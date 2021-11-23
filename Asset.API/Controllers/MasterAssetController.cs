@@ -84,6 +84,16 @@ namespace Asset.API.Controllers
             return c;
         }
 
+        [HttpPost]
+        [Route("SortMasterAssets/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexMasterAssetVM.GetData> SortMasterAssets(int pagenumber, int pagesize, SortMasterAssetVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _MasterAssetService.sortMasterAssets(sortObj).ToList();
+            return _pagingService.GetAll<IndexMasterAssetVM.GetData>(pageInfo, list);
+        }
 
 
 

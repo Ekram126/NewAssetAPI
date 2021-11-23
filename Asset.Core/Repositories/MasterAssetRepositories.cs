@@ -407,7 +407,7 @@ namespace Asset.Core.Repositories
 
             var list = _context.MasterAssets.Include(a => a.brand)
                 .Include(a => a.Category)
-                 .Include(a => a.SubCategory)
+                .Include(a => a.SubCategory)
                 .Include(a => a.Origin)
                 .Include(a => a.ECRIS).ToList();
 
@@ -462,10 +462,6 @@ namespace Asset.Core.Repositories
 
 
 
-
-
-
-
             if (searchObj.OriginId != 0)
             {
                 lstData = lstData.Where(a => a.OriginId == searchObj.OriginId).ToList();
@@ -501,11 +497,6 @@ namespace Asset.Core.Repositories
             else
                 lstData = lstData.ToList();
 
-
-
-
-
-
             if (searchObj.AssetName != "")
             {
                 lstData = lstData.Where(b => b.AssetName == searchObj.AssetName).ToList();
@@ -514,8 +505,6 @@ namespace Asset.Core.Repositories
             {
                 lstData = lstData.Where(b => b.NameAr == searchObj.AssetNameAr).ToList();
             }
-
-
             if (searchObj.Code != "")
             {
                 lstData = lstData.Where(b => b.Code == searchObj.Code).ToList();
@@ -527,5 +516,124 @@ namespace Asset.Core.Repositories
 
             return lstData;
         }
+
+        public IEnumerable<IndexMasterAssetVM.GetData> sortMasterAssets(SortMasterAssetVM searchObj)
+        {
+            List<IndexMasterAssetVM.GetData> lstData = new List<IndexMasterAssetVM.GetData>();
+
+            var list = _context.MasterAssets.Include(a => a.brand)
+                .Include(a => a.Category)
+                .Include(a => a.SubCategory)
+                .Include(a => a.Origin)
+                .Include(a => a.ECRIS).ToList();
+
+            foreach (var item in list)
+            {
+                IndexMasterAssetVM.GetData getDataObj = new IndexMasterAssetVM.GetData();
+                getDataObj.Id = item.Id;
+                getDataObj.Code = item.Code;
+                getDataObj.Name = item.Name;
+                getDataObj.NameAr = item.NameAr;
+                getDataObj.AssetName = item.Name;
+                getDataObj.AssetNameAr = item.NameAr;
+                getDataObj.Model = item.ModelNumber;
+                getDataObj.PMBGColor = item.PMBGColor;
+                getDataObj.PMColor = item.PMColor;
+
+                if (item.OriginId != null)
+                {
+                    getDataObj.OriginId = item.OriginId;
+                    getDataObj.OriginName = item.Origin.Name;
+                    getDataObj.OriginNameAr = item.Origin.NameAr;
+                }
+                if (item.BrandId != null)
+                {
+                    getDataObj.BrandId = item.BrandId;
+                    getDataObj.BrandName = item.brand.Name;
+                    getDataObj.BrandNameAr = item.brand.NameAr;
+                }
+
+                if (item.ECRIId != null)
+                {
+                    getDataObj.ECRIId = item.ECRIId;
+                    getDataObj.ECRIName = item.ECRIS.Name;
+                    getDataObj.ECRINameAr = item.ECRIS.NameAr;
+                }
+
+                if (item.CategoryId != null)
+                {
+                    getDataObj.CategoryId = item.CategoryId;
+                    getDataObj.CategoryName = item.Category.Name;
+                    getDataObj.CategoryNameAr = item.Category.NameAr;
+                }
+
+                if (item.SubCategoryId != null)
+                {
+                    getDataObj.SubCategoryId = item.SubCategoryId;
+                    getDataObj.SubCategoryName = item.SubCategory.Name;
+                    getDataObj.SubCategoryNameAr = item.SubCategory.NameAr;
+                }
+                lstData.Add(getDataObj);
+            }
+
+            if (searchObj.OriginName != "" || searchObj.OriginNameAr!="")
+            {
+                lstData = lstData.OrderBy(d => d.OriginName).ThenBy(d=>d.BrandNameAr).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.ECRIName != "" || searchObj.ECRINameAr != "")
+            {
+                lstData = lstData.OrderBy(d => d.ECRIName).ThenBy(d => d.ECRINameAr).ToList();
+            }
+            else
+                list = list.ToList();
+
+            if (searchObj.BrandName != "" || searchObj.BrandNameAr != "")
+            {
+                lstData = lstData.OrderBy(d => d.BrandName).ThenBy(d => d.BrandNameAr).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.CategoryName != "" || searchObj.CategoryNameAr != "")
+            {
+                lstData = lstData.OrderBy(d => d.CategoryName).ThenBy(d => d.CategoryNameAr).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.SubCategoryName != "" || searchObj.SubCategoryNameAr != "")
+            {
+                lstData = lstData.OrderBy(d => d.SubCategoryName).ThenBy(d => d.SubCategoryNameAr).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.AssetName != "" || searchObj.AssetNameAr != "")
+            {
+                lstData = lstData.OrderBy(d => d.AssetName).ThenBy(d => d.AssetNameAr).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.Code != "")
+            {
+                lstData = lstData.OrderBy(d => d.Code).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.ModelNumber != "")
+            {
+                lstData = lstData.OrderBy(d => d.Model).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            return lstData;
+        }
+    
     }
 }
