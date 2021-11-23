@@ -1,0 +1,455 @@
+﻿using Asset.Domain.Repositories;
+using Asset.Models;
+using Asset.ViewModels.SupplierExecludeAssetVM;
+using Asset.ViewModels.RoleCategoryVM;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Asset.Core.Repositories
+{
+    public class SupplierExecludeAssetRepositories : ISupplierExecludeAssetRepository
+    {
+        private ApplicationDbContext _context;
+
+        public SupplierExecludeAssetRepositories(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+
+        public EditSupplierExecludeAssetVM GetById(int id)
+        {
+
+
+
+            var reasonIds = (from execlude in _context.SupplierExecludeReasons
+                             join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                             where trans.SupplierExecludeAssetId == id
+                             select execlude.Id).ToList();
+
+
+
+
+
+
+            return _context.SupplierExecludeAssets.Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Where(a => a.Id == id).Select(item => new EditSupplierExecludeAssetVM
+            {
+                Id = item.Id,
+                AssetId = item.AssetId,
+                StatusId = item.StatusId,
+                Date = item.Date,
+                ExecludeDate = item.ExecludeDate,
+                ExNumber = item.ExNumber,
+                UserId = item.User.UserName,
+                ReasonIds = reasonIds,
+                assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
+                assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber
+
+            }).FirstOrDefault();
+
+        }
+
+
+
+
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAll()
+        {
+            List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
+            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+            foreach (var item in lstSupplierExecludeAssets)
+            {
+
+                IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
+                getDataObj.Id = item.Id;
+                getDataObj.ExNumber = item.ExNumber;
+                getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
+                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
+                getDataObj.UserName = item.User.UserName;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+
+                getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
+
+
+                getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                getDataObj.StatusId = item.StatusId;
+
+                if (item.StatusId == 1)
+                {
+                    getDataObj.StatusName = "Open";
+                    getDataObj.StatusNameAr = "فتح";
+                }
+                if (item.StatusId == 2)
+                {
+                    getDataObj.StatusName = "Approved";
+                    getDataObj.StatusNameAr = "موافقة";
+                }
+                if (item.StatusId == 3)
+                {
+                    getDataObj.StatusName = "Rejected";
+                    getDataObj.StatusNameAr = "رفض الطلب";
+                }
+                if (item.StatusId == 4)
+                {
+                    getDataObj.StatusName = "System Rejected";
+                    getDataObj.StatusNameAr = "استبعاد من النظام";
+                }
+                var lstExTitles = (from execlude in _context.SupplierExecludeReasons
+                                   join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                                   where trans.SupplierExecludeAssetId == item.Id
+                                   select execlude).ToList();
+
+
+                if (lstExTitles.Count > 0)
+                {
+                    List<string> execludeNames = new List<string>();
+                    List<string> execludeNamesAr = new List<string>();
+                    foreach (var reason in lstExTitles)
+                    {
+                        execludeNames.Add(reason.Name);
+                        execludeNamesAr.Add(reason.NameAr);
+                    }
+
+                    getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+                    getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                }
+
+                list.Add(getDataObj);
+            }
+
+            return list;
+        }
+
+        public int Add(CreateSupplierExecludeAssetVM model)
+        {
+            SupplierExecludeAsset supplierExecludeAssetObj = new SupplierExecludeAsset();
+            try
+            {
+                if (supplierExecludeAssetObj != null)
+                {
+                    supplierExecludeAssetObj.Id = model.Id;
+                    supplierExecludeAssetObj.AssetId = model.AssetId;
+                    supplierExecludeAssetObj.StatusId = 1;
+                    supplierExecludeAssetObj.Date = DateTime.Today.Date;
+                    if (model.ExecludeDate != "")
+                        supplierExecludeAssetObj.ExecludeDate = DateTime.Parse(model.ExecludeDate.ToString());
+                    supplierExecludeAssetObj.ExNumber = model.ExNumber;
+                    supplierExecludeAssetObj.UserId = model.UserId;
+                    _context.SupplierExecludeAssets.Add(supplierExecludeAssetObj);
+                    _context.SaveChanges();
+                    int id = supplierExecludeAssetObj.Id;
+                    if (model.ReasonIds.Count > 0)
+                    {
+                        foreach (var reasonId in model.ReasonIds)
+                        {
+                            SupplierExeclude supplierExecludeObj = new SupplierExeclude();
+                            supplierExecludeObj.SupplierExecludeAssetId = id;
+                            supplierExecludeObj.ReasonId = reasonId;
+                            _context.SupplierExecludes.Add(supplierExecludeObj);
+                            _context.SaveChanges();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string str = ex.Message;
+            }
+            return supplierExecludeAssetObj.Id;
+        }
+
+        public int Delete(int id)
+        {
+            var SupplierExecludeAssetObj = _context.SupplierExecludeAssets.Find(id);
+            try
+            {
+                if (SupplierExecludeAssetObj != null)
+                {
+                    _context.SupplierExecludeAssets.Remove(SupplierExecludeAssetObj);
+                    return _context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                string str = ex.Message;
+            }
+
+            return 0;
+        }
+
+        public int Update(EditSupplierExecludeAssetVM model)
+        {
+            try
+            {
+                var supplierExecludeAssetObj = _context.SupplierExecludeAssets.Find(model.Id);
+                supplierExecludeAssetObj.Id = model.Id;
+                supplierExecludeAssetObj.AssetId = model.AssetId;
+                supplierExecludeAssetObj.StatusId = model.StatusId;
+                supplierExecludeAssetObj.Date = model.Date;
+                supplierExecludeAssetObj.ExecludeDate = model.ExecludeDate;
+                supplierExecludeAssetObj.ExNumber = model.ExNumber;
+                supplierExecludeAssetObj.UserId = model.UserId;
+                _context.Entry(supplierExecludeAssetObj).State = EntityState.Modified;
+                _context.SaveChanges();
+
+                if (model.ReasonIds.Count > 0)
+                {
+
+
+                    List<int> reasonIds = new List<int>();
+                    var savedReasonIds = (from execlude in _context.SupplierExecludeReasons
+                                          join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                                          where trans.SupplierExecludeAssetId == model.Id
+                                          select trans).ToList().Select(a => a.ReasonId).ToList();
+                    foreach (var sr in savedReasonIds)
+                    {
+                        reasonIds.Add(sr.Value);
+                    }
+
+
+
+                    var savedIds = reasonIds.ToList().Except(model.ReasonIds);
+                    if (savedIds.Count() > 0)
+                    {
+                        foreach (var item in savedIds)
+                        {
+                            var row = _context.SupplierExecludes.Where(a => a.SupplierExecludeAssetId == model.Id && a.ReasonId == item).ToList();
+                            if (row.Count > 0)
+                            {
+                                var reasonObj = row[0];
+                                _context.SupplierExecludes.Remove(reasonObj);
+                                _context.SaveChanges();
+                            }
+                        }
+                    }
+                    var neewIds = model.ReasonIds.Except(reasonIds);
+                    if (neewIds.Count() > 0)
+                    {
+                        foreach (var itm in neewIds)
+                        {
+                            SupplierExeclude supplierExecludeObj = new SupplierExeclude();
+                            supplierExecludeObj.SupplierExecludeAssetId = model.Id;
+                            supplierExecludeObj.ReasonId = itm;
+                            _context.SupplierExecludes.Add(supplierExecludeObj);
+                            _context.SaveChanges();
+                        }
+                    }
+
+
+
+                    return supplierExecludeAssetObj.Id;
+                }
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+            }
+
+            return 0;
+        }
+
+        public int CreateSupplierExecludAttachments(SupplierExecludeAttachment attachObj)
+        {
+            SupplierExecludeAttachment assetAttachmentObj = new SupplierExecludeAttachment();
+            assetAttachmentObj.SupplierExecludeAssetId = attachObj.SupplierExecludeAssetId;
+            assetAttachmentObj.Title = attachObj.Title;
+            assetAttachmentObj.FileName = attachObj.FileName;
+            _context.SupplierExecludeAttachments.Add(assetAttachmentObj);
+            _context.SaveChanges();
+            int Id = assetAttachmentObj.Id;
+            return Id;
+        }
+
+        public IEnumerable<SupplierExecludeAttachment> GetAttachmentBySupplierExecludeAssetId(int assetId)
+        {
+            return _context.SupplierExecludeAttachments.Where(a => a.SupplierExecludeAssetId == assetId).ToList();
+        }
+
+        public int DeleteSupplierExecludeAttachment(int id)
+        {
+            try
+            {
+                var attachObj = _context.SupplierExecludeAttachments.Find(id);
+                _context.SupplierExecludeAttachments.Remove(attachObj);
+                return _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+            }
+
+            return 0;
+
+        }
+
+        public int UpdateExcludedDate(EditSupplierExecludeAssetVM model)
+        {
+            try
+            {
+                var supplierExecludeAssetObj = _context.SupplierExecludeAssets.Find(model.Id);
+                supplierExecludeAssetObj.Id = model.Id;
+                supplierExecludeAssetObj.StatusId = model.StatusId;
+                if (model.StatusId == 2)
+                    supplierExecludeAssetObj.ExecludeDate = model.ExecludeDate;
+                if (model.StatusId == 3)
+                    supplierExecludeAssetObj.ExecludeDate = DateTime.Today.Date;
+
+
+                supplierExecludeAssetObj.UserId = model.UserId;
+                _context.Entry(supplierExecludeAssetObj).State = EntityState.Modified;
+                _context.SaveChanges();
+
+                if (model.StatusId == 2)
+                {
+                    AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
+                    assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
+                    assetStatusTransactionObj.AssetStatusId = 8;
+                    assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                    _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
+                    _context.SaveChanges();
+                }
+                return supplierExecludeAssetObj.Id;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+            }
+
+            return 0;
+        }
+
+        public ViewSupplierExecludeAssetVM GetSupplierExecludeAssetDetailById(int id)
+        {
+
+
+            var reasonNames = (from execlude in _context.SupplierExecludeReasons
+                             join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                             where trans.SupplierExecludeAssetId == id
+                             select execlude).ToList();
+
+
+
+
+
+
+            return _context.SupplierExecludeAssets.Include(a => a.User).Include(a => a.AssetDetail)
+                                        .Include(a => a.AssetDetail.Hospital)
+                                        .Include(a => a.AssetDetail.Supplier)
+                                        .Include(a => a.AssetDetail.MasterAsset).Where(a => a.Id == id).Select(item => new ViewSupplierExecludeAssetVM
+                                        {
+                                            Id = item.Id,
+                                            AssetId = item.AssetId,
+                                            StatusId = item.StatusId,
+                                            Date = item.Date,
+                                            ExecludeDate = item.ExecludeDate,
+                                            ExNumber = item.ExNumber,
+                                            UserId = item.User.UserName,
+                                            ReasonNames = reasonNames,
+                                            assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
+                                            assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber,
+
+                                            
+                                            HospitalName = item.AssetDetail.Hospital.Name,
+                                            HospitalNameAr = item.AssetDetail.Hospital.NameAr,
+
+                                            GovName = item.AssetDetail.Hospital.Governorate.Name,
+                                            GovNameAr = item.AssetDetail.Hospital.Governorate.NameAr,
+
+
+                                            CityName = item.AssetDetail.Hospital.City.Name,
+                                            CityNameAr = item.AssetDetail.Hospital.City.NameAr,
+
+                                            OrgName = item.AssetDetail.Hospital.Organization.Name,
+                                            OrgNameAr = item.AssetDetail.Hospital.Organization.NameAr,
+
+                                            SubOrgName = item.AssetDetail.Hospital.SubOrganization.Name,
+                                            SubOrgNameAr = item.AssetDetail.Hospital.SubOrganization.NameAr,
+
+
+
+                                        }).FirstOrDefault();
+
+        }
+
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByStatusId(int statusId)
+        {
+            List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
+            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
+
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+            if(statusId != 0)
+            {
+                lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.StatusId == statusId).ToList();
+            }
+            foreach (var item in lstSupplierExecludeAssets)
+            {
+
+                IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
+                getDataObj.Id = item.Id;
+                getDataObj.ExNumber = item.ExNumber;
+                getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
+                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
+                getDataObj.UserName = item.User.UserName;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+
+                getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
+
+
+                getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                getDataObj.StatusId = item.StatusId;
+
+                if (item.StatusId == 1)
+                {
+                    getDataObj.StatusName = "Open";
+                    getDataObj.StatusNameAr = "فتح";
+                }
+                if (item.StatusId == 2)
+                {
+                    getDataObj.StatusName = "Approved";
+                    getDataObj.StatusNameAr = "موافقة";
+                }
+                if (item.StatusId == 3)
+                {
+                    getDataObj.StatusName = "Rejected";
+                    getDataObj.StatusNameAr = "رفض الطلب";
+                }
+                if (item.StatusId == 4)
+                {
+                    getDataObj.StatusName = "System Rejected";
+                    getDataObj.StatusNameAr = "استبعاد من النظام";
+                }
+                var lstExTitles = (from execlude in _context.SupplierExecludeReasons
+                                   join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                                   where trans.SupplierExecludeAssetId == item.Id
+                                   select execlude).ToList();
+
+
+                if (lstExTitles.Count > 0)
+                {
+                    List<string> execludeNames = new List<string>();
+                    List<string> execludeNamesAr = new List<string>();
+                    foreach (var reason in lstExTitles)
+                    {
+                        execludeNames.Add(reason.Name);
+                        execludeNamesAr.Add(reason.NameAr);
+                    }
+
+                    getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+                    getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                }
+
+                list.Add(getDataObj);
+            }
+
+            return list;
+        }
+    }
+}

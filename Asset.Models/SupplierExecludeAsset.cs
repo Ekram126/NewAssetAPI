@@ -1,0 +1,34 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Asset.Models
+{
+    public class SupplierExecludeAsset
+    {
+        public int Id { get; set; }
+
+        public int? AssetId { get; set; }
+        [ForeignKey("AssetId")]
+        public virtual AssetDetail AssetDetail { get; set; }
+
+        public int? StatusId { get; set; }
+
+
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser User { get; set; }
+
+        public DateTime? Date { get; set; }
+        public DateTime? ExecludeDate { get; set; }
+
+        [StringLength(50)]
+        public string ExNumber { get; set; }
+
+
+    }
+}

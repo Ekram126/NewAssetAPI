@@ -1,0 +1,8 @@
+                //(from hbtsys in db.SystemHabits
+                // join hbt in db.Habits on hbtsys.Id equals hbt.HabitId
+                // where hbt.PatientId == item.Id
+                // select hbtsys).ToList();
+
+             
+
+            //string ids = String.Join(",", clinicIds.Select(p => p.ToString()).ToArray());
