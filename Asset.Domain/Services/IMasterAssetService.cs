@@ -31,5 +31,6 @@ namespace Asset.Domain.Services
         List<CountMasterAssetBrands> CountMasterAssetsByBrand();
 
         List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier();
+        IEnumerable<IndexMasterAssetVM.GetData> sortMasterAssets(SortMasterAssetVM sortObj);
     }
 }

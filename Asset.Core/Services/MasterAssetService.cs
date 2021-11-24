@@ -94,7 +94,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.MasterAssetRepository.SearchInMasterAssets(searchObj);
         }
-
+        public IEnumerable<IndexMasterAssetVM.GetData> sortMasterAssets(SortMasterAssetVM sortObj)
+        {
+            return _unitOfWork.MasterAssetRepository.sortMasterAssets(sortObj);
+        }
         public int Update(EditMasterAssetVM masterAssetObj)
         {
             _unitOfWork.MasterAssetRepository.Update(masterAssetObj);

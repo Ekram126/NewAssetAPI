@@ -33,5 +33,6 @@ namespace Asset.Domain.Repositories
         List<CountMasterAssetBrands> CountMasterAssetsByBrand();
 
         List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier();
+        IEnumerable<IndexMasterAssetVM.GetData> sortMasterAssets(SortMasterAssetVM searchObj);
     }
 }
