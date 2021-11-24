@@ -1657,6 +1657,21 @@ namespace Asset.Core.Repositories
                 lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
             }
 
+            if (sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
+            {
+                lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
+            }
+
+            if (sortObj.OrgName != "" || sortObj.OrgNameAr != "")
+            {
+                lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
+            }
+
+            if (sortObj.SubOrgName != "" || sortObj.SubOrgNameAr != "")
+            {
+                lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
+            }
+
             if (sortObj.Code != "")
             {
                 lstAssetData = lstAssetData.OrderBy(d => d.Code).ToList();
