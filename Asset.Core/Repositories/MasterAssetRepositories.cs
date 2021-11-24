@@ -576,9 +576,9 @@ namespace Asset.Core.Repositories
                 lstData.Add(getDataObj);
             }
 
-            if (searchObj.OriginName != "" || searchObj.OriginNameAr!="")
+            if (searchObj.OriginName != "" || searchObj.OriginNameAr !="")
             {
-                lstData = lstData.OrderBy(d => d.OriginName).ThenBy(d=>d.BrandNameAr).ToList();
+                lstData = lstData.OrderBy(d => d.OriginName).ThenBy(d=>d.OriginNameAr).ToList();
             }
             else
                 lstData = lstData.ToList();
