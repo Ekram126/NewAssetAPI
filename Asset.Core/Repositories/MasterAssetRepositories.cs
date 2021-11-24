@@ -575,7 +575,12 @@ namespace Asset.Core.Repositories
                 }
                 lstData.Add(getDataObj);
             }
-
+            if (searchObj.AssetName != "" || searchObj.AssetNameAr != "")
+            {
+                lstData = lstData.OrderBy(d => d.AssetName).ThenBy(d => d.AssetNameAr).ToList();
+            }
+            else
+                lstData = lstData.ToList();
             if (searchObj.OriginName != "" || searchObj.OriginNameAr !="")
             {
                 lstData = lstData.OrderBy(d => d.OriginName).ThenBy(d=>d.OriginNameAr).ToList();

@@ -1619,6 +1619,51 @@ namespace Asset.Core.Repositories
             }
             return lstAssetOrganization;
         }
+
+        public IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj)
+        {
+            List<IndexAssetDetailVM.GetData> lstAssetData = new List<IndexAssetDetailVM.GetData>();
+
+            var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset)
+                 .Include(a => a.Hospital)
+                 .Include(a => a.Hospital.Governorate)
+                 .Include(a => a.Hospital.City)
+                 .ToList();
+            foreach (var item in lstAssetDetails)
+            {
+                IndexAssetDetailVM.GetData Assetobj = new IndexAssetDetailVM.GetData();
+                Assetobj.Id = item.Id;
+                Assetobj.Code = item.Code;
+                Assetobj.HospitalName = item.HospitalId > 0 ? item.Hospital.Name : "";
+                Assetobj.HospitalNameAr = item.HospitalId > 0 ? item.Hospital.NameAr : "";
+                Assetobj.AssetName = item.MasterAssetId > 0 ? item.MasterAsset.Name : "";
+                Assetobj.AssetNameAr = item.MasterAssetId > 0 ? item.MasterAsset.NameAr : "";
+                Assetobj.GovernorateName = item.HospitalId > 0 ? item.Hospital.Governorate.Name : "";
+                Assetobj.GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "";
+                lstAssetData.Add(Assetobj);
+            }
+            if (sortObj.AssetName != "" || sortObj.AssetNameAr != "")
+            {
+                lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ThenBy(d => d.AssetNameAr).ToList();
+            }
+
+            if (sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
+            {
+                lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ThenBy(d => d.GovernorateNameAr).ToList();
+            }
+
+            if (sortObj.HospitalName != "" || sortObj.HospitalNameAr != "")
+            {
+                lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
+            }
+
+            if (sortObj.Code != "")
+            {
+                lstAssetData = lstAssetData.OrderBy(d => d.Code).ToList();
+            }
+
+            return lstAssetData;
+        }
     }
 }
 
