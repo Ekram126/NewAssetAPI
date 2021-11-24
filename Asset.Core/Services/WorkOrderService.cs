@@ -84,5 +84,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalId(hospitalId, userId,statusId);
         }
+
+        public IEnumerable<IndexWorkOrderVM> SearchWorkOrders(SearchWorkOrderVM searchObj)
+        {
+            return _unitOfWork.WorkOrder.SearchWorkOrders(searchObj);
+        }
     }
 }

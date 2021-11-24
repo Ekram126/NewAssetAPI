@@ -97,12 +97,12 @@ namespace Asset.API.Controllers
         }
 
 
-        //[HttpPost]
-        //[Route("SearchAssetDetailsByHospitalId")]
-        //public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetDetailsByHospitalId(SearchMasterAssetVM model)
-        //{
-        //    return _AssetDetailService.SearchAssetInHospitalByHospitalId(model);
-        //}
+        [HttpPost]
+        [Route("SearchAssetDetailsByHospitalId")]
+        public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetDetailsByHospitalId(SearchMasterAssetVM model)
+        {
+            return _AssetDetailService.SearchAssetInHospitalByHospitalId(model);
+        }
 
 
 

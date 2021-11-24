@@ -135,12 +135,12 @@ namespace Asset.Core.Repositories
                     ActualStartDate = work.WorkOrder.ActualStartDate,
                     ActualEndDate = work.WorkOrder.ActualEndDate,
                     Note = work.WorkOrder.Note,
-                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId,
+                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId:0,
                     WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
                     WorkOrderPeriorityNameAr = work.WorkOrder.WorkOrderPeriority.NameAr,
-                    WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId,
+                    WorkOrderTypeId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderTypeId:0,
                     WorkOrderTypeName = work.WorkOrder.WorkOrderType.Name,
-                    RequestId = work.WorkOrder.RequestId,
+                    RequestId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.RequestId:0,
                     RequestSubject = work.WorkOrder.Request.Subject,
                     AssetSerial = work.WorkOrder.Request.AssetDetail.SerialNumber,
                     MasterAssetId = (int)work.WorkOrder.Request.AssetDetail.MasterAssetId,
@@ -197,11 +197,11 @@ namespace Asset.Core.Repositories
                     ActualStartDate = work.WorkOrder.ActualStartDate,
                     ActualEndDate = work.WorkOrder.ActualEndDate,
                     Note = work.WorkOrder.Note,
-                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId,
+                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId:0,
                     WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
-                    WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId,
+                    WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId != null ? (int)work.WorkOrder.WorkOrderTypeId:0,
                     WorkOrderTypeName = work.WorkOrder.WorkOrderType.Name,
-                    RequestId = work.WorkOrder.RequestId,
+                    RequestId = work.WorkOrder.RequestId != null ? (int)work.WorkOrder.RequestId:0,
                     RequestSubject = work.WorkOrder.Request.Subject,
                     SerialNumber = work.WorkOrder.Request.AssetDetail.SerialNumber,
                     WorkOrderSubject = work.WorkOrder.Request.Subject,
@@ -370,11 +370,11 @@ namespace Asset.Core.Repositories
                 getDataObj.ActualStartDate = item.WorkOrder.ActualStartDate;
                 getDataObj.ActualEndDate = item.WorkOrder.ActualEndDate;
                 getDataObj.Note = item.WorkOrder.Note;
-                getDataObj.WorkOrderPeriorityId = item.WorkOrder.WorkOrderPeriorityId;
+                getDataObj.WorkOrderPeriorityId = item.WorkOrder.WorkOrderPeriorityId != null?(int) item.WorkOrder.WorkOrderPeriorityId:0;
                 getDataObj.WorkOrderPeriorityName = item.WorkOrder.WorkOrderPeriority.Name;
-                getDataObj.WorkOrderTypeId = item.WorkOrder.WorkOrderTypeId;
+                getDataObj.WorkOrderTypeId = item.WorkOrder.WorkOrderTypeId != null ? (int) item.WorkOrder.WorkOrderTypeId:0;
                 getDataObj.WorkOrderTypeName = item.WorkOrder.WorkOrderType.Name;
-                getDataObj.RequestId = item.WorkOrder.RequestId;
+                getDataObj.RequestId = item.WorkOrder.RequestId != null ? (int)item.WorkOrder.RequestId:0;
                 getDataObj.RequestSubject = item.WorkOrder.Request.Subject;
                 getDataObj.SerialNumber = item.WorkOrder.Request.AssetDetail.SerialNumber;
                 getDataObj.WorkOrderSubject = item.WorkOrder.Request.Subject;
@@ -514,11 +514,11 @@ namespace Asset.Core.Repositories
                     ActualStartDate = work.WorkOrder.ActualStartDate,
                     ActualEndDate = work.WorkOrder.ActualEndDate,
                     Note = work.WorkOrder.Note,
-                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId,
+                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId : 0,
                     WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
-                    WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId,
+                    WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId != null ? (int)work.WorkOrder.WorkOrderTypeId:0,
                     WorkOrderTypeName = work.WorkOrder.WorkOrderType.Name,
-                    RequestId = work.WorkOrder.RequestId,
+                    RequestId = work.WorkOrder.RequestId != null ? (int)work.WorkOrder.RequestId:0,
                     RequestSubject = work.WorkOrder.Request.Subject,
                     SerialNumber = work.WorkOrder.Request.AssetDetail.SerialNumber,
                     WorkOrderSubject = work.WorkOrder.Request.Subject,

@@ -99,6 +99,28 @@ namespace Asset.API.Controllers
 
 
 
+        [HttpPost]
+        [Route("SearchInWorkOrders/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexWorkOrderVM> SearchInWorkOrders(int pagenumber, int pagesize, SearchWorkOrderVM searchObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _workOrderService.SearchWorkOrders(searchObj).ToList();
+            return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, list);
+        }
+
+        [HttpPost]
+        [Route("SearchInWorkOrderssCount")]
+        public int SearchInRequestsCount(SearchWorkOrderVM searchObj)
+        {
+            int count = _workOrderService.SearchWorkOrders(searchObj).ToList().Count();
+            return count;
+        }
+
+
+
+
 
         // GET api/<WorkOrderController>/5
         [HttpGet("{id}")]

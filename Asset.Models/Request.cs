@@ -16,19 +16,19 @@ namespace Asset.Models
         public DateTime RequestDate { get; set; }
         //public bool? IsAssigned { get; set; }
         //public bool? IsSolved { get; set; }
-        public int RequestModeId { get; set; }
+        public int? RequestModeId { get; set; }
         [ForeignKey("RequestModeId")]
         public virtual RequestMode RequestMode { get; set; }
         //public int SubCategoryId { get; set; }
         //[ForeignKey("SubCategoryId")]
         //public virtual SubCategory SubCategory { get; set; }
-        public int AssetDetailId { get; set; }
+        public int? AssetDetailId { get; set; }
         [ForeignKey("AssetDetailId")]
         public virtual AssetDetail AssetDetail { get; set; }
 
 
 
-        public int RequestPeriorityId { get; set; }
+        public int? RequestPeriorityId { get; set; }
         [ForeignKey("RequestPeriorityId")]
         public virtual RequestPeriority RequestPeriority { get; set; }
         //public int EmployeeId { get; set; }

@@ -128,6 +128,25 @@ namespace Asset.API.Controllers
 
 
 
+        [HttpPost]
+        [Route("SearchInRequests/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexRequestVM.GetData> SearchInRequests(int pagenumber, int pagesize, SearchRequestVM searchObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _requestService.SearchRequests(searchObj).ToList();
+            return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, list);
+        }
+
+        [HttpPost]
+        [Route("SearchInRequestsCount")]
+        public int SearchInRequestsCount(SearchRequestVM searchObj)
+        {
+            int count = _requestService.SearchRequests(searchObj).ToList().Count();
+            return count;
+        }
+
 
 
 

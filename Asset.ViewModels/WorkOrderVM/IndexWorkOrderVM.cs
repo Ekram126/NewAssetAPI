@@ -10,7 +10,7 @@ namespace Asset.ViewModels.WorkOrderVM
     {
         public int Id { get; set; }
         public string Subject { get; set; }
-       
+
         public string WorkOrderNumber { get; set; }
         public DateTime? CreationDate { get; set; }
         public DateTime? PlannedStartDate { get; set; }
@@ -45,7 +45,7 @@ namespace Asset.ViewModels.WorkOrderVM
 
         public string StatusName { get; set; }
         public string StatusNameAr { get; set; }
-    public string statusColor { get; set; }
+        public string statusColor { get; set; }
 
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
@@ -55,7 +55,7 @@ namespace Asset.ViewModels.WorkOrderVM
 
         public bool ExistStatusId { get; set; }
 
-
+        public int? AssetId { get; set; }
         public int? MasterAssetId { get; set; }
         public int? HospitalId { get; set; }
         public int? GovernorateId { get; set; }

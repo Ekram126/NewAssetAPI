@@ -14,6 +14,9 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId,int statusId);
         IEnumerable<IndexWorkOrderVM> GetworkOrderByUserId(int requestId, string userId);
         IEnumerable<IndexWorkOrderVM> GetworkOrder(string userId);
+
+        IEnumerable<IndexWorkOrderVM> SearchWorkOrders(SearchWorkOrderVM searchObj);
+
         IndexWorkOrderVM GetById(int id);
         IndexWorkOrderVM GetWorkOrderByRequestId(int requestId);
         int Add(CreateWorkOrderVM createWorkOrderVM);
