@@ -35,6 +35,7 @@ namespace Asset.API.Controllers
 
         private IPMAssetTimeService _pMAssetTimeService;
         private IPagingService _pagingService;
+        private QrController _qrController;
 
         [Obsolete]
         IHostingEnvironment _webHostingEnvironment;
@@ -42,6 +43,7 @@ namespace Asset.API.Controllers
         [Obsolete]
         public AssetDetailController(IAssetDetailService AssetDetailService, IAssetOwnerService assetOwnerService,
             IPMAssetTimeService pMAssetTimeService, IPagingService pagingService,
+            QrController qrController,
             IHostingEnvironment webHostingEnvironment)
         {
             _AssetDetailService = AssetDetailService;
@@ -49,6 +51,7 @@ namespace Asset.API.Controllers
             _assetOwnerService = assetOwnerService;
             _pMAssetTimeService = pMAssetTimeService;
             _pagingService = pagingService;
+            _qrController = qrController;
         }
 
 
@@ -69,7 +72,7 @@ namespace Asset.API.Controllers
         [Route("getcount")]
         public int count()
         {
-            return _pagingService.Count<AssetDetail>();
+            return _AssetDetailService.GetAll().ToList().Count();
         }
         [HttpGet]
         [Route("GetAllSerialsByMasterAssetIdAndHospitalId/{masterAssetId}/{hospitalId}")]
@@ -231,6 +234,8 @@ namespace Asset.API.Controllers
         public ActionResult<AssetDetail> Add(CreateAssetDetailVM AssetDetailVM)
         {
             var savedId = _AssetDetailService.Add(AssetDetailVM);
+            _qrController.Index(AssetDetailVM.Id);
+
             return Ok(new { assetId = savedId });
 
         }

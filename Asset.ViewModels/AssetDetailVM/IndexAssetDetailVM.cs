@@ -63,6 +63,7 @@ namespace Asset.ViewModels.AssetDetailVM
             public int? OrganizationId { get; set; }
             public int? SubOrganizationId { get; set; }
             public int? AssetId { get; set; }
+            public string QrFilePath { get; set; }
         }
     }
 }

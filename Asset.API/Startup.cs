@@ -1,3 +1,4 @@
+using Asset.API.Controllers;
 using Asset.Core;
 using Asset.Core.Services;
 using Asset.Domain;
@@ -107,8 +108,8 @@ namespace Asset.API
             services.AddTransient<IWorkOrderAttachmentService, WorkOrderAttachmentService>();
             services.AddTransient<IWorkOrderAssignService, WorkOrderAssignService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IPagingService, PagingService>(); 
-
+            services.AddScoped<IPagingService, PagingService>();
+            services.AddScoped<QrController, QrController>();
 
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()

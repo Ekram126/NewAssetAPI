@@ -11,6 +11,7 @@ using Asset.ViewModels.PMAssetTaskScheduleVM;
 using Asset.ViewModels.PMAssetTaskVM;
 using Asset.ViewModels.PmAssetTimeVM;
 using Asset.ViewModels.SupplierVM;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -38,46 +39,45 @@ namespace Asset.Core.Repositories
                 if (model != null)
                 {
                     assetDetailObj.Code = model.Code;
-                    assetDetailObj.PurchaseDate = model.PurchaseDate != "" ? DateTime.Parse(model.PurchaseDate) : null;
+                    assetDetailObj.PurchaseDate = model.PurchaseDate != null ? DateTime.Parse(model.PurchaseDate) : null;
                     assetDetailObj.Price = model.Price;
                     assetDetailObj.SerialNumber = model.SerialNumber;
                     assetDetailObj.Remarks = model.Remarks;
                     assetDetailObj.Barcode = model.Barcode;
-                    assetDetailObj.InstallationDate = model.InstallationDate != "" ? DateTime.Parse(model.InstallationDate) : null;
+                    assetDetailObj.InstallationDate = model.InstallationDate != null ? DateTime.Parse(model.InstallationDate) : null;
                     assetDetailObj.RoomId = model.RoomId;
                     assetDetailObj.FloorId = model.FloorId;
                     assetDetailObj.BuildingId = model.BuildingId;
-                    assetDetailObj.ReceivingDate = model.ReceivingDate != "" ? DateTime.Parse(model.ReceivingDate) : null;
-                    assetDetailObj.OperationDate = model.OperationDate != "" ? DateTime.Parse(model.OperationDate) : null;
+                    assetDetailObj.ReceivingDate = model.ReceivingDate != null ? DateTime.Parse(model.ReceivingDate) : null;
+                    assetDetailObj.OperationDate = model.OperationDate != null ? DateTime.Parse(model.OperationDate) : null;
                     assetDetailObj.PONumber = model.PONumber;
                     assetDetailObj.DepartmentId = model.DepartmentId;
                     assetDetailObj.SupplierId = model.SupplierId;
                     assetDetailObj.HospitalId = model.HospitalId;
                     assetDetailObj.MasterAssetId = model.MasterAssetId;
-                    assetDetailObj.WarrantyStart = model.WarrantyStart != "" ? DateTime.Parse(model.WarrantyStart) : null;
-                    assetDetailObj.WarrantyEnd = model.WarrantyEnd != "" ? DateTime.Parse(model.WarrantyEnd) : null;
+                    assetDetailObj.WarrantyStart = model.WarrantyStart != null ? DateTime.Parse(model.WarrantyStart) : null;
+                    assetDetailObj.WarrantyEnd = model.WarrantyEnd != null ? DateTime.Parse(model.WarrantyEnd) : null;
                     assetDetailObj.DepreciationRate = model.DepreciationRate;
                     assetDetailObj.CostCenter = model.CostCenter;
                     assetDetailObj.WarrantyExpires = model.WarrantyExpires;
                     _context.AssetDetails.Add(assetDetailObj);
                     _context.SaveChanges();
 
-                    int assetDetailId = assetDetailObj.Id;
+                    model.Id = assetDetailObj.Id;
 
-
-                    foreach (var item in model.ListOwners)
+                    int assetDetailId = model.Id;
+                    if (model.ListOwners.Count > 0)
                     {
-                        AssetOwner ownerObj = new AssetOwner();
-                        ownerObj.AssetDetailId = assetDetailId;
-                        ownerObj.EmployeeId = int.Parse(item.ToString());
-                        _context.AssetOwners.Add(ownerObj);
-                        _context.SaveChanges();
+                        foreach (var item in model.ListOwners)
+                        {
+                            AssetOwner ownerObj = new AssetOwner();
+                            ownerObj.AssetDetailId = assetDetailId;
+                            ownerObj.EmployeeId = int.Parse(item.ToString());
+                            _context.AssetOwners.Add(ownerObj);
+                            _context.SaveChanges();
+                        }
                     }
-
-
-
-
-                    if (model.MasterAssetId > 0 && model.InstallationDate != "")
+                    if (model.MasterAssetId > 0 && model.InstallationDate != null)
                     {
                         var dates = new List<DateTime>();
                         var masterObj = _context.MasterAssets.Find(model.MasterAssetId);
@@ -146,6 +146,10 @@ namespace Asset.Core.Repositories
 
                     return assetDetailId;
                 }
+            }
+            catch (SqlException ex)
+            {
+                string str = ex.Message;
             }
             catch (Exception ex)
             {
@@ -216,9 +220,9 @@ namespace Asset.Core.Repositories
                 HospitalName = _context.Hospitals.Where(a => a.Id == item.HospitalId).ToList().First().Name,
                 HospitalNameAr = _context.Hospitals.Where(a => a.Id == item.HospitalId).ToList().First().NameAr,
                 AssetName = _context.MasterAssets.Where(a => a.Id == item.MasterAssetId).ToList().First().Name,
-                AssetNameAr = _context.MasterAssets.Where(a => a.Id == item.MasterAssetId).ToList().First().NameAr
-
-            });
+                AssetNameAr = _context.MasterAssets.Where(a => a.Id == item.MasterAssetId).ToList().First().NameAr,
+            
+            }) ;
             return lstAssetDetails;
         }
 
@@ -257,11 +261,13 @@ namespace Asset.Core.Repositories
                                             OrgNameAr = detail.Hospital.Organization.NameAr,
                                             SubOrganizationId = detail.Hospital.SubOrganizationId,
                                             SubOrgName = detail.Hospital.SubOrganization.Name,
-                                            SubOrgNameAr = detail.Hospital.SubOrganization.NameAr
+                                            SubOrgNameAr = detail.Hospital.SubOrganization.NameAr,
+                                            QrFilePath=detail.QrFilePath
                                         }).ToListAsync();
 
 
-                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 
+                    && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
                 {
                     lstAssetDetails = lstAssetDetails.ToList();
                 }
@@ -456,6 +462,7 @@ namespace Asset.Core.Repositories
                 assetDetailObj.WarrantyExpires = model.WarrantyExpires;
                 assetDetailObj.DepreciationRate = model.DepreciationRate;
                 assetDetailObj.CostCenter = model.CostCenter;
+                assetDetailObj.QrFilePath = model.QrFilePath;
                 _context.Entry(assetDetailObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -567,7 +574,7 @@ namespace Asset.Core.Repositories
                 model.CostCenter = detailObj.CostCenter;
                 model.DepreciationRate = detailObj.DepreciationRate;
                 model.PONumber = detailObj.PONumber;
-
+                model.QrFilePath = detailObj.QrFilePath;
                 var lstAssetStatus = _context.AssetStatusTransactions.Include(a => a.AssetStatus).Where(a => a.AssetDetailId == detailObj.Id).ToList().OrderByDescending(a => a.StatusDate).ToList();
 
                 if (lstAssetStatus.Count > 0)
