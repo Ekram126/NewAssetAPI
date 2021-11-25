@@ -25,7 +25,7 @@ namespace Asset.API.Controllers
 
 
 
-        public HospitalController(IHospitalService HospitalService, IBuildingService buildingService, 
+        public HospitalController(IHospitalService HospitalService, IBuildingService buildingService,
             IAssetDetailService assetDetailService, IEmployeeService employeeService, IPagingService pagingService)
         {
             _HospitalService = HospitalService;
@@ -69,13 +69,28 @@ namespace Asset.API.Controllers
             return _HospitalService.GetHospitalDetailById(id);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("GetHospitalsByUserId/{userId}")]
-        public async Task<IEnumerable<IndexHospitalVM.GetData>> GetHospitalsByUserId(string userId)
+        public IEnumerable<IndexHospitalVM.GetData> GetHospitalsByUserId(string userId)
         {
-            return await _HospitalService.GetHospitalsByUserId(userId);
+            return _HospitalService.GetHospitalsByUserId(userId).ToList();
         }
 
+
+        [HttpPost]
+        [Route("GetHospitalsByUserIdAndPaging/{userId}")]
+        public IEnumerable<IndexHospitalVM.GetData> GetHospitalsByUserIdAndPaging(string userId, PagingParameter pageInfo)
+        {
+            var hoslist = _HospitalService.GetHospitalsByUserId(userId).ToList();
+            return _pagingService.GetAll<IndexHospitalVM.GetData>(pageInfo, hoslist);
+        }
+
+        [HttpGet]
+        [Route("GetHospitalsByUserIdAndPagingCount/{userId}")]
+        public int GetHospitalsByUserIdAndPagingCount(string userId)
+        {
+            return _HospitalService.GetHospitalsByUserId(userId).ToList().Count();
+        }
 
         [HttpGet]
         [Route("GetHospitalDepartmentByHospitalId/{hospitalId}")]
@@ -262,7 +277,7 @@ namespace Asset.API.Controllers
         public int CountHospitals()
         {
             return _HospitalService.CountHospitals();
-        }      
+        }
 
     }
 }
