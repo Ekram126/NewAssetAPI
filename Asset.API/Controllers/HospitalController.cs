@@ -25,7 +25,7 @@ namespace Asset.API.Controllers
 
 
 
-        public HospitalController(IHospitalService HospitalService, IBuildingService buildingService, 
+        public HospitalController(IHospitalService HospitalService, IBuildingService buildingService,
             IAssetDetailService assetDetailService, IEmployeeService employeeService, IPagingService pagingService)
         {
             _HospitalService = HospitalService;
@@ -69,13 +69,28 @@ namespace Asset.API.Controllers
             return _HospitalService.GetHospitalDetailById(id);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("GetHospitalsByUserId/{userId}")]
-        public async Task<IEnumerable<IndexHospitalVM.GetData>> GetHospitalsByUserId(string userId)
+        public IEnumerable<IndexHospitalVM.GetData> GetHospitalsByUserId(string userId)
         {
-            return await _HospitalService.GetHospitalsByUserId(userId);
+            return _HospitalService.GetHospitalsByUserId(userId).ToList();
         }
 
+
+        [HttpPost]
+        [Route("GetHospitalsByUserIdAndPaging/{userId}")]
+        public IEnumerable<IndexHospitalVM.GetData> GetHospitalsByUserIdAndPaging(string userId, PagingParameter pageInfo)
+        {
+            var hoslist = _HospitalService.GetHospitalsByUserId(userId).ToList();
+            return _pagingService.GetAll<IndexHospitalVM.GetData>(pageInfo, hoslist);
+        }
+
+        [HttpGet]
+        [Route("GetHospitalsByUserIdAndPagingCount/{userId}")]
+        public int GetHospitalsByUserIdAndPagingCount(string userId)
+        {
+            return _HospitalService.GetHospitalsByUserId(userId).ToList().Count();
+        }
 
         [HttpGet]
         [Route("GetHospitalDepartmentByHospitalId/{hospitalId}")]
@@ -186,6 +201,10 @@ namespace Asset.API.Controllers
         [Route("AddHospital")]
         public ActionResult<Hospital> Add(CreateHospitalVM HospitalVM)
         {
+            if (HospitalVM.Code.Length > 5)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "codelen", Message = "code must not exceed 5 characters", MessageAr = "الكود لا يتعدى 5 حروف وأرقام" });
+            }
             var lstOrgCode = _HospitalService.GetAllHospitals().ToList().Where(a => a.Code == HospitalVM.Code).ToList();
             if (lstOrgCode.Count > 0)
             {
