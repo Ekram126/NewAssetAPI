@@ -1642,9 +1642,13 @@ namespace Asset.Core.Repositories
                 Assetobj.GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "";
                 lstAssetData.Add(Assetobj);
             }
-            if (sortObj.AssetName != "" || sortObj.AssetNameAr != "")
+            if (sortObj.AssetName != "")
             {
-                lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ThenBy(d => d.AssetNameAr).ToList();
+                lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ToList();
+            }
+            else if (sortObj.AssetNameAr != "")
+            {
+                lstAssetData = lstAssetData.OrderBy(d => d.AssetNameAr).ToList();
             }
 
             if (sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
