@@ -102,6 +102,29 @@ namespace Asset.API.Controllers
 
 
 
+        [HttpPost]
+        [Route("SearchInHospitals/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexHospitalVM.GetData> SearchInRequests(int pagenumber, int pagesize, SearchHospitalVM searchObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _HospitalService.SearchHospitals(searchObj).ToList();
+            return _pagingService.GetAll<IndexHospitalVM.GetData>(pageInfo, list);
+        }
+
+        [HttpPost]
+        [Route("SearchInHospitalsCount")]
+        public int SearchInRequestsCount(SearchHospitalVM searchObj)
+        {
+            int count = _HospitalService.SearchHospitals(searchObj).ToList().Count();
+            return count;
+        }
+
+
+
+
+
 
         [HttpPut]
         [Route("UpdateHospitalDepartment")]

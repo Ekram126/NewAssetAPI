@@ -98,6 +98,11 @@ namespace Asset.Core.Services
             return _unitOfWork.HospitalRepository.GetSubOrganizationsByHospitalId(hospitalId);
         }
 
+        public IEnumerable<IndexHospitalVM.GetData> SearchHospitals(SearchHospitalVM searchObj)
+        {
+            return _unitOfWork.HospitalRepository.SearchHospitals(searchObj);
+        }
+
         public int Update(EditHospitalVM HospitalVM)
         {
             _unitOfWork.HospitalRepository.Update(HospitalVM);

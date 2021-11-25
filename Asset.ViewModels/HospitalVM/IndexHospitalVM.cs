@@ -22,17 +22,20 @@ namespace Asset.ViewModels.HospitalVM
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
 
+            public int GovernorateId { get; set; }
             public string GovernorateName { get; set; }
             public string GovernorateNameAr { get; set; }
 
 
+            public int CityId { get; set; }
             public string CityName { get; set; }
             public string CityNameAr{get; set;}
 
+            public int SubOrganizationId { get; set; }
             public string SubOrgName { get; set; }
             public string SubOrgNameAr {get; set;}
 
-
+            public int OrganizationId { get; set; }
             public string OrgName { get; set; }
             public string OrgNameAr { get; set; }
 

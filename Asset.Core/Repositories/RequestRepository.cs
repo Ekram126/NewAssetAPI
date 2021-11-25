@@ -196,6 +196,16 @@ namespace Asset.Core.Repositories
                     roleObj = lstRoles[0];
                     userRoleName = roleObj.Name;
 
+                    var roles = (from userRole in _context.UserRoles
+                                     join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+                                     where userRole.UserId == userId
+                                     select role);
+                    foreach (var role in roles)
+                    {
+                        userRoleNames.Add(role.Name);
+                    }
+                  
+
 
                 }
             }
@@ -277,7 +287,6 @@ namespace Asset.Core.Repositories
             {
                 list = list.ToList();
             }
-
             if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
             {
                 list = list.Where(t => t.GovernorateId == UserObj.GovernorateId).ToList();
@@ -297,22 +306,26 @@ namespace Asset.Core.Repositories
 
             if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
             {
-
-                if (userRoleName == "TLHospitalManager")
+                if (userRoleNames.Contains("Admin"))
+                {
+                    list = list.ToList();
+                }
+                if (userRoleNames.Contains("TLHospitalManager"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
 
-                if (userRoleName == "EngDepManager")
+                if (userRoleNames.Contains("EngDepManager"))
                 {
+                
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleName == "EngManager")
+                if (userRoleNames.Contains("EngManager"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
 
-                if (userRoleName == "Eng")
+                if (userRoleNames.Contains("Eng"))
                 {
 
                     var lstAssigned = (from order in _context.WorkOrders
@@ -383,19 +396,16 @@ namespace Asset.Core.Repositories
 
                 }
 
-                if (userRoleName == "Admin")
-                {
-                    list = list.ToList();
-                }
-                if (userRoleName == "AssetOwner")
+               
+                if (userRoleNames.Contains("AssetOwner"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-                if (userRoleName == "DE")
+                if (userRoleNames.Contains("DE"))
                 {
                     list = list = new List<IndexRequestVM.GetData>();
                 }
-                if (userRoleName == "HR")
+                if (userRoleNames.Contains("HR"))
                 {
                     list = list = new List<IndexRequestVM.GetData>();
                 }
@@ -404,27 +414,27 @@ namespace Asset.Core.Repositories
             }
             if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
             {
-                if (userRoleName == "Admin")
+                if (userRoleNames.Contains("Admin"))
                 {
                     list = list.ToList();
                 }
-                if (userRoleName == "TLHospitalManager")
+                if (userRoleNames.Contains("TLHospitalManager"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleName == "EngDepManager")
+                if (userRoleNames.Contains("EngDepManager"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleName == "EngManager")
+                if (userRoleNames.Contains("EngManager"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleName == "AssetOwner")
+                if (userRoleNames.Contains("AssetOwner"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-                if (userRoleName == "Eng")
+                if (userRoleNames.Contains("Eng"))
                 {
 
                     var lstAssigned = (from order in _context.WorkOrders
@@ -495,11 +505,11 @@ namespace Asset.Core.Repositories
 
                 }
 
-                if (userRoleName == "DE")
+                if (userRoleNames.Contains("DE"))
                 {
                     list = list = new List<IndexRequestVM.GetData>();
                 }
-                if (userRoleName == "HR")
+                if (userRoleNames.Contains("HR"))
                 {
                     list = list = new List<IndexRequestVM.GetData>();
                 }
@@ -860,13 +870,6 @@ namespace Asset.Core.Repositories
 
             return list;
         }
-
-
-
-
-
-
-
         public IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId, int statusId)
         {
             List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
@@ -1214,12 +1217,7 @@ namespace Asset.Core.Repositories
 
             return list;
         }
-
-
-
-
-
-        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId)
+                public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId)
         {
             throw new NotImplementedException();
         }
