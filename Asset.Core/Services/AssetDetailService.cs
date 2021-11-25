@@ -172,5 +172,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.GetAssetByOrganization(AssetModel);
         }
+
+        public IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj)
+        {
+            return _unitOfWork.AssetDetailRepository.SortAssets(sortObj);
+        }
     }
 }

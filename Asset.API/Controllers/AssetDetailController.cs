@@ -366,5 +366,15 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.GetAssetByOrganization(AssetModel);
         }
+        [HttpPost]
+        [Route("SortAssets/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexAssetDetailVM.GetData> SortAssets(int pagenumber, int pagesize, Sort sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _AssetDetailService.SortAssets(sortObj).ToList();
+            return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
+        }
     }
 }
