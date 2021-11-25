@@ -1584,37 +1584,58 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.AssetName != "" || sortObj.AssetNameAr != "")
             {
-                lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ThenBy(d => d.AssetNameAr).ToList();
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.AssetName).ThenByDescending(d => d.AssetNameAr).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ThenBy(d => d.AssetNameAr).ToList();
             }
 
-            if (sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
+            else if (sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
             {
-                lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ThenBy(d => d.GovernorateNameAr).ToList();
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ThenByDescending(d => d.GovernorateNameAr).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ThenBy(d => d.GovernorateNameAr).ToList();
             }
 
-            if (sortObj.HospitalName != "" || sortObj.HospitalNameAr != "")
+            else if(sortObj.HospitalName != "" || sortObj.HospitalNameAr != "")
             {
-                lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalName).ThenByDescending(d => d.HospitalNameAr).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
             }
 
-            if (sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
+            else if(sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
             {
-                lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ThenByDescending(d => d.GovernorateNameAr).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ThenBy(d => d.GovernorateNameAr).ToList();
             }
 
-            if (sortObj.OrgName != "" || sortObj.OrgNameAr != "")
+            else if(sortObj.OrgName != "" || sortObj.OrgNameAr != "")
             {
-                lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.OrgName).ThenByDescending(d => d.OrgNameAr).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.OrgName).ThenBy(d => d.OrgNameAr).ToList();
             }
 
-            if (sortObj.SubOrgName != "" || sortObj.SubOrgNameAr != "")
+            else if(sortObj.SubOrgName != "" || sortObj.SubOrgNameAr != "")
             {
-                lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgName).ThenByDescending(d => d.SubOrgNameAr).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.SubOrgName).ThenBy(d => d.SubOrgNameAr).ToList();
             }
 
-            if (sortObj.Code != "")
+            else if(sortObj.Code != "")
             {
-                lstAssetData = lstAssetData.OrderBy(d => d.Code).ToList();
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.Code).ToList();
             }
 
             return lstAssetData;

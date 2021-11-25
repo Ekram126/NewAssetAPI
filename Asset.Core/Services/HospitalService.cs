@@ -103,6 +103,10 @@ namespace Asset.Core.Services
             return _unitOfWork.HospitalRepository.SearchHospitals(searchObj);
         }
 
+        public IEnumerable<IndexHospitalVM.GetData> SortHospitals(SortVM sortObj)
+        {
+            return _unitOfWork.HospitalRepository.SortHospitals(sortObj);
+        }
         public int Update(EditHospitalVM HospitalVM)
         {
             _unitOfWork.HospitalRepository.Update(HospitalVM);

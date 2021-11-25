@@ -258,7 +258,17 @@ namespace Asset.API.Controllers
         public int CountHospitals()
         {
             return _HospitalService.CountHospitals();
-        }      
-
+        }
+        
+        [HttpPost]
+        [Route("SortAssets/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexHospitalVM.GetData> SortAssets(int pagenumber, int pagesize, SortVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _HospitalService.SortHospitals(sortObj).ToList();
+            return _pagingService.GetAll<IndexHospitalVM.GetData>(pageInfo, list);
+        }
     }
 }

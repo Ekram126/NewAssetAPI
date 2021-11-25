@@ -22,5 +22,6 @@ namespace Asset.ViewModels.MasterAssetVM
         public string ModelNumber { get; set; }
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
+        public string SortStatus { get; set; }
     }
 }

@@ -531,5 +531,74 @@ namespace Asset.Core.Repositories
 
             return lstData;
         }
+        public IEnumerable<IndexHospitalVM.GetData> SortHospitals(SortVM sortObj)
+        {
+            List<IndexHospitalVM.GetData> lstHospital = new List<IndexHospitalVM.GetData>();
+
+            var lstHospitals = _context.Hospitals.Include(a => a.Governorate)
+                   .Include(a=>a.City)
+                   .Include(a=>a.Organization)
+                   .Include(a=>a.SubOrganization).ToList();
+
+            foreach (var item in lstHospitals)
+            {
+                IndexHospitalVM.GetData hospitalobj = new IndexHospitalVM.GetData();
+                hospitalobj.Id = item.Id;
+                hospitalobj.Code = item.Code;
+                hospitalobj.Name = item.Name;
+                hospitalobj.NameAr = item.NameAr;
+                hospitalobj.GovernorateName = item.Governorate.Name ;
+                hospitalobj.GovernorateNameAr = item.Governorate.NameAr;
+                hospitalobj.OrgName = item.Organization.Name;
+                hospitalobj.OrgNameAr = item.Organization.NameAr;
+                hospitalobj.SubOrgName = item.SubOrganization.Name;
+                hospitalobj.SubOrgNameAr = item.SubOrganization.NameAr;
+                hospitalobj.CityName = item.City.Name;
+                hospitalobj.CityNameAr = item.City.NameAr;
+                lstHospital.Add(hospitalobj);
+            }
+            if (sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.GovernorateName).ThenByDescending(d => d.GovernorateNameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.GovernorateName).ThenBy(d => d.GovernorateNameAr).ToList();
+            }
+
+            else if (sortObj.HospitalName != "" || sortObj.HospitalNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.Name).ThenByDescending(d => d.NameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.Name).ThenBy(d => d.NameAr).ToList();
+            }
+
+            else if (sortObj.OrgName != "" || sortObj.OrgNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.OrgName).ThenByDescending(d => d.OrgNameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.OrgName).ThenBy(d => d.OrgNameAr).ToList();
+            }
+
+            else if (sortObj.SubOrgName != "" || sortObj.SubOrgNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.SubOrgName).ThenByDescending(d => d.SubOrgNameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.SubOrgName).ThenBy(d => d.SubOrgNameAr).ToList();
+            }
+            else if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.Code).ToList();
+            }
+
+            return lstHospital;
+        }
+
+
     }
 }

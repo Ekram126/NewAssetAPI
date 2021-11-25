@@ -25,5 +25,6 @@ namespace Asset.Domain.Services
         List<CountHospitalVM> CountHospitalsByCities();
         int CountHospitals();
         int Delete(int id);
+        IEnumerable<IndexHospitalVM.GetData> SortHospitals(SortVM sortObj);
     }
 }

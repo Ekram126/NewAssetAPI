@@ -26,5 +26,6 @@ namespace Asset.Domain.Repositories
         List<IndexHospitalDepartmentVM.GetData> GetHospitalDepartmentByHospitalId2(int hospitalId);
         int CountHospitals();
         int Delete(int id);
+        IEnumerable<IndexHospitalVM.GetData> SortHospitals(SortVM sortObj);
     }
 }

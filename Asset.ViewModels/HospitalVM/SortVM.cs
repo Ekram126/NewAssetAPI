@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Asset.ViewModels.AssetDetailVM
+namespace Asset.ViewModels.HospitalVM
 {
-    public class Sort
+    public class SortVM
     {
         public int Id { get; set; }
         public string Code { get; set; }
-        public string AssetName { get; set; }
-        public string AssetNameAr { get; set; }
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }
         public string GovernorateName { get; set; }
@@ -24,6 +22,5 @@ namespace Asset.ViewModels.AssetDetailVM
         public string SubOrgName { get; set; }
         public string SubOrgNameAr { get; set; }
         public string SortStatus { get; set; }
-        
     }
 }
