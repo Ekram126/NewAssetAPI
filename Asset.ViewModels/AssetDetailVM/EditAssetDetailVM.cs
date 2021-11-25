@@ -48,5 +48,6 @@ namespace Asset.ViewModels.AssetDetailVM
 
 
         public List<int?> ListOwners { get; set; }
+        public string QrFilePath { get; set; }
     }
 }
