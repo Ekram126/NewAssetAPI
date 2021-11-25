@@ -76,7 +76,7 @@ namespace Contract.API.Controllers
         [Route("getcount")]
         public int count()
         {
-            return _pagingService.Count<ContractDetail>();
+            return _pagingService.Count<MasterContract>();
         }
 
         [HttpPut]
@@ -110,13 +110,34 @@ namespace Contract.API.Controllers
         }
 
 
+        //[HttpPost]
+        //[Route("SearchInContract")]
+        //public IEnumerable<IndexMasterContractVM.GetData> SearchInContract(SearchContractVM model)
+        //{
+        //    return _masterContractService.Search(model).ToList();
+        //}
+
+
+
+
         [HttpPost]
-        [Route("SearchInContract")]
-        public IEnumerable<IndexMasterContractVM.GetData> SearchInContract(SearchContractVM model)
+        [Route("SearchInContract/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexMasterContractVM.GetData> SearchInRequests(int pagenumber, int pagesize, SearchContractVM searchObj)
         {
-            return _masterContractService.Search(model).ToList();
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _masterContractService.Search(searchObj).ToList();
+            return _pagingService.GetAll<IndexMasterContractVM.GetData>(pageInfo, list);
         }
 
+        [HttpPost]
+        [Route("SearchInContractCount")]
+        public int SearchInContractCount(SearchContractVM searchObj)
+        {
+            int count = _masterContractService.Search(searchObj).ToList().Count();
+            return count;
+        }
 
 
 

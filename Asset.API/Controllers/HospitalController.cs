@@ -186,6 +186,10 @@ namespace Asset.API.Controllers
         [Route("AddHospital")]
         public ActionResult<Hospital> Add(CreateHospitalVM HospitalVM)
         {
+            if (HospitalVM.Code.Length > 5)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "codelen", Message = "code must not exceed 5 characters", MessageAr = "الكود لا يتعدى 5 حروف وأرقام" });
+            }
             var lstOrgCode = _HospitalService.GetAllHospitals().ToList().Where(a => a.Code == HospitalVM.Code).ToList();
             if (lstOrgCode.Count > 0)
             {
