@@ -263,7 +263,8 @@ namespace Asset.Core.Repositories
                                             OrgName = detail.Hospital.Organization.Name,
                                             OrgNameAr = detail.Hospital.Organization.NameAr,
                                             SubOrgName = detail.Hospital.SubOrganization.Name,
-                                            SubOrgNameAr = detail.Hospital.SubOrganization.NameAr
+                                            SubOrgNameAr = detail.Hospital.SubOrganization.NameAr,
+                                            QrFilePath=detail.QrFilePath
                                         }).ToListAsync();
 
 
