@@ -28,5 +28,6 @@ namespace Asset.Domain.Services
         GeneratedRequestNumberVM GenerateRequestNumber();
 
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
+        IEnumerable<IndexRequestsVM> SortRequests(SortRequestVM sortObj);
     }
 }

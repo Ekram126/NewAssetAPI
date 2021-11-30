@@ -11,7 +11,7 @@ namespace Asset.Domain.Repositories
     public interface IEmployeeRepository
     {
 
-       IEnumerable<IndexEmployeeVM.GetData> GetAll();
+        IEnumerable<IndexEmployeeVM.GetData> GetAll();
         List<Employee> GetEmployeesByHospitalId(int hospitalId);
         List<Employee> GetEmployeesAssetOwnerByHospitalId(int hospitalId);
         List<Employee> GetEmployeesAssetOwnerByHospitalId(int hospitalId,int assetDetailId);
@@ -21,5 +21,6 @@ namespace Asset.Domain.Repositories
         int Add(CreateEmployeeVM employeeObj);
         int Update(EditEmployeeVM employeeObj);
         int Delete(int id);
+        IEnumerable<IndexEmployeeVM.GetData>SortEmployee(SortEmployeeVM sortObj);
     }
 }
