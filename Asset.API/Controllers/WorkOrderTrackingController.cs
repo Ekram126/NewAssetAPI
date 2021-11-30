@@ -93,9 +93,10 @@ namespace Asset.API.Controllers
 
         // POST api/<WorkOrderTrackingController>
         [HttpPost]
-        public int Post(CreateWorkOrderTrackingVM createWorkOrderTrackingVM)
+        [Route("AddWorkOrderTracking")]
+        public int Post(CreateWorkOrderTrackingVM createWorkOrderObj)
         {
-            return _workOrderTrackingService.AddWorkOrderTracking(createWorkOrderTrackingVM);
+            return _workOrderTrackingService.AddWorkOrderTracking(createWorkOrderObj);
 
         }
 

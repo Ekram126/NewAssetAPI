@@ -105,5 +105,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public string WarrantyEnd{ get; set; }
 
         public string AssetImg { get; set; }
+        public string QrFilePath { get; set; }
+
     }
 }

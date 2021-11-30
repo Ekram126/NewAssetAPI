@@ -72,13 +72,20 @@ namespace Asset.API.Controllers
                                  join role in _context.ApplicationRole on userRole.RoleId equals role.Id
                                  where userRole.UserId == item.Id
                                  select role.Name).ToList();
-
-                foreach (var roleName in roleNames)
+                string strRoles = "";
+                var list = new List<string>();
+                foreach (var role in roleNames)
                 {
-                    userObj.DisplayName = string.Join(",", roleName);
+                    list.Add(role);
                 }
 
+                strRoles = string.Join<string>(",", list);
+                //foreach (var roleName in list)
+                //{
+                //  //  strRoles = string.Join(",", roleName);
+                //}
 
+                userObj.DisplayName = strRoles;
 
 
                 userObj.CategoryRoleName = _roleCategoryService.GetById((int)item.RoleCategoryId).Name;
@@ -243,34 +250,52 @@ namespace Asset.API.Controllers
 
             if (userObj.RoleIds.Count > 0)
             {
-                var savedRoleIds = (from userRole in _context.UserRoles
-                                    join role in _roleManager.Roles on userRole.RoleId equals role.Id
-                                    where userObj.Id == userRole.UserId
-                                    select userRole).ToList().Select(a => a.RoleId).ToList();
+                //var savedRoleIds = (from userRole in _context.UserRoles
+                //                    join role in _roleManager.Roles on userRole.RoleId equals role.Id
+                //                    where userObj.Id == userRole.UserId
+                //                    select userRole).ToList().Select(a => a.RoleId).ToList();
 
-                var savedIds = savedRoleIds.Except(userObj.RoleIds);
-                if (savedIds.Count() > 0)
+
+                var lstUserRoles = _context.UserRoles.Where(a => a.UserId == userObj.Id).ToList();
+                foreach (var roleUserObj in lstUserRoles)
                 {
-                    foreach (var item in savedIds)
-                    {
-                        var row = _context.UserRoles.Where(a => a.RoleId == item && a.UserId == userObj.Id).ToList();
-                        if (row.Count > 0)
-                        {
-                            var roleUserObj = row[0];
-                            _context.UserRoles.Remove(roleUserObj);
-                            _context.SaveChanges();
-                        }
-                    }
+                    _context.UserRoles.Remove(roleUserObj);
+                    _context.SaveChanges();
                 }
-                var neewIds = userObj.RoleIds.Except(savedIds);
-                if (neewIds.Count() > 0)
+
+
+                foreach (var itm in userObj.RoleIds)
                 {
-                    foreach (var itm in neewIds)
-                    {
-                        var roleName = _context.ApplicationRole.Where(a => a.Id == itm).FirstOrDefault().Name;
-                        await _applicationUser.AddToRoleAsync(updateObj, roleName);
-                    }
+                    var roleName = _context.ApplicationRole.Where(a => a.Id == itm).FirstOrDefault().Name;
+                    await _applicationUser.AddToRoleAsync(updateObj, roleName);
                 }
+
+
+
+                //var savedIds = savedRoleIds.Except(userObj.RoleIds);
+
+                //if (savedIds.Count() > 0)
+                //{
+                //    foreach (var item in savedIds)
+                //    {
+                //        var row = _context.UserRoles.Where(a => a.RoleId == item && a.UserId == userObj.Id).ToList();
+                //        if (row.Count > 0)
+                //        {
+                //            var roleUserObj = row[0];
+                //            _context.UserRoles.Remove(roleUserObj);
+                //            _context.SaveChanges();
+                //        }
+                //    }
+                //}
+                //var neewIds = userObj.RoleIds.Except(savedIds);
+                //if (neewIds.Count() > 0)
+                //{
+                //    foreach (var itm in neewIds)
+                //    {
+                //        var roleName = _context.ApplicationRole.Where(a => a.Id == itm).FirstOrDefault().Name;
+                //        await _applicationUser.AddToRoleAsync(updateObj, roleName);
+                //    }
+                //}
 
             }
             return Ok(new Response { Status = "Success", Message = "User updated successfully!" });
