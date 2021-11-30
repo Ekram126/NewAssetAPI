@@ -1548,5 +1548,119 @@ namespace Asset.Core.Repositories
 
             return lstData;
         }
+
+        public IEnumerable<IndexRequestsVM> SortRequests(SortRequestVM sortObj)
+        {
+            var request = _context.Request
+                                          .Include(r => r.RequestPeriority)
+                                          .Include(r => r.AssetDetail)
+                                          .Include(r => r.RequestType)
+                                          .Include(r => r.SubProblem)
+                                          .Include(r => r.RequestMode)
+                                          .Include(r => r.User)
+                                          .Select(req => new IndexRequestsVM
+                                          {
+                                              Id = req.Id,
+                                              Subject = req.Subject,
+                                              RequestCode = req.RequestCode,
+                                              Description = req.Description,
+                                              RequestDate = req.RequestDate,
+                                              RequestModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0,
+                                              ModeName = req.RequestMode.Name,
+                                              SubProblemId = req.SubProblemId,
+                                              SubProblemName = req.SubProblem.Name,
+                                              RequestTypeId = req.RequestTypeId,
+                                              RequestTypeName = req.RequestType.Name,
+                                              RequestPeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0,
+                                              PeriorityName = req.RequestPeriority.Name,
+                                              CreatedById = req.CreatedById,
+                                              CreatedBy = req.User.UserName,
+                                              AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0,
+                                              SerialNumber = req.AssetDetail.SerialNumber,
+                                              AssetName = _context.MasterAssets.Where(t => t.Id == req.AssetDetail.MasterAssetId).FirstOrDefault().Name,
+                                              AssetNameAr = _context.MasterAssets.Where(t => t.Id == req.AssetDetail.MasterAssetId).FirstOrDefault().NameAr,
+                                              UserId = req.User.Id,
+                                          }).OrderByDescending(p => p.RequestDate).ToList();
+
+            if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.RequestCode).ToList();
+                else
+                    request = request.OrderBy(d => d.RequestCode).ToList();
+            }
+            else if (sortObj.AssetName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.AssetName).ToList();
+                else
+                    request = request.OrderBy(d => d.AssetName).ToList();
+            }
+            else if (sortObj.AssetNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.AssetNameAr).ToList();
+                else
+                    request = request.OrderBy(d => d.AssetNameAr).ToList();
+            }
+            else if (sortObj.Subject != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.Subject).ToList();
+                else
+                    request = request.OrderBy(d => d.Subject).ToList();
+            }
+            else if (sortObj.PeriorityName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.PeriorityName).ToList();
+                else
+                    request = request.OrderBy(d => d.PeriorityName).ToList();
+            }
+            else if (sortObj.PeriorityNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.PeriorityNameAr).ToList();
+                else
+                    request = request.OrderBy(d => d.PeriorityNameAr).ToList();
+            }
+            else if (sortObj.StatusName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.StatusName).ToList();
+                else
+                    request = request.OrderBy(d => d.StatusName).ToList();
+            }
+            else if (sortObj.StatusNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.StatusNameAr).ToList();
+                else
+                    request = request.OrderBy(d => d.StatusNameAr).ToList();
+            }
+            else if (sortObj.ModeName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.ModeName).ToList();
+                else
+                    request = request.OrderBy(d => d.ModeName).ToList();
+            }
+            else if (sortObj.ModeNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.ModeNameAr).ToList();
+                else
+                    request = request.OrderBy(d => d.ModeNameAr).ToList();
+            }
+            else if (sortObj.RequestDate!=null)
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.RequestDate).ToList();
+                else
+                    request = request.OrderBy(d => d.RequestDate).ToList();
+            }
+            return request;
+        }
+
     }
 }

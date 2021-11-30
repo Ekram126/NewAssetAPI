@@ -1582,54 +1582,90 @@ namespace Asset.Core.Repositories
                 Assetobj.GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "";
                 lstAssetData.Add(Assetobj);
             }
-            if (sortObj.AssetName != "" || sortObj.AssetNameAr != "")
+            if (sortObj.AssetName != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.AssetName).ThenByDescending(d => d.AssetNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.AssetName).ToList();
                 else
-                    lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ThenBy(d => d.AssetNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ToList();
             }
-
-            else if (sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
+            else if (sortObj.AssetNameAr != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ThenByDescending(d => d.GovernorateNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.AssetNameAr).ToList();
                 else
-                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ThenBy(d => d.GovernorateNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderBy(d => d.AssetNameAr).ToList();
             }
-
-            else if(sortObj.HospitalName != "" || sortObj.HospitalNameAr != "")
+            else if (sortObj.GovernorateName != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalName).ThenByDescending(d => d.HospitalNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ToList();
                 else
-                    lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ThenBy(d => d.HospitalNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ToList();
             }
-
-            else if(sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
+            else if(sortObj.GovernorateNameAr != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ThenByDescending(d => d.GovernorateNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateNameAr).ToList();
                 else
-                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ThenBy(d => d.GovernorateNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateNameAr).ToList();
             }
-
-            else if(sortObj.OrgName != "" || sortObj.OrgNameAr != "")
+            else if(sortObj.HospitalName != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.OrgName).ThenByDescending(d => d.OrgNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalName).ToList();
                 else
-                    lstAssetData = lstAssetData.OrderBy(d => d.OrgName).ThenBy(d => d.OrgNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ToList();
             }
-
-            else if(sortObj.SubOrgName != "" || sortObj.SubOrgNameAr != "")
+            else if(sortObj.HospitalNameAr != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgName).ThenByDescending(d => d.SubOrgNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalNameAr).ToList();
                 else
-                    lstAssetData = lstAssetData.OrderBy(d => d.SubOrgName).ThenBy(d => d.SubOrgNameAr).ToList();
+                    lstAssetData = lstAssetData.OrderBy(d => d.HospitalNameAr).ToList();
             }
-
+            else if(sortObj.GovernorateName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ToList();
+            }
+            else if (sortObj.GovernorateNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateNameAr).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateNameAr).ToList();
+            }
+            else if(sortObj.OrgName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.OrgName).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.OrgName).ToList();
+            }
+            else if(sortObj.OrgNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.OrgNameAr).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.OrgNameAr).ToList();
+            }
+            else if(sortObj.SubOrgName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgName).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.SubOrgName).ToList();
+            }
+            else if(sortObj.SubOrgNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgNameAr).ToList();
+                else
+                    lstAssetData = lstAssetData.OrderBy(d => d.SubOrgNameAr).ToList();
+            }
             else if(sortObj.Code != "")
             {
                 if (sortObj.SortStatus == "descending")

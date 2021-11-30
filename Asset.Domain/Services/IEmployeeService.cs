@@ -22,5 +22,6 @@ namespace Asset.Domain.Services
         int Add(CreateEmployeeVM employeeObj);
         int Update(EditEmployeeVM employeeObj);
         int Delete(int id);
+        IEnumerable<IndexEmployeeVM.GetData> SortEmployee(SortEmployeeVM sortObj);
     }
 }

@@ -567,36 +567,61 @@ namespace Asset.Core.Repositories
                 hospitalobj.CityNameAr = item.City.NameAr;
                 lstHospital.Add(hospitalobj);
             }
-            if (sortObj.GovernorateName != "" || sortObj.GovernorateNameAr != "")
+            if (sortObj.GovernorateName != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.GovernorateName).ThenByDescending(d => d.GovernorateNameAr).ToList();
+                    lstHospital = lstHospital.OrderByDescending(d => d.GovernorateName).ToList();
                 else
-                    lstHospital = lstHospital.OrderBy(d => d.GovernorateName).ThenBy(d => d.GovernorateNameAr).ToList();
+                    lstHospital = lstHospital.OrderBy(d => d.GovernorateName).ToList();
             }
-
-            else if (sortObj.HospitalName != "" || sortObj.HospitalNameAr != "")
+            else if(sortObj.GovernorateNameAr != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.Name).ThenByDescending(d => d.NameAr).ToList();
+                    lstHospital = lstHospital.OrderByDescending(d => d.GovernorateNameAr).ToList();
                 else
-                    lstHospital = lstHospital.OrderBy(d => d.Name).ThenBy(d => d.NameAr).ToList();
+                    lstHospital = lstHospital.OrderBy(d => d.GovernorateNameAr).ToList();
             }
-
-            else if (sortObj.OrgName != "" || sortObj.OrgNameAr != "")
+            else if (sortObj.HospitalName != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.OrgName).ThenByDescending(d => d.OrgNameAr).ToList();
+                    lstHospital = lstHospital.OrderByDescending(d => d.Name).ToList();
                 else
-                    lstHospital = lstHospital.OrderBy(d => d.OrgName).ThenBy(d => d.OrgNameAr).ToList();
+                    lstHospital = lstHospital.OrderBy(d => d.Name).ToList();
             }
-
-            else if (sortObj.SubOrgName != "" || sortObj.SubOrgNameAr != "")
+            else if(sortObj.HospitalNameAr != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.SubOrgName).ThenByDescending(d => d.SubOrgNameAr).ToList();
+                    lstHospital = lstHospital.OrderByDescending(d => d.NameAr).ToList();
                 else
-                    lstHospital = lstHospital.OrderBy(d => d.SubOrgName).ThenBy(d => d.SubOrgNameAr).ToList();
+                    lstHospital = lstHospital.OrderBy(d => d.NameAr).ToList();
+            }
+            else if (sortObj.OrgName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.OrgName).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.OrgName).ToList();
+            }
+            else if(sortObj.OrgNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.OrgNameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.OrgNameAr).ToList();
+            }
+            else if (sortObj.SubOrgName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.SubOrgName).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.SubOrgName).ToList();
+            }
+            else if(sortObj.SubOrgNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.SubOrgNameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.SubOrgNameAr).ToList();
             }
             else if (sortObj.Code != "")
             {

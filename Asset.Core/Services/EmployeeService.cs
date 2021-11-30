@@ -68,6 +68,11 @@ namespace Asset.Core.Services
             return _unitOfWork.EmployeeRepository.GetEmployeesHasEngRoleInHospital(hospitalId);
         }
 
+        public IEnumerable<IndexEmployeeVM.GetData> SortEmployee(SortEmployeeVM sortObj)
+        {
+            return _unitOfWork.EmployeeRepository.SortEmployee(sortObj);
+        }
+
         public int Update(EditEmployeeVM employeeObj)
         {
             _unitOfWork.EmployeeRepository.Update(employeeObj);

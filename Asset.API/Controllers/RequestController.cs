@@ -181,6 +181,16 @@ namespace Asset.API.Controllers
             return _requestService.GetRequestsByUserIdAssetId(userId,  assetId).ToList().Count;
         }
 
+        [HttpPost]
+        [Route("SortRequests/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexRequestsVM> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _requestService.SortRequests(sortObj).ToList();
+            return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list);
+        }
 
     }
 }
