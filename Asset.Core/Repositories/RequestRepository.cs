@@ -272,7 +272,7 @@ namespace Asset.Core.Repositories
                     getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
                 }
                 getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == a.Request.Id).ToList().Count;
-                getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == a.Request.Id).ToList().Count;
+                getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count;
                 getDataObj.GovernorateId = req.User.GovernorateId;
                 getDataObj.CityId = req.User.CityId;
                 getDataObj.OrganizationId = req.User.OrganizationId;
@@ -1199,8 +1199,6 @@ namespace Asset.Core.Repositories
 
 
             var list = _context.Request
-                            // .Include(a => a.Request)
-                            // .Include(a => a.RequestStatus)
                             .Include(a => a.RequestPeriority)
                             .Include(a => a.RequestMode)
                             .Include(a => a.User)
@@ -1252,6 +1250,7 @@ namespace Asset.Core.Repositories
                 getDataObj.Subject = item.Subject;
                 getDataObj.RequestDate = item.RequestDate;
                 getDataObj.HospitalId = item.AssetDetail.HospitalId;
+                getDataObj.CreatedById = item.CreatedById;
 
                 getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
                 var lstStatus = _context.RequestTracking
@@ -1329,6 +1328,27 @@ namespace Asset.Core.Repositories
             }
             else
                 lstData = lstData.ToList();
+
+
+   
+            if (searchObj.AssetOwnerId != 0)
+            {
+               
+                //MyList.Any(c => c.Id == MyObject.Id)
+
+                var lstEmpEmails = _context.Employees.Where(e => e.Id == searchObj.AssetOwnerId).ToList();
+                if (lstEmpEmails.Count > 0)
+                {
+                    var emailObj = _context.ApplicationUser.Where(a => a.Email == lstEmpEmails[0].Email).ToList();
+                    if (emailObj.Count > 0)
+                    {
+                        lstData = lstData.Where(a => a.CreatedById == emailObj[0].Id).ToList();
+                    }
+                }
+            }
+            else
+                lstData = lstData.ToList();
+
 
             if (searchObj.Subject != "")
             {

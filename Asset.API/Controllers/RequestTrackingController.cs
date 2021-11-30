@@ -61,6 +61,7 @@ namespace Asset.API.Controllers
 
         // POST api/<RequestTrackingController>
         [HttpPost]
+        [Route("AddRequestTracking")]
         public int Post(CreateRequestTracking createRequestTracking)
         {
            return _requestTrackingService.AddRequestTracking(createRequestTracking);

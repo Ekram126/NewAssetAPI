@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Asset.ViewModels.EmployeeVM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,8 +19,9 @@ namespace Asset.ViewModels.RequestVM
         public int? OrganizationId { get; set; }
         public int? SubOrganizationId { get; set; }
         public int? AssetId { get; set; }
-
-
+        public int? AssetOwnerId { get; set; }
+        public string AssetOwnerCreatedById { get; set; }
+        public List<IndexEmployeeVM> ListEmployees { get; set; }
         public string Subject { get; set; }
         public string Code { get; set; }
         public string UserId { get; set; }
