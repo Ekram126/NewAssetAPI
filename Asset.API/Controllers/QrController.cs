@@ -29,20 +29,20 @@ namespace Asset.API.Controllers
             _context = context;
             this.userManager = userManager;
         }
-            [HttpPost]
-            [DisableRequestSizeLimit]
-            [Route("Index/{eqId}")]
-            public IActionResult Index(int eqId)
-            {
-                int assetId = eqId;
+        [HttpPost]
+        [DisableRequestSizeLimit]
+        [Route("Index/{eqId}")]
+        public IActionResult Index(int eqId)
+        {
+            int assetId = eqId;
 
-                string url = "http://biomedicalupd-001-site1.itempurl.com/#/home/EquipmentDetails/" + assetId; 
-                QRCodeGenerator qrGenerator = new QRCodeGenerator();
-                QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+            string url = "http://biomedicalupd-001-site1.itempurl.com/#/home/EquipmentDetails/" + assetId;
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
 
-                QRCode qrCode = new QRCode(qrCodeData);
-                Bitmap qrCodeImage = qrCode.GetGraphic(15);
-                var bitmapFiles = BitmapToBytes(qrCodeImage, assetId);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(15);
+            var bitmapFiles = BitmapToBytes(qrCodeImage, assetId);
             var asset = _context.AssetDetails.Where(e => e.Id == assetId).FirstOrDefault();
             asset.QrFilePath = url;
             _context.Entry(asset).State = EntityState.Modified;
@@ -51,21 +51,21 @@ namespace Asset.API.Controllers
 
 
             return Ok(url);
-            }
-
-            private static Byte[] BitmapToBytes(Bitmap img,int assetId)
-            {
-                //var eq= _context.Equipments.Where(e => e.Id == qrText).FirstOrDefault();
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    img.Save(Directory.GetCurrentDirectory() + "/UploadedAttachments/qrFiles/equipment-" + assetId + ".png", System.Drawing.Imaging.ImageFormat.Png);
-
-                    return stream.ToArray();
-                }
-            }
-
-
         }
+
+        private static Byte[] BitmapToBytes(Bitmap img, int assetId)
+        {
+            //var eq= _context.Equipments.Where(e => e.Id == qrText).FirstOrDefault();
+            using (MemoryStream stream = new MemoryStream())
+            {
+                img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                img.Save(Directory.GetCurrentDirectory() + "/UploadedAttachments/qrFiles/equipment-" + assetId + ".png", System.Drawing.Imaging.ImageFormat.Png);
+
+                return stream.ToArray();
+            }
+        }
+
+
     }
+}
 

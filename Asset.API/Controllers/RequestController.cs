@@ -120,10 +120,11 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, Requests);
         }
         [HttpGet]
-        [Route("getcount")]
-        public int count()
+        [Route("getcount/{userId}")]
+        public int count(string userId)
         {
-            return _pagingService.Count<Request>();
+            var count = _requestService.GetAllRequestsWithTrackingByUserId(userId).ToList().Count;
+            return count;
         }
 
 
@@ -158,7 +159,7 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, Requests);
         }
         [HttpGet]
-        [Route("GetRequestsCountByStatusId")]
+        [Route("GetRequestsCountByStatusId/{userId}/{statusId}")]
         public int GetCountByStatusId(string userId, int statusId)
         {
             return _requestService.GetAllRequestsByStatusId(userId, statusId).ToList().Count;

@@ -219,7 +219,7 @@ namespace Asset.Core.Repositories
         {
             List<MasterAsset> list = new List<MasterAsset>();
             var lstMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
-                                   .Where(a => a.HospitalId == hospitalId).GroupBy(a => a.MasterAsset.Id).ToList();
+                                   .Where(a => a.HospitalId == hospitalId).ToList().GroupBy(a => a.MasterAsset.Id).ToList();
 
 
             foreach (var item in lstMasterAssets)
@@ -232,6 +232,26 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
+
+
+        //public IEnumerable<MasterAsset> GetAssetOwnerByHospitalId(int hospitalId, string userId)
+        //{
+        //    List<MasterAsset> list = new List<MasterAsset>();
+        //    var lstMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
+        //                           .Where(a => a.HospitalId == hospitalId).ToList().GroupBy(a => a.MasterAsset.Id).ToList();
+
+
+        //    foreach (var item in lstMasterAssets)
+        //    {
+        //        MasterAsset masterAssetObj = new MasterAsset();
+        //        masterAssetObj.Id = item.FirstOrDefault().MasterAsset.Id;
+        //        masterAssetObj.Name = item.FirstOrDefault().MasterAsset.Name;
+        //        masterAssetObj.NameAr = item.FirstOrDefault().MasterAsset.NameAr;
+        //        list.Add(masterAssetObj);
+        //    }
+        //    return list;
+        //}
+
 
         public IEnumerable<MasterAssetAttachment> GetAttachmentByMasterAssetId(int assetId)
         {

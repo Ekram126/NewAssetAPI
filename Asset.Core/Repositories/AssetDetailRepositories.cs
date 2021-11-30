@@ -201,7 +201,8 @@ namespace Asset.Core.Repositories
                     GovernorateName = item.HospitalId > 0 ? item.Hospital.Governorate.Name : "",
                     GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "",
                     CityName = item.HospitalId > 0 ? item.Hospital.City.Name : "",
-                    CityNameAr = item.HospitalId > 0 ? item.Hospital.City.NameAr : ""
+                    CityNameAr = item.HospitalId > 0 ? item.Hospital.City.NameAr : "",
+                    QrFilePath = item.QrFilePath
                 });
 
             return lstAssetDetails;

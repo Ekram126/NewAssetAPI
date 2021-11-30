@@ -11,12 +11,17 @@ using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.PMAssetTaskScheduleVM;
 using Asset.ViewModels.PmAssetTimeVM;
 using Asset.ViewModels.SupplierVM;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -197,7 +202,7 @@ namespace Asset.API.Controllers
         [HttpPut]
         [Route("GetAssetDetailsByUserIdWithPaging/{userId}")]
         public IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByUserId(string userId, PagingParameter pageInfo)
-       {
+        {
             var AssetDetail = _AssetDetailService.GetAssetDetailsByUserId(userId).Result.ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, AssetDetail);
         }
@@ -380,6 +385,84 @@ namespace Asset.API.Controllers
             pageInfo.PageSize = pagesize;
             var list = _AssetDetailService.SortAssets(sortObj).ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
+        }
+
+
+        [HttpGet]
+        [Route("GenerateQRCode")]
+        public ActionResult GenerateQRCode()
+        {
+
+            //DataTable dt = new DataTable();
+            //dt.Columns.AddRange(new DataColumn[5] { new DataColumn("LastName"), new DataColumn("FatherName"), new DataColumn("Adress"), new DataColumn("Name"), new DataColumn("Birthday") });
+            //dt.Rows.Add("Pulodov", "Abdulloevich", "city Dushanbe", "Rustam", "22.12.1987");
+            //string col1 = "LastName: " + dt.Rows[0]["LastName"].ToString() + '\n' + "Name: " + dt.Rows[0]["Name"].ToString();
+            //string col2 = "FatherName: " + dt.Rows[0]["FatherName"].ToString() + '\n' + "Birthday: " + dt.Rows[0]["Birthday"].ToString();
+            //string col3 = "Adress: " + dt.Rows[0]["Adress"].ToString();
+          //  string[,] data = new string[1, 3] { { col1, col2, col3 } };
+
+
+            string strDate = DateTime.Today.Day + DateTime.Today.Month + DateTime.Today.Year + DateTime.Now.Hour + DateTime.Now.Minute.ToString() + DateTime.Now.Millisecond.ToString();
+            string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/Qr_" + strDate + ".docx";
+            if (!System.IO.File.Exists(path))
+            {
+                var fs = System.IO.File.Create(path);
+                fs.Close();
+
+            }
+            using (WordprocessingDocument doc = WordprocessingDocument.Create(path, WordprocessingDocumentType.Document))
+            {
+                MainDocumentPart mainDocumentPart = doc.AddMainDocumentPart();
+                mainDocumentPart.Document = new Document();
+                Body body = mainDocumentPart.Document.AppendChild(new Body());
+
+                AddTable(path, new string[,]{ { "Texas", "TX" },{ "California", "CA" },{ "New York", "NY" },{ "Massachusetts", "MA" } }, mainDocumentPart.Document);
+
+
+
+
+              //  doc.Save();
+            }
+            return Ok();
+        }
+
+
+        public static void AddTable(string fileName, string[,] data,Document doc)
+        {
+            
+                var  document = doc.MainDocumentPart.Document;
+                DocumentFormat.OpenXml.Wordprocessing.Table table = new DocumentFormat.OpenXml.Wordprocessing.Table();
+                TableProperties props = new TableProperties(
+                    new TableBorders(
+                        new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                        new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                        new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                        new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                        new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                        new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 }
+                    ));
+                table.ClearAllAttributes();
+                table.AppendChild<TableProperties>(props);
+                for (var i = 0; i <= data.GetUpperBound(0); i++)
+                {
+                    var tr = new DocumentFormat.OpenXml.Wordprocessing.TableRow();
+                    for (var j = 0; j <= data.GetUpperBound(1); j++)
+                    {
+                        var tc = new DocumentFormat.OpenXml.Wordprocessing.TableCell();
+                        string[] datas = data[i, j].ToString().Split('\n');
+                        for (int k = 0; k < datas.Length; k++)
+                        {
+                            tc.Append(new Paragraph(new Run(new Text(datas[k]))));
+                            tc.Append(new TableCellProperties(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
+                        }
+                        //tc.Append(new TableCellProperties(new TableCellWidth { Type = TableWidthUnitValues.Auto }));
+                        tr.Append(tc);
+                    }
+                    table.Append(tr);
+                }
+            document.Body.Append(table);
+            document.Save();
+            
         }
     }
 }

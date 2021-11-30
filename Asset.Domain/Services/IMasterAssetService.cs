@@ -14,6 +14,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexMasterAssetVM.GetData> GetAll();
         IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(SearchMasterAssetVM searchObj);
         IEnumerable<MasterAsset> GetAllMasterAssets();
+     //   IEnumerable<MasterAsset> GetAssetOwnerByHospitalId(int hospitalId, string userId);
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId, string userId);
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId);
         EditMasterAssetVM GetById(int id);

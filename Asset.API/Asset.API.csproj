@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Reports\AssetReport.repx" />
+    <None Remove="Reports\AssetReport.vsrepx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="bin\Debug\net5.0\appsettings.Development.json" />
     <Content Include="bin\Debug\net5.0\appsettings.json" />
     <Content Include="bin\Debug\net5.0\Asset.API.deps.json" />
@@ -13,6 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Reports\AssetReport.repx" />
+    <EmbeddedResource Include="Reports\AssetReport.vsrepx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Reporting.Core" Version="21.1.5-pre-21203" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.14.0" />
     <PackageReference Include="MailKit" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
@@ -100,6 +112,15 @@
     <None Include="bin\Debug\net5.0\System.IdentityModel.Tokens.Jwt.dll" />
     <None Include="bin\Debug\net5.0\System.Runtime.Caching.dll" />
     <None Include="bin\Debug\net5.0\System.Security.Cryptography.ProtectedData.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Reports\AssetReport.cs">
+      <DependentUpon>AssetReport.vsrepx</DependentUpon>
+    </Compile>
+    <Compile Update="Reports\AssetReport.Designer.cs">
+      <DependentUpon>AssetReport.vsrepx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>
