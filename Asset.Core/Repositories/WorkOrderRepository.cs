@@ -183,7 +183,14 @@ namespace Asset.Core.Repositories
                 work.ActualEndDate = item.FirstOrDefault().ActualEndDate;
                 work.RequestId = item.FirstOrDefault().RequestId != null ? (int)item.FirstOrDefault().RequestId : 0;
                 work.HospitalId = item.FirstOrDefault().Request.AssetDetail.HospitalId;
-                work.AssignedTo = _context.WorkOrderTrackings.Where(a => a.AssignedTo == userId).FirstOrDefault().AssignedTo;
+                if (userId != null)
+                {
+                  var lstUsers   = _context.WorkOrderTrackings.Where(a => a.AssignedTo == userId).ToList();
+                    if (lstUsers.Count > 0)
+                    {
+                        work.AssignedTo = _context.WorkOrderTrackings.Where(a => a.AssignedTo == userId).FirstOrDefault().AssignedTo;
+                    }
+                }
                 work.TrackCreatedById = _context.WorkOrderTrackings.Where(a => a.CreatedById == userId).FirstOrDefault().CreatedById;
                 list.Add(work);
             }
