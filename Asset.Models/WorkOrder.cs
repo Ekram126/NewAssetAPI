@@ -23,13 +23,13 @@ namespace Asset.Models
         public virtual ApplicationUser User { get; set; }
 
 
-        public int WorkOrderPeriorityId { get; set; }
+        public int? WorkOrderPeriorityId { get; set; }
         [ForeignKey("WorkOrderPeriorityId")]
         public virtual WorkOrderPeriority WorkOrderPeriority { get; set; }
-        public int WorkOrderTypeId { get; set; }
+        public int? WorkOrderTypeId { get; set; }
         [ForeignKey("WorkOrderTypeId")]
         public virtual WorkOrderType WorkOrderType { get; set; }
-        public int RequestId { get; set; }
+        public int? RequestId { get; set; }
         [ForeignKey("RequestId")]
         public virtual Request Request { get; set; }
     }

@@ -30,9 +30,6 @@ namespace Asset.ViewModels.AssetDetailVM
         public string WarrantyEnd { get; set; }
 
 
-
-
-
         public int? BuildingId { get; set; }
         public int? RoomId { get; set; }
         public int? FloorId { get; set; }

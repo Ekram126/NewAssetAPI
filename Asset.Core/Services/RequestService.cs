@@ -79,12 +79,22 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId)
         {
-            return _unitOfWork.Request.GetAllRequestsByStatusId(userId, statusId);
+            return _unitOfWork.Request.GetRequestsByUserIdAssetId(userId, statusId);
         }
 
         public IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId, int assetId)
         {
             return _unitOfWork.Request.GetAllRequestsByStatusId(userId, assetId);
+        }
+
+        public IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj)
+        {
+            return _unitOfWork.Request.SearchRequests(searchObj);
+        }
+
+        public IEnumerable<IndexRequestsVM> SortRequests(SortRequestVM sortObj)
+        {
+            return _unitOfWork.Request.SortRequests(sortObj);
         }
     }
 }

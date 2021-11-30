@@ -69,16 +69,26 @@ namespace Asset.API.Controllers
 
         [HttpPut]
         [Route("GetAllWorkOrdersByHospitalId/{hospitalId}/{userId}")]
-        public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId)
+        public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId, PagingParameter pageInfo)
         {
-            return _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId);
+            var  lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).ToList();
+            return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders);
         }
 
+        //[HttpGet]
+        //[Route("getcount")]
+        //public int count()
+        //{
+        //    return _pagingService.Count<WorkOrder>();
+        //}
+
+
         [HttpGet]
-        [Route("getcount")]
-        public int count()
+        [Route("getcount/{hospitalId}/{userId}")]
+        public int count(int hospitalId,string userId)
         {
-            return _pagingService.Count<WorkOrder>();
+            var count = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).ToList().Count;
+            return count;
         }
 
         [HttpPut]
@@ -91,11 +101,33 @@ namespace Asset.API.Controllers
 
 
         [HttpGet]
-        [Route("GetCountByStatus")]
+        [Route("GetCountByStatus/{hospitalId}/{userId}/{statusId}")]
         public int GetCountByStatus(int? hospitalId, string userId, int statusId)
         {
             return _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId, statusId).Count();
         }
+
+
+
+        [HttpPost]
+        [Route("SearchInWorkOrders/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexWorkOrderVM> SearchInWorkOrders(int pagenumber, int pagesize, SearchWorkOrderVM searchObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _workOrderService.SearchWorkOrders(searchObj).ToList();
+            return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, list);
+        }
+
+        [HttpPost]
+        [Route("SearchInWorkOrderssCount")]
+        public int SearchInRequestsCount(SearchWorkOrderVM searchObj)
+        {
+            int count = _workOrderService.SearchWorkOrders(searchObj).ToList().Count();
+            return count;
+        }
+
 
 
 

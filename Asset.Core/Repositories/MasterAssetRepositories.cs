@@ -219,7 +219,7 @@ namespace Asset.Core.Repositories
         {
             List<MasterAsset> list = new List<MasterAsset>();
             var lstMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
-                                   .Where(a => a.HospitalId == hospitalId).GroupBy(a => a.MasterAsset.Id).ToList();
+                                   .Where(a => a.HospitalId == hospitalId).ToList().GroupBy(a => a.MasterAsset.Id).ToList();
 
 
             foreach (var item in lstMasterAssets)
@@ -232,6 +232,26 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
+
+
+        //public IEnumerable<MasterAsset> GetAssetOwnerByHospitalId(int hospitalId, string userId)
+        //{
+        //    List<MasterAsset> list = new List<MasterAsset>();
+        //    var lstMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
+        //                           .Where(a => a.HospitalId == hospitalId).ToList().GroupBy(a => a.MasterAsset.Id).ToList();
+
+
+        //    foreach (var item in lstMasterAssets)
+        //    {
+        //        MasterAsset masterAssetObj = new MasterAsset();
+        //        masterAssetObj.Id = item.FirstOrDefault().MasterAsset.Id;
+        //        masterAssetObj.Name = item.FirstOrDefault().MasterAsset.Name;
+        //        masterAssetObj.NameAr = item.FirstOrDefault().MasterAsset.NameAr;
+        //        list.Add(masterAssetObj);
+        //    }
+        //    return list;
+        //}
+
 
         public IEnumerable<MasterAssetAttachment> GetAttachmentByMasterAssetId(int assetId)
         {
@@ -525,7 +545,7 @@ namespace Asset.Core.Repositories
                 .Include(a => a.Category)
                 .Include(a => a.SubCategory)
                 .Include(a => a.Origin)
-                .Include(a => a.ECRIS).ToList();
+                .Include(a => a.ECRIS).Take(20).Take(20).ToList();
 
             foreach (var item in list)
             {
@@ -575,67 +595,119 @@ namespace Asset.Core.Repositories
                 }
                 lstData.Add(getDataObj);
             }
-            if (searchObj.AssetName != "" || searchObj.AssetNameAr != "")
+            if (searchObj.AssetName != "")
             {
-                lstData = lstData.OrderBy(d => d.AssetName).ThenBy(d => d.AssetNameAr).ToList();
+                if(searchObj.SortStatus== "descending")
+                    lstData = lstData.OrderByDescending(d => d.AssetName).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.AssetName).ToList();
             }
-            else
-                lstData = lstData.ToList();
-            if (searchObj.OriginName != "" || searchObj.OriginNameAr !="")
+            else if(searchObj.AssetNameAr != "")
             {
-                lstData = lstData.OrderBy(d => d.OriginName).ThenBy(d=>d.OriginNameAr).ToList();
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.AssetNameAr).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.AssetNameAr).ToList();
             }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.ECRIName != "" || searchObj.ECRINameAr != "")
+            else if (searchObj.OriginName != "")
             {
-                lstData = lstData.OrderBy(d => d.ECRIName).ThenBy(d => d.ECRINameAr).ToList();
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.OriginName).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.OriginName).ToList();
             }
-            else
-                list = list.ToList();
-
-            if (searchObj.BrandName != "" || searchObj.BrandNameAr != "")
+            else if(searchObj.OriginNameAr != "")
             {
-                lstData = lstData.OrderBy(d => d.BrandName).ThenBy(d => d.BrandNameAr).ToList();
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.OriginNameAr).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.OriginNameAr).ToList();
             }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.CategoryName != "" || searchObj.CategoryNameAr != "")
+            else if (searchObj.ECRIName != "")
             {
-                lstData = lstData.OrderBy(d => d.CategoryName).ThenBy(d => d.CategoryNameAr).ToList();
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.ECRIName).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.ECRIName).ToList();
             }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.SubCategoryName != "" || searchObj.SubCategoryNameAr != "")
+            else if(searchObj.ECRINameAr != "")
             {
-                lstData = lstData.OrderBy(d => d.SubCategoryName).ThenBy(d => d.SubCategoryNameAr).ToList();
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.ECRINameAr).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.ECRINameAr).ToList();
             }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.AssetName != "" || searchObj.AssetNameAr != "")
+            else if(searchObj.BrandName != "")
             {
-                lstData = lstData.OrderBy(d => d.AssetName).ThenBy(d => d.AssetNameAr).ToList();
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.BrandName).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.BrandName).ToList();
             }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.Code != "")
+            else if(searchObj.BrandNameAr != "")
             {
-                lstData = lstData.OrderBy(d => d.Code).ToList();
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.BrandNameAr).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.BrandNameAr).ToList();
             }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.ModelNumber != "")
+            else if (searchObj.CategoryName != "")
             {
-                lstData = lstData.OrderBy(d => d.Model).ToList();
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.CategoryName).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.CategoryName).ToList();
             }
-            else
-                lstData = lstData.ToList();
+            else if(searchObj.CategoryNameAr != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.CategoryNameAr).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.CategoryNameAr).ToList();
+            }
+            else if (searchObj.SubCategoryName != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.SubCategoryName).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.SubCategoryName).ToList();
+            }
+            else if(searchObj.SubCategoryNameAr != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.SubCategoryNameAr).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.SubCategoryNameAr).ToList();
+            }
+            else if (searchObj.AssetName != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.AssetName).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.AssetName).ToList();
+            }
+            else if(searchObj.AssetNameAr != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.AssetNameAr).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.AssetNameAr).ToList();
+            }
+            else if (searchObj.Code != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.Code).ToList();
+            }
+            
+            else if (searchObj.ModelNumber != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.Model).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.Model).ToList();
+            }
 
             return lstData;
         }

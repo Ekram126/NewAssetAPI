@@ -12,7 +12,8 @@ namespace Asset.Domain.Services
         IEnumerable<IndexHospitalVM.GetData> GetAll();
         EditHospitalVM GetById(int id);
         DetailHospitalVM GetHospitalDetailById(int id);
-        Task<IEnumerable<IndexHospitalVM.GetData>> GetHospitalsByUserId(string userId);
+        IEnumerable<IndexHospitalVM.GetData> GetHospitalsByUserId(string userId);
+        IEnumerable<IndexHospitalVM.GetData> SearchHospitals(SearchHospitalVM searchObj);
         IEnumerable<Hospital> GetHospitalsByCityId(int cityId);
         IEnumerable<Hospital> GetHospitalsBySubOrganizationId(int subOrgId);
         List<SubOrganization> GetSubOrganizationsByHospitalId(int hospitalId);
@@ -24,5 +25,6 @@ namespace Asset.Domain.Services
         List<CountHospitalVM> CountHospitalsByCities();
         int CountHospitals();
         int Delete(int id);
+        IEnumerable<IndexHospitalVM.GetData> SortHospitals(SortVM sortObj);
     }
 }

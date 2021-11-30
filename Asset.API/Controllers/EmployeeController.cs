@@ -216,5 +216,16 @@ namespace Asset.API.Controllers
 
             return Ok();
         }
+
+        [HttpPost]
+        [Route("SortEmployees/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexEmployeeVM.GetData> SortEmployees(int pagenumber, int pagesize, SortEmployeeVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _EmployeeService.SortEmployee(sortObj).ToList();
+            return _pagingService.GetAll<IndexEmployeeVM.GetData>(pageInfo, list);
+        }
     }
 }

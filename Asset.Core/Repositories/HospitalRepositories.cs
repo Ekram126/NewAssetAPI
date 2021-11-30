@@ -24,7 +24,7 @@ namespace Asset.Core.Repositories
 
 
         public EditHospitalVM GetById(int id)
-       {
+        {
             var HospitalObj = _context.Hospitals.Where(a => a.Id == id).Select(item => new EditHospitalVM
             {
                 Id = item.Id,
@@ -43,10 +43,11 @@ namespace Asset.Core.Repositories
                 CityId = item.CityId,
                 OrganizationId = item.OrganizationId,
                 SubOrganizationId = item.SubOrganizationId,
-                Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a=>a.DepartmentId).ToList(),
-                EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item=> new EnableDisableDepartment { 
-                DepartmentId = item.DepartmentId,
-                IsActive = item.IsActive
+                Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList(),
+                EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
+                {
+                    DepartmentId = item.DepartmentId,
+                    IsActive = item.IsActive
                 }).ToList(),
 
             }).First();
@@ -134,7 +135,7 @@ namespace Asset.Core.Repositories
             {
                 if (HospitalObj != null)
                 {
-                   
+
                     _context.Hospitals.Remove(HospitalObj);
                     return _context.SaveChanges();
                 }
@@ -217,295 +218,79 @@ namespace Asset.Core.Repositories
             return _context.Hospitals.ToList();
         }
 
-        public async Task<IEnumerable<IndexHospitalVM.GetData>> GetHospitalsByUserId(string userId)
+        public IEnumerable<IndexHospitalVM.GetData> GetHospitalsByUserId(string userId)
         {
+            List<IndexHospitalVM.GetData> lstHospitals = new List<IndexHospitalVM.GetData>();
             if (userId != null)
             {
-                List<IndexHospitalVM.GetData> lstHospitals = new List<IndexHospitalVM.GetData>();
-                var userObj = await _context.Users.FindAsync(userId);
-
-
-                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    lstHospitals = _context.Hospitals.ToList().Select(item => new IndexHospitalVM.GetData
+                var userObj =  _context.ApplicationUser.Find(userId);
+         
+                
+               lstHospitals =  _context.Hospitals.Include(a => a.Governorate).Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
+                    .Select(item => new IndexHospitalVM.GetData
                     {
                         Id = item.Id,
                         Code = item.Code,
                         Name = item.Name,
                         NameAr = item.NameAr,
-                        CityName = item.CityId != 0 ? _context.Cities.Where(a => a.Id == item.CityId).ToList().First().Name : "",
-                        CityNameAr = item.CityId != 0 ? _context.Cities.Where(a => a.Id == item.CityId).ToList().First().NameAr : "",
-                        GovernorateName = item.GovernorateId != 0 ? _context.Governorates.Where(a => a.Id == item.GovernorateId).ToList().First().Name : "",
-                        GovernorateNameAr = item.GovernorateId != 0 ? _context.Governorates.Where(a => a.Id == item.GovernorateId).ToList().First().NameAr : "",
-                        OrgName = item.OrganizationId != 0 ? _context.Organizations.Where(a => a.Id == item.OrganizationId).ToList().First().Name : "",
-                        OrgNameAr = item.OrganizationId != 0 ? _context.Organizations.Where(a => a.Id == item.OrganizationId).ToList().First().NameAr : "",
-                        SubOrgName = item.SubOrganizationId != 0 ? _context.SubOrganizations.Where(a => a.Id == item.SubOrganizationId).ToList().First().Name : "",
-                        SubOrgNameAr = item.SubOrganizationId != 0 ? _context.SubOrganizations.Where(a => a.Id == item.SubOrganizationId).ToList().First().NameAr : ""
+                        CityId = item.CityId != 0 ? item.City.Id : 0,
+                        CityName = item.CityId != 0 ? item.City.Name : "",
+                        CityNameAr = item.CityId != 0 ? item.City.NameAr : "",
+                        GovernorateId = item.GovernorateId != 0 ? item.Governorate.Id : 0,
+                        GovernorateName = item.GovernorateId != 0 ? item.Governorate.Name : "",
+                        GovernorateNameAr = item.GovernorateId != 0 ? item.Governorate.NameAr : "",
+                        OrganizationId = item.OrganizationId != 0 ? item.Organization.Id : 0,
+                        OrgName = item.OrganizationId != 0 ? item.Organization.Name : "",
+                        OrgNameAr = item.OrganizationId != 0 ? item.Organization.NameAr : "",
+                        SubOrganizationId = item.SubOrganizationId != 0 ? item.SubOrganization.Id : 0,
+                        SubOrgName = item.SubOrganizationId != 0 ? item.SubOrganization.Name : "",
+                        SubOrgNameAr = item.SubOrganizationId != 0 ? item.SubOrganization.NameAr : ""
                     }).ToList();
+
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstHospitals = lstHospitals.ToList();
                 }
 
 
                 if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.HospitalId == 0)
                 {
-                    lstHospitals = (from host in _context.Hospitals
-
-                                    join sub in _context.SubOrganizations on host.SubOrganizationId equals sub.Id into hostptlSubOrg
-                                    from hso in hostptlSubOrg.DefaultIfEmpty()
-
-
-                                    join org in _context.Organizations on host.OrganizationId equals org.Id into hostOrg
-                                    from ho in hostOrg.DefaultIfEmpty()
-
-
-                                    join city in _context.Cities on host.CityId equals city.Id into hostcity
-                                    from hc in hostcity.DefaultIfEmpty()
-
-
-                                    join gov in _context.Governorates on host.GovernorateId equals gov.Id into govcity
-                                    from gc in govcity.DefaultIfEmpty()
-
-
-                                    where gc.Id == userObj.GovernorateId && host.GovernorateId == userObj.GovernorateId
-
-                                    select new IndexHospitalVM.GetData
-                                    {
-                                        Id = host.Id,
-                                        Code = host.Code,
-                                        Name = host.Name,
-                                        NameAr = host.NameAr,
-                                        GovernorateName = gc.Name,
-                                        GovernorateNameAr = gc.NameAr,
-                                        CityName = hc.Name,
-                                        CityNameAr = hc.NameAr,
-                                        OrgName = ho.Name,
-                                        OrgNameAr = ho.NameAr,
-                                        SubOrgName = hso.Name,
-                                        SubOrgNameAr = hso.NameAr
-                                    })
-                                         .ToList();
+                    lstHospitals = lstHospitals.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
                 }
+
                 if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.HospitalId == 0)
                 {
-                    lstHospitals = await (from host in _context.Hospitals
-
-                                          join sub in _context.SubOrganizations on host.SubOrganizationId equals sub.Id
-                                          //into hostptlSubOrg
-                                       //   from hso in hostptlSubOrg.DefaultIfEmpty()
-
-
-                                          join org in _context.Organizations on host.OrganizationId equals org.Id
-                                          //into hostOrg
-                                       //   from ho in hostOrg.DefaultIfEmpty()
-
-
-                                          join city in _context.Cities on host.CityId equals city.Id 
-                                          //into hostcity
-                                      //    from hc in hostcity.DefaultIfEmpty()
-
-
-                                          join gov in _context.Governorates on host.GovernorateId equals gov.Id
-                                          //into govcity
-                                        //  from gc in govcity.DefaultIfEmpty()
-
-                                          where city.Id == userObj.CityId && gov.Id == userObj.GovernorateId
-
-                                          select new IndexHospitalVM.GetData
-                                          {
-                                              Id = host.Id,
-                                              Code = host.Code,
-                                              Name = host.Name,
-                                              NameAr = host.NameAr,
-                                              GovernorateName = gov.Name,
-                                              GovernorateNameAr = gov.NameAr,
-                                              CityName = city.Name,
-                                              CityNameAr = city.NameAr,
-                                              OrgName = org.Name,
-                                              OrgNameAr = org.NameAr,
-                                              SubOrgName = sub.Name,
-                                              SubOrgNameAr = sub.NameAr
-                                          })
-                                          .ToListAsync();
+                    lstHospitals = lstHospitals.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
                 }
                 if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.HospitalId > 0)
                 {
-                    lstHospitals = await (from host in _context.Hospitals
-                                          join sub in _context.SubOrganizations on host.SubOrganizationId equals sub.Id
-                                          join org in _context.Organizations on host.OrganizationId equals org.Id
-                                          join city in _context.Cities on host.CityId equals city.Id
-                                          join gov in _context.Governorates on host.GovernorateId equals gov.Id
-                                          where host.GovernorateId == userObj.GovernorateId
-                                         && host.CityId == userObj.CityId
-                                         && host.Id == userObj.HospitalId
-                                         && userObj.Id == userId
-                                          select new IndexHospitalVM.GetData
-                                          {
-                                              Id = host.Id,
-                                              Code = host.Code,
-                                              Name = host.Name,
-                                              NameAr = host.NameAr,
-                                              GovernorateName = gov.Name,
-                                              GovernorateNameAr = gov.NameAr,
-                                              CityName = city.Name,
-                                              CityNameAr = city.NameAr,
-                                              OrgName = org.Name,
-                                              OrgNameAr = org.NameAr,
-                                              SubOrgName = sub.Name,
-                                              SubOrgNameAr = sub.NameAr
-                                          })
-                                        .ToListAsync();
+
+                    lstHospitals = lstHospitals.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId && a.Id == userObj.HospitalId).ToList();
                 }
+
+
+
                 if (userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0)
                 {
-
-                    lstHospitals = await (from host in _context.Hospitals
-
-                                          join org in _context.Organizations on host.OrganizationId equals org.Id into hostOrg
-                                          from ho in hostOrg.DefaultIfEmpty()
-
-
-                                          join sub in _context.SubOrganizations on host.SubOrganizationId equals sub.Id into hostptlSubOrg
-                                          from hso in hostptlSubOrg.DefaultIfEmpty()
-
-
-                                          join city in _context.Cities on host.CityId equals city.Id into hostcity
-                                          from hc in hostcity.DefaultIfEmpty()
-
-
-                                          join gov in _context.Governorates on host.GovernorateId equals gov.Id into govcity
-                                          from gc in govcity.DefaultIfEmpty()
-
-                                          where host.OrganizationId == userObj.OrganizationId
-
-                                          select new IndexHospitalVM.GetData
-                                          {
-                                              Id = host.Id,
-                                              Code = host.Code,
-                                              Name = host.Name,
-                                              NameAr = host.NameAr,
-                                              GovernorateName = gc.Name,
-                                              GovernorateNameAr = gc.NameAr,
-                                              CityName = hc.Name,
-                                              CityNameAr = hc.NameAr,
-                                              OrgName = ho.Name,
-                                              OrgNameAr = ho.NameAr,
-                                              SubOrgName = hso.Name,
-                                              SubOrgNameAr = hso.NameAr
-                                          })
-                                           .ToListAsync();
-
-
+                    lstHospitals = lstHospitals.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
                 }
+
+
+
                 if (userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
                 {
 
-                    lstHospitals = await (from host in _context.Hospitals
-
-                                          join sub in _context.SubOrganizations on host.SubOrganizationId equals sub.Id into hostptlSubOrg
-                                          from hso in hostptlSubOrg.DefaultIfEmpty()
-
-
-                                          join org in _context.Organizations on host.OrganizationId equals org.Id into hostOrg
-                                          from ho in hostOrg.DefaultIfEmpty()
-
-
-                                          join city in _context.Cities on host.CityId equals city.Id into hostcity
-                                          from hc in hostcity.DefaultIfEmpty()
-
-
-                                          join gov in _context.Governorates on host.GovernorateId equals gov.Id into govcity
-                                          from gc in govcity.DefaultIfEmpty()
-
-                                          where host.SubOrganizationId == userObj.SubOrganizationId && host.OrganizationId == userObj.OrganizationId
-
-                                          select new IndexHospitalVM.GetData
-                                          {
-                                              Id = host.Id,
-                                              Code = host.Code,
-                                              Name = host.Name,
-                                              NameAr = host.NameAr,
-                                              GovernorateName = gc.Name,
-                                              GovernorateNameAr = gc.NameAr,
-                                              CityName = hc.Name,
-                                              CityNameAr = hc.NameAr,
-                                              OrgName = ho.Name,
-                                              OrgNameAr = ho.NameAr,
-                                              SubOrgName = hso.Name,
-                                              SubOrgNameAr = hso.NameAr
-                                          })
-                                           .ToListAsync();
-
-
+                    lstHospitals = lstHospitals.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
                 }
                 if (userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
                 {
 
-                    lstHospitals = await (from host in _context.Hospitals
-                                          join sub in _context.SubOrganizations on host.SubOrganizationId equals sub.Id
-                                          join org in _context.Organizations on host.OrganizationId equals org.Id
-                                          join city in _context.Cities on host.CityId equals city.Id
-                                          join gov in _context.Governorates on host.GovernorateId equals gov.Id
-                                          where host.SubOrganizationId == userObj.SubOrganizationId
-                                          && host.OrganizationId == userObj.OrganizationId
-                                          && host.Id == userObj.HospitalId
-                                          && userObj.Id == userId
-
-                                          select new IndexHospitalVM.GetData
-                                          {
-                                              Id = host.Id,
-                                              Code = host.Code,
-                                              Name = host.Name,
-                                              NameAr = host.NameAr,
-                                              GovernorateName = gov.Name,
-                                              GovernorateNameAr = gov.NameAr,
-                                              CityName = city.Name,
-                                              CityNameAr = city.NameAr,
-                                              OrgName = org.Name,
-                                              OrgNameAr = org.NameAr,
-                                              SubOrgName = sub.Name,
-                                              SubOrgNameAr = sub.NameAr
-                                          })
-                                           .ToListAsync();
-
+                    lstHospitals = lstHospitals.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId  && a.Id == userObj.HospitalId).ToList();
 
                 }
-
-
-
-
-
-                //if (userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
-                //{
-                //    lstHospitals = await (from host in _context.Hospitals
-                //                          join sub in _context.SubOrganizations on host.SubOrganizationId equals sub.Id
-                //                          join org in _context.Organizations on host.OrganizationId equals org.Id
-                //                          join city in _context.Cities on host.CityId equals city.Id
-                //                          join gov in _context.Governorates on host.GovernorateId equals gov.Id
-                //                          where host.GovernorateId == userObj.GovernorateId
-                //                         && host.CityId == userObj.CityId
-                //                         && host.Id == userObj.HospitalId
-                //                         && userObj.Id == userId
-                //                          select new IndexHospitalVM.GetData
-                //                          {
-                //                              Id = host.Id,
-                //                              Code = host.Code,
-                //                              AssetName = host.Name,
-                //                              AssetNameAr = host.NameAr,
-                //                              GovernorateName = gov.Name,
-                //                              GovernorateNameAr = gov.NameAr,
-                //                              CityName = city.Name,
-                //                              CityNameAr = city.NameAr,
-                //                              OrgName = org.Name,
-                //                              OrgNameAr = org.NameAr,
-                //                              SubOrgName = sub.Name,
-                //                              SubOrgNameAr = sub.NameAr
-                     
-                //                          })
-                //                        .ToListAsync();
-                //}
-
-                return lstHospitals;
+      
             }
-            return null;
+            return lstHospitals;
         }
 
         public IEnumerable<Hospital> GetHospitalsByCityId(int cityId)
@@ -521,7 +306,7 @@ namespace Asset.Core.Repositories
 
         public DetailHospitalVM GetHospitalDetailById(int id)
         {
-            var HospitalObj = _context.Hospitals.Where(a => a.Id == id).Select(item => new DetailHospitalVM
+            var HospitalObj = _context.Hospitals.Include(a => a.Governorate).Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization).Where(a => a.Id == id).Select(item => new DetailHospitalVM
             {
                 Id = item.Id,
                 Code = item.Code,
@@ -545,25 +330,14 @@ namespace Asset.Core.Repositories
                 }).ToList(),
 
 
-
-
-                GovernorateName = (item.GovernorateId != null || item.GovernorateId != 0) ? _context.Governorates.Where(a => a.Id == item.GovernorateId).First().Name : "",
-                GovernorateNameAr = (item.GovernorateId != null || item.GovernorateId != 0) ? _context.Governorates.Where(a => a.Id == item.GovernorateId).First().NameAr : "",
-                CityName = (item.CityId != null || item.CityId != 0) ? _context.Cities.Where(a => a.Id == item.CityId).First().Name : "",
-                CityNameAr = (item.CityId != null || item.CityId != 0) ? _context.Cities.Where(a => a.Id == item.CityId).First().NameAr : "",
-
-
-                SubOrganizationName = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? _context.SubOrganizations.Where(a => a.Id == item.SubOrganizationId).First().Name : "",
-                SubOrganizationNameAr = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? _context.SubOrganizations.Where(a => a.Id == item.SubOrganizationId).First().NameAr : "",
-
-
-                OrganizationName = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? (from org in _context.Organizations
-                                                                                                      join sub in _context.SubOrganizations on org.Id equals sub.OrganizationId
-                                                                                                      select org).First().Name : "",
-
-                OrganizationNameAr = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? (from org in _context.Organizations
-                                                                                                        join sub in _context.SubOrganizations on org.Id equals sub.OrganizationId
-                                                                                                        select org).First().NameAr : ""
+               GovernorateName = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.Name : "",
+                GovernorateNameAr = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.NameAr : "",
+                CityName = (item.CityId != null || item.CityId != 0) ? item.City.Name : "",
+                CityNameAr = (item.CityId != null || item.CityId != 0) ? item.City.NameAr : "",
+                SubOrganizationName = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.Name : "",
+                SubOrganizationNameAr = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.NameAr : "",
+                OrganizationName = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.Name : "",
+                OrganizationNameAr = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.NameAr : ""
 
             }).First();
 
@@ -608,7 +382,7 @@ namespace Asset.Core.Repositories
             var lstHospitalDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == hospitalId).ToList()
                 .Select(item => new IndexHospitalDepartmentVM.GetData
                 {
-                    Id= item.Id,
+                    Id = item.Id,
                     DepartmentName = _context.Departments.Where(a => a.Id == item.DepartmentId).First().Name,
                     DepartmentNameAr = _context.Departments.Where(a => a.Id == item.DepartmentId).First().NameAr,
                     IsActive = item.IsActive,
@@ -621,10 +395,10 @@ namespace Asset.Core.Repositories
 
         public List<SubOrganization> GetSubOrganizationsByHospitalId(int hospitalId)
         {
-            return (from hospital in _context.Hospitals
-                    join sub in _context.SubOrganizations on hospital.SubOrganizationId equals sub.Id
-                    where hospital.Id == hospitalId
-                    select sub).ToList();
+            return  _context.Hospitals.Include(a => a.SubOrganization).Where(a => a.Id == hospitalId).Select(a => a.SubOrganization).ToList();
+                    //join sub in _context.SubOrganizations on hospital.SubOrganizationId equals sub.Id
+                    //where hospital.Id == hospitalId
+                    //select sub).ToList();
         }
 
         public List<CountHospitalVM> CountHospitalsByCities()
@@ -649,6 +423,217 @@ namespace Asset.Core.Repositories
         {
             return _context.Hospitals.Count();
         }
-       
+
+        public IEnumerable<IndexHospitalVM.GetData> SearchHospitals(SearchHospitalVM searchObj)
+        {
+            List<IndexHospitalVM.GetData> lstData = new List<IndexHospitalVM.GetData>();
+            ApplicationUser UserObj = new ApplicationUser();
+            var obj = _context.ApplicationUser.Where(a => a.Id == searchObj.UserId).ToList();
+            if (obj.Count > 0)
+            {
+                UserObj = obj[0];
+            }
+            var list = _context.Hospitals
+                        .Include(a => a.Governorate)
+                        .Include(a => a.City)
+                        .Include(a => a.Organization)
+                        .Include(a => a.SubOrganization)
+                        .ToList();
+
+
+            if (list.Count > 0)
+            {
+                if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.ToList();
+                }
+
+                if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.Where(t => t.GovernorateId == UserObj.GovernorateId).ToList();
+                }
+                if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.Where(t => t.GovernorateId == UserObj.GovernorateId && t.CityId == UserObj.CityId).ToList();
+                }
+                if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+                {
+                    list = list.Where(t => t.GovernorateId == UserObj.GovernorateId && t.CityId == UserObj.CityId && t.Id == UserObj.HospitalId).ToList();
+                }
+                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.Where(t => t.OrganizationId == UserObj.OrganizationId).ToList();
+                }
+                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.Where(t => t.OrganizationId == UserObj.OrganizationId && t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
+                }
+
+                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+                {
+                    list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId && t.Id == UserObj.HospitalId).ToList();
+                }
+            }
+
+            foreach (var item in list)
+            {
+                IndexHospitalVM.GetData getDataObj = new IndexHospitalVM.GetData();
+                getDataObj.Id = item.Id;
+                getDataObj.Code = item.Code;
+                getDataObj.Name = item.Name;
+                getDataObj.NameAr = item.NameAr;
+                getDataObj.GovernorateId = item.Governorate.Id;
+                getDataObj.GovernorateName = item.Governorate.Name;
+                getDataObj.GovernorateNameAr = item.Governorate.NameAr;
+                getDataObj.CityId = item.City.Id;
+                getDataObj.CityName = item.City.Name;
+                getDataObj.CityNameAr = item.City.NameAr;
+                getDataObj.OrganizationId = item.Organization.Id;
+                getDataObj.OrgName = item.Organization.Name;
+                getDataObj.OrgNameAr = item.Organization.NameAr;
+                getDataObj.SubOrganizationId = item.SubOrganization.Id;
+                getDataObj.SubOrgName = item.SubOrganization.Name;
+                getDataObj.SubOrgNameAr = item.SubOrganization.NameAr;
+                lstData.Add(getDataObj);
+            }
+
+
+            if (searchObj.GovernorateId != 0)
+            {
+                lstData = lstData.Where(a => a.GovernorateId == searchObj.GovernorateId).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+
+
+            if (searchObj.CityId != 0)
+            {
+                lstData = lstData.Where(a => a.CityId == searchObj.CityId).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.OrganizationId != 0)
+            {
+                lstData = lstData.Where(a => a.OrganizationId == searchObj.OrganizationId).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+
+
+            if (searchObj.SubOrganizationId != 0)
+            {
+                lstData = lstData.Where(a => a.SubOrganizationId == searchObj.SubOrganizationId).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+
+
+            if (searchObj.Code != "")
+            {
+                lstData = lstData.Where(b => b.Code == searchObj.Code).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            return lstData;
+        }
+        public IEnumerable<IndexHospitalVM.GetData> SortHospitals(SortVM sortObj)
+        {
+            List<IndexHospitalVM.GetData> lstHospital = new List<IndexHospitalVM.GetData>();
+
+            var lstHospitals = _context.Hospitals.Include(a => a.Governorate)
+                   .Include(a=>a.City)
+                   .Include(a=>a.Organization)
+                   .Include(a=>a.SubOrganization).ToList();
+
+            foreach (var item in lstHospitals)
+            {
+                IndexHospitalVM.GetData hospitalobj = new IndexHospitalVM.GetData();
+                hospitalobj.Id = item.Id;
+                hospitalobj.Code = item.Code;
+                hospitalobj.Name = item.Name;
+                hospitalobj.NameAr = item.NameAr;
+                hospitalobj.GovernorateName = item.Governorate.Name ;
+                hospitalobj.GovernorateNameAr = item.Governorate.NameAr;
+                hospitalobj.OrgName = item.Organization.Name;
+                hospitalobj.OrgNameAr = item.Organization.NameAr;
+                hospitalobj.SubOrgName = item.SubOrganization.Name;
+                hospitalobj.SubOrgNameAr = item.SubOrganization.NameAr;
+                hospitalobj.CityName = item.City.Name;
+                hospitalobj.CityNameAr = item.City.NameAr;
+                lstHospital.Add(hospitalobj);
+            }
+            if (sortObj.GovernorateName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.GovernorateName).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.GovernorateName).ToList();
+            }
+            else if(sortObj.GovernorateNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.GovernorateNameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.GovernorateNameAr).ToList();
+            }
+            else if (sortObj.HospitalName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.Name).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.Name).ToList();
+            }
+            else if(sortObj.HospitalNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.NameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.NameAr).ToList();
+            }
+            else if (sortObj.OrgName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.OrgName).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.OrgName).ToList();
+            }
+            else if(sortObj.OrgNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.OrgNameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.OrgNameAr).ToList();
+            }
+            else if (sortObj.SubOrgName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.SubOrgName).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.SubOrgName).ToList();
+            }
+            else if(sortObj.SubOrgNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.SubOrgNameAr).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.SubOrgNameAr).ToList();
+            }
+            else if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstHospital = lstHospital.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstHospital = lstHospital.OrderBy(d => d.Code).ToList();
+            }
+
+            return lstHospital;
+        }
+
+
     }
 }

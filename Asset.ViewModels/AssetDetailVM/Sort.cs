@@ -23,5 +23,7 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public string SubOrgName { get; set; }
         public string SubOrgNameAr { get; set; }
+        public string SortStatus { get; set; }
+        
     }
 }

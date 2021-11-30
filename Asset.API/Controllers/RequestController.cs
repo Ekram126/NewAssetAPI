@@ -120,13 +120,33 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, Requests);
         }
         [HttpGet]
-        [Route("getcount")]
-        public int count()
+        [Route("getcount/{userId}")]
+        public int count(string userId)
         {
-            return _pagingService.Count<Request>();
+            var count = _requestService.GetAllRequestsWithTrackingByUserId(userId).ToList().Count;
+            return count;
         }
 
 
+
+        [HttpPost]
+        [Route("SearchInRequests/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexRequestVM.GetData> SearchInRequests(int pagenumber, int pagesize, SearchRequestVM searchObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _requestService.SearchRequests(searchObj).ToList();
+            return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, list);
+        }
+
+        [HttpPost]
+        [Route("SearchInRequestsCount")]
+        public int SearchInRequestsCount(SearchRequestVM searchObj)
+        {
+            int count = _requestService.SearchRequests(searchObj).ToList().Count();
+            return count;
+        }
 
 
 
@@ -139,7 +159,7 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, Requests);
         }
         [HttpGet]
-        [Route("GetRequestsCountByStatusId")]
+        [Route("GetRequestsCountByStatusId/{userId}/{statusId}")]
         public int GetCountByStatusId(string userId, int statusId)
         {
             return _requestService.GetAllRequestsByStatusId(userId, statusId).ToList().Count;
@@ -162,6 +182,16 @@ namespace Asset.API.Controllers
             return _requestService.GetRequestsByUserIdAssetId(userId,  assetId).ToList().Count;
         }
 
+        [HttpPost]
+        [Route("SortRequests/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexRequestsVM> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _requestService.SortRequests(sortObj).ToList();
+            return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list);
+        }
 
     }
 }

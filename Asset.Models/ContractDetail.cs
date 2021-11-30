@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,8 +12,16 @@ namespace Asset.Models
     {
         public int Id { get; set; }
         public int? MasterContractId { get; set; }
+        [ForeignKey("MasterContractId")]
+        public virtual MasterContract MasterContract { get; set; }
+
+
+
 
         public int? AssetDetailId { get; set; }
+        [ForeignKey("AssetDetailId")]
+        public virtual AssetDetail AssetDetail { get; set; }
+
         public bool? HasSpareParts { get; set; }
 
 

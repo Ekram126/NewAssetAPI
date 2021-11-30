@@ -242,5 +242,112 @@ namespace Asset.Core.Repositories
             }
             return 0;
         }
+
+        public IEnumerable<IndexEmployeeVM.GetData> SortEmployee(SortEmployeeVM sortObj)
+        {
+            List<IndexEmployeeVM.GetData> list = new List<IndexEmployeeVM.GetData>();
+            var lstEmployees = _context.Employees.ToList();
+            if (lstEmployees.Count > 0)
+            {
+                foreach (var item in lstEmployees)
+                {
+                    IndexEmployeeVM.GetData getDataObj = new IndexEmployeeVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.Name = item.Name;
+                    getDataObj.NameAr = item.NameAr;
+                    getDataObj.Email = item.Email;
+                    getDataObj.Code = item.Code;
+                    getDataObj.GenderId = item.GenderId;
+                    getDataObj.WhatsApp = item.WhatsApp;
+                    getDataObj.Phone = item.Phone;
+                    getDataObj.Address = item.Address;
+                    getDataObj.AddressAr = item.AddressAr;
+                    getDataObj.CardId = item.CardId;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.DepartmentId = item.DepartmentId;
+                    getDataObj.ClassificationId = item.ClassificationId;
+                    getDataObj.EmpImg = item.EmpImg;
+
+                    if (item.HospitalId != 0 || item.HospitalId != null)
+                    {
+                        var lstHospitals = _context.Hospitals.Where(a => a.Id == item.HospitalId).ToList();
+                        if (lstHospitals.Count > 0)
+                        {
+                            getDataObj.HospitalName = lstHospitals[0].Name;
+                            getDataObj.HospitalNameAr = lstHospitals[0].NameAr;
+                        }
+                    }
+
+                    if (item.DepartmentId != 0 || item.DepartmentId != null)
+                    {
+                        var lstDepartments = _context.Departments.Where(a => a.Id == item.DepartmentId).ToList();
+                        if (lstDepartments.Count > 0)
+                        {
+                            getDataObj.DepartmentName = lstDepartments[0].Name;
+                            getDataObj.DepartmentNameAr = lstDepartments[0].NameAr;
+                        }
+                    }
+
+                    list.Add(getDataObj);
+                }
+                if (sortObj.Code != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.Code).ToList();
+                    else
+                        list = list.OrderBy(d => d.Code).ToList();
+                }
+                else if (sortObj.Name != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.Name).ToList();
+                    else
+                        list = list.OrderBy(d => d.Name).ToList();
+                }
+                else if (sortObj.NameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.NameAr).ToList();
+                    else
+                        list = list.OrderBy(d => d.NameAr).ToList();
+                }
+                else if (sortObj.DepartmentName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.DepartmentName).ToList();
+                    else
+                        list = list.OrderBy(d => d.DepartmentName).ToList();
+                }
+                else if (sortObj.DepartmentNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.DepartmentNameAr).ToList();
+                    else
+                        list = list.OrderBy(d => d.DepartmentNameAr).ToList();
+                }
+                else if (sortObj.Email != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.Email).ToList();
+                    else
+                        list = list.OrderBy(d => d.Email).ToList();
+                }
+                else if (sortObj.HospitalName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.HospitalName).ToList();
+                    else
+                        list = list.OrderBy(d => d.HospitalName).ToList();
+                }
+                else if (sortObj.HospitalNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.HospitalNameAr).ToList();
+                    else
+                        list = list.OrderBy(d => d.HospitalNameAr).ToList();
+                }
+            }
+            return list;
+        }
     }
 }

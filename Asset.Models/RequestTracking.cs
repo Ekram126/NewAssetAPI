@@ -12,10 +12,10 @@ namespace Asset.Models
         public int Id { get; set; }
         public string Description { get; set; }
         public DateTime DescriptionDate { get; set; }
-        public int RequestStatusId { get; set; }
+        public int? RequestStatusId { get; set; }
         [ForeignKey("RequestStatusId")]
         public virtual RequestStatus RequestStatus { get; set; }
-        public int RequestId { get; set; }
+        public int? RequestId { get; set; }
         [ForeignKey("RequestId")]
         public virtual Request Request { get; set; }
         public string CreatedById { get; set; }

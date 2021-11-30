@@ -89,14 +89,14 @@ namespace Asset.Core.Repositories
                     Description = req.Description,
                     CreatedById = req.CreatedById,
                     UserName = req.User.UserName,
-                    RequestId = req.RequestId,
-                    RequestStatusId = req.RequestStatusId,
+                    RequestId = req.RequestId != null ? (int)req.RequestId : 0,
+                    RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                     StatusName = req.RequestStatus.Name,
                     StatusNameAr = req.RequestStatus.NameAr,
                     Subject = req.Request.Subject,
                     RequestCode = req.Request.RequestCode,
                     RequestDate = req.Request.RequestDate,
-                    AssetDetailId = assetDetailId > 0 ? assetDetailId: (int)req.Request.AssetDetailId,
+                    AssetDetailId = assetDetailId > 0 ? assetDetailId : (int)req.Request.AssetDetailId,
                     SerialNumber = req.Request.AssetDetail.SerialNumber,
                     HospitalId = (int)req.User.HospitalId,
                     GovernorateId = (int)req.User.GovernorateId,
@@ -104,15 +104,15 @@ namespace Asset.Core.Repositories
                     OrganizationId = (int)req.User.OrganizationId,
                     SubOrganizationId = (int)req.User.SubOrganizationId,
                     RoleId = req.User.RoleId,
-                    AssetName = assetDetailId > 0 ? _context.MasterAssets.Where(a=>a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().Name: _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().Name,
+                    AssetName = assetDetailId > 0 ? _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().Name : _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().Name,
 
-                    AssetNameAr = assetDetailId > 0 ? _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().NameAr: _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().NameAr,
+                    AssetNameAr = assetDetailId > 0 ? _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().NameAr : _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().NameAr,
 
                     // RoleName = _context.Roles.Where(a => a.Id == req.User.RoleId).FirstOrDefault().Name
 
                     //AssetName=req.Request.AssetDetail.MasterAssetId,
 
-                }).ToList().OrderByDescending(a=>a.DescriptionDate).GroupBy(r => r.RequestId);
+                }).ToList().OrderByDescending(a => a.DescriptionDate).GroupBy(r => r.RequestId);
             foreach (var item in ListRequestTracking)
             {
                 lstRequestTrackings.Add(item.LastOrDefault());
@@ -166,7 +166,7 @@ namespace Asset.Core.Repositories
             }
             if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
             {
-               // lstRequestTrackings = lstRequestTrackings.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                // lstRequestTrackings = lstRequestTrackings.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
 
 
                 if (userRoleName == "TLHospitalManager")
@@ -186,7 +186,7 @@ namespace Asset.Core.Repositories
                 {
                     lstRequestTrackings = lstRequestTrackings.Where(t => t.HospitalId == UserObj.HospitalId && t.AssetDetailId == assetDetailId).ToList();
                 }
-  
+
             }
 
 
@@ -202,15 +202,17 @@ namespace Asset.Core.Repositories
 
         public List<RequestTrackingView> GetRequestTracksByRequestId(int requestId)
         {
-            var trackings = _context.RequestTracking.Where(r => r.RequestId == requestId).OrderByDescending(a=>a.DescriptionDate).Select(req => new RequestTrackingView
+            var trackings = _context.RequestTracking.Where(r => r.RequestId == requestId).OrderByDescending(a => a.DescriptionDate).Select(req => new RequestTrackingView
             {
                 Id = req.Id,
-                RequestId= req.RequestId,
+
+                RequestId = req.RequestId != null ? (int)req.RequestId : 0,
+                RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                 Description = req.Description,
                 DescriptionDate = req.DescriptionDate,
                 CreatedById = req.CreatedById,
                 UserName = req.User.UserName,
-                RequestStatusId = req.RequestStatusId,
+
                 StatusName = req.RequestStatus.Name,
                 StatusNameAr = req.RequestStatus.NameAr
             }).OrderByDescending(t => t.DescriptionDate).ToList();
@@ -223,7 +225,7 @@ namespace Asset.Core.Repositories
 
 
 
-            public RequestDetails GetAllTrackingsByRequestId(int RequestId)
+        public RequestDetails GetAllTrackingsByRequestId(int RequestId)
         {
             var trackings = _context.RequestTracking.Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
             {
@@ -233,7 +235,9 @@ namespace Asset.Core.Repositories
                 DescriptionDate = req.DescriptionDate,
                 CreatedById = req.CreatedById,
                 UserName = req.User.UserName,
-                RequestStatusId = req.RequestStatusId,
+
+                RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
+
                 StatusName = req.RequestStatus.Name,
                 StatusNameAr = req.RequestStatus.NameAr
             }).OrderByDescending(t => t.DescriptionDate).ToList();
@@ -242,7 +246,7 @@ namespace Asset.Core.Repositories
 
             var lstRequestTracking = _context.RequestTracking.Include(t => t.Request.AssetDetail)
                 .Include(t => t.Request.RequestMode).Include(t => t.Request.RequestPeriority)
-                .Include(t => t.Request.SubProblem).Include(t => t.Request.RequestType).Include(r=>r.RequestStatus)
+                .Include(t => t.Request.SubProblem).Include(t => t.Request.RequestType).Include(r => r.RequestStatus)
                 .Where(r => r.RequestId == RequestId).Select(req => new RequestDetails
                 {
                     Id = req.Id,
@@ -252,13 +256,16 @@ namespace Asset.Core.Repositories
                     Subject = req.Request.Subject,
                     RequestCode = req.Request.RequestCode,
                     RequestDate = req.Request.RequestDate,
-                    AssetDetailId = req.Request.AssetDetailId,
-                    MasterAssetId = (int) req.Request.AssetDetail.MasterAssetId,
+                    AssetDetailId = req.Request.AssetDetailId!=null ? (int)req.Request.AssetDetailId:0,
+                    MasterAssetId = (int)req.Request.AssetDetail.MasterAssetId,
                     SerialNumber = req.Request.AssetDetail.SerialNumber,
-                    RequestModeId = req.Request.RequestModeId,
+                    RequestModeId = req.Request.RequestModeId != null ? (int)req.Request.RequestModeId : 0,
+                    RequestPeriorityId = req.Request.RequestPeriorityId != null ? (int)req.Request.RequestPeriorityId : 0,
+                    RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
+             
                     ModeName = req.Request.RequestMode.Name,
                     ModeNameAr = req.Request.RequestMode.NameAr,
-                    RequestPeriorityId = req.Request.RequestPeriorityId,
+
                     PeriorityName = req.Request.RequestPeriority.Name,
                     PeriorityNameAr = req.Request.RequestPeriority.NameAr,
                     SubProblemId = req.Request.SubProblemId,
@@ -267,10 +274,10 @@ namespace Asset.Core.Repositories
                     RequestTypeId = req.Request.RequestTypeId,
                     RequestTypeName = req.Request.RequestType.Name,
                     RequestTypeNameAr = req.Request.RequestType.NameAr,
-                    RequestStatusId = req.RequestStatusId,
+                 
                     StatusName = req.RequestStatus.Name,
                     StatusNameAr = req.RequestStatus.NameAr,
-                    AssetName = _context.MasterAssets.Where(a=>a.Id  == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().Name,
+                    AssetName = _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().Name,
                     AssetNameAr = _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().NameAr,
                     lstTracking = trackings
                 }).FirstOrDefault();
@@ -282,7 +289,7 @@ namespace Asset.Core.Repositories
             var RequestTrackingObj = _context.RequestTracking.Select(req => new IndexRequestTracking
             {
                 Id = req.Id,
-                RequestStatusId = req.RequestStatusId,
+                RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                 Description = req.Description,
                 DescriptionDate = req.DescriptionDate,
                 CreatedById = req.CreatedById,
@@ -312,7 +319,7 @@ namespace Asset.Core.Repositories
 
         public int CountRequestTracksByRequestId(int requestId)
         {
-            var counting = _context.RequestTracking.Where(a => a.RequestId == requestId).OrderByDescending(a=>a.DescriptionDate).Count();
+            var counting = _context.RequestTracking.Where(a => a.RequestId == requestId).OrderByDescending(a => a.DescriptionDate).Count();
             return counting;
         }
     }

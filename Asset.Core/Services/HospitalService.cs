@@ -88,9 +88,9 @@ namespace Asset.Core.Services
         }
 
 
-        public async Task<IEnumerable<IndexHospitalVM.GetData>> GetHospitalsByUserId(string userId)
+        public  IEnumerable<IndexHospitalVM.GetData> GetHospitalsByUserId(string userId)
         {
-            return await _unitOfWork.HospitalRepository.GetHospitalsByUserId(userId);
+            return  _unitOfWork.HospitalRepository.GetHospitalsByUserId(userId);
         }
 
         public List<SubOrganization> GetSubOrganizationsByHospitalId(int hospitalId)
@@ -98,6 +98,15 @@ namespace Asset.Core.Services
             return _unitOfWork.HospitalRepository.GetSubOrganizationsByHospitalId(hospitalId);
         }
 
+        public IEnumerable<IndexHospitalVM.GetData> SearchHospitals(SearchHospitalVM searchObj)
+        {
+            return _unitOfWork.HospitalRepository.SearchHospitals(searchObj);
+        }
+
+        public IEnumerable<IndexHospitalVM.GetData> SortHospitals(SortVM sortObj)
+        {
+            return _unitOfWork.HospitalRepository.SortHospitals(sortObj);
+        }
         public int Update(EditHospitalVM HospitalVM)
         {
             _unitOfWork.HospitalRepository.Update(HospitalVM);
