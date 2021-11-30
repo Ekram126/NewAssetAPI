@@ -280,8 +280,8 @@ namespace Asset.API.Controllers
         }
         
         [HttpPost]
-        [Route("SortAssets/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexHospitalVM.GetData> SortAssets(int pagenumber, int pagesize, SortVM sortObj)
+        [Route("SortHospitals/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexHospitalVM.GetData> SortHospitals(int pagenumber, int pagesize, SortVM sortObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
