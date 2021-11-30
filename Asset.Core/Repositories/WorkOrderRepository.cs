@@ -863,12 +863,6 @@ namespace Asset.Core.Repositories
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
 
-                //if (userRoleName == "AssetOwner")
-                //{
-                //    var lstAssigned = list.Where(t => t.HospitalId == UserObj.HospitalId && t.AssignedTo == userId).ToList();
-                //    var lstCreatedItems = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //    list = lstAssigned.Concat(lstCreatedItems).ToList();
-                //}
                 if (userRoleName == "Eng")
                 {
                     var lstAssigned = list.Where(t => t.HospitalId == UserObj.HospitalId && t.AssignedTo == userId).ToList();
@@ -904,13 +898,6 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-
-                //if (userRoleName == "AssetOwner")
-                //{
-                //    var lstAssigned = list.Where(t => t.HospitalId == UserObj.HospitalId && t.AssignedTo == userId).ToList();
-                //    var lstCreatedItems = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //    list = lstAssigned.Concat(lstCreatedItems).ToList();
-                //}
 
                 if (userRoleName == "Eng")
                 {
@@ -1273,6 +1260,61 @@ namespace Asset.Core.Repositories
 
 
             return lstData;
+        }
+
+        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId,SortWorkOrderVM sortObj)
+        {
+            var list = GetAllWorkOrdersByHospitalId(hosId, userId);
+            if (sortObj.WorkOrderNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.WorkOrderNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.WorkOrderNumber).ToList();
+            }
+            else if (sortObj.StatusName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.StatusName).ToList();
+                else
+                    list = list.OrderBy(d => d.StatusName).ToList();
+            }
+            else if (sortObj.StatusNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.StatusNameAr).ToList();
+                else
+                    list = list.OrderBy(d => d.StatusNameAr).ToList();
+            }
+            else if (sortObj.RequestSubject != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.RequestSubject).ToList();
+                else
+                    list = list.OrderBy(d => d.RequestSubject).ToList();
+            }
+            else if (sortObj.CreatedBy != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.CreatedBy).ToList();
+                else
+                    list = list.OrderBy(d => d.CreatedBy).ToList();
+            }
+            else if (sortObj.CreationDate != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.CreationDate).ToList();
+                else
+                    list = list.OrderBy(d => d.CreationDate).ToList();
+            }
+            else if (sortObj.Note != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.Note).ToList();
+                else
+                    list = list.OrderBy(d => d.Note).ToList();
+            }
+            return list;
         }
     }
 }

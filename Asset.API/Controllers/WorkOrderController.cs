@@ -189,5 +189,15 @@ namespace Asset.API.Controllers
 
             return Ok();
         }
+        [HttpPost]
+        [Route("SortWorkOrders/{hosId}/{userId}/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId,string userId,int pagenumber, int pagesize, SortWorkOrderVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _workOrderService.SortWorkOrders(hosId,userId,sortObj).ToList();
+            return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, list);
+        }
     }
 }
