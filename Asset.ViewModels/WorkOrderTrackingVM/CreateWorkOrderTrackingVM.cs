@@ -17,11 +17,9 @@ namespace Asset.ViewModels.WorkOrderTrackingVM
         public int WorkOrderStatusId { get; set; }
         public int WorkOrderId { get; set; }
 
-        //public DateTime? ActualStartDate { get; set; }
-        //public DateTime? ActualEndDate { get; set; }
-
-
         public string ActualStartDate { get; set; }
         public string ActualEndDate { get; set; }
+        public string PlannedStartDate { get; set; }
+        public string PlannedEndDate { get; set; }
     }
 }

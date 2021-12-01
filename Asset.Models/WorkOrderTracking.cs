@@ -33,5 +33,9 @@ namespace Asset.Models
         public DateTime? ActualStartDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
 
+
+        public DateTime? PlannedStartDate { get; set; }
+        public DateTime? PlannedEndDate { get; set; }
+
     }
 }

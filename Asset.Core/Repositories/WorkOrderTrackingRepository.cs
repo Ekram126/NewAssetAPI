@@ -27,7 +27,7 @@ namespace Asset.Core.Repositories
                 string assignedTo = "";
                 if (createWorkOrderTrackingVM != null)
                 {
-                  var isEmployeeId =  Int32.TryParse(createWorkOrderTrackingVM.AssignedTo, out int empId);
+                    var isEmployeeId = Int32.TryParse(createWorkOrderTrackingVM.AssignedTo, out int empId);
                     if (createWorkOrderTrackingVM.AssignedTo != "" && isEmployeeId == true)
                     {
 
@@ -56,8 +56,12 @@ namespace Asset.Core.Repositories
                         workOrderTracking.AssignedTo = createWorkOrderTrackingVM.AssignedTo;
 
 
-                    workOrderTracking.ActualStartDate = DateTime.Parse(createWorkOrderTrackingVM.ActualStartDate);
-                    workOrderTracking.ActualEndDate = DateTime.Parse(createWorkOrderTrackingVM.ActualEndDate);
+                    workOrderTracking.ActualStartDate = createWorkOrderTrackingVM.ActualStartDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.ActualStartDate) : null;
+                    workOrderTracking.ActualEndDate = createWorkOrderTrackingVM.ActualEndDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.ActualEndDate):null;
+
+                    workOrderTracking.PlannedStartDate = createWorkOrderTrackingVM.PlannedStartDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.PlannedStartDate):null;
+                    workOrderTracking.PlannedEndDate = createWorkOrderTrackingVM.PlannedEndDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.PlannedEndDate):null;
+
                     _context.WorkOrderTrackings.Add(workOrderTracking);
                     _context.SaveChanges();
                     createWorkOrderTrackingVM.Id = workOrderTracking.Id;
@@ -135,12 +139,12 @@ namespace Asset.Core.Repositories
                     ActualStartDate = work.WorkOrder.ActualStartDate,
                     ActualEndDate = work.WorkOrder.ActualEndDate,
                     Note = work.WorkOrder.Note,
-                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId:0,
+                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId : 0,
                     WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
                     WorkOrderPeriorityNameAr = work.WorkOrder.WorkOrderPeriority.NameAr,
-                    WorkOrderTypeId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderTypeId:0,
+                    WorkOrderTypeId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderTypeId : 0,
                     WorkOrderTypeName = work.WorkOrder.WorkOrderType.Name,
-                    RequestId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.RequestId:0,
+                    RequestId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.RequestId : 0,
                     RequestSubject = work.WorkOrder.Request.Subject,
                     AssetSerial = work.WorkOrder.Request.AssetDetail.SerialNumber,
                     MasterAssetId = (int)work.WorkOrder.Request.AssetDetail.MasterAssetId,
@@ -197,11 +201,11 @@ namespace Asset.Core.Repositories
                     ActualStartDate = work.WorkOrder.ActualStartDate,
                     ActualEndDate = work.WorkOrder.ActualEndDate,
                     Note = work.WorkOrder.Note,
-                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId:0,
+                    WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId : 0,
                     WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
-                    WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId != null ? (int)work.WorkOrder.WorkOrderTypeId:0,
+                    WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId != null ? (int)work.WorkOrder.WorkOrderTypeId : 0,
                     WorkOrderTypeName = work.WorkOrder.WorkOrderType.Name,
-                    RequestId = work.WorkOrder.RequestId != null ? (int)work.WorkOrder.RequestId:0,
+                    RequestId = work.WorkOrder.RequestId != null ? (int)work.WorkOrder.RequestId : 0,
                     RequestSubject = work.WorkOrder.Request.Subject,
                     SerialNumber = work.WorkOrder.Request.AssetDetail.SerialNumber,
                     WorkOrderSubject = work.WorkOrder.Request.Subject,
@@ -370,11 +374,11 @@ namespace Asset.Core.Repositories
                 getDataObj.ActualStartDate = item.WorkOrder.ActualStartDate;
                 getDataObj.ActualEndDate = item.WorkOrder.ActualEndDate;
                 getDataObj.Note = item.WorkOrder.Note;
-                getDataObj.WorkOrderPeriorityId = item.WorkOrder.WorkOrderPeriorityId != null?(int) item.WorkOrder.WorkOrderPeriorityId:0;
+                getDataObj.WorkOrderPeriorityId = item.WorkOrder.WorkOrderPeriorityId != null ? (int)item.WorkOrder.WorkOrderPeriorityId : 0;
                 getDataObj.WorkOrderPeriorityName = item.WorkOrder.WorkOrderPeriority.Name;
-                getDataObj.WorkOrderTypeId = item.WorkOrder.WorkOrderTypeId != null ? (int) item.WorkOrder.WorkOrderTypeId:0;
+                getDataObj.WorkOrderTypeId = item.WorkOrder.WorkOrderTypeId != null ? (int)item.WorkOrder.WorkOrderTypeId : 0;
                 getDataObj.WorkOrderTypeName = item.WorkOrder.WorkOrderType.Name;
-                getDataObj.RequestId = item.WorkOrder.RequestId != null ? (int)item.WorkOrder.RequestId:0;
+                getDataObj.RequestId = item.WorkOrder.RequestId != null ? (int)item.WorkOrder.RequestId : 0;
                 getDataObj.RequestSubject = item.WorkOrder.Request.Subject;
                 getDataObj.SerialNumber = item.WorkOrder.Request.AssetDetail.SerialNumber;
                 getDataObj.WorkOrderSubject = item.WorkOrder.Request.Subject;
@@ -516,9 +520,9 @@ namespace Asset.Core.Repositories
                     Note = work.WorkOrder.Note,
                     WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId : 0,
                     WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
-                    WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId != null ? (int)work.WorkOrder.WorkOrderTypeId:0,
+                    WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId != null ? (int)work.WorkOrder.WorkOrderTypeId : 0,
                     WorkOrderTypeName = work.WorkOrder.WorkOrderType.Name,
-                    RequestId = work.WorkOrder.RequestId != null ? (int)work.WorkOrder.RequestId:0,
+                    RequestId = work.WorkOrder.RequestId != null ? (int)work.WorkOrder.RequestId : 0,
                     RequestSubject = work.WorkOrder.Request.Subject,
                     SerialNumber = work.WorkOrder.Request.AssetDetail.SerialNumber,
                     WorkOrderSubject = work.WorkOrder.Request.Subject,
@@ -669,7 +673,7 @@ namespace Asset.Core.Repositories
                                 WorkOrderId = wo.WorkOrderId
 
                             }).ToList();
-            if(lstWO.Count >0)
+            if (lstWO.Count > 0)
             {
                 return lstWO.First();
             }
@@ -684,7 +688,7 @@ namespace Asset.Core.Repositories
                       .Include(w => w.WorkOrderStatus).Include(w => w.User)
                       .Select(work => new IndexWorkOrderTrackingVM
                       {
-                          Id=work.Id,
+                          Id = work.Id,
                           TrackId = work.Id,
                           WorkOrderDate = work.WorkOrderDate,
                           CreationDate = work.CreationDate,
@@ -697,8 +701,8 @@ namespace Asset.Core.Repositories
                           WorkOrderStatusNameAr = work.WorkOrderStatus.NameAr,
                           ActualStartDate = work.ActualStartDate,
                           ActualEndDate = work.ActualEndDate,
-                          
-                      }).ToList().OrderByDescending(a=>a.CreationDate).ToList();
+
+                      }).ToList().OrderByDescending(a => a.CreationDate).ToList();
 
             return lstTracks;
         }

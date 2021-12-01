@@ -271,7 +271,7 @@ namespace Asset.Core.Repositories
                     getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
                     getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
                 }
-                getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == a.Request.Id).ToList().Count;
+                getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
                 getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count;
                 getDataObj.GovernorateId = req.User.GovernorateId;
                 getDataObj.CityId = req.User.CityId;
