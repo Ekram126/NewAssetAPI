@@ -50,6 +50,11 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterContractRepository.Search(model);
         }
 
+        public IEnumerable<IndexMasterContractVM.GetData> SortContracts(int hospitalId, SortContractsVM sortObj)
+        {
+            return _unitOfWork.MasterContractRepository.SortContracts(hospitalId, sortObj);
+        }
+
         public int Update(MasterContract masterContractObj)
         {
             return _unitOfWork.MasterContractRepository.Update(masterContractObj);

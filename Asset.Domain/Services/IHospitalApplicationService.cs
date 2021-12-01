@@ -27,5 +27,7 @@ namespace Asset.Domain.Services
         int CreateHospitalApplicationAttachments(HospitalApplicationAttachment attachObj);
         IEnumerable<HospitalApplicationAttachment> GetAttachmentByHospitalApplicationId(int assetId);
         int DeleteHospitalApplicationAttachment(int id);
+        IEnumerable<IndexHospitalApplicationVM.GetData> SortHospitalApp(SortHospitalApplication sortObj);
+
     }
 }

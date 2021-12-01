@@ -573,5 +573,75 @@ namespace Asset.Core.Repositories
 
             return list;
         }
+
+        public IEnumerable<IndexHospitalApplicationVM.GetData> SortHospitalApp(SortHospitalApplication sortObj)
+        {
+            var list = GetAll();
+            if (sortObj.AssetName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetName).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetName).ToList();
+            }
+            else if (sortObj.AssetNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetNameAr).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetNameAr).ToList();
+            }
+            else if (sortObj.AppNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AppNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.AppNumber).ToList();
+            }
+            else if (sortObj.Date != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.Date).ToList();
+                else
+                    list = list.OrderBy(d => d.Date).ToList();
+            }
+            else if (sortObj.StatusName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.StatusName).ToList();
+                else
+                    list = list.OrderBy(d => d.StatusName).ToList();
+            }
+            else if (sortObj.StatusNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.StatusNameAr).ToList();
+                else
+                    list = list.OrderBy(d => d.StatusNameAr).ToList();
+            }
+            else if (sortObj.DueDate != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.DueDate).ToList();
+                else
+                    list = list.OrderBy(d => d.DueDate).ToList();
+            }
+            else if (sortObj.ReasonHoldTitles != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ReasonHoldTitles).ToList();
+                else
+                    list = list.OrderBy(d => d.ReasonHoldTitlesAr).ToList();
+            }
+            else if (sortObj.ReasonHoldTitlesAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ReasonHoldTitlesAr).ToList();
+                else
+                    list = list.OrderBy(d => d.ReasonHoldTitlesAr).ToList();
+            }
+
+            return list;
+        }
     }
 }

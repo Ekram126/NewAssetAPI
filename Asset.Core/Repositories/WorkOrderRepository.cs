@@ -1293,6 +1293,13 @@ namespace Asset.Core.Repositories
                 else
                     list = list.OrderBy(d => d.StatusNameAr).ToList();
             }
+            else if (sortObj.Subject != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.Subject).ToList();
+                else
+                    list = list.OrderBy(d => d.Subject).ToList();
+            }
             else if (sortObj.RequestSubject != "")
             {
                 if (sortObj.SortStatus == "descending")
