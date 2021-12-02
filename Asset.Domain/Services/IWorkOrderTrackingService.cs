@@ -13,6 +13,9 @@ namespace Asset.Domain.Services
         IEnumerable<LstWorkOrderFromTracking> GetAllWorkOrderFromTrackingByServiceRequestId(int ServiceRequestId,string userId);
         IEnumerable<LstWorkOrderFromTracking> GetAllWorkOrderFromTrackingByServiceRequestUserId(int ServiceRequestId, string userId);
         IEnumerable<LstWorkOrderFromTracking> GetAllWorkOrderFromTrackingByUserId(string userId);
+
+        WorkOrderTracking GetFirstTrackForWorkOrderByWorkOrderId(int woId);
+
         IndexWorkOrderTrackingVM GetWorkOrderTrackingById(int id);
         WorkOrderDetails GetAllWorkOrderByWorkOrderId(int WorkOrderId);
         List<WorkOrderAttachment> GetAttachmentsByWorkOrderId(int id);

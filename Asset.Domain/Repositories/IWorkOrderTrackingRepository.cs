@@ -14,7 +14,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<LstWorkOrderFromTracking> GetAllWorkOrderFromTrackingByServiceRequestUserId(int ServiceRequestId, string userId);
         IEnumerable<LstWorkOrderFromTracking> GetAllWorkOrderFromTrackingByUserId(string userId);
         List<IndexWorkOrderTrackingVM> GetAllWorkOrderTrackingByWorkOrderId(int WorkOrderId);
-     
+
+        WorkOrderTracking GetFirstTrackForWorkOrderByWorkOrderId(int woId);
 
         List<IndexWorkOrderTrackingVM> GetTrackOfWorkOrderByWorkOrderId(int workOrderId);
         List<WorkOrderAttachment> GetAttachmentsByWorkOrderId(int id);

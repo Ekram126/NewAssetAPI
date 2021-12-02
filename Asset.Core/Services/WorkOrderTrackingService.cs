@@ -64,6 +64,11 @@ namespace Asset.Core.Services
             return _unitOfWork.WorkOrderTracking.GetEngManagerWhoFirstAssignedWO(woId);
         }
 
+        public WorkOrderTracking GetFirstTrackForWorkOrderByWorkOrderId(int woId)
+        {
+            return _unitOfWork.WorkOrderTracking.GetFirstTrackForWorkOrderByWorkOrderId(woId);
+        }
+
         public List<IndexWorkOrderTrackingVM> GetTrackOfWorkOrderByWorkOrderId(int workOrderId)
         {
             return _unitOfWork.WorkOrderTracking.GetTrackOfWorkOrderByWorkOrderId(workOrderId);

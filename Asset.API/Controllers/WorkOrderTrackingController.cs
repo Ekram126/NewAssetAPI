@@ -59,6 +59,12 @@ namespace Asset.API.Controllers
 
 
 
+        [HttpGet]
+        [Route("GetFirstTrackForWorkOrderByWorkOrderId/{woId}")]
+        public WorkOrderTracking GetFirstTrackForWorkOrderByWorkOrderId(int woId)
+        {
+            return _workOrderTrackingService.GetFirstTrackForWorkOrderByWorkOrderId(woId);
+        }
 
 
         [HttpGet]

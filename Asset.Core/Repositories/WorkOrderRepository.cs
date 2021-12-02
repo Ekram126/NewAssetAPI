@@ -150,11 +150,16 @@ namespace Asset.Core.Repositories
                 work.Note = item.FirstOrDefault().Note;
                 work.CreatedById = item.FirstOrDefault().CreatedById;
                 work.CreatedBy = item.FirstOrDefault().User.UserName;
-
+         
                 work.TypeName = item.FirstOrDefault().WorkOrderType.Name;
                 work.TypeNameAr = item.FirstOrDefault().WorkOrderType.NameAr;
                 work.PeriorityName = item.FirstOrDefault().WorkOrderPeriority.Name;
                 work.PeriorityNameAr = item.FirstOrDefault().WorkOrderPeriority.NameAr;
+                var lstAssignTo = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList().GroupBy(a => item.FirstOrDefault().Id).ToList();
+
+
+
+
                 var lstStatus = _context.WorkOrderTrackings
                        .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
                        .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList().GroupBy(a => item.FirstOrDefault().Id).ToList();

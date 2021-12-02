@@ -682,6 +682,18 @@ namespace Asset.Core.Repositories
             return null;
         }
 
+        public WorkOrderTracking GetFirstTrackForWorkOrderByWorkOrderId(int woId)
+        {
+            WorkOrderTracking trackingObj = new WorkOrderTracking();
+            var lstTracks = _context.WorkOrderTrackings.Where(r => r.WorkOrderId == woId).ToList();
+            if(lstTracks.Count>0)
+            {
+                trackingObj = lstTracks[0];
+            }
+
+            return trackingObj;
+        }
+
         public List<IndexWorkOrderTrackingVM> GetTrackOfWorkOrderByWorkOrderId(int workOrderId)
         {
             var lstTracks = _context.WorkOrderTrackings.Where(r => r.WorkOrderId == workOrderId)
