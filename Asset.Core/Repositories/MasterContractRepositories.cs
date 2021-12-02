@@ -334,5 +334,46 @@ namespace Contract.Core.Repositories
 
             return lstData;
         }
+
+        public IEnumerable<IndexMasterContractVM.GetData> SortContracts(int hospitalId, SortContractsVM sortObj)
+        {
+            var list=GetMasterContractsByHospitalId(hospitalId);
+            if (sortObj.ContractNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ContractNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.ContractNumber).ToList();
+            }
+            else if (sortObj.Subject != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.Subject).ToList();
+                else
+                    list = list.OrderBy(d => d.Subject).ToList();
+            }
+            else if (sortObj.ContractDate != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ContractDate).ToList();
+                else
+                    list = list.OrderBy(d => d.ContractDate).ToList();
+            }
+            else if (sortObj.StartDate != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.StartDate).ToList();
+                else
+                    list = list.OrderBy(d => d.StartDate).ToList();
+            }
+            else if (sortObj.EndDate != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.EndDate).ToList();
+                else
+                    list = list.OrderBy(d => d.EndDate).ToList();
+            }
+            return list;
+        }
     }
 }

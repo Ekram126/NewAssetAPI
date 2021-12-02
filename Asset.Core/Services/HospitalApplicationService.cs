@@ -75,6 +75,11 @@ namespace Asset.Core.Services
             return _unitOfWork.HospitalApplicationRepository.GetHospitalApplicationById(id);
         }
 
+        public IEnumerable<IndexHospitalApplicationVM.GetData> SortHospitalApp(SortHospitalApplication sortObj)
+        {
+            return _unitOfWork.HospitalApplicationRepository.SortHospitalApp(sortObj);
+        }
+
         public int Update(EditHospitalApplicationVM HospitalApplicationObj)
         {
             return _unitOfWork.HospitalApplicationRepository.Update(HospitalApplicationObj);

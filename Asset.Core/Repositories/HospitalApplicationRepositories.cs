@@ -573,5 +573,95 @@ namespace Asset.Core.Repositories
 
             return list;
         }
+
+        public IEnumerable<IndexHospitalApplicationVM.GetData> SortHospitalApp(SortHospitalApplication sortObj)
+        {
+            var list = GetAll();
+            if (sortObj.AssetName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetName).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetName).ToList();
+            }
+            else if (sortObj.AssetNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetNameAr).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetNameAr).ToList();
+            }
+            else if (sortObj.AssetName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetName).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetName).ToList();
+            }
+            else if (sortObj.TypeName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.TypeName).ToList();
+                else
+                    list = list.OrderBy(d => d.TypeName).ToList();
+            }
+            else if (sortObj.TypeNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.TypeNameAr).ToList();
+                else
+                    list = list.OrderBy(d => d.TypeNameAr).ToList();
+            }
+            else if (sortObj.ReasonExTitles != "" || sortObj.ReasonHoldTitles != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ReasonExTitles).ThenByDescending(d=>d.ReasonHoldTitles).ToList();
+                else
+                    list = list.OrderBy(d => d.ReasonExTitles).ThenBy(d=>d.ReasonHoldTitles).ToList();
+            }
+            else if (sortObj.ReasonExTitlesAr != "" || sortObj.ReasonHoldTitlesAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ReasonExTitlesAr).ThenByDescending(d => d.ReasonHoldTitlesAr).ToList();
+                else
+                    list = list.OrderBy(d => d.ReasonExTitlesAr).ThenBy(d => d.ReasonHoldTitlesAr).ToList();
+            }
+            else if (sortObj.Date != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.Date).ToList();
+                else
+                    list = list.OrderBy(d => d.Date).ToList();
+            }
+            else if (sortObj.StatusName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.StatusName).ToList();
+                else
+                    list = list.OrderBy(d => d.StatusName).ToList();
+            }
+            else if (sortObj.StatusNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.StatusNameAr).ToList();
+                else
+                    list = list.OrderBy(d => d.StatusNameAr).ToList();
+            }
+            else if (sortObj.DueDate != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.DueDate).ToList();
+                else
+                    list = list.OrderBy(d => d.DueDate).ToList();
+            }
+            else if (sortObj.AppNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AppNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.AppNumber).ToList();
+            }
+            return list;
+        }
     }
 }

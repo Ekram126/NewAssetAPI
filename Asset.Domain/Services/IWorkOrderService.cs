@@ -24,5 +24,6 @@ namespace Asset.Domain.Services
         GeneratedWorkOrderNumberVM GenerateWorOrderNumber();
         int GetTotalWorkOrdersForAssetInHospital(int assetDetailId);
         PrintWorkOrderVM PrintWorkOrderById(int id);
+        IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj);
     }
 }

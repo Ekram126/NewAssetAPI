@@ -30,7 +30,6 @@ namespace Asset.API.Controllers
             _pagingService = pagingService;
         }
 
-
         [HttpGet]
         [Route("ListHospitalApplications")]
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetAll()
@@ -52,8 +51,6 @@ namespace Asset.API.Controllers
             return _pagingService.Count<HospitalApplication>();
         }
 
-
-
         [HttpPut]
         [Route("GetAllHospitalsByStatusId/{statusId}")]
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(PagingParameter pageInfo, int statusId)
@@ -68,11 +65,6 @@ namespace Asset.API.Controllers
         {
             return _hospitalApplicationService.GetAllByStatusId(statusId).ToList().Count;
         }
-
-
-
-
-
 
         [HttpGet]
         [Route("GetById/{id}")]
@@ -94,8 +86,6 @@ namespace Asset.API.Controllers
         {
             return _hospitalApplicationService.GetAssetHospitalId(assetId);
         }
-
-
 
         [HttpPut]
         [Route("UpdateHospitalApplication")]
@@ -134,7 +124,6 @@ namespace Asset.API.Controllers
             return Ok();
         }
 
-
         [HttpPost]
         [Route("AddHospitalApplication")]
         public int Add(CreateHospitalApplicationVM hospitalApplicationVM)
@@ -165,8 +154,6 @@ namespace Asset.API.Controllers
             return Ok();
         }
 
-
-
         [HttpPost]
         [Route("CreateHospitalApplicationAttachments")]
         public int CreateHospitalApplicationAttachments(HospitalApplicationAttachment attachObj)
@@ -184,7 +171,6 @@ namespace Asset.API.Controllers
             return StatusCode(StatusCodes.Status201Created);
         }
 
-
         [HttpGet]
         [Route("GetAttachmentByHospitalApplicationId/{hospitalApplicationId}")]
         public IEnumerable<HospitalApplicationAttachment> GetAttachmentByHospitalApplicationId(int hospitalApplicationId)
@@ -199,6 +185,15 @@ namespace Asset.API.Controllers
             return _hospitalApplicationService.DeleteHospitalApplicationAttachment(id);
         }
 
-
+        [HttpPost]
+        [Route("SortHospitalApp/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexHospitalApplicationVM.GetData> SortHospitalApp(int pagenumber, int pagesize, SortHospitalApplication sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _hospitalApplicationService.SortHospitalApp(sortObj).ToList();
+            return _pagingService.GetAll(pageInfo, list);
+        }
     }
 }

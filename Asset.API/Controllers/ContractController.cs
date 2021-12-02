@@ -21,7 +21,6 @@ namespace Contract.API.Controllers
         private IMasterContractService _masterContractService;
         private IPagingService _pagingService;
 
-
         private IContractDetailService _contractDetailService;
         public ContractController(IMasterContractService masterContractService, IContractDetailService contractDetailService,
             IPagingService pagingService)
@@ -31,14 +30,12 @@ namespace Contract.API.Controllers
             _pagingService = pagingService;
         }
 
-
         [HttpGet]
         [Route("ListMasterContracts")]
         public IEnumerable<MasterContract> GetAll()
         {
             return _masterContractService.GetAll();
         }
-
 
         [HttpGet]
         [Route("GetById/{id}")]
@@ -47,15 +44,12 @@ namespace Contract.API.Controllers
             return _masterContractService.GetById(id);
         }
 
-
         [HttpGet]
         [Route("GetContractsByMasterContractId/{masterId}")]
         public ActionResult<IEnumerable<IndexContractVM.GetData>> GetContractsByMasterContractId(int masterId)
         {
             return _contractDetailService.GetContractsByMasterContractId(masterId).ToList();
         }
-
-
 
         [HttpGet]
         [Route("GetMasterContractsByHospitalId/{hospitalId}")]
@@ -98,7 +92,6 @@ namespace Contract.API.Controllers
             return Ok();
         }
 
-
         [HttpPost]
         [Route("AddMasterContract")]
         public ActionResult<MasterContract> Add(CreateMasterContractVM MasterContractVM)
@@ -109,16 +102,12 @@ namespace Contract.API.Controllers
 
         }
 
-
         //[HttpPost]
         //[Route("SearchInContract")]
         //public IEnumerable<IndexMasterContractVM.GetData> SearchInContract(SearchContractVM model)
         //{
         //    return _masterContractService.Search(model).ToList();
         //}
-
-
-
 
         [HttpPost]
         [Route("SearchInContract/{pagenumber}/{pagesize}")]
@@ -139,10 +128,6 @@ namespace Contract.API.Controllers
             return count;
         }
 
-
-
-
-
         [HttpDelete]
         [Route("DeleteMasterContract/{id}")]
         public ActionResult<MasterContract> Delete(int id)
@@ -161,12 +146,6 @@ namespace Contract.API.Controllers
             return Ok();
         }
 
-
-
-
-
-
-
         [HttpPost]
         [Route("AddContract")]
         public ActionResult<ContractDetail> AddContract(ContractDetail model)
@@ -176,7 +155,6 @@ namespace Contract.API.Controllers
             return Ok(new { ContractId = savedId });
 
         }
-
 
         [HttpDelete]
         [Route("DeleteContract/{id}")]
@@ -197,9 +175,16 @@ namespace Contract.API.Controllers
             return Ok();
         }
 
-
-
-
+        [HttpPost]
+        [Route("SortContracts/{hosId}/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexMasterContractVM.GetData> SortContracts(int hosId, int pagenumber, int pagesize, SortContractsVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _masterContractService.SortContracts(hosId, sortObj).ToList();
+            return _pagingService.GetAll(pageInfo, list);
+        }
 
     }
 }

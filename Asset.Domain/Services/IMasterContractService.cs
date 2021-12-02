@@ -18,5 +18,7 @@ namespace Asset.Domain.Services
         int Add(CreateMasterContractVM masterContractObj);
         int Update(MasterContract masterContractObj);
         int Delete(int id);
+        IEnumerable<IndexMasterContractVM.GetData> SortContracts(int hospitalId, SortContractsVM sortObj);
+
     }
 }
