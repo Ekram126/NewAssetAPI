@@ -207,7 +207,8 @@ namespace Asset.Core.Repositories
                     GovernorateName = item.HospitalId > 0 ? item.Hospital.Governorate.Name : "",
                     GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "",
                     CityName = item.HospitalId > 0 ? item.Hospital.City.Name : "",
-                    CityNameAr = item.HospitalId > 0 ? item.Hospital.City.NameAr : ""
+                    CityNameAr = item.HospitalId > 0 ? item.Hospital.City.NameAr : "",
+                    QrFilePath=item.QrFilePath
                 });
 
             return lstAssetDetails;
@@ -227,7 +228,8 @@ namespace Asset.Core.Repositories
                 HospitalNameAr = _context.Hospitals.Where(a => a.Id == item.HospitalId).ToList().First().NameAr,
                 AssetName = _context.MasterAssets.Where(a => a.Id == item.MasterAssetId).ToList().First().Name,
                 AssetNameAr = _context.MasterAssets.Where(a => a.Id == item.MasterAssetId).ToList().First().NameAr,
-            
+                QrFilePath=item.QrFilePath
+
             }) ;
             return lstAssetDetails;
         }

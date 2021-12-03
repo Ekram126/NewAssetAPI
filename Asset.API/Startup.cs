@@ -39,7 +39,8 @@ namespace Asset.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+          //  services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfigurationVM>();
             services.AddSingleton(emailConfig);
             services.AddScoped<IEmailSender, EmailSender>();

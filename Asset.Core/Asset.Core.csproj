@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.15.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.12" />
     <PackageReference Include="MimeKit" Version="2.15.1" />
   </ItemGroup>
 
