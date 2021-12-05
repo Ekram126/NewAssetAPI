@@ -18,7 +18,9 @@ namespace Asset.ViewModels.RequestVM
         public int? CityId { get; set; }
         public int? OrganizationId { get; set; }
         public int? SubOrganizationId { get; set; }
-        public int? AssetId { get; set; }
+        public int? AssetDetailId { get; set; }
+        public int? MasterAssetId { get; set; }
+
         public int? AssetOwnerId { get; set; }
         public string AssetOwnerCreatedById { get; set; }
         public List<IndexEmployeeVM> ListEmployees { get; set; }

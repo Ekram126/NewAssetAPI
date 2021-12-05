@@ -46,7 +46,8 @@ namespace Asset.ViewModels.RequestVM
             public DateTime RequestDate { get; set; }
             public int ModeId { get; set; }
          
-            public int AssetDetailId { get; set; }
+            public int? AssetDetailId { get; set; }
+            public int? MasterAssetId { get; set; }
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
             public string SerialNumber { get; set; }

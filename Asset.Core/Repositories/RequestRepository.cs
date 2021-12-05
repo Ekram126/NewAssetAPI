@@ -1251,7 +1251,8 @@ namespace Asset.Core.Repositories
                 getDataObj.RequestDate = item.RequestDate;
                 getDataObj.HospitalId = item.AssetDetail.HospitalId;
                 getDataObj.CreatedById = item.CreatedById;
-
+                getDataObj.AssetDetailId = item.AssetDetailId;
+                getDataObj.MasterAssetId = item.AssetDetail.MasterAssetId;
                 getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
                 var lstStatus = _context.RequestTracking
                             .Include(t => t.Request).Include(t => t.RequestStatus)
@@ -1322,15 +1323,32 @@ namespace Asset.Core.Repositories
                 lstData = lstData.ToList();
 
 
-            if (searchObj.AssetId != 0)
+            //if (searchObj.AssetId != 0)
+            //{
+            //    lstData = lstData.Where(a => a.AssetDetailId == searchObj.AssetId).ToList();
+            //}
+            //else
+            //    lstData = lstData.ToList();
+
+
+            if (searchObj.AssetDetailId != 0)
             {
-                lstData = lstData.Where(a => a.AssetDetailId == searchObj.AssetId).ToList();
+                lstData = lstData.Where(a => a.AssetDetailId == searchObj.AssetDetailId).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.MasterAssetId != 0)
+            {
+                lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
             }
             else
                 lstData = lstData.ToList();
 
 
-   
+
+
+
             if (searchObj.AssetOwnerId != 0)
             {
                

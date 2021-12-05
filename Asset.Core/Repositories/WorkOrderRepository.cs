@@ -150,7 +150,7 @@ namespace Asset.Core.Repositories
                 work.Note = item.FirstOrDefault().Note;
                 work.CreatedById = item.FirstOrDefault().CreatedById;
                 work.CreatedBy = item.FirstOrDefault().User.UserName;
-         
+
                 work.TypeName = item.FirstOrDefault().WorkOrderType.Name;
                 work.TypeNameAr = item.FirstOrDefault().WorkOrderType.NameAr;
                 work.PeriorityName = item.FirstOrDefault().WorkOrderPeriority.Name;
@@ -1032,13 +1032,18 @@ namespace Asset.Core.Repositories
                     foreach (var item in lstTracks)
                     {
                         LstWorkOrderFromTracking trackObj = new LstWorkOrderFromTracking();
-                        trackObj.ActualStartDate = DateTime.Parse(item.ActualStartDate.Value.ToShortDateString());
-                        trackObj.ActualEndDate = DateTime.Parse(item.ActualEndDate.Value.ToShortDateString());
+                        if (item.ActualStartDate != null)
+                            trackObj.ActualStartDate = DateTime.Parse(item.ActualStartDate.Value.ToShortDateString());
+
+
+                        if (item.ActualEndDate != null)
+                            trackObj.ActualEndDate = DateTime.Parse(item.ActualEndDate.Value.ToShortDateString());
                         trackObj.Notes = item.Notes;
                         trackObj.CreatedBy = _context.ApplicationUser.Where(a => a.Id == item.CreatedById).ToList().FirstOrDefault().UserName;
                         trackObj.StatusName = item.WorkOrderStatus.Name;
                         trackObj.StatusNameAr = item.WorkOrderStatus.NameAr;
-                        trackObj.AssignedToName = _context.ApplicationUser.Where(a => a.Id == item.AssignedTo).ToList().FirstOrDefault().UserName;
+                        if (item.AssignedTo != "")
+                            trackObj.AssignedToName = _context.ApplicationUser.Where(a => a.Id == item.AssignedTo).ToList().FirstOrDefault().UserName;
                         lstTracking.Add(trackObj);
 
                     }
@@ -1160,6 +1165,7 @@ namespace Asset.Core.Repositories
                 getDataObj.CreationDate = item.CreationDate;
                 getDataObj.AssetName = item.Request.AssetDetail.MasterAsset.Name + " - " + item.Request.AssetDetail.SerialNumber;
                 getDataObj.AssetNameAr = item.Request.AssetDetail.MasterAsset.NameAr + " - " + item.Request.AssetDetail.SerialNumber;
+                getDataObj.MasterAssetId = item.Request.AssetDetail.MasterAssetId;
 
                 var lstStatus = _context.WorkOrderTrackings
                             .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
@@ -1215,9 +1221,16 @@ namespace Asset.Core.Repositories
                 lstData = lstData.ToList();
 
 
-            if (searchObj.AssetId != 0)
+            if (searchObj.AssetDetailId != 0)
             {
-                lstData = lstData.Where(a => a.AssetId == searchObj.AssetId).ToList();
+                lstData = lstData.Where(a => a.AssetId == searchObj.AssetDetailId).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.MasterAssetId != 0)
+            {
+                lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
             }
             else
                 lstData = lstData.ToList();
@@ -1303,13 +1316,13 @@ namespace Asset.Core.Repositories
             lstData = lstData.Where(a => a.PlannedStartDate >= startingFrom && a.PlannedStartDate <= endingTo).ToList();
 
 
-            lstData = lstData.Where(a => a.PlannedEndDate >= startingFrom && a.PlannedEndDate <= endingTo).ToList();
+            //lstData = lstData.Where(a => a.PlannedEndDate >= startingFrom && a.PlannedEndDate <= endingTo).ToList();
 
 
             return lstData;
         }
 
-        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId,SortWorkOrderVM sortObj)
+        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj)
         {
             var list = GetAllWorkOrdersByHospitalId(hosId, userId);
             if (sortObj.WorkOrderNumber != "")
