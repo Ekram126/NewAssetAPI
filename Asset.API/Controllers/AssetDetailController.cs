@@ -74,10 +74,10 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, HospitalAssets);
         }
         [HttpGet]
-        [Route("getcount")]
-        public int count()
+        [Route("getcount/{userId}")]
+        public int count(string userId)
         {
-            return _AssetDetailService.GetAll().ToList().Count();
+            return _AssetDetailService.GetAssetDetailsByUserId(userId).Result.ToList().Count;// _AssetDetailService.GetAll().ToList().Count();
         }
         [HttpGet]
         [Route("GetAllSerialsByMasterAssetIdAndHospitalId/{masterAssetId}/{hospitalId}")]
@@ -97,12 +97,12 @@ namespace Asset.API.Controllers
 
 
 
-        [HttpPost]
-        [Route("SearchAssetDetails")]
-        public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM model)
-        {
-            return _AssetDetailService.SearchAssetInHospital(model);
-        }
+        //[HttpPost]
+        //[Route("SearchAssetDetails")]
+        //public  IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM model)
+        //{
+        //    return  _AssetDetailService.SearchAssetInHospital(model);
+        //}
 
 
         [HttpPost]
@@ -121,7 +121,7 @@ namespace Asset.API.Controllers
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list = _AssetDetailService.SearchAssetInHospital(searchObj).ToList();
+            var list =  _AssetDetailService.SearchAssetInHospital(searchObj).ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
         }
 
@@ -129,7 +129,7 @@ namespace Asset.API.Controllers
         [Route("SearchAssetDetailsCount")]
         public int SearchInMasterAssetsCount(SearchMasterAssetVM searchObj)
         {
-            int count = _AssetDetailService.SearchAssetInHospital(searchObj).ToList().Count();
+            int count =  _AssetDetailService.SearchAssetInHospital(searchObj).ToList().Count();
             return count;
         }
 

@@ -96,13 +96,13 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM searchObj)
         {
-            return _unitOfWork.AssetDetailRepository.SearchAssetInHospital(searchObj);
+            return  _unitOfWork.AssetDetailRepository.SearchAssetInHospital(searchObj);
            
         }
 
         public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj)
         {
-            return _unitOfWork.AssetDetailRepository.SearchAssetInHospitalByHospitalId(searchObj);
+            return  _unitOfWork.AssetDetailRepository.SearchAssetInHospitalByHospitalId(searchObj);
         }
 
         public IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId)

@@ -15,10 +15,11 @@ namespace Asset.ViewModels.AssetDetailVM
         public class GetData
         {
             public int Id { get; set; }
-
+            public string UserId { get; set; }
             public int? MasterAssetId { get; set; }
             public string Code { get; set; }
             public string Serial { get; set; }
+            public string Model { get; set; }
             public string SerialNumber { get; set; }
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
@@ -64,6 +65,8 @@ namespace Asset.ViewModels.AssetDetailVM
             public int? SubOrganizationId { get; set; }
             public int? AssetId { get; set; }
             public string QrFilePath { get; set; }
+
+            public List<int> ListAssetIds { get; set; }
         }
     }
 }

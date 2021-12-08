@@ -26,6 +26,7 @@ namespace Asset.Models
         public DbSet<Department> Departments { get; set; }
         public DbSet<HospitalDepartment> HospitalDepartments { get; set; }
         public DbSet<MasterAsset> MasterAssets { get; set; }
+        public DbSet<MasterAssetComponent> MasterAssetComponents { get; set; }
         public DbSet<AssetDetail> AssetDetails { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Origin> Origins { get; set; }

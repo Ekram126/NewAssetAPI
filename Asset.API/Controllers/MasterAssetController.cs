@@ -2,6 +2,7 @@
 using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.MasterAssetAttachmentVM;
+using Asset.ViewModels.MasterAssetComponentVM;
 using Asset.ViewModels.MasterAssetVM;
 using Asset.ViewModels.PagingParameter;
 using Microsoft.AspNetCore.Hosting;
@@ -21,14 +22,18 @@ namespace Asset.API.Controllers
     {
         private IPagingService _pagingService;
         private IMasterAssetService _MasterAssetService;
+        private IMasterAssetComponentService _masterAssetComponentService;
         [Obsolete]
         IHostingEnvironment _webHostingEnvironment;
 
         [Obsolete]
-        public MasterAssetController(IMasterAssetService MasterAssetService, IHostingEnvironment webHostingEnvironment,
+        public MasterAssetController(IMasterAssetService MasterAssetService,
+            IMasterAssetComponentService masterAssetComponentService,
+            IHostingEnvironment webHostingEnvironment,
             IPagingService pagingService)
         {
             _MasterAssetService = MasterAssetService;
+            _masterAssetComponentService = masterAssetComponentService;
             _webHostingEnvironment = webHostingEnvironment;
             _pagingService = pagingService;
         }
@@ -54,7 +59,7 @@ namespace Asset.API.Controllers
         [Route("getcount")]
         public int count()
         {
-            var total =_MasterAssetService.GetAll().ToList().Count();
+            var total = _MasterAssetService.GetAll().ToList().Count();
             return total;// _pagingService.Count<MasterAsset>();
         }
 
@@ -67,7 +72,7 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("SearchInMasterAssets/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(int pagenumber,int pagesize, SearchMasterAssetVM searchObj)
+        public IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(int pagenumber, int pagesize, SearchMasterAssetVM searchObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
@@ -80,7 +85,7 @@ namespace Asset.API.Controllers
         [Route("SearchInMasterAssetsCount")]
         public int SearchInMasterAssetsCount(SearchMasterAssetVM searchObj)
         {
-            int c= _MasterAssetService.SearchInMasterAssets(searchObj).ToList().Count();
+            int c = _MasterAssetService.SearchInMasterAssets(searchObj).ToList().Count();
             return c;
         }
 

@@ -71,6 +71,7 @@ namespace Asset.API
             services.AddScoped<IAssetStatusTransactionService, AssetStatusTransactionService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IMasterAssetService, MasterAssetService>();
+            services.AddScoped<IMasterAssetComponentService, MasterAssetComponentService>();
             services.AddScoped<IOriginService, OriginService>();
             services.AddScoped<ISupplierService, SupplierService>();
             services.AddScoped<ICommetieeMemberService, CommetieeMemberService>();

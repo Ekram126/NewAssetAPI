@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Asset.Models;
+using Asset.ViewModels.MasterAssetComponentVM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,6 +43,9 @@ namespace Asset.ViewModels.MasterAssetVM
 
         public string AssetImg { get; set; }
         public int? PMTimeId { get; set; }
+
+
+      public  List<CreateMasterAssetComponentVM> ListComponents { get; set; }
 
     }
 }

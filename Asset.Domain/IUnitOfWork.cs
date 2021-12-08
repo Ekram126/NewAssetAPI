@@ -17,6 +17,7 @@ namespace Asset.Domain
         IDepartmentRepository DepartmentRepository { get; }
         IAssetPeriorityRepository AssetPeriorityRepository { get; }
         IMasterAssetRepository MasterAssetRepository { get; }
+        IMasterAssetComponentRepository MasterAssetComponentRepository { get; }
         IAssetDetailRepository AssetDetailRepository { get; }
         IBrandRepository BrandRepository { get; }
         ICategoryRepository CategoryRepository { get; }

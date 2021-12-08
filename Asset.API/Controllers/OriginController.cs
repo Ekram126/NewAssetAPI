@@ -91,17 +91,17 @@ namespace Asset.API.Controllers
             try
             {
                 int id = OriginVM.Id;
-                var lstoriginCode = _OriginService.GetAllOrigins().ToList().Where(a => a.Code != OriginVM.Code && a.Id != id).ToList();
+                var lstoriginCode = _OriginService.GetAllOrigins().ToList().Where(a => a.Code == OriginVM.Code && a.Id != id).ToList();
                 if (lstoriginCode.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Origin code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
                 }
-                var lstoriginNames = _OriginService.GetAllOrigins().ToList().Where(a => a.Name != OriginVM.Name && a.Id != id).ToList();
+                var lstoriginNames = _OriginService.GetAllOrigins().ToList().Where(a => a.Name == OriginVM.Name && a.Id != id).ToList();
                 if (lstoriginNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Origin name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
                 }
-                var lstoriginArNames = _OriginService.GetAllOrigins().ToList().Where(a => a.NameAr != OriginVM.NameAr && a.Id != id).ToList();
+                var lstoriginArNames = _OriginService.GetAllOrigins().ToList().Where(a => a.NameAr == OriginVM.NameAr && a.Id != id).ToList();
                 if (lstoriginArNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "Origin arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });

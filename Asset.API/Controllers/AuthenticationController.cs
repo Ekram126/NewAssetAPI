@@ -107,7 +107,9 @@ namespace Asset.API.Controllers
                 var cityNameAr = user.CityId > 0 ? _context.Cities.Where(a => a.Id == user.CityId).First().NameAr : "";
                 var orgNameAr = user.OrganizationId > 0 ? _context.Organizations.Where(a => a.Id == user.OrganizationId).First().NameAr : "";
                 var subOrgNameAr = user.SubOrganizationId > 0 ? _context.SubOrganizations.Where(a => a.Id == user.SubOrganizationId).First().NameAr : "";
+                var hospitalName = user.HospitalId > 0 ? _context.Hospitals.Where(a => a.Id == user.HospitalId).First().Name : "";
 
+                var hospitalNameAr = user.HospitalId > 0 ? _context.Hospitals.Where(a => a.Id == user.HospitalId).First().NameAr : "";
 
                 var roleNames = (from userRole in _context.UserRoles
                                  join role in _roleManager.Roles on userRole.RoleId equals role.Id
@@ -137,11 +139,12 @@ namespace Asset.API.Controllers
                     cityName = cityName,
                     orgName = orgName,
                     subOrgName = subOrgName,
-
+                    hospitalName= hospitalName,
                     govNameAr = govNameAr,
                     cityNameAr = cityNameAr,
                     orgNameAr = orgNameAr,
-                    subOrgNameAr = subOrgNameAr
+                    subOrgNameAr = subOrgNameAr,
+                    hospitalNameAr = hospitalNameAr,
 
 
                 });
