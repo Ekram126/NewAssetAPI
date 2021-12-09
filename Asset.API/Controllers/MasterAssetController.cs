@@ -71,6 +71,14 @@ namespace Asset.API.Controllers
         }
 
         [HttpPost]
+        [Route("AutoCompleteMasterAssetName")]
+        public IEnumerable<MasterAsset> AutoCompleteMasterAssetName(string name)
+        {
+            return _MasterAssetService.AutoCompleteMasterAssetName(name);
+        }
+
+
+        [HttpPost]
         [Route("SearchInMasterAssets/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(int pagenumber, int pagesize, SearchMasterAssetVM searchObj)
         {

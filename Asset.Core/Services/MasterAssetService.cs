@@ -25,6 +25,11 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterAssetRepository.Add(masterAssetObj);
         }
 
+        public IEnumerable<MasterAsset> AutoCompleteMasterAssetName(string name)
+        {
+            return _unitOfWork.MasterAssetRepository.AutoCompleteMasterAssetName(name);
+        }
+
         public int CountMasterAssets()
         {
             return _unitOfWork.MasterAssetRepository.CountMasterAssets();

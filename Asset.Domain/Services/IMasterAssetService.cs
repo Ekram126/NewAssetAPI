@@ -14,7 +14,8 @@ namespace Asset.Domain.Services
         IEnumerable<IndexMasterAssetVM.GetData> GetAll();
         IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(SearchMasterAssetVM searchObj);
         IEnumerable<MasterAsset> GetAllMasterAssets();
-     //   IEnumerable<MasterAsset> GetAssetOwnerByHospitalId(int hospitalId, string userId);
+        IEnumerable<MasterAsset> AutoCompleteMasterAssetName(string name);
+        //   IEnumerable<MasterAsset> GetAssetOwnerByHospitalId(int hospitalId, string userId);
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId, string userId);
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId);
         EditMasterAssetVM GetById(int id);
@@ -24,9 +25,9 @@ namespace Asset.Domain.Services
         int Delete(int id);
         int CreateMasterAssetDocuments(CreateMasterAssetAttachmentVM attachObj);
         IEnumerable<MasterAssetAttachment> GetAttachmentByMasterAssetId(int assetId);
-        int DeleteMasterAssetAttachment(int id); 
-        
-        
+        int DeleteMasterAssetAttachment(int id);
+
+
         int CountMasterAssets();
 
         List<CountMasterAssetBrands> CountMasterAssetsByBrand();
