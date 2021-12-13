@@ -714,7 +714,8 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<MasterAsset> AutoCompleteMasterAssetName(string name)
         {
-            return _context.MasterAssets.Where(a => a.Name.Contains(name) || a.NameAr.Contains(name)).ToList();
+            var lst = _context.MasterAssets.Where(a => a.Name.Contains(name) || a.NameAr.Contains(name)).ToList();
+            return lst;
         }
     }
 }

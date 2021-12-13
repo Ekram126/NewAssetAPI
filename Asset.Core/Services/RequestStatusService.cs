@@ -18,17 +18,17 @@ namespace Asset.Core.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public IEnumerable<IndexRequestStatusVM> GetAllRequestStatus()
+        public IEnumerable<IndexRequestStatusVM.GetData> GetAllRequestStatus()
         {
            return _unitOfWork.RequestStatus.GetAll();
         }
       
-        public int UpdateRequestStatus(IndexRequestStatusVM editRequestStatus)
-        {
-          return  _unitOfWork.RequestStatus.Update(editRequestStatus);
-        }
+        //public int UpdateRequestStatus(RequestStatus editRequestStatus)
+        //{
+        //  return  _unitOfWork.RequestStatus.Update(editRequestStatus);
+        //}
 
-        public IndexRequestStatusVM GetById(int id)
+        public RequestStatus GetById(int id)
         {
             return _unitOfWork.RequestStatus.GetById(id);
         }
@@ -38,7 +38,7 @@ namespace Asset.Core.Services
            return _unitOfWork.RequestStatus.Add(createRequestVM);
         }
 
-        public int Update(IndexRequestStatusVM editRequestVM)
+        public int Update(RequestStatus editRequestVM)
         {
             return _unitOfWork.RequestStatus.Update(editRequestVM);
         }
@@ -47,6 +47,11 @@ namespace Asset.Core.Services
         {
 
            return _unitOfWork.RequestStatus.Delete(id);
+        }
+
+        public IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId)
+        {
+            return _unitOfWork.RequestStatus.GetAll(userId);
         }
     }
 }

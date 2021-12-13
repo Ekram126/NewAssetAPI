@@ -70,8 +70,8 @@ namespace Asset.API.Controllers
             return _MasterAssetService.GetAllMasterAssetsByHospitalId(hospitalId, userId);
         }
 
-        [HttpPost]
-        [Route("AutoCompleteMasterAssetName")]
+        [HttpGet]
+        [Route("AutoCompleteMasterAssetName/{name}")]
         public IEnumerable<MasterAsset> AutoCompleteMasterAssetName(string name)
         {
             return _MasterAssetService.AutoCompleteMasterAssetName(name);

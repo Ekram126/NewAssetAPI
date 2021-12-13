@@ -18,7 +18,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId, string userId);
         IndexRequestsVM GetRequestByWorkOrderId(int workOrderId);
         int GetTotalRequestForAssetInHospital(int assetDetailId);
-
+        int GetTotalOpenRequestInThisWeek(string userId);
         IndexRequestsVM GetById(int id);
         int Add(CreateRequestVM createRequestVM);
         void Update(int Id, EditRequestVM editRequestVM);

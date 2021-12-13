@@ -10,11 +10,11 @@ namespace Asset.Domain.Repositories
 {
     public interface IRequestStatusRepository
     {
-        IEnumerable<IndexRequestStatusVM> GetAll();
-
-        IndexRequestStatusVM GetById(int id);
+        IEnumerable<IndexRequestStatusVM.GetData> GetAll();
+        IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId);
+        RequestStatus GetById(int id);
         int Add(RequestStatus createRequestVM);
-        int Update(IndexRequestStatusVM editRequestVM);
+        int Update(RequestStatus editRequestVM);
         int Delete(int id);
 
     }

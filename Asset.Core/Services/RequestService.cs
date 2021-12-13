@@ -96,5 +96,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.SortRequests(sortObj);
         }
+
+        public int GetTotalOpenRequestInThisWeek(string userId)
+        {
+            return _unitOfWork.Request.GetTotalOpenRequestInThisWeek(userId);
+        }
     }
 }

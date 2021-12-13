@@ -10,10 +10,11 @@ namespace Asset.Domain.Services
 {
     public interface IRequestStatusService
     {
-        IEnumerable<IndexRequestStatusVM> GetAllRequestStatus();
-        IndexRequestStatusVM GetById(int id);
+        IEnumerable<IndexRequestStatusVM.GetData> GetAllRequestStatus();
+        IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId);
+        RequestStatus GetById(int id);
         int Add(RequestStatus createRequestVM);
-        int Update(IndexRequestStatusVM editRequestVM);
+        int Update(RequestStatus editRequestVM);
         int Delete(int id);
     }
 }

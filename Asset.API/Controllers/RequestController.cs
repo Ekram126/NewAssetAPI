@@ -19,7 +19,7 @@ namespace Asset.API.Controllers
     public class RequestController : ControllerBase
     {
         private readonly IRequestService _requestService;
-        private readonly IWorkOrderService  _workOrderService;
+        private readonly IWorkOrderService _workOrderService;
         private IPagingService _pagingService;
         public RequestController(IRequestService requestService, IWorkOrderService workOrderService, IPagingService pagingService)
         {
@@ -71,11 +71,16 @@ namespace Asset.API.Controllers
         public int GetTotalRequestForAssetInHospital(int assetDetailId)
         {
             return _requestService.GetTotalRequestForAssetInHospital(assetDetailId);
-            
+
         }
 
 
-
+        [HttpGet]
+        [Route("GetTotalOpenRequestInThisWeek/{userId}")]
+        public int GetTotalOpenRequestInThisWeek(string userId)
+        {
+              return _requestService.GetTotalOpenRequestInThisWeek(userId);
+        }
 
         // POST api/<RequestController>
         [HttpPost]
@@ -99,7 +104,7 @@ namespace Asset.API.Controllers
         public ActionResult DeleteRequestDTO(int id)
         {
 
-           var lstWorkOrders = _workOrderService.GetAllWorkOrders().Where(a => a.RequestId == id).ToList();
+            var lstWorkOrders = _workOrderService.GetAllWorkOrders().Where(a => a.RequestId == id).ToList();
 
             if (lstWorkOrders.Count > 0)
             {
@@ -153,9 +158,9 @@ namespace Asset.API.Controllers
 
         [HttpPut]
         [Route("GetAllRequestsWithTrackingByUserIdWithPagingAndStatusId/{userId}/{statusId}")]
-        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId,int statusId, PagingParameter pageInfo)
+        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId, PagingParameter pageInfo)
         {
-            var Requests = _requestService.GetAllRequestsByStatusId(userId,statusId).ToList();
+            var Requests = _requestService.GetAllRequestsByStatusId(userId, statusId).ToList();
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, Requests);
         }
         [HttpGet]
@@ -170,7 +175,7 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("GetRequestsByUserIdWithPagingAndStatusIdAndAssetId/{userId}/{assetId}")]
-        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserIdWithPagingAndStatusIdAndRequestId(string userId,int assetId, PagingParameter pageInfo)
+        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserIdWithPagingAndStatusIdAndRequestId(string userId, int assetId, PagingParameter pageInfo)
         {
             var lstRequests = _requestService.GetRequestsByUserIdAssetId(userId, assetId).ToList();
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, lstRequests);
@@ -179,7 +184,7 @@ namespace Asset.API.Controllers
         [Route("GetRequestsByUserIdWithPagingAndStatusIdAndAssetIdCount")]
         public int GetAllRequestsWithTrackingByUserIdWithPagingAndStatusIdAndRequestIdCount(string userId, int assetId)
         {
-            return _requestService.GetRequestsByUserIdAssetId(userId,  assetId).ToList().Count;
+            return _requestService.GetRequestsByUserIdAssetId(userId, assetId).ToList().Count;
         }
 
         [HttpPost]

@@ -5,6 +5,7 @@ using Asset.ViewModels.RequestVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -1059,9 +1060,6 @@ namespace Asset.Core.Repositories
                         listWO.Add(getDataObj);
                     }
 
-
-
-
                     var lstCreatedItems = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     list = listWO.Concat(lstCreatedItems).ToList();
 
@@ -1351,7 +1349,7 @@ namespace Asset.Core.Repositories
 
             if (searchObj.AssetOwnerId != 0)
             {
-               
+
                 //MyList.Any(c => c.Id == MyObject.Id)
 
                 var lstEmpEmails = _context.Employees.Where(e => e.Id == searchObj.AssetOwnerId).ToList();
@@ -1556,7 +1554,7 @@ namespace Asset.Core.Repositories
                 else
                     request = request.OrderBy(d => d.ModeNameAr).ToList();
             }
-            else if (sortObj.RequestDate!=null)
+            else if (sortObj.RequestDate != null)
             {
                 if (sortObj.SortStatus == "descending")
                     request = request.OrderByDescending(d => d.RequestDate).ToList();
@@ -1566,5 +1564,131 @@ namespace Asset.Core.Repositories
             return request;
         }
 
+        public int GetTotalOpenRequestInThisWeek(string userId)
+        {
+
+            //DateTime today = DateTime.Today;
+            //int currentDayOfWeek = (int)today.DayOfWeek;
+            //DateTime sunday = today.AddDays(-currentDayOfWeek);
+            //var dates = Enumerable.Range(0, 7).Select(days => sunday.AddDays(days)).ToList();
+            //var startDate = dates[0];
+            //var endDate = dates.Last();
+            // var countOpenRequest = _context.RequestTracking.Include(a=>a.Request).Where(a => a.DescriptionDate >= startDate && a.DescriptionDate <= endDate && a.RequestStatusId == 1).Count();
+
+            ApplicationUser UserObj = new ApplicationUser();
+            ApplicationRole roleObj = new ApplicationRole();
+            string userRoleName = "";
+            var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+            if (obj.Count > 0)
+            {
+                UserObj = obj[0];
+
+                var lstRoles = _context.ApplicationRole.Where(a => a.Id == UserObj.RoleId).ToList();
+                if (lstRoles.Count > 0)
+                {
+                    roleObj = lstRoles[0];
+                    userRoleName = roleObj.Name;
+                }
+            }
+
+            var roleNames = (from userRole in _context.UserRoles
+                             join role in _context.Roles on userRole.RoleId equals role.Id
+                             where userRole.UserId == userId
+                             select role);
+
+            var list = _context.Request
+                              .Include(t => t.AssetDetail)
+                              .Include(t => t.AssetDetail.Hospital)
+                              .Include(t => t.AssetDetail.Hospital.Governorate)
+                              .Include(t => t.AssetDetail.Hospital.City)
+                              .Include(t => t.AssetDetail.Hospital.Organization)
+                              .Include(t => t.AssetDetail.Hospital.SubOrganization)
+                              .Include(t => t.User)
+                              .Include(t => t.RequestMode)
+                              .Include(t => t.RequestPeriority).ToList();
+
+            if (list.Count > 0)
+            {
+                if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.ToList();
+                }
+
+                if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
+                }
+                if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId && t.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
+                }
+                if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+                {
+                    list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId && t.AssetDetail.Hospital.CityId == UserObj.CityId && t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
+                }
+                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId && t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
+                }
+
+                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+                {
+                    if (userRoleName == "Admin")
+                    {
+                        list = list.ToList();
+                    }
+                    if (userRoleName == "TLHospitalManager")
+                    {
+                        list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    if (userRoleName == "EngDepManager")
+                    {
+                        list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    if (userRoleName == "EngManager")
+                    {
+                        list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    if (userRoleName == "AssetOwner")
+                    {
+                        list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId &&  t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    }
+                    if (userRoleName == "Eng")
+                    {
+
+                        var lstAssigned = (from order in _context.WorkOrders
+                                           join track in _context.WorkOrderTrackings on order.Id equals track.WorkOrderId
+                                           join usr in _context.ApplicationUser on track.AssignedTo equals usr.Id
+                                           join req in _context.Request on order.RequestId equals req.Id
+                                           where usr.HospitalId == UserObj.HospitalId
+                                           && track.AssignedTo == userId
+                                           select order).ToList();
+
+                    }
+
+                    //   list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+            }
+
+
+            List<Request> listCountRequests = new List<Request>();
+
+
+            //var lstRequests = _context.Request.ToList();
+            foreach (var item in list)
+            {
+                var listWO = _context.WorkOrders.Where(a => a.RequestId == item.Id).ToList();
+                if (listWO.Count == 0)
+                {
+                    listCountRequests.Add(item);
+                }
+            }
+
+            return listCountRequests.Count;
+        }
     }
 }

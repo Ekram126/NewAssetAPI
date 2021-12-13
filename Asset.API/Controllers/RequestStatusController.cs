@@ -26,15 +26,27 @@ namespace Asset.API.Controllers
         }
         // GET: api/<RequestStatusController>
         [HttpGet]
-        public IEnumerable<IndexRequestStatusVM> Get()
+        public IEnumerable<IndexRequestStatusVM.GetData> Get()
         {
             return _requestStatusService.GetAllRequestStatus();
         }
 
+        [HttpGet]
+        [Route("GetAll/{userId}")]
+        public IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId)
+        {
+            return _requestStatusService.GetAll(userId);
+        }
+
+
+
+
+
+
 
         [HttpGet]
         [Route("GetById/{id}")]
-        public ActionResult<IndexRequestStatusVM> GetById(int id)
+        public ActionResult<RequestStatus> GetById(int id)
         {
             return _requestStatusService.GetById(id);
         }
@@ -63,7 +75,7 @@ namespace Asset.API.Controllers
 
         [HttpPut]
         [Route("update/{id}")]
-        public IActionResult PutRequestStatus(IndexRequestStatusVM editRequestStatus)
+        public IActionResult PutRequestStatus(RequestStatus editRequestStatus)
         {
            
             var lstNames = _requestStatusService.GetAllRequestStatus().ToList().Where(a => a.Name == editRequestStatus.Name && a.Id == editRequestStatus.Id).ToList();
