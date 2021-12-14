@@ -94,5 +94,9 @@ namespace Asset.Core.Services
             return _unitOfWork.WorkOrder.SortWorkOrders(hosId, userId, sortObj);
         }
 
+        public List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId)
+        {
+            return _unitOfWork.WorkOrder.GetLastRequestAndWorkOrderByAssetId(assetId);
+        }
     }
 }

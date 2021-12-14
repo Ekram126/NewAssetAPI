@@ -1383,5 +1383,27 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
+
+        public List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId)
+        {
+            //throw new NotImplementedException();
+
+            return _context.WorkOrders.Include(a => a.Request)
+                                    .Include(a => a.Request.AssetDetail)
+                                    .Include(a => a.Request.AssetDetail.Hospital)
+                                .Where(a => a.Request.AssetDetailId == assetId)
+                                .OrderByDescending(a => a.CreationDate)
+                                .ToList()
+                                .Select(item => new IndexWorkOrderVM
+                                {
+                                    Id = item.Id,
+                                    WorkOrderNumber = item.WorkOrderNumber,
+                                    Subject = item.Subject,
+                                    RequestSubject = item.Request.Subject,
+                                    RequestNumber = item.Request.RequestCode,
+                                    CreationDate = item.CreationDate,
+                                    HospitalId = item.Request.AssetDetail.HospitalId
+                                }).ToList();
+        }
     }
 }

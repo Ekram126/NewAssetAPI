@@ -241,9 +241,15 @@ namespace Asset.Core.Repositories
                 getDataObj.ModeId = req.RequestMode.Id;
                 getDataObj.ModeName = req.RequestMode.Name;
                 getDataObj.ModeNameAr = req.RequestMode.NameAr;
+
+
                 getDataObj.PeriorityId = req.RequestPeriority.Id;
                 getDataObj.PeriorityName = req.RequestPeriority.Name;
                 getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
+                getDataObj.PeriorityColor= req.RequestPeriority.Color;
+                getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
+
+
                 getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
                 getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
                 getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
@@ -1690,5 +1696,7 @@ namespace Asset.Core.Repositories
 
             return listCountRequests.Count;
         }
+
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Asset.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,7 +31,8 @@ namespace Asset.ViewModels.RequestStatusVM
             public int? CityId { get; set; }
             public int? OrganizationId { get; set; }
             public int? SubOrganizationId { get; set; }
+            public List<RequestStatus> ListStatus{ get; set; }
 
-        }
+    }
     }
 }

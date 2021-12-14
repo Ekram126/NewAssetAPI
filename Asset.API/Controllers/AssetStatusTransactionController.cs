@@ -33,6 +33,12 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetLastTransactionByAssetId/{assetId}")]
+        public List<AssetStatusTransaction> GetLastTransactionByAssetId(int assetId)
+        {
+            return _assetStatusTransactionService.GetLastTransactionByAssetId(assetId);
+        }
 
 
         [HttpGet]
@@ -77,12 +83,12 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddAssetStatusTransaction")]
-        public ActionResult<AssetStatusTransaction> Add(AssetStatusTransaction AssetStatusTransactionVM)
+        public ActionResult<AssetStatusTransaction> Add(CreateAssetStatusTransactionVM AssetStatusTransactionVM)
         {
-  
-                var savedId = _assetStatusTransactionService.Add(AssetStatusTransactionVM);
-                return CreatedAtAction("GetById", new { id = savedId }, AssetStatusTransactionVM);
-            
+
+            var savedId = _assetStatusTransactionService.Add(AssetStatusTransactionVM);
+            return Ok(savedId);
+
         }
 
         [HttpDelete]

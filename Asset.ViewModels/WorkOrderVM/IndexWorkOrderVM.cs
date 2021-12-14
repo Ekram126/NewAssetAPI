@@ -39,6 +39,7 @@ namespace Asset.ViewModels.WorkOrderVM
 
 
         public int RequestId { get; set; }
+        public string RequestNumber { get; set; }
         public string RequestSubject { get; set; }
         public int WorkOrderTrackingId { get; set; }
         public int WorkOrderStatusId { get; set; }

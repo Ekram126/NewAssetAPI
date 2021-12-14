@@ -11,8 +11,9 @@ namespace Asset.Domain.Repositories
     {
         IEnumerable<IndexAssetStatusTransactionVM.GetData> GetAll();
         AssetStatusTransaction GetById(int id);
+        List<AssetStatusTransaction> GetLastTransactionByAssetId(int assetId);
         IEnumerable<IndexAssetStatusTransactionVM.GetData> GetAssetStatusByAssetDetailId(int assetId);
-        int Add(AssetStatusTransaction assetStatusTransactionObj);
+        int Add(CreateAssetStatusTransactionVM assetStatusTransactionObj);
         int Update(AssetStatusTransaction assetStatusTransactionObj);
         int Delete(int id);
     }

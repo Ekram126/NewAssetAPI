@@ -22,7 +22,7 @@ namespace Asset.Core.Repositories
             _context = context;
         }
 
-        public int Add(AssetStatusTransaction model)
+        public int Add(CreateAssetStatusTransactionVM model)
         {
             AssetStatusTransaction AssetStatusTransactionsTransactionObj = new AssetStatusTransaction();
             try
@@ -31,7 +31,8 @@ namespace Asset.Core.Repositories
                 {
                     AssetStatusTransactionsTransactionObj.AssetDetailId = model.AssetDetailId;
                     AssetStatusTransactionsTransactionObj.AssetStatusId = model.AssetStatusId;
-                    AssetStatusTransactionsTransactionObj.StatusDate = model.StatusDate;
+                    if (model.StatusDate != "")
+                        AssetStatusTransactionsTransactionObj.StatusDate = DateTime.Parse(model.StatusDate);
                     _context.AssetStatusTransactions.Add(AssetStatusTransactionsTransactionObj);
                     _context.SaveChanges();
                 }
@@ -92,6 +93,21 @@ namespace Asset.Core.Repositories
             return _context.AssetStatusTransactions.Find(id);
         }
 
+        public List<AssetStatusTransaction> GetLastTransactionByAssetId(int assetId)
+        {
+            var lstLastTransaction = _context.AssetStatusTransactions.ToList()
+                                        .Where(a => a.AssetDetailId == assetId)
+                                        .OrderByDescending(a => a.StatusDate)
+                                         .Select(item => new AssetStatusTransaction
+                                         {
+                                             Id = item.Id,
+                                             AssetDetailId = item.AssetDetailId,
+                                             AssetStatusId = item.AssetStatusId,
+                                             StatusDate = item.StatusDate
+                                         }).ToList();
+      
+            return lstLastTransaction;
+        }
 
         public int Update(AssetStatusTransaction model)
         {

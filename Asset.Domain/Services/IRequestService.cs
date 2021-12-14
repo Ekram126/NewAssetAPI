@@ -1,4 +1,5 @@
-﻿using Asset.ViewModels.RequestVM;
+﻿using Asset.Models;
+using Asset.ViewModels.RequestVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId,int assetId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId,string userId);
-
+       // List<Request> GetLastRequestAndWorkOrderByAssetId(int assetId);
         int GetTotalOpenRequestInThisWeek(string userId);
         IndexRequestsVM GetRequestByWorkOrderId(int workOrderId);
 

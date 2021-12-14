@@ -11,29 +11,6 @@ namespace Asset.ViewModels.RequestVM
 {
     public class IndexRequestVM
     {
-        //public int Id { get; set; }
-        //public string RequestName { get; set; }
-        //public string RequestCode { get; set; }
-        //public string Description { get; set; }
-        //public DateTime RequestDate { get; set; }
-        //public string RequestTime { get; set; }
-        //public bool? IsSolved { get; set; }
-        //public bool? IsAssigned { get; set; }
-        //public int RequestModeId { get; set; }
-        //public string ModeName { get; set; }
-        //public int SubCategoryId { get; set; }
-        //public string SubCategoryName { get; set; }
-        //public int AssetDetailId { get; set; }
-        //public string SerialNumber { get; set; }
-        //public int RequestPeriorityId { get; set; }
-        //public string PeriorityName { get; set; }
-        //public int EmployeeId { get; set; }
-        //public string EmployeeName { get; set; }
-        //public string CreatedById { get; set; }
-        //public string CreatedBy { get; set; }
-
-
-
         public List<GetData> Results { get; set; }
 
 
@@ -67,6 +44,10 @@ namespace Asset.ViewModels.RequestVM
 
             public string PeriorityName { get; set; }
             public string PeriorityNameAr { get; set; }
+            public string PeriorityColor { get; set; }
+            public string PeriorityIcon { get; set; }
+
+
 
             public string ModeName { get; set; }
             public string ModeNameAr { get; set; }

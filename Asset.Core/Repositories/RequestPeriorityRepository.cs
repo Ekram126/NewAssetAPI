@@ -28,6 +28,10 @@ namespace Asset.Core.Repositories
                     RequestPeriority requestPeriority = new RequestPeriority();
                     requestPeriority.Name = createRequestPeriority.Name;
                     requestPeriority.NameAr = createRequestPeriority.NameAr;
+
+                    requestPeriority.Color = createRequestPeriority.Color;
+                    requestPeriority.Icon = createRequestPeriority.Icon;
+
                     _context.RequestPeriority.Add(requestPeriority);
                     _context.SaveChanges();
                 }
@@ -61,7 +65,11 @@ namespace Asset.Core.Repositories
             {
                 Id = per.Id,
                Name = per.Name,
-                NameAr = per.NameAr
+                NameAr = per.NameAr,
+                Color= per.Color,
+                Icon= per.Icon
+                
+                
             }).ToList();
         }
 
@@ -71,7 +79,9 @@ namespace Asset.Core.Repositories
             {
                 Id = per.Id,
                 Name = per.Name,
-               NameAr = per.NameAr
+               NameAr = per.NameAr,
+                Color = per.Color,
+                Icon = per.Icon
             }).FirstOrDefault();
         }
 
@@ -82,7 +92,9 @@ namespace Asset.Core.Repositories
             {
                 Id = per.Id,
                Name = per.Name,
-                NameAr = per.NameAr
+                NameAr = per.NameAr,
+                Color = per.Color,
+                Icon = per.Icon
             }).ToList();
             
         }
@@ -96,6 +108,8 @@ namespace Asset.Core.Repositories
                 requestPeriority.Id = editRequestPeriority.Id;
                 requestPeriority.Name = editRequestPeriority.Name;
                 requestPeriority.NameAr = editRequestPeriority.NameAr;
+                requestPeriority.Color = editRequestPeriority.Color;
+                requestPeriority.Icon = editRequestPeriority.Icon;
                 _context.Entry(requestPeriority).State = EntityState.Modified;
                 _context.SaveChanges();
             }

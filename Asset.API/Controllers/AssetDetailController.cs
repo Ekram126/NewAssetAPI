@@ -73,6 +73,20 @@ namespace Asset.API.Controllers
             var HospitalAssets = _AssetDetailService.GetAll().ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, HospitalAssets);
         }
+
+
+
+
+        [HttpGet]
+        [Route("ListAssetDetailCarouselByUserId/{userId}")]
+        public async Task< IEnumerable<IndexAssetDetailVM.GetData>> ListAssetDetailCarouselByUserId(string userId)
+        {
+            return await _AssetDetailService.GetAssetDetailsByUserId(userId);
+        }
+
+
+
+
         [HttpGet]
         [Route("getcount/{userId}")]
         public int count(string userId)

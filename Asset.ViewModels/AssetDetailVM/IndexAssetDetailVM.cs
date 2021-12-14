@@ -67,6 +67,9 @@ namespace Asset.ViewModels.AssetDetailVM
             public string QrFilePath { get; set; }
 
             public List<int> ListAssetIds { get; set; }
+
+            public string MasterImg { get; set; }
+           
         }
     }
 }

@@ -12,6 +12,6 @@ namespace Asset.ViewModels.AssetStatusTransactionVM
 
         public int AssetStatusId { get; set; }
 
-        public DateTime? StatusDate { get; set; }
+        public string StatusDate { get; set; }
     }
 }

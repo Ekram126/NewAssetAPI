@@ -15,6 +15,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexWorkOrderVM> GetworkOrderByUserId(int requestId, string userId);
         IEnumerable<IndexWorkOrderVM> GetworkOrder(string userId);
 
+        List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId);
         IEnumerable<IndexWorkOrderVM> SearchWorkOrders(SearchWorkOrderVM searchObj);
 
         IndexWorkOrderVM GetById(int id);

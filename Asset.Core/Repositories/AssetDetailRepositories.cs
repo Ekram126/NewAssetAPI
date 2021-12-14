@@ -190,6 +190,8 @@ namespace Asset.Core.Repositories
                 {
                     Id = item.Id,
                     Code = item.Code,
+                    MasterImg = item.MasterAsset.AssetImg != "" ? item.MasterAsset.AssetImg : "",
+                    Model = item.MasterAsset.ModelNumber,
                     Price = item.Price,
                     Serial = item.SerialNumber,
                     SerialNumber = item.SerialNumber,
@@ -260,7 +262,7 @@ namespace Asset.Core.Repositories
                 {
                     empObj = lstEmployees[0];
                 }
-                //   var lstAssetIds = _context.AssetOwners.Where(a => a.EmployeeId == empObj.Id).Select(a => a.AssetDetailId).ToList();
+          
                 if (userRoleNames.Contains("AssetOwner"))
                 {
 
@@ -276,6 +278,7 @@ namespace Asset.Core.Repositories
                             Code = detail.AssetDetail.Code,
                             UserId = userObj.Id,
                             Price = detail.AssetDetail.Price,
+                            MasterImg = detail.AssetDetail.MasterAsset.AssetImg,
                             Serial = detail.AssetDetail.SerialNumber,
                             BrandName = detail.AssetDetail.MasterAsset.brand.Name,
                             BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
@@ -321,6 +324,7 @@ namespace Asset.Core.Repositories
                                                Code = detail.Code,
                                                UserId = userObj.Id,
                                                Price = detail.Price,
+                                               MasterImg = detail.MasterAsset.AssetImg,
                                                Serial = detail.SerialNumber,
                                                BrandName = detail.MasterAsset.brand.Name,
                                                BrandNameAr = detail.MasterAsset.brand.NameAr,
@@ -385,6 +389,7 @@ namespace Asset.Core.Repositories
                                     UserId = userObj.Id,
                                     Price = detail.AssetDetail.Price,
                                     Serial = detail.AssetDetail.SerialNumber,
+                                    MasterImg = detail.AssetDetail.MasterAsset.AssetImg,
                                     BrandName = detail.AssetDetail.MasterAsset.brand.Name,
                                     BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
                                     Model = detail.AssetDetail.MasterAsset.ModelNumber,

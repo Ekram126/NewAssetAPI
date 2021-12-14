@@ -23,7 +23,7 @@ namespace Asset.API.Controllers
 
         private IWorkOrderTrackingService _workOrderTackingService;
 
-        public WorkOrderController(IWorkOrderService workOrderService, IWorkOrderTrackingService workOrderTackingService,IPagingService pagingService)
+        public WorkOrderController(IWorkOrderService workOrderService, IWorkOrderTrackingService workOrderTackingService, IPagingService pagingService)
         {
             _workOrderService = workOrderService;
             _workOrderTackingService = workOrderTackingService;
@@ -52,6 +52,14 @@ namespace Asset.API.Controllers
             return _workOrderService.GenerateWorOrderNumber();
         }
 
+        [HttpGet]
+        [Route("GetLastRequestAndWorkOrderByAssetId/{assetId}")]
+        public IEnumerable<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId)
+        {
+            return _workOrderService.GetLastRequestAndWorkOrderByAssetId(assetId);
+        }
+
+
 
         [HttpGet]
         [Route("GetworkOrder/{userId}")]
@@ -71,7 +79,7 @@ namespace Asset.API.Controllers
         [Route("GetAllWorkOrdersByHospitalId/{hospitalId}/{userId}")]
         public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId, PagingParameter pageInfo)
         {
-            var  lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).ToList();
+            var lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).ToList();
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders);
         }
 
@@ -85,7 +93,7 @@ namespace Asset.API.Controllers
 
         [HttpGet]
         [Route("getcount/{hospitalId}/{userId}")]
-        public int count(int hospitalId,string userId)
+        public int count(int hospitalId, string userId)
         {
             var count = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).ToList().Count;
             return count;
@@ -93,9 +101,9 @@ namespace Asset.API.Controllers
 
         [HttpPut]
         [Route("GetAllWorkOrdersByHospitalStatusId/{hospitalId}/{userId}/{statusId}")]
-        public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(PagingParameter pageInfo,int? hospitalId, string userId, int statusId)
+        public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(PagingParameter pageInfo, int? hospitalId, string userId, int statusId)
         {
-            var lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId,statusId).ToList();
+            var lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId, statusId).ToList();
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders);
         }
 
@@ -191,12 +199,12 @@ namespace Asset.API.Controllers
         }
         [HttpPost]
         [Route("SortWorkOrders/{hosId}/{userId}/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId,string userId,int pagenumber, int pagesize, SortWorkOrderVM sortObj)
+        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, int pagenumber, int pagesize, SortWorkOrderVM sortObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list = _workOrderService.SortWorkOrders(hosId,userId,sortObj).ToList();
+            var list = _workOrderService.SortWorkOrders(hosId, userId, sortObj).ToList();
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, list);
         }
     }

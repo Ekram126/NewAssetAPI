@@ -12,5 +12,7 @@ namespace Asset.ViewModels.RequestPeriorityVM
         public string Name { get; set; }
 
         public string NameAr { get; set; }
+        public string Color { get; set; }
+        public string Icon { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace Asset.Core.Services
         }
 
 
-        public int Add(AssetStatusTransaction AssetStatusTransactionVM)
+        public int Add(CreateAssetStatusTransactionVM AssetStatusTransactionVM)
         {
           return  _unitOfWork.AssetStatusTransactionRepository.Add(AssetStatusTransactionVM);
             // _unitOfWork.CommitAsync();
@@ -49,6 +49,10 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetStatusTransactionRepository.GetById(id);
         }
 
+        public List<AssetStatusTransaction> GetLastTransactionByAssetId(int assetId)
+        {
+            return _unitOfWork.AssetStatusTransactionRepository.GetLastTransactionByAssetId(assetId);
+        }
 
         public int Update(AssetStatusTransaction AssetStatusTransactionVM)
         {
