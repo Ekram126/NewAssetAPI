@@ -78,16 +78,17 @@ namespace Asset.Core.Repositories
             }).Where(e => e.Id == id).FirstOrDefault();
         }
 
-        public void Update(int id, EditRequestTypeVM editRequestTypeVM)
+        public void Update(EditRequestTypeVM editRequestTypeVM)
         {
             try
             {
-                RequestType requestType = new RequestType();
-                requestType.Id = editRequestTypeVM.Id;
-                requestType.Name = editRequestTypeVM.Name;
-                requestType.NameAr = editRequestTypeVM.NameAr;
-                requestType.Code = editRequestTypeVM.Code;
-                _context.Entry(requestType).State = EntityState.Modified;
+                //RequestType requestType = new RequestType();
+                var requestTypeObj = _context.RequestTypes.Find(editRequestTypeVM.Id);
+                requestTypeObj.Id = editRequestTypeVM.Id;
+                requestTypeObj.Name = editRequestTypeVM.Name;
+                requestTypeObj.NameAr = editRequestTypeVM.NameAr;
+                requestTypeObj.Code = editRequestTypeVM.Code;
+                _context.Entry(requestTypeObj).State = EntityState.Modified;
                 _context.SaveChanges();
             }
             catch (Exception ex)

@@ -29,6 +29,11 @@ namespace Asset.Core.Services
             _unitOfWork.WorkOrderTracking.Delete(id);
         }
 
+        public IEnumerable<WorkOrderTracking> GetAll()
+        {
+            return _unitOfWork.WorkOrderTracking.GetAll();
+        }
+
         public WorkOrderDetails GetAllWorkOrderByWorkOrderId(int WorkOrderId)
         {
             return _unitOfWork.WorkOrderTracking.GetAllWorkOrderByWorkOrderId(WorkOrderId);

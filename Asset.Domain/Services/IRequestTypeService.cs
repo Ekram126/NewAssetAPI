@@ -12,7 +12,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestTypeVM> GetAllRequestTypes();
         IndexRequestTypeVM GetRequestTypeById(int id);
         void AddRequestType(CreateRequestTypeVM createRequestTypeVM);
-        void UpdateRequestType(int id, EditRequestTypeVM editRequestTypeVM);
+        void UpdateRequestType(EditRequestTypeVM editRequestTypeVM);
         void DeleteRequestType(int id);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
+using Asset.Models;
 using Asset.ViewModels.RequestTrackingVM;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,11 @@ namespace Asset.Core.Services
         public void DeleteRequestTracking(int id)
         {
             _unitOfWork.RequestTracking.Delete(id);
+        }
+
+        public IEnumerable<RequestTracking> GetAll()
+        {
+            return _unitOfWork.RequestTracking.GetAll();
         }
 
         public IEnumerable<IndexRequestTracking> GetAllRequestTracking(string UserId, int assetDetailId)

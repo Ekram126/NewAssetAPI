@@ -196,6 +196,8 @@ namespace Asset.Core.Repositories
                     Serial = item.SerialNumber,
                     SerialNumber = item.SerialNumber,
                     PurchaseDate = item.PurchaseDate,
+                    SupplierId = item.SupplierId,
+                    DepartmentId = item.DepartmentId,
                     HospitalName = item.HospitalId > 0 ? item.Hospital.Name : "",
                     HospitalNameAr = item.HospitalId > 0 ? item.Hospital.NameAr : "",
                     AssetName = item.MasterAssetId > 0 ? item.MasterAsset.Name : "",

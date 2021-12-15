@@ -16,12 +16,14 @@ namespace Asset.API.Controllers
     [ApiController]
     public class DepartmentController : ControllerBase
     {
+        private IAssetDetailService _assetDetailService;
         private IDepartmentService _DepartmentService;
         private IPagingService _pagingService;
 
 
-        public DepartmentController(IDepartmentService DepartmentService, IPagingService pagingService)
+        public DepartmentController(IDepartmentService DepartmentService, IAssetDetailService assetDetailService, IPagingService pagingService)
         {
+            _assetDetailService = assetDetailService;
             _DepartmentService = DepartmentService;
             _pagingService = pagingService;
         }
@@ -118,8 +120,15 @@ namespace Asset.API.Controllers
         {
             try
             {
-
-                int deletedRow = _DepartmentService.Delete(id);
+                var lstHospitalAssets = _assetDetailService.GetAll().Where(a => a.DepartmentId == id).ToList();
+                if (lstHospitalAssets.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "hostassets", Message = "There are assets in this departments ", MessageAr = "هناك أصول في هذا القسم" });
+                }
+                else
+                {
+                    int deletedRow = _DepartmentService.Delete(id);
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {

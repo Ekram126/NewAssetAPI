@@ -22,8 +22,8 @@ namespace Asset.Core.Services
 
         public int Add(CreateSubCategoryVM subCategoryObj)
         {
-            _unitOfWork.SubCategoryRepository.Add(subCategoryObj);
-            return _unitOfWork.CommitAsync();
+            return _unitOfWork.SubCategoryRepository.Add(subCategoryObj);
+            //return _unitOfWork.CommitAsync();
         }
 
         public int Delete(int id)

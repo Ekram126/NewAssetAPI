@@ -43,17 +43,17 @@ namespace Asset.API.Controllers
             var lstcodes = _workOrderTypeService.GetAllWorkOrderTypes().ToList().Where(a => a.Code == createWorkOrderTypeVM.Code).ToList();
             if (lstcodes.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = " name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "code already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             var lstNames = _workOrderTypeService.GetAllWorkOrderTypes().ToList().Where(a => a.Name == createWorkOrderTypeVM.Name).ToList();
             if (lstNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = " name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             var lstArNames = _workOrderTypeService.GetAllWorkOrderTypes().ToList().Where(a => a.NameAr == createWorkOrderTypeVM.NameAr).ToList();
             if (lstArNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = " arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {
@@ -63,20 +63,20 @@ namespace Asset.API.Controllers
         }
 
         // PUT api/<WorkOrderTypeController>/5
-        [HttpPut("{id}")]
+        [HttpPut]
         public IActionResult Put(int id, EditWorkOrderTypeVM editWorkOrderTypeVM)
         {
-            var lstcodes = _workOrderTypeService.GetAllWorkOrderTypes().ToList().Where(a => a.Code == editWorkOrderTypeVM.Name && a.Id == editWorkOrderTypeVM.Id).ToList();
+            var lstcodes = _workOrderTypeService.GetAllWorkOrderTypes().ToList().Where(a => a.Code == editWorkOrderTypeVM.Code && a.Id != editWorkOrderTypeVM.Id).ToList();
             if (lstcodes.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = " name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstNames = _workOrderTypeService.GetAllWorkOrderTypes().ToList().Where(a => a.Name == editWorkOrderTypeVM.Name && a.Id == editWorkOrderTypeVM.Id).ToList();
+            var lstNames = _workOrderTypeService.GetAllWorkOrderTypes().ToList().Where(a => a.Name == editWorkOrderTypeVM.Name && a.Id != editWorkOrderTypeVM.Id).ToList();
             if (lstNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = " name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstArNames = _workOrderTypeService.GetAllWorkOrderTypes().ToList().Where(a => a.NameAr == editWorkOrderTypeVM.NameAr && a.Id == editWorkOrderTypeVM.Id).ToList();
+            var lstArNames = _workOrderTypeService.GetAllWorkOrderTypes().ToList().Where(a => a.NameAr == editWorkOrderTypeVM.NameAr && a.Id != editWorkOrderTypeVM.Id).ToList();
             if (lstArNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = " arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });

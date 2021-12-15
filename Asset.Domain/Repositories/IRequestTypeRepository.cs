@@ -12,7 +12,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexRequestTypeVM> GetAll();
         IndexRequestTypeVM GetById(int id);
         void Add(CreateRequestTypeVM createRequestTypeVM);
-        void Update(int id, EditRequestTypeVM editRequestTypeVM);
+        void Update(EditRequestTypeVM editRequestTypeVM);
         void Delete(int id);
     }
 }

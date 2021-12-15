@@ -26,7 +26,7 @@ namespace Asset.Core.Repositories
             {
                 if (createRequestVM != null)
                 {
-
+                    reqStatusObj.Icon = createRequestVM.Icon;
                     reqStatusObj.Color = createRequestVM.Color;
                     reqStatusObj.Name = createRequestVM.Name;
                     reqStatusObj.NameAr = createRequestVM.NameAr;
@@ -241,6 +241,8 @@ namespace Asset.Core.Repositories
             }).ToList();
         }
 
+  
+
         public RequestStatus GetById(int id)
         {
             return _context.RequestStatus.Find(id);
@@ -252,6 +254,7 @@ namespace Asset.Core.Repositories
             {
                 var reqStatusObj = _context.RequestStatus.Find(editRequestVM.Id);
                 reqStatusObj.Color = editRequestVM.Color;
+                reqStatusObj.Icon = editRequestVM.Icon;
                 reqStatusObj.Name = editRequestVM.Name;
                 reqStatusObj.NameAr = editRequestVM.NameAr;
                 _context.Entry(reqStatusObj).State = EntityState.Modified;

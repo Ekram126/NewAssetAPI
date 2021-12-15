@@ -40,15 +40,20 @@ namespace Asset.API.Controllers
         [HttpPost]
         public IActionResult Post(CreateRequestTypeVM createRequestTypeVM)
         {
+            var lstcodes = _requestTypeService.GetAllRequestTypes().ToList().Where(a => a.Code == createRequestTypeVM.Code).ToList();
+            if (lstcodes.Count > 0)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Status code already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+            }
             var lstNames = _requestTypeService.GetAllRequestTypes().ToList().Where(a => a.Name == createRequestTypeVM.Name).ToList();
             if (lstNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "ECRI name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Status name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             var lstArNames = _requestTypeService.GetAllRequestTypes().ToList().Where(a => a.NameAr == createRequestTypeVM.NameAr).ToList();
             if (lstArNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "ECRI arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Status arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {
@@ -58,33 +63,35 @@ namespace Asset.API.Controllers
         }
 
         // PUT api/<RequestTypeController>/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, EditRequestTypeVM editRequestTypeVM)
+        [HttpPut]
+        [Route("UpdateRequestType")]
+        public IActionResult Put(EditRequestTypeVM editRequestTypeVM)
         {
-            var lstcodes = _requestTypeService.GetAllRequestTypes().ToList().Where(a => a.Code != editRequestTypeVM.Code).ToList();
+            var lstcodes = _requestTypeService.GetAllRequestTypes().ToList().Where(a => a.Code == editRequestTypeVM.Code && a.Id  != editRequestTypeVM.Id).ToList();
             if (lstcodes.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = " name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Status code already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstNames = _requestTypeService.GetAllRequestTypes().ToList().Where(a => a.Name != editRequestTypeVM.Name).ToList();
+            var lstNames = _requestTypeService.GetAllRequestTypes().ToList().Where(a => a.Name == editRequestTypeVM.Name && a.Id != editRequestTypeVM.Id).ToList();
             if (lstNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = " name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Status name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstArNames = _requestTypeService.GetAllRequestTypes().ToList().Where(a => a.NameAr != editRequestTypeVM.NameAr).ToList();
+            var lstArNames = _requestTypeService.GetAllRequestTypes().ToList().Where(a => a.NameAr == editRequestTypeVM.NameAr && a.Id != editRequestTypeVM.Id).ToList();
             if (lstArNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = " arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "Status arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {
-                _requestTypeService.UpdateRequestType(id, editRequestTypeVM);
+                _requestTypeService.UpdateRequestType(editRequestTypeVM);
                 return Ok();
             }
         }
 
         // DELETE api/<RequestTypeController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("DeleteRequestType/{id}")]
         public void Delete(int id)
         {
             _requestTypeService.DeleteRequestType(id);

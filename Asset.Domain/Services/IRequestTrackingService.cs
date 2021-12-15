@@ -1,4 +1,5 @@
-﻿using Asset.ViewModels.RequestTrackingVM;
+﻿using Asset.Models;
+using Asset.ViewModels.RequestTrackingVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Asset.Domain.Services
 {
     public interface IRequestTrackingService
     {
+        IEnumerable<RequestTracking> GetAll();
         IEnumerable<IndexRequestTracking> GetAllRequestTracking(string UserId, int assetDetailId);
         IndexRequestTracking GetRequestTrackingById(int id);
         RequestDetails GetAllTrackingsByRequestId(int RequestId);

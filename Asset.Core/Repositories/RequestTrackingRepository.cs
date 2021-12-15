@@ -322,5 +322,11 @@ namespace Asset.Core.Repositories
             var counting = _context.RequestTracking.Where(a => a.RequestId == requestId).OrderByDescending(a => a.DescriptionDate).Count();
             return counting;
         }
+
+        public IEnumerable<RequestTracking> GetAll()
+        {
+            return _context.RequestTracking.ToList();
+           
+        }
     }
 }

@@ -92,6 +92,11 @@ namespace Asset.Core.Repositories
             }
         }
 
+        public IEnumerable<WorkOrderTracking> GetAll()
+        {
+            return _context.WorkOrderTrackings.ToList();
+        }
+
         public WorkOrderDetails GetAllWorkOrderByWorkOrderId(int WorkOrderId)
         {
             var lstTracking = _context.WorkOrderTrackings.Where(r => r.WorkOrderId == WorkOrderId)

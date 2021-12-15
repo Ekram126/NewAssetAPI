@@ -66,9 +66,10 @@ namespace Asset.Core.Repositories
             return _context.SubCategories.ToList().Select(item => new IndexSubCategoryVM.GetData
             {
                 Id = item.Id,
-                Code= item.Code,
+                Code = item.Code,
                 Name = item.Name,
-                NameAr = item.NameAr
+                NameAr = item.NameAr,
+                CategoryId = (int)item.CategoryId
             });
         }
 
@@ -82,9 +83,10 @@ namespace Asset.Core.Repositories
             return _context.SubCategories.Where(a => a.Id == id).Select(item => new EditSubCategoryVM
             {
                 Id = item.Id,
+                Code = item.Code,
                 Name = item.Name,
                 NameAr = item.NameAr,
-                CategoryId=(int)item.CategoryId
+                CategoryId = (int)item.CategoryId
             }).First();
         }
 
@@ -95,7 +97,8 @@ namespace Asset.Core.Repositories
                 Id = item.Id,
                 Code = item.Code,
                 Name = item.Name,
-                NameAr = item.NameAr
+                NameAr = item.NameAr,
+                CategoryId = (int)item.CategoryId
             });
         }
 

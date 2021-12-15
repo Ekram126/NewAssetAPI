@@ -19,10 +19,12 @@ namespace Asset.API.Controllers
     public class RequestStatusController : ControllerBase
     {
         private IRequestStatusService _requestStatusService;
+        private IRequestTrackingService _requestTrackingService;
 
-        public RequestStatusController(IRequestStatusService requestStatusService)
+        public RequestStatusController(IRequestStatusService requestStatusService, IRequestTrackingService requestTrackingService)
         {
             _requestStatusService = requestStatusService;
+            _requestTrackingService = requestTrackingService;
         }
         // GET: api/<RequestStatusController>
         [HttpGet]
@@ -39,11 +41,6 @@ namespace Asset.API.Controllers
         }
 
 
-
-
-
-
-
         [HttpGet]
         [Route("GetById/{id}")]
         public ActionResult<RequestStatus> GetById(int id)
@@ -58,12 +55,12 @@ namespace Asset.API.Controllers
             var lstNames = _requestStatusService.GetAllRequestStatus().ToList().Where(a => a.Name == createRequestStatusVM.Name).ToList();
             if (lstNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "ECRI name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Request status name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             var lstArNames = _requestStatusService.GetAllRequestStatus().ToList().Where(a => a.NameAr == createRequestStatusVM.NameAr).ToList();
             if (lstArNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "ECRI arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Request status arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {
@@ -74,16 +71,16 @@ namespace Asset.API.Controllers
         }
 
         [HttpPut]
-        [Route("update/{id}")]
+        [Route("UpdateRequestStatus")]
         public IActionResult PutRequestStatus(RequestStatus editRequestStatus)
         {
            
-            var lstNames = _requestStatusService.GetAllRequestStatus().ToList().Where(a => a.Name == editRequestStatus.Name && a.Id == editRequestStatus.Id).ToList();
+            var lstNames = _requestStatusService.GetAllRequestStatus().ToList().Where(a => a.Name == editRequestStatus.Name && a.Id != editRequestStatus.Id).ToList();
             if (lstNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = " name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstArNames = _requestStatusService.GetAllRequestStatus().ToList().Where(a => a.NameAr == editRequestStatus.NameAr && a.Id == editRequestStatus.Id).ToList();
+            var lstArNames = _requestStatusService.GetAllRequestStatus().ToList().Where(a => a.NameAr == editRequestStatus.NameAr && a.Id != editRequestStatus.Id).ToList();
             if (lstArNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = " arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
@@ -103,8 +100,15 @@ namespace Asset.API.Controllers
         {
             try
             {
-
-                int deletedRow = _requestStatusService.Delete(id);
+                var lstRequestTracking = _requestTrackingService.GetAll().Where(a => a.RequestStatusId == id).ToList();
+                if (lstRequestTracking.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "reqStatus", Message = " arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                }
+                else
+                {
+                   int deletedRow = _requestStatusService.Delete(id);
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {

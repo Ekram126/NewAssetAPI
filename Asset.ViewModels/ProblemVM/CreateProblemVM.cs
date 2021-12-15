@@ -11,6 +11,6 @@ namespace Asset.ViewModels.ProblemVM
         public string Code { get; set; }
         public string Name { get; set; }
         public string NameAr { get; set; }
-        public int MasterAssetId { get; set; }
+        public int? MasterAssetId { get; set; }
     }
 }

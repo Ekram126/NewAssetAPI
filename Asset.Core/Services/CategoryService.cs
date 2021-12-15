@@ -21,8 +21,8 @@ namespace Asset.Core.Services
 
         public int Add(CreateCategoryVM categoryObj)
         {
-            _unitOfWork.CategoryRepository.Add(categoryObj);
-            return _unitOfWork.CommitAsync();
+            return _unitOfWork.CategoryRepository.Add(categoryObj);
+          //  return _unitOfWork.CommitAsync();
         }
 
         public int Delete(int id)

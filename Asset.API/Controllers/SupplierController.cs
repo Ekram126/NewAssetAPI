@@ -17,13 +17,16 @@ namespace Asset.API.Controllers
     [ApiController]
     public class SupplierController : ControllerBase
     {
-
+        private IAssetDetailService _assetDetailService;
+        private IMasterContractService _masterContractService;
         private ISupplierService _SupplierService;
         private IPagingService _pagingService;
 
 
-        public SupplierController(ISupplierService SupplierService, IPagingService pagingService)
+        public SupplierController(ISupplierService SupplierService, IAssetDetailService assetDetailService, IMasterContractService masterContractService, IPagingService pagingService)
         {
+            _masterContractService = masterContractService;
+            _assetDetailService = assetDetailService;
             _SupplierService = SupplierService;
             _pagingService = pagingService;
 
@@ -143,8 +146,21 @@ namespace Asset.API.Controllers
         {
             try
             {
-
-                int deletedRow = _SupplierService.Delete(id);
+               var supplierObj = _SupplierService.GetById(id);
+                var lstHospitalAssets = _assetDetailService.GetAll().Where(a => a.SupplierId == supplierObj.Id).ToList();
+                if (lstHospitalAssets.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "hostassets", Message = "Hospital Assets has this supplier", MessageAr = "أصول المستشفى بها منتجات من هذا المورد" });
+                }
+                var lstMasterContracts= _masterContractService.GetAll().Where(a => a.SupplierId == supplierObj.Id).ToList();
+                if (lstMasterContracts.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "contract", Message = "Contract has this supplier", MessageAr = "العقد به هذا المورد" });
+                }
+                else
+                {
+                   int deletedRow = _SupplierService.Delete(id);
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {

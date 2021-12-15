@@ -64,7 +64,7 @@ namespace Asset.Core.Repositories
                 Name = prob.Name,
                 NameAr = prob.NameAr,
                 Code = prob.Code,
-                MasterAssetId= prob.MasterAssetId,
+                MasterAssetId= (int)prob.MasterAssetId,
                 MasterAssetName= prob.MasterAsset.Name
             }).ToList();
         }
@@ -77,7 +77,7 @@ namespace Asset.Core.Repositories
                 Name = prob.Name,
                 NameAr = prob.NameAr,
                 Code = prob.Code,
-                MasterAssetId = prob.MasterAssetId,
+                MasterAssetId = (int)prob.MasterAssetId,
                 MasterAssetName = prob.MasterAsset.Name
             }).Where(e=>e.Id == id).FirstOrDefault();
         }

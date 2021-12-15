@@ -53,7 +53,7 @@ namespace Asset.Core.Services
         public int Update(EditECRIVM ECRIObj)
         {
             _unitOfWork.ECRIRepository.Update(ECRIObj);
-            _unitOfWork.CommitAsync();
+            //_unitOfWork.CommitAsync();
             return ECRIObj.Id;
         }
     }

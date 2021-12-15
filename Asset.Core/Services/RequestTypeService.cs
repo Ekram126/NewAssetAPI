@@ -37,9 +37,9 @@ namespace Asset.Core.Services
             return _unitOfWork.RequestType.GetById(id);
         }
 
-        public void UpdateRequestType(int id, EditRequestTypeVM editRequestTypeVM)
+        public void UpdateRequestType(EditRequestTypeVM editRequestTypeVM)
         {
-            _unitOfWork.RequestType.Update(id, editRequestTypeVM);
+            _unitOfWork.RequestType.Update(editRequestTypeVM);
         }
     }
 }

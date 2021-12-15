@@ -18,6 +18,7 @@ namespace Asset.ViewModels.SubCategoryVM
             public string Code { get; set; }
             public string Name { get; set; }
             public string NameAr { get; set; }
+            public int CategoryId { get; set; }
         }
     }
 }

@@ -65,6 +65,8 @@ namespace Asset.Core.Repositories
                 Name = item.Name,
                 NameAr = item.NameAr,
                 Code = item.Code
+                
+             
             }).ToList();
         }
 

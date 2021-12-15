@@ -104,6 +104,7 @@ namespace Asset.Core.Repositories
             try
             {
                 var ECRIObj = _context.ECRIS.Find(model.Id);
+                ECRIObj.Id = model.Id;
                 ECRIObj.Code = model.Code;
                 ECRIObj.Name = model.Name;
                 ECRIObj.NameAr = model.NameAr;
