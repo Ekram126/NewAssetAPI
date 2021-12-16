@@ -1491,48 +1491,7 @@ namespace Asset.Core.Repositories
                 {
                     empObj = lstEmployees[0];
                 }
-                //request = _context.Request
-                //                         .Include(r => r.RequestPeriority)
-                //                         .Include(r => r.AssetDetail)
-                //                         .Include(r => r.RequestType)
-                //                         .Include(r => r.SubProblem)
-                //                         .Include(r => r.RequestMode)
-                //                         .Include(r => r.User)
-                //                         .Select(req => new IndexRequestsVM
-                //                         {
-                //                             Id = req.Id,
-                //                             Code = req.RequestCode,
-                //                             Subject = req.Subject,
-                //                             RequestCode = req.RequestCode,
-                //                             Description = req.Description,
-                //                             RequestDate = req.RequestDate,
-                //                             RequestModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0,
-                //                             ModeName = req.RequestMode.Name,
-                //                             SubProblemId = req.SubProblemId,
-                //                             SubProblemName = req.SubProblem.Name,
-                //                             RequestTypeId = req.RequestTypeId,
-                //                             RequestTypeName = req.RequestType.Name,
-                //                             RequestPeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0,
-                //                             PeriorityName = req.RequestPeriority.Name,
-                //                             CreatedById = req.CreatedById,
-                //                             CreatedBy = req.User.UserName,
-                //                             AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0,
-                //                             SerialNumber = req.AssetDetail.SerialNumber,
-                //                             AssetName = _context.MasterAssets.Where(t => t.Id == req.AssetDetail.MasterAssetId).FirstOrDefault().Name,
-                //                             AssetNameAr = _context.MasterAssets.Where(t => t.Id == req.AssetDetail.MasterAssetId).FirstOrDefault().NameAr,
-                //                             UserId = req.User.Id,
-                //                             HospitalId = (int)req.AssetDetail.HospitalId,
-                //                             GovernorateId = (int)req.AssetDetail.Hospital.GovernorateId,
-                //                             CityId = (int)req.AssetDetail.Hospital.CityId,
-                //                             OrganizationId = (int)req.AssetDetail.Hospital.OrganizationId,
-                //                             SubOrganizationId = (int)req.AssetDetail.Hospital.SubOrganizationId
-
-                //                         }).OrderByDescending(p => p.RequestDate).ToList();
-
-
-
-
-
+    
                 var lstRequests = _context.Request.Include(r => r.RequestPeriority)
                                          .Include(r => r.AssetDetail).Include(r => r.AssetDetail.Hospital).Include(r => r.AssetDetail.Hospital.Governorate)
                                          .Include(r => r.AssetDetail.Hospital.City).Include(r => r.AssetDetail.Hospital.Organization).Include(r => r.AssetDetail.Hospital.SubOrganization)
