@@ -9,6 +9,7 @@ namespace Asset.ViewModels.RequestVM
     {
         public int Id { get; set; }
         public string Subject { get; set; }
+        public string Code { get; set; }
         public string RequestCode { get; set; }
         public string Description { get; set; }
         public DateTime RequestDate { get; set; }
@@ -35,6 +36,9 @@ namespace Asset.ViewModels.RequestVM
         public string RequestTypeNameAr { get; set; }
         public int RequestTrackingId { get; set; }
         public int RequestStatusId { get; set; }
+
+        public int StatusId { get; set; }
+        public string StatusColor { get; set; }
         public string StatusName { get; set; }
         public string StatusNameAr { get; set; }
         public string UserId { get; set; }

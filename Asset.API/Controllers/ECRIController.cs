@@ -59,6 +59,20 @@ namespace Asset.API.Controllers
 
 
 
+        [HttpPost]
+        [Route("SortECRI/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexECRIVM.GetData> SortMasterAssets(int pagenumber, int pagesize, SortECRIVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _ECRIService.sortECRI(sortObj).ToList();
+            return _pagingService.GetAll<IndexECRIVM.GetData>(pageInfo, list);
+        }
+
+
+
+
         [HttpPut]
         [Route("UpdateECRI")]
         public IActionResult Update(EditECRIVM ECRIVM)

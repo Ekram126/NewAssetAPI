@@ -31,6 +31,6 @@ namespace Asset.Domain.Repositories
 
         GeneratedRequestNumberVM GenerateRequestNumber();
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
-        IEnumerable<IndexRequestsVM> SortRequests(SortRequestVM sortObj);
+       Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj);
     }
 }

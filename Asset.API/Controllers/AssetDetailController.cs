@@ -25,6 +25,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Data.Entity;
+
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -392,13 +395,13 @@ namespace Asset.API.Controllers
         }
         [HttpPost]
         [Route("SortAssets/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexAssetDetailVM.GetData> SortAssets(int pagenumber, int pagesize, Sort sortObj)
+        public async Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(int pagenumber, int pagesize, Sort sortObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list = _AssetDetailService.SortAssets(sortObj).ToList();
-            return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
+            var list = await _AssetDetailService.SortAssets(sortObj);
+            return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list.ToList());
         }
 
 

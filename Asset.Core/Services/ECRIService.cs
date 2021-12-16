@@ -48,7 +48,10 @@ namespace Asset.Core.Services
             return _unitOfWork.ECRIRepository.GetById(id);
         }
 
-      
+        public IEnumerable<IndexECRIVM.GetData> sortECRI(SortECRIVM searchObj)
+        {
+            return _unitOfWork.ECRIRepository.sortECRI(searchObj);
+        }
 
         public int Update(EditECRIVM ECRIObj)
         {

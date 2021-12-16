@@ -438,10 +438,7 @@ namespace Asset.Core.Repositories
 
                     if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
                     {
-
-
                         lstAssetDetails = lstAssetDetails.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.HospitalId == userObj.HospitalId).ToList();
-
                     }
                     return lstAssetDetails;
 
@@ -1827,191 +1824,312 @@ namespace Asset.Core.Repositories
             return lstAssetOrganization;
         }
 
-        public IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj)
+        public async Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj)
         {
             List<IndexAssetDetailVM.GetData> lstAssetData = new List<IndexAssetDetailVM.GetData>();
 
-            var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset)
+            if (sortObj.UserId != null)
+            {
+                var userObj = await _context.Users.FindAsync(sortObj.UserId);
+                ApplicationRole roleObj = new ApplicationRole();
+                Employee empObj = new Employee();
+              //  string userRoleName = "";
+                List<string> userRoleNames = new List<string>();
+                var obj = _context.ApplicationUser.Where(a => a.Id == sortObj.UserId).ToList();
+                userObj = obj[0];
+
+                var lstRoles = _context.ApplicationRole.Where(a => a.Id == userObj.RoleId).ToList();
+                if (lstRoles.Count > 0)
+                {
+                    roleObj = lstRoles[0];
+                   // userRoleName = roleObj.Name;
+
+                    var roles = (from userRole in _context.UserRoles
+                                 join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+                                 where userRole.UserId == sortObj.UserId
+                                 select role);
+                    foreach (var role in roles)
+                    {
+                        userRoleNames.Add(role.Name);
+                    }
+                }
+
+                var lstEmployees = _context.Employees.Where(a => a.Email == userObj.Email).ToList();
+                if (lstEmployees.Count > 0)
+                {
+                    empObj = lstEmployees[0];
+                }
+
+
+
+                var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset)
                 .Include(a => a.MasterAsset.brand)
                   .Include(a => a.Supplier)
                  .Include(a => a.Hospital)
                  .Include(a => a.Hospital.Governorate)
                  .Include(a => a.Hospital.City)
+                 .Include(a => a.Hospital.Organization).Include(a => a.Hospital.SubOrganization)
                  .ToList();
-            foreach (var item in lstAssetDetails)
-            {
-                IndexAssetDetailVM.GetData Assetobj = new IndexAssetDetailVM.GetData();
-                Assetobj.Id = item.Id;
-                Assetobj.Code = item.Code;
-                Assetobj.Model = item.MasterAsset.ModelNumber;
-                Assetobj.Serial = item.SerialNumber;
-
-                Assetobj.BrandName = item.MasterAsset.BrandId > 0 ? item.MasterAsset.brand.Name : "";
-                Assetobj.BrandNameAr = item.MasterAsset.BrandId > 0 ? item.MasterAsset.brand.NameAr : "";
-
-
-
-
-                Assetobj.SupplierName = item.SupplierId > 0 ? item.Supplier.Name : "";
-                Assetobj.SupplierNameAr = item.SupplierId > 0 ? item.Supplier.NameAr : "";
-
-
-
-
-                Assetobj.HospitalName = item.HospitalId > 0 ? item.Hospital.Name : "";
-                Assetobj.HospitalNameAr = item.HospitalId > 0 ? item.Hospital.NameAr : "";
-                Assetobj.AssetName = item.MasterAssetId > 0 ? item.MasterAsset.Name : "";
-                Assetobj.AssetNameAr = item.MasterAssetId > 0 ? item.MasterAsset.NameAr : "";
-                Assetobj.GovernorateName = item.HospitalId > 0 ? item.Hospital.Governorate.Name : "";
-                Assetobj.GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "";
-                Assetobj.QrFilePath = item.QrFilePath;
-
-                lstAssetData.Add(Assetobj);
-            }
-            if (sortObj.AssetName != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.AssetName).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ToList();
-            }
-            else if (sortObj.AssetNameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.AssetNameAr).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.AssetNameAr).ToList();
-            }
-            else if (sortObj.GovernorateName != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ToList();
-            }
-            else if (sortObj.GovernorateNameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateNameAr).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateNameAr).ToList();
-            }
-            else if (sortObj.HospitalName != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalName).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ToList();
-            }
-            else if (sortObj.HospitalNameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalNameAr).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.HospitalNameAr).ToList();
-            }
-            else if (sortObj.GovernorateName != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ToList();
-            }
-            else if (sortObj.GovernorateNameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateNameAr).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.GovernorateNameAr).ToList();
-            }
-            else if (sortObj.OrgName != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.OrgName).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.OrgName).ToList();
-            }
-            else if (sortObj.OrgNameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.OrgNameAr).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.OrgNameAr).ToList();
-            }
-            else if (sortObj.SubOrgName != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgName).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.SubOrgName).ToList();
-            }
-            else if (sortObj.SubOrgNameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgNameAr).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.SubOrgNameAr).ToList();
-            }
-            else if (sortObj.Code != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.Code).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.Code).ToList();
-            }
+                foreach (var item in lstAssetDetails)
+                {
+                    IndexAssetDetailVM.GetData Assetobj = new IndexAssetDetailVM.GetData();
+                    Assetobj.Id = item.Id;
+                    Assetobj.Code = item.Code;
+                    Assetobj.Model = item.MasterAsset.ModelNumber;
+                    Assetobj.Serial = item.SerialNumber;
+                    Assetobj.BrandName = item.MasterAsset.BrandId > 0 ? item.MasterAsset.brand.Name : "";
+                    Assetobj.BrandNameAr = item.MasterAsset.BrandId > 0 ? item.MasterAsset.brand.NameAr : "";
+                    Assetobj.SupplierName = item.SupplierId > 0 ? item.Supplier.Name : "";
+                    Assetobj.SupplierNameAr = item.SupplierId > 0 ? item.Supplier.NameAr : "";
+                    Assetobj.HospitalName = item.HospitalId > 0 ? item.Hospital.Name : "";
+                    Assetobj.HospitalNameAr = item.HospitalId > 0 ? item.Hospital.NameAr : "";
+                    Assetobj.AssetName = item.MasterAssetId > 0 ? item.MasterAsset.Name : "";
+                    Assetobj.AssetNameAr = item.MasterAssetId > 0 ? item.MasterAsset.NameAr : "";
+                    Assetobj.GovernorateName = item.HospitalId > 0 ? item.Hospital.Governorate.Name : "";
+                    Assetobj.GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "";
+                    Assetobj.GovernorateId = item.Hospital.GovernorateId;
+                    Assetobj.CityId = item.Hospital.CityId;
+                    Assetobj.OrganizationId = item.Hospital.OrganizationId;
+                    Assetobj.SubOrganizationId = item.Hospital.SubOrganizationId;
+                    Assetobj.QrFilePath = item.QrFilePath;
+                    lstAssetData.Add(Assetobj);
+                }
 
 
-            else if (sortObj.Model != "")
-            {
-                if (sortObj.Model == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.Model).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.Model).ToList();
+
+
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetData = lstAssetData.ToList();
+                }
+                if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetData = lstAssetData.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
+                }
+
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetData = lstAssetData.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
+                }
+
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId > 0)
+                {
+                    if (userRoleNames.Contains("AssetOwner"))
+                    {
+
+                        //lstAssetData = lstAssetData.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId && a.HospitalId == userObj.HospitalId).ToList();
+
+
+                        var lstAssetOwners = _context.AssetOwners
+                                                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital)
+                                                .Include(a => a.AssetDetail.Supplier).Include(a => a.AssetDetail.MasterAsset.brand)
+                                                .Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City).Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization)
+                            .Where(a => a.EmployeeId == empObj.Id && a.AssetDetail.HospitalId == userObj.HospitalId).Select(detail => new IndexAssetDetailVM.GetData
+                            {
+                                Id = detail.AssetDetail.Id,
+                                Code = detail.AssetDetail.Code,
+                                UserId = userObj.Id,
+                                Price = detail.AssetDetail.Price,
+                                Serial = detail.AssetDetail.SerialNumber,
+                                MasterImg = detail.AssetDetail.MasterAsset.AssetImg,
+                                BrandName = detail.AssetDetail.MasterAsset.brand.Name,
+                                BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
+                                Model = detail.AssetDetail.MasterAsset.ModelNumber,
+                                SerialNumber = detail.AssetDetail.SerialNumber,
+                                MasterAssetId = detail.AssetDetail.MasterAssetId,
+                                PurchaseDate = detail.AssetDetail.PurchaseDate,
+                                HospitalId = detail.AssetDetail.Hospital.Id,
+                                HospitalName = detail.AssetDetail.Hospital.Name,
+                                HospitalNameAr = detail.AssetDetail.Hospital.NameAr,
+                                AssetName = detail.AssetDetail.MasterAsset.Name,
+                                AssetNameAr = detail.AssetDetail.MasterAsset.NameAr,
+                                GovernorateId = detail.AssetDetail.Hospital.GovernorateId,
+                                GovernorateName = detail.AssetDetail.Hospital.Governorate.Name,
+                                GovernorateNameAr = detail.AssetDetail.Hospital.Governorate.NameAr,
+                                CityId = detail.AssetDetail.Hospital.CityId,
+                                CityName = detail.AssetDetail.Hospital.City.Name,
+                                CityNameAr = detail.AssetDetail.Hospital.City.NameAr,
+                                OrganizationId = detail.AssetDetail.Hospital.OrganizationId,
+                                OrgName = detail.AssetDetail.Hospital.Organization.Name,
+                                OrgNameAr = detail.AssetDetail.Hospital.Organization.NameAr,
+                                SubOrganizationId = detail.AssetDetail.Hospital.SubOrganizationId,
+                                SubOrgName = detail.AssetDetail.Hospital.SubOrganization.Name,
+                                SubOrgNameAr = detail.AssetDetail.Hospital.SubOrganization.NameAr,
+                                SupplierName = detail.AssetDetail.Supplier.Name,
+                                SupplierNameAr = detail.AssetDetail.Supplier.NameAr,
+                                QrFilePath = detail.AssetDetail.QrFilePath
+                            }).ToList();
+
+                        lstAssetData = lstAssetOwners.ToList();
+                    }
+                    else
+                    {
+                        lstAssetData = lstAssetData.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId && a.HospitalId == userObj.HospitalId).ToList();
+                    }
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetData = lstAssetData.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetData = lstAssetData.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
+                }
+
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
+                {
+                    lstAssetData = lstAssetData.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.HospitalId == userObj.HospitalId).ToList();
+                }
+
+
+
+                if (sortObj.AssetName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.AssetName).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ToList();
+                }
+                else if (sortObj.AssetNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.AssetNameAr).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.AssetNameAr).ToList();
+                }
+                else if (sortObj.GovernorateName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ToList();
+                }
+                else if (sortObj.GovernorateNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateNameAr).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.GovernorateNameAr).ToList();
+                }
+                else if (sortObj.HospitalName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalName).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ToList();
+                }
+                else if (sortObj.HospitalNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalNameAr).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.HospitalNameAr).ToList();
+                }
+                else if (sortObj.GovernorateName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ToList();
+                }
+                else if (sortObj.GovernorateNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateNameAr).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.GovernorateNameAr).ToList();
+                }
+                else if (sortObj.OrgName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.OrgName).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.OrgName).ToList();
+                }
+                else if (sortObj.OrgNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.OrgNameAr).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.OrgNameAr).ToList();
+                }
+                else if (sortObj.SubOrgName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgName).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.SubOrgName).ToList();
+                }
+                else if (sortObj.SubOrgNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgNameAr).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.SubOrgNameAr).ToList();
+                }
+                else if (sortObj.Code != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.Code).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.Code).ToList();
+                }
+
+
+                else if (sortObj.Model != "" && sortObj.Model != null)
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.Model).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.Model).ToList();
+                }
+
+                else if (sortObj.Serial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.Serial).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.Serial).ToList();
+                }
+
+                else if (sortObj.BrandName != "" && sortObj.BrandName != null)
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.BrandName).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.BrandName).ToList();
+                }
+
+
+                else if (sortObj.BrandNameAr != "" && sortObj.BrandNameAr != null)
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.BrandNameAr).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.BrandNameAr).ToList();
+                }
+
+                else if (sortObj.SupplierName != "" && sortObj.SupplierName != null)
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.SupplierName).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.SupplierName).ToList();
+                }
+
+                else if (sortObj.SupplierNameAr != "" && sortObj.SupplierNameAr != null)
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstAssetData = lstAssetData.OrderByDescending(d => d.SupplierNameAr).ToList();
+                    else
+                        lstAssetData = lstAssetData.OrderBy(d => d.SupplierNameAr).ToList();
+                }
+
+
+               
             }
-
-            else if (sortObj.Serial != "")
-            {
-                if (sortObj.Serial == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.Serial).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.Serial).ToList();
-            }
-
-            else if (sortObj.BrandName != "")
-            {
-                if (sortObj.BrandName == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.BrandName).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.BrandName).ToList();
-            }
-
-
-            else if (sortObj.BrandNameAr != "")
-            {
-                if (sortObj.BrandNameAr == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.BrandNameAr).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.BrandNameAr).ToList();
-            }
-
-            else if (sortObj.SupplierName != "")
-            {
-                if (sortObj.SupplierName == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.SupplierName).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.SupplierName).ToList();
-            }
-
-            else if (sortObj.SupplierNameAr != "")
-            {
-                if (sortObj.SupplierNameAr == "descending")
-                    lstAssetData = lstAssetData.OrderByDescending(d => d.SupplierNameAr).ToList();
-                else
-                    lstAssetData = lstAssetData.OrderBy(d => d.SupplierNameAr).ToList();
-            }
-
-
             return lstAssetData;
+
         }
     }
 }

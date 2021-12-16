@@ -92,9 +92,9 @@ namespace Asset.Core.Services
             return _unitOfWork.Request.SearchRequests(searchObj);
         }
 
-        public IEnumerable<IndexRequestsVM> SortRequests(SortRequestVM sortObj)
+        public async Task< IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj)
         {
-            return _unitOfWork.Request.SortRequests(sortObj);
+            return await _unitOfWork.Request.SortRequests(sortObj);
         }
 
         public int GetTotalOpenRequestInThisWeek(string userId)

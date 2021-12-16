@@ -189,13 +189,13 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("SortRequests/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexRequestsVM> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj)
+        public async Task< IEnumerable<IndexRequestsVM>> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list = _requestService.SortRequests(sortObj).ToList();
-            return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list);
+            var list = await _requestService.SortRequests(sortObj);
+            return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list.ToList());
         }
 
     }

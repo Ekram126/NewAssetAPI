@@ -12,5 +12,7 @@ namespace Asset.Domain.Repositories
         int Add(CreateECRIVM ecriObj);
         int Update(EditECRIVM ecriObj);
         int Delete(int id);
+
+        IEnumerable<IndexECRIVM.GetData> sortECRI(SortECRIVM searchObj);
     }
 }

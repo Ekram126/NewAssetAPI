@@ -173,9 +173,9 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetDetailRepository.GetAssetByOrganization(AssetModel);
         }
 
-        public IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj)
+        public async Task< IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj)
         {
-            return _unitOfWork.AssetDetailRepository.SortAssets(sortObj);
+            return await _unitOfWork.AssetDetailRepository.SortAssets(sortObj);
         }
     }
 }

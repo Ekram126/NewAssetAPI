@@ -99,6 +99,51 @@ namespace Asset.Core.Repositories
             });
         }
 
+        public IEnumerable<IndexECRIVM.GetData> sortECRI(SortECRIVM searchObj)
+        {
+            List<IndexECRIVM.GetData> lstData = new List<IndexECRIVM.GetData>();
+
+            var list = _context.ECRIS.ToList();
+
+            foreach (var item in list)
+            {
+                IndexECRIVM.GetData getDataObj = new IndexECRIVM.GetData();
+                getDataObj.Id = item.Id;
+                getDataObj.Code = item.Code;
+                getDataObj.Name = item.Name;
+                getDataObj.NameAr = item.NameAr;              
+                lstData.Add(getDataObj);
+            }
+       
+         
+            if (searchObj.Name != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.Name).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.Name).ToList();
+            }
+            else if (searchObj.NameAr != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.NameAr).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.NameAr).ToList();
+            }
+           
+            
+            else if (searchObj.Code != "")
+            {
+                if (searchObj.SortStatus == "descending")
+                    lstData = lstData.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstData = lstData.OrderBy(d => d.Code).ToList();
+            }
+
+          
+            return lstData;
+        }
+
         public int Update(EditECRIVM model)
         {
             try

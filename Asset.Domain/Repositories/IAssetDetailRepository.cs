@@ -53,7 +53,7 @@ namespace Asset.Domain.Repositories
         List<GroupCityVM> GetAssetByCity(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupSupplierVM> GetAssetBySupplier(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupOrganizationVM> GetAssetByOrganization(List<IndexAssetDetailVM.GetData> AssetModel);
-        IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj);
+        Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj);
 
     }
 }
