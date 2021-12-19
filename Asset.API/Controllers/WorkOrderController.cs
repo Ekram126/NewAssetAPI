@@ -79,8 +79,8 @@ namespace Asset.API.Controllers
         [Route("GetAllWorkOrdersByHospitalId/{hospitalId}/{userId}")]
         public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId, PagingParameter pageInfo)
         {
-            var lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).ToList();
-            return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders);
+            var lstWorkOrders =  _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId);
+            return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders.ToList());
         }
 
         //[HttpGet]

@@ -12,5 +12,6 @@ namespace Asset.ViewModels.WorkOrderStatusVM
         public string Name { get; set; }
         public string NameAr { get; set; }
         public string Color { get; set; }
+        public string Icon { get; set; }
     }
 }

@@ -62,7 +62,7 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId,string userId)
         {
-            return _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalId(hospitalId, userId);
+            return  _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalId(hospitalId, userId);
         }
 
         public GeneratedWorkOrderNumberVM GenerateWorOrderNumber()

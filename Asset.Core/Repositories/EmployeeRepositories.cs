@@ -179,30 +179,65 @@ namespace Asset.Core.Repositories
                                 join usr in _context.ApplicationUser on emp.Email equals usr.Email
                                 join role in _context.ApplicationRole on usr.RoleId equals role.Id
                                 where usr.HospitalId == hospitalId
-                                select new EmployeeEngVM { 
-                                    Name= usr.UserName,
-                                    roleName= role.Name,
-                                    UserId = usr.Id,
-                                    Id= emp.Id
-                                }).ToList().Where(a=>a.roleName == "EngDepManager").ToList();
-            return lstEngineers;
-        }
-
-
-        public List<EmployeeEngVM> GetEmployeesHasEngDepManagerRoleInHospital(int hospitalId)
-        {
-            var lstEngineers = (from emp in _context.Employees
-                                join usr in _context.ApplicationUser on emp.Email equals usr.Email
-                                join role in _context.ApplicationRole on usr.RoleId equals role.Id
-                                where usr.HospitalId == hospitalId
                                 select new EmployeeEngVM
                                 {
                                     Name = usr.UserName,
                                     roleName = role.Name,
                                     UserId = usr.Id,
                                     Id = emp.Id
-                                }).ToList().Where(a => a.roleName == "Eng").ToList();
+                                }).ToList().Where(a => a.roleName == "EngDepManager").ToList();
             return lstEngineers;
+        }
+
+
+        public List<EmployeeEngVM> GetEmployeesHasEngDepManagerRoleInHospital(int hospitalId)
+        {
+
+            List<EmployeeEngVM> list = new List<EmployeeEngVM>();
+            //var lstEngineers = (from emp in _context.Employees
+            //                    join usr in _context.ApplicationUser on emp.Email equals usr.Email
+            //                    join role in _context.UserRoles on usr.RoleId equals role.RoleId
+            //                    where usr.HospitalId == hospitalId select usr).ToList().ToList();
+
+            var lstEngineers = (from usr in _context.ApplicationUser
+                                join role in _context.UserRoles on usr.Id equals role.UserId
+                                where usr.HospitalId == hospitalId
+                                select usr).ToList().ToList();
+
+
+
+            if (lstEngineers.Count > 0)
+            {
+                foreach (var usr in lstEngineers)
+                {
+
+                    EmployeeEngVM engObj = new EmployeeEngVM();
+                    engObj.Name = usr.UserName;
+                    var lstRoles = _context.UserRoles.Where(a => a.UserId == usr.Id).ToList();
+                    if (lstRoles.Count > 0)
+                    {
+                        engObj.roleName = _context.ApplicationRole.Where(a => a.Id == lstRoles[0].RoleId).FirstOrDefault().Name;
+                    }
+                    engObj.UserId = usr.Id;
+                    var lstEmployees = _context.Employees.Where(a => a.Email == usr.Email).ToList();
+                    if (lstEmployees.Count > 0)
+                    {
+                        engObj.Id = lstEmployees[0].Id;
+                    }
+
+                    list.Add(engObj);
+                }
+            }
+
+            list = list.Where(a => a.roleName == "Eng").ToList();
+            //select new EmployeeEngVM
+            //{
+            //    Name = usr.UserName,
+            //    roleName = _context.ApplicationRole.Where(a => a.Id == role.RoleId).ToList().FirstOrDefault().Name,
+            //    UserId = usr.Id,
+            //    Id = emp.Id
+            //}).ToList().Where(a => a.roleName == "Eng").ToList();
+            return list;
         }
 
 
@@ -226,7 +261,8 @@ namespace Asset.Core.Repositories
                 employeeObj.Address = model.Address;
                 employeeObj.AddressAr = model.AddressAr;
                 employeeObj.Phone = model.Phone;
-                employeeObj.Dob = model.Dob != "" ? DateTime.Parse(model.Dob) : null;
+                if (model.Dob != null)
+                    employeeObj.Dob = DateTime.Parse(model.Dob);
                 employeeObj.WhatsApp = model.WhatsApp;
                 employeeObj.GenderId = model.GenderId;
                 employeeObj.HospitalId = model.HospitalId;

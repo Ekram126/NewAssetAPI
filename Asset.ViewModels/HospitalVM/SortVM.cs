@@ -10,6 +10,10 @@ namespace Asset.ViewModels.HospitalVM
     {
         public int Id { get; set; }
         public string Code { get; set; }
+
+        public string Name { get; set; }
+        public string NameAr { get; set; }
+
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }
         public string GovernorateName { get; set; }

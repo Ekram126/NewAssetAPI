@@ -581,20 +581,43 @@ namespace Asset.Core.Repositories
                 else
                     lstHospital = lstHospital.OrderBy(d => d.GovernorateNameAr).ToList();
             }
-            else if (sortObj.HospitalName != "")
+            //else if (sortObj.HospitalName != "")
+            //{
+            //    if (sortObj.SortStatus == "descending")
+            //        lstHospital = lstHospital.OrderByDescending(d => d.Name).ToList();
+            //    else
+            //        lstHospital = lstHospital.OrderBy(d => d.Name).ToList();
+            //}
+            //else if(sortObj.HospitalNameAr != "")
+            //{
+            //    if (sortObj.SortStatus == "descending")
+            //        lstHospital = lstHospital.OrderByDescending(d => d.NameAr).ToList();
+            //    else
+            //        lstHospital = lstHospital.OrderBy(d => d.NameAr).ToList();
+            //}
+
+
+
+            else if (sortObj.Name != "")
             {
                 if (sortObj.SortStatus == "descending")
                     lstHospital = lstHospital.OrderByDescending(d => d.Name).ToList();
                 else
                     lstHospital = lstHospital.OrderBy(d => d.Name).ToList();
             }
-            else if(sortObj.HospitalNameAr != "")
+            else if (sortObj.NameAr != "")
             {
                 if (sortObj.SortStatus == "descending")
                     lstHospital = lstHospital.OrderByDescending(d => d.NameAr).ToList();
                 else
                     lstHospital = lstHospital.OrderBy(d => d.NameAr).ToList();
             }
+
+
+
+
+
+
             else if (sortObj.OrgName != "")
             {
                 if (sortObj.SortStatus == "descending")

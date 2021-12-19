@@ -146,16 +146,16 @@ namespace Asset.API.Controllers
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "email", Message = "Email already exist", MessageAr = "هذا البريد الإلكتروني مسجل سابقاً" });
                 }
-                var lstPhones = _EmployeeService.GetAll().ToList().Where(a => a.Phone == EmployeeVM.Phone && a.Id != EmployeeVM.Id).ToList();
-                if (lstPhones.Count > 0)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "phone", Message = "Phone already exist", MessageAr = "هذا المحمول مسجل سابقاً" });
-                }
-                var lstWhatsApps = _EmployeeService.GetAll().ToList().Where(a => a.WhatsApp == EmployeeVM.WhatsApp && a.Id != EmployeeVM.Id).ToList();
-                if (lstWhatsApps.Count > 0)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "whatsApp", Message = "WhatsApp already exist", MessageAr = "هذا الواتس اب مسجل سابقاً" });
-                }
+                //var lstPhones = _EmployeeService.GetAll().ToList().Where(a => a.Phone == EmployeeVM.Phone && a.Id != EmployeeVM.Id).ToList();
+                //if (lstPhones.Count > 0)
+                //{
+                //    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "phone", Message = "Phone already exist", MessageAr = "هذا المحمول مسجل سابقاً" });
+                //}
+                //var lstWhatsApps = _EmployeeService.GetAll().ToList().Where(a => a.WhatsApp == EmployeeVM.WhatsApp && a.Id != EmployeeVM.Id).ToList();
+                //if (lstWhatsApps.Count > 0)
+                //{
+                //    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "whatsApp", Message = "WhatsApp already exist", MessageAr = "هذا الواتس اب مسجل سابقاً" });
+                //}
                 else
                 {
                     int updatedRow = _EmployeeService.Update(EmployeeVM);
@@ -181,16 +181,16 @@ namespace Asset.API.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "email", Message = "Email already exist", MessageAr = "هذا البريد الإلكتروني مسجل سابقاً" });
             }
-            var lstPhones= _EmployeeService.GetAll().ToList().Where(a => a.Phone == EmployeeVM.Phone).ToList();
-            if (lstPhones.Count > 0)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "phone", Message = "Phone already exist", MessageAr = "هذا المحمول مسجل سابقاً" });
-            }
-            var lstWhatsApps = _EmployeeService.GetAll().ToList().Where(a => a.WhatsApp == EmployeeVM.WhatsApp).ToList();
-            if (lstWhatsApps.Count > 0)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "whatsApp", Message = "WhatsApp already exist", MessageAr = "هذا الواتس اب مسجل سابقاً" });
-            }
+            //var lstPhones= _EmployeeService.GetAll().ToList().Where(a => a.Phone == EmployeeVM.Phone).ToList();
+            //if (lstPhones.Count > 0)
+            //{
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "phone", Message = "Phone already exist", MessageAr = "هذا المحمول مسجل سابقاً" });
+            //}
+            //var lstWhatsApps = _EmployeeService.GetAll().ToList().Where(a => a.WhatsApp == EmployeeVM.WhatsApp).ToList();
+            //if (lstWhatsApps.Count > 0)
+            //{
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "whatsApp", Message = "WhatsApp already exist", MessageAr = "هذا الواتس اب مسجل سابقاً" });
+            //}
             else
             {
                 var savedId = _EmployeeService.Add(EmployeeVM);

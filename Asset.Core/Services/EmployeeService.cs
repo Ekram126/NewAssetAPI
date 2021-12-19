@@ -76,7 +76,7 @@ namespace Asset.Core.Services
         public int Update(EditEmployeeVM employeeObj)
         {
             _unitOfWork.EmployeeRepository.Update(employeeObj);
-            _unitOfWork.CommitAsync();
+          //  _unitOfWork.CommitAsync();
             return employeeObj.Id;
         }
     }

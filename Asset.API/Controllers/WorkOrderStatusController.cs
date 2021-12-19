@@ -38,7 +38,15 @@ namespace Asset.API.Controllers
             return _workOrderStatusService.GetWorkOrderStatusById(id);
         }
 
-    
+        [HttpGet]
+        [Route("GetAll/{userId}")]
+        public IEnumerable<IndexWorkOrderStatusVM> GetAll(string userId)
+        {
+            return _workOrderStatusService.GetAll(userId);
+        }
+
+
+
         [HttpPost]
         public IActionResult Post(CreateWorkOrderStatusVM createWorkOrderStatusVM)
         {

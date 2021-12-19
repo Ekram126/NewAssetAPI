@@ -39,24 +39,35 @@ namespace Asset.Core.Repositories
                 if (model != null)
                 {
                     assetDetailObj.Code = model.Code;
-                    assetDetailObj.PurchaseDate = model.PurchaseDate != null ? DateTime.Parse(model.PurchaseDate) : null;
+                    if (model.PurchaseDate != "")
+                        assetDetailObj.PurchaseDate = DateTime.Parse(model.PurchaseDate);
                     assetDetailObj.Price = model.Price;
                     assetDetailObj.SerialNumber = model.SerialNumber;
                     assetDetailObj.Remarks = model.Remarks;
                     assetDetailObj.Barcode = model.Barcode;
-                    assetDetailObj.InstallationDate = model.InstallationDate != null ? DateTime.Parse(model.InstallationDate) : null;
+                    if (model.InstallationDate != "")
+                        assetDetailObj.InstallationDate = DateTime.Parse(model.InstallationDate);
                     assetDetailObj.RoomId = model.RoomId;
                     assetDetailObj.FloorId = model.FloorId;
                     assetDetailObj.BuildingId = model.BuildingId;
-                    assetDetailObj.ReceivingDate = model.ReceivingDate != null ? DateTime.Parse(model.ReceivingDate) : null;
-                    assetDetailObj.OperationDate = model.OperationDate != null ? DateTime.Parse(model.OperationDate) : null;
+                    if (model.ReceivingDate != "")
+                        assetDetailObj.ReceivingDate = DateTime.Parse(model.ReceivingDate);
+                    if (model.OperationDate != "")
+                        assetDetailObj.OperationDate = DateTime.Parse(model.OperationDate);
                     assetDetailObj.PONumber = model.PONumber;
                     assetDetailObj.DepartmentId = model.DepartmentId;
-                    assetDetailObj.SupplierId = model.SupplierId;
+                    if (model.SupplierId > 0)
+                        assetDetailObj.SupplierId = model.SupplierId;
+
+
                     assetDetailObj.HospitalId = model.HospitalId;
                     assetDetailObj.MasterAssetId = model.MasterAssetId;
-                    assetDetailObj.WarrantyStart = model.WarrantyStart != null ? DateTime.Parse(model.WarrantyStart) : null;
-                    assetDetailObj.WarrantyEnd = model.WarrantyEnd != null ? DateTime.Parse(model.WarrantyEnd) : null;
+                    if (model.WarrantyStart != "")
+                        assetDetailObj.WarrantyStart = DateTime.Parse(model.WarrantyStart);
+                    if (model.WarrantyEnd != "")
+                        assetDetailObj.WarrantyEnd = DateTime.Parse(model.WarrantyEnd);
+
+
                     assetDetailObj.DepreciationRate = model.DepreciationRate;
                     assetDetailObj.CostCenter = model.CostCenter;
                     assetDetailObj.WarrantyExpires = model.WarrantyExpires;
@@ -264,7 +275,7 @@ namespace Asset.Core.Repositories
                 {
                     empObj = lstEmployees[0];
                 }
-          
+
                 if (userRoleNames.Contains("AssetOwner"))
                 {
 
@@ -1833,7 +1844,7 @@ namespace Asset.Core.Repositories
                 var userObj = await _context.Users.FindAsync(sortObj.UserId);
                 ApplicationRole roleObj = new ApplicationRole();
                 Employee empObj = new Employee();
-              //  string userRoleName = "";
+                //  string userRoleName = "";
                 List<string> userRoleNames = new List<string>();
                 var obj = _context.ApplicationUser.Where(a => a.Id == sortObj.UserId).ToList();
                 userObj = obj[0];
@@ -1842,7 +1853,7 @@ namespace Asset.Core.Repositories
                 if (lstRoles.Count > 0)
                 {
                     roleObj = lstRoles[0];
-                   // userRoleName = roleObj.Name;
+                    // userRoleName = roleObj.Name;
 
                     var roles = (from userRole in _context.UserRoles
                                  join role in _context.ApplicationRole on userRole.RoleId equals role.Id
@@ -2126,7 +2137,7 @@ namespace Asset.Core.Repositories
                 }
 
 
-               
+
             }
             return lstAssetData;
 

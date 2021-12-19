@@ -185,29 +185,23 @@ namespace Asset.Core.Repositories
             List<IndexRequestVM.GetData> listWO = new List<IndexRequestVM.GetData>();
             ApplicationUser UserObj = new ApplicationUser();
             ApplicationRole roleObj = new ApplicationRole();
-            string userRoleName = "";
+           
             List<string> userRoleNames = new List<string>();
             var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
             if (obj.Count > 0)
             {
                 UserObj = obj[0];
 
-                var lstRoles = _context.ApplicationRole.Where(a => a.Id == UserObj.RoleId).ToList();
-                if (lstRoles.Count > 0)
+                var roles = (from userRole in _context.UserRoles
+                             join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+                             where userRole.UserId == userId
+                             select role);
+                foreach (var role in roles)
                 {
-                    roleObj = lstRoles[0];
-                    userRoleName = roleObj.Name;
-
-                    var roles = (from userRole in _context.UserRoles
-                                 join role in _context.ApplicationRole on userRole.RoleId equals role.Id
-                                 where userRole.UserId == userId
-                                 select role);
-                    foreach (var role in roles)
-                    {
-                        userRoleNames.Add(role.Name);
-                    }
+                    userRoleNames.Add(role.Name);
                 }
             }
+
             var lstRequests = _context.Request
                                .Include(t => t.AssetDetail)
                                .Include(t => t.AssetDetail.MasterAsset)
@@ -392,6 +386,7 @@ namespace Asset.Core.Repositories
 
 
             }
+
             return list;
         }
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int assetId)
@@ -1491,7 +1486,7 @@ namespace Asset.Core.Repositories
                 {
                     empObj = lstEmployees[0];
                 }
-    
+
                 var lstRequests = _context.Request.Include(r => r.RequestPeriority)
                                          .Include(r => r.AssetDetail).Include(r => r.AssetDetail.Hospital).Include(r => r.AssetDetail.Hospital.Governorate)
                                          .Include(r => r.AssetDetail.Hospital.City).Include(r => r.AssetDetail.Hospital.Organization).Include(r => r.AssetDetail.Hospital.SubOrganization)
