@@ -119,7 +119,7 @@ namespace Asset.Core.Repositories
             ApplicationUser UserObj = new ApplicationUser();
             ApplicationRole roleObj = new ApplicationRole();
             List<string> userRoleNames = new List<string>();
-            string userRoleName = "";
+           // string userRoleName = "";
             var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
             if (obj.Count > 0)
             {

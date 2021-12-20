@@ -13,6 +13,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexHospitalApplicationVM.GetData> GetAll();
         IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(int statusId);
         EditHospitalApplicationVM GetById(int id);
+        IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByHospitalId(int hospitalId);
 
         ViewHospitalApplicationVM GetHospitalApplicationById(int id);
         int GetAssetHospitalId(int assetId);

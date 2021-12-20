@@ -43,6 +43,13 @@ namespace Asset.ViewModels.HospitalApplicationVM
             public int DiffMonths { get; set; }
 
             public bool IsMoreThan3Months { get; set; }
+            public int? HospitalId { get; set; }
+
+     
+            public int GovernorateId { get; set; }
+            public int CityId { get; set; }
+            public int OrganizationId { get; set; }
+            public int SubOrganizationId { get; set; }
         }
     }
 }

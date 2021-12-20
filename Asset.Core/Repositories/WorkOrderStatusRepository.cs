@@ -101,7 +101,8 @@ namespace Asset.Core.Repositories
                 getDataObj.ListStatus = lstStatus;
                 var workorders = _context.WorkOrders
                                     .Include(a => a.Request)
-                                    .Include(a => a.Request.AssetDetail).Include(a => a.Request.AssetDetail.Hospital)
+                                    .Include(a => a.Request.AssetDetail)
+                                    .Include(a => a.Request.AssetDetail.Hospital)
                                     .Include(a => a.User).ToList();
 
                 getDataObj.GovernorateId = workorders[0].Request.AssetDetail.Hospital.GovernorateId;
@@ -152,7 +153,18 @@ namespace Asset.Core.Repositories
                     }
                     if (lstRoleNames.Contains("Eng"))
                     {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                        List<WorkOrder> list = new List<WorkOrder>();
+                        var lstEngWorkorders = _context.WorkOrderTrackings.Include(a => a.WorkOrder)
+                            .Where(t => t.AssignedTo == userId && t.WorkOrder.Request.AssetDetail.Hospital.Id == UserObj.HospitalId)
+                            .Select(a=>a.WorkOrder).ToList().GroupBy(a=>a.Id).ToList();
+                        foreach (var item in lstEngWorkorders)
+                        {
+                            WorkOrder workOrderObj = new WorkOrder();
+                            workOrderObj.Id = item.Key;
+
+                            list.Add(workOrderObj);
+                        }
+                        workorders = list.ToList();
                     }
                     if (lstRoleNames.Contains("AssetOwner"))
                     {

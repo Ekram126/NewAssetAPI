@@ -68,7 +68,7 @@ namespace Asset.API.Controllers
         [Route("getcount")]
         public int count()
         {
-            return _pagingService.Count<SupplierExecludeAsset>();
+            return _supplierExecludeAssetService.GetAll().ToList().Count;
         }
 
 

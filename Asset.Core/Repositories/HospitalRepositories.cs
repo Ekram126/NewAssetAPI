@@ -223,29 +223,29 @@ namespace Asset.Core.Repositories
             List<IndexHospitalVM.GetData> lstHospitals = new List<IndexHospitalVM.GetData>();
             if (userId != null)
             {
-                var userObj =  _context.ApplicationUser.Find(userId);
-         
-                
-               lstHospitals =  _context.Hospitals.Include(a => a.Governorate).Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
-                    .Select(item => new IndexHospitalVM.GetData
-                    {
-                        Id = item.Id,
-                        Code = item.Code,
-                        Name = item.Name,
-                        NameAr = item.NameAr,
-                        CityId = item.CityId != 0 ? item.City.Id : 0,
-                        CityName = item.CityId != 0 ? item.City.Name : "",
-                        CityNameAr = item.CityId != 0 ? item.City.NameAr : "",
-                        GovernorateId = item.GovernorateId != 0 ? item.Governorate.Id : 0,
-                        GovernorateName = item.GovernorateId != 0 ? item.Governorate.Name : "",
-                        GovernorateNameAr = item.GovernorateId != 0 ? item.Governorate.NameAr : "",
-                        OrganizationId = item.OrganizationId != 0 ? item.Organization.Id : 0,
-                        OrgName = item.OrganizationId != 0 ? item.Organization.Name : "",
-                        OrgNameAr = item.OrganizationId != 0 ? item.Organization.NameAr : "",
-                        SubOrganizationId = item.SubOrganizationId != 0 ? item.SubOrganization.Id : 0,
-                        SubOrgName = item.SubOrganizationId != 0 ? item.SubOrganization.Name : "",
-                        SubOrgNameAr = item.SubOrganizationId != 0 ? item.SubOrganization.NameAr : ""
-                    }).ToList();
+                var userObj = _context.ApplicationUser.Find(userId);
+
+
+                lstHospitals = _context.Hospitals.Include(a => a.Governorate).Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
+                     .Select(item => new IndexHospitalVM.GetData
+                     {
+                         Id = item.Id,
+                         Code = item.Code,
+                         Name = item.Name,
+                         NameAr = item.NameAr,
+                         CityId = item.CityId != 0 ? item.City.Id : 0,
+                         CityName = item.CityId != 0 ? item.City.Name : "",
+                         CityNameAr = item.CityId != 0 ? item.City.NameAr : "",
+                         GovernorateId = item.GovernorateId != 0 ? item.Governorate.Id : 0,
+                         GovernorateName = item.GovernorateId != 0 ? item.Governorate.Name : "",
+                         GovernorateNameAr = item.GovernorateId != 0 ? item.Governorate.NameAr : "",
+                         OrganizationId = item.OrganizationId != 0 ? item.Organization.Id : 0,
+                         OrgName = item.OrganizationId != 0 ? item.Organization.Name : "",
+                         OrgNameAr = item.OrganizationId != 0 ? item.Organization.NameAr : "",
+                         SubOrganizationId = item.SubOrganizationId != 0 ? item.SubOrganization.Id : 0,
+                         SubOrgName = item.SubOrganizationId != 0 ? item.SubOrganization.Name : "",
+                         SubOrgNameAr = item.SubOrganizationId != 0 ? item.SubOrganization.NameAr : ""
+                     }).ToList();
 
                 if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
                 {
@@ -285,10 +285,10 @@ namespace Asset.Core.Repositories
                 if (userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
                 {
 
-                    lstHospitals = lstHospitals.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId  && a.Id == userObj.HospitalId).ToList();
+                    lstHospitals = lstHospitals.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.Id == userObj.HospitalId).ToList();
 
                 }
-      
+
             }
             return lstHospitals;
         }
@@ -330,7 +330,7 @@ namespace Asset.Core.Repositories
                 }).ToList(),
 
 
-               GovernorateName = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.Name : "",
+                GovernorateName = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.Name : "",
                 GovernorateNameAr = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.NameAr : "",
                 CityName = (item.CityId != null || item.CityId != 0) ? item.City.Name : "",
                 CityNameAr = (item.CityId != null || item.CityId != 0) ? item.City.NameAr : "",
@@ -395,10 +395,10 @@ namespace Asset.Core.Repositories
 
         public List<SubOrganization> GetSubOrganizationsByHospitalId(int hospitalId)
         {
-            return  _context.Hospitals.Include(a => a.SubOrganization).Where(a => a.Id == hospitalId).Select(a => a.SubOrganization).ToList();
-                    //join sub in _context.SubOrganizations on hospital.SubOrganizationId equals sub.Id
-                    //where hospital.Id == hospitalId
-                    //select sub).ToList();
+            return _context.Hospitals.Include(a => a.SubOrganization).Where(a => a.Id == hospitalId).Select(a => a.SubOrganization).ToList();
+            //join sub in _context.SubOrganizations on hospital.SubOrganizationId equals sub.Id
+            //where hospital.Id == hospitalId
+            //select sub).ToList();
         }
 
         public List<CountHospitalVM> CountHospitalsByCities()
@@ -534,7 +534,23 @@ namespace Asset.Core.Repositories
 
             if (searchObj.Code != "")
             {
-                lstData = lstData.Where(b => b.Code == searchObj.Code).ToList();
+                lstData = lstData.Where(b => b.Code.Contains(searchObj.Code)).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+
+            if (searchObj.Name != "")
+            {
+                lstData = lstData.Where(b => b.Name.Contains(searchObj.Name)).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+
+            if (searchObj.NameAr != "")
+            {
+                lstData = lstData.Where(b => b.NameAr.Contains(searchObj.NameAr)).ToList();
             }
             else
                 lstData = lstData.ToList();
@@ -546,9 +562,9 @@ namespace Asset.Core.Repositories
             List<IndexHospitalVM.GetData> lstHospital = new List<IndexHospitalVM.GetData>();
 
             var lstHospitals = _context.Hospitals.Include(a => a.Governorate)
-                   .Include(a=>a.City)
-                   .Include(a=>a.Organization)
-                   .Include(a=>a.SubOrganization).ToList();
+                   .Include(a => a.City)
+                   .Include(a => a.Organization)
+                   .Include(a => a.SubOrganization).ToList();
 
             foreach (var item in lstHospitals)
             {
@@ -557,103 +573,138 @@ namespace Asset.Core.Repositories
                 hospitalobj.Code = item.Code;
                 hospitalobj.Name = item.Name;
                 hospitalobj.NameAr = item.NameAr;
-                hospitalobj.GovernorateName = item.Governorate.Name ;
+                hospitalobj.GovernorateId = (int)item.GovernorateId;
+                hospitalobj.GovernorateName = item.Governorate.Name;
                 hospitalobj.GovernorateNameAr = item.Governorate.NameAr;
+                hospitalobj.OrganizationId = (int)item.OrganizationId;
                 hospitalobj.OrgName = item.Organization.Name;
                 hospitalobj.OrgNameAr = item.Organization.NameAr;
+                hospitalobj.SubOrganizationId = (int)item.SubOrganizationId;
                 hospitalobj.SubOrgName = item.SubOrganization.Name;
                 hospitalobj.SubOrgNameAr = item.SubOrganization.NameAr;
+                hospitalobj.CityId = (int)item.CityId;
                 hospitalobj.CityName = item.City.Name;
                 hospitalobj.CityNameAr = item.City.NameAr;
                 lstHospital.Add(hospitalobj);
             }
-            if (sortObj.GovernorateName != "")
+
+            if (sortObj.UserId != null)
             {
-                if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.GovernorateName).ToList();
-                else
-                    lstHospital = lstHospital.OrderBy(d => d.GovernorateName).ToList();
+                var userObj = _context.ApplicationUser.Find(sortObj.UserId);
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstHospital = lstHospital.ToList();
+                }
+                if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.HospitalId == 0)
+                {
+                    lstHospital = lstHospital.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
+                }
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.HospitalId == 0)
+                {
+                    lstHospital = lstHospital.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
+                }
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.HospitalId > 0)
+                {
+                    lstHospital = lstHospital.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId && a.Id == userObj.HospitalId).ToList();
+                }
+                if (userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0)
+                {
+                    lstHospital = lstHospital.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
+                }
+                if (userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
+                {
+                    lstHospital = lstHospital.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
+                }
+                if (userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
+                {
+                    lstHospital = lstHospital.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.Id == userObj.HospitalId).ToList();
+                }
+
+
+
+
+                if (sortObj.GovernorateName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.GovernorateName).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.GovernorateName).ToList();
+                }
+                else if (sortObj.GovernorateNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.GovernorateNameAr).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.GovernorateNameAr).ToList();
+                }
+
+                else if (sortObj.CityName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.CityName).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.CityName).ToList();
+                }
+                else if (sortObj.CityNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.CityNameAr).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.CityNameAr).ToList();
+                }
+
+
+                else if (sortObj.Name != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.Name).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.Name).ToList();
+                }
+                else if (sortObj.NameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.NameAr).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.NameAr).ToList();
+                }
+
+                else if (sortObj.OrgName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.OrgName).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.OrgName).ToList();
+                }
+                else if (sortObj.OrgNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.OrgNameAr).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.OrgNameAr).ToList();
+                }
+                else if (sortObj.SubOrgName != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.SubOrgName).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.SubOrgName).ToList();
+                }
+                else if (sortObj.SubOrgNameAr != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.SubOrgNameAr).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.SubOrgNameAr).ToList();
+                }
+                else if (sortObj.Code != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        lstHospital = lstHospital.OrderByDescending(d => d.Code).ToList();
+                    else
+                        lstHospital = lstHospital.OrderBy(d => d.Code).ToList();
+                }
             }
-            else if(sortObj.GovernorateNameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.GovernorateNameAr).ToList();
-                else
-                    lstHospital = lstHospital.OrderBy(d => d.GovernorateNameAr).ToList();
-            }
-            //else if (sortObj.HospitalName != "")
-            //{
-            //    if (sortObj.SortStatus == "descending")
-            //        lstHospital = lstHospital.OrderByDescending(d => d.Name).ToList();
-            //    else
-            //        lstHospital = lstHospital.OrderBy(d => d.Name).ToList();
-            //}
-            //else if(sortObj.HospitalNameAr != "")
-            //{
-            //    if (sortObj.SortStatus == "descending")
-            //        lstHospital = lstHospital.OrderByDescending(d => d.NameAr).ToList();
-            //    else
-            //        lstHospital = lstHospital.OrderBy(d => d.NameAr).ToList();
-            //}
-
-
-
-            else if (sortObj.Name != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.Name).ToList();
-                else
-                    lstHospital = lstHospital.OrderBy(d => d.Name).ToList();
-            }
-            else if (sortObj.NameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.NameAr).ToList();
-                else
-                    lstHospital = lstHospital.OrderBy(d => d.NameAr).ToList();
-            }
-
-
-
-
-
-
-            else if (sortObj.OrgName != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.OrgName).ToList();
-                else
-                    lstHospital = lstHospital.OrderBy(d => d.OrgName).ToList();
-            }
-            else if(sortObj.OrgNameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.OrgNameAr).ToList();
-                else
-                    lstHospital = lstHospital.OrderBy(d => d.OrgNameAr).ToList();
-            }
-            else if (sortObj.SubOrgName != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.SubOrgName).ToList();
-                else
-                    lstHospital = lstHospital.OrderBy(d => d.SubOrgName).ToList();
-            }
-            else if(sortObj.SubOrgNameAr != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.SubOrgNameAr).ToList();
-                else
-                    lstHospital = lstHospital.OrderBy(d => d.SubOrgNameAr).ToList();
-            }
-            else if (sortObj.Code != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    lstHospital = lstHospital.OrderByDescending(d => d.Code).ToList();
-                else
-                    lstHospital = lstHospital.OrderBy(d => d.Code).ToList();
-            }
-
             return lstHospital;
         }
 

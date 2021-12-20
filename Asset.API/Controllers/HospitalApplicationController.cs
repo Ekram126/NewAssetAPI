@@ -44,11 +44,40 @@ namespace Asset.API.Controllers
             var lstHospitalApplications = _hospitalApplicationService.GetAll().ToList();
             return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstHospitalApplications);
         }
-        [HttpGet]
-        [Route("getcount")]
-        public int count()
+
+
+
+        [HttpPut]
+        [Route("ListHospitalApplicationsWithPaging/{hospitalId}")]
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllWithPaging(int? hospitalId,PagingParameter pageInfo)
         {
-            return _pagingService.Count<HospitalApplication>();
+            List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
+
+            if (hospitalId != 0)
+
+                list = _hospitalApplicationService.GetAllByHospitalId(int.Parse(hospitalId.ToString())).ToList();
+            else
+                list = _hospitalApplicationService.GetAll().ToList();
+
+
+            return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, list);
+        }
+
+
+        [HttpGet]
+        [Route("getcount/{hospitalId}")]
+        public int count(int? hospitalId)
+        {
+            //  List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
+            int listCount = 0;
+            if (hospitalId != 0)
+
+                listCount = _hospitalApplicationService.GetAllByHospitalId(int.Parse(hospitalId.ToString())).ToList().Count;
+            else
+                listCount = _hospitalApplicationService.GetAll().ToList().Count;
+
+
+            return listCount; //_pagingService.Count<HospitalApplication>();
         }
 
         [HttpPut]

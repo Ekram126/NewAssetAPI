@@ -23,7 +23,11 @@ namespace Asset.ViewModels.HospitalApplicationVM
         public string AppDate { get; set; }
         public string ReasonExTitles { get; set; }
         public string ReasonExTitlesAr { get; set; }
-
-
+        public string UserId { get; set; }
+        public int HospitalId { get; set; }
+        public int GovernorateId { get; set; }
+        public int CityId { get; set; }
+        public int OrganizationId { get; set; }
+        public int SubOrganizationId { get; set; }
     }
 }

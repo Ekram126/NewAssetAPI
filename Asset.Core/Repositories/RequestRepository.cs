@@ -1677,24 +1677,24 @@ namespace Asset.Core.Repositories
 
             ApplicationUser UserObj = new ApplicationUser();
             ApplicationRole roleObj = new ApplicationRole();
-            string userRoleName = "";
+           // string userRoleName = "";
             var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
             if (obj.Count > 0)
             {
                 UserObj = obj[0];
 
-                var lstRoles = _context.ApplicationRole.Where(a => a.Id == UserObj.RoleId).ToList();
-                if (lstRoles.Count > 0)
-                {
-                    roleObj = lstRoles[0];
-                    userRoleName = roleObj.Name;
-                }
+                //var lstRoles = _context.ApplicationRole.Where(a => a.Id == UserObj.RoleId).ToList();
+                //if (lstRoles.Count > 0)
+                //{
+                //    roleObj = lstRoles[0];
+                //    userRoleName = roleObj.Name;
+                //}
             }
 
             var roleNames = (from userRole in _context.UserRoles
                              join role in _context.Roles on userRole.RoleId equals role.Id
                              where userRole.UserId == userId
-                             select role);
+                             select role.Name);
 
             var list = _context.Request
                               .Include(t => t.AssetDetail)
@@ -1711,7 +1711,14 @@ namespace Asset.Core.Repositories
             {
                 if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
                 {
-                    list = list.ToList();
+                    if (roleNames.Contains("Supplier"))
+                    {
+                        list = new List<Request>();
+                    }
+                    else
+                    {
+                        list = list.ToList();
+                    }
                 }
 
                 if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
@@ -1737,27 +1744,27 @@ namespace Asset.Core.Repositories
 
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
                 {
-                    if (userRoleName == "Admin")
+                    if (roleNames.Contains("Admin"))
                     {
                         list = list.ToList();
                     }
-                    if (userRoleName == "TLHospitalManager")
+                    if (roleNames.Contains("TLHospitalManager"))
                     {
                         list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    if (userRoleName == "EngDepManager")
+                    if (roleNames.Contains("EngDepManager"))
                     {
                         list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    if (userRoleName == "EngManager")
+                    if (roleNames.Contains("EngManager"))
                     {
                         list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    if (userRoleName == "AssetOwner")
+                    if (roleNames.Contains("AssetOwner"))
                     {
                         list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
-                    if (userRoleName == "Eng")
+                    if (roleNames.Contains("Eng"))
                     {
 
                         var lstAssigned = (from order in _context.WorkOrders

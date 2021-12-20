@@ -10,7 +10,7 @@ namespace Asset.ViewModels.HospitalVM
     {
         public int Id { get; set; }
         public string Code { get; set; }
-
+        public string UserId { get; set; }
         public string Name { get; set; }
         public string NameAr { get; set; }
 
@@ -26,5 +26,10 @@ namespace Asset.ViewModels.HospitalVM
         public string SubOrgName { get; set; }
         public string SubOrgNameAr { get; set; }
         public string SortStatus { get; set; }
+
+        public int? GovernorateId { get; set; }
+        public int? CityId { get; set; }
+        public int? OrganizationId { get; set; }
+        public int? SubOrganizationId { get; set; }
     }
 }

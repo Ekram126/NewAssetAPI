@@ -68,7 +68,8 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetAll()
         {
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
-            var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+            var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
             foreach (var item in lstHospitalApplications)
             {
 
@@ -577,6 +578,168 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexHospitalApplicationVM.GetData> SortHospitalApp(SortHospitalApplication sortObj)
         {
             var list = GetAll();
+            //List<string> userRoleNames = new List<string>();
+            //var roles = (from userRole in _context.UserRoles
+            //             join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+            //             where userRole.UserId == sortObj.UserId
+            //             select role);
+            //foreach (var role in roles)
+            //{
+            //    userRoleNames.Add(role.Name);
+            //}
+
+            //List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
+            //var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+            //    .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+            //foreach (var item in lstHospitalApplications)
+            //{
+
+            //    IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
+            //    getDataObj.Id = item.Id;
+            //    getDataObj.AppNumber = item.AppNumber;
+            //    getDataObj.Date = item.AppDate.Value.ToShortDateString();
+            //    getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
+            //    getDataObj.AppTypeId = item.AppTypeId;
+            //    getDataObj.UserName = item.User.UserName;
+            //    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
+            //    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+            //    getDataObj.TypeName = item.ApplicationType.Name;
+            //    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+            //    getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
+            //    getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+            //    getDataObj.HospitalId = (int)item.AssetDetail.HospitalId;
+            //    getDataObj.GovernorateId = (int)item.AssetDetail.Hospital.GovernorateId;
+
+            //    getDataObj.CityId = (int)item.AssetDetail.Hospital.CityId;
+            //    getDataObj.OrganizationId = (int)item.AssetDetail.Hospital.OrganizationId;
+            //    getDataObj.SubOrganizationId = (int)item.AssetDetail.Hospital.SubOrganizationId;
+
+
+            //    getDataObj.StatusId = item.StatusId;
+            //    if (item.StatusId == 1)
+            //    {
+            //        getDataObj.StatusName = "Open";
+            //        getDataObj.StatusNameAr = "فتح";
+            //    }
+            //    if (item.StatusId == 2)
+            //    {
+            //        getDataObj.StatusName = "Approved";
+            //        getDataObj.StatusNameAr = "موافقة";
+            //    }
+            //    if (item.StatusId == 3)
+            //    {
+            //        getDataObj.StatusName = "Rejected";
+            //        getDataObj.StatusNameAr = "رفض الطلب";
+            //    }
+            //    if (item.StatusId == 4)
+            //    {
+            //        getDataObj.StatusName = "System Rejected";
+            //        getDataObj.StatusNameAr = "استبعاد من النظام";
+            //    }
+
+            //    var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
+            //                          join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+            //                          where trans.HospitalApplicationId == item.Id
+            //                          && item.AppTypeId == 1
+            //                          select execlude).ToList();
+            //    if (ReasonExTitles.Count > 0)
+            //    {
+            //        List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+            //        foreach (var reason in ReasonExTitles)
+            //        {
+            //            execludeNames.Add(reason.Name);
+            //        }
+
+            //        getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+            //        List<string> execludeNamesAr = new List<string>();
+            //        foreach (var reason in ReasonExTitles)
+            //        {
+            //            execludeNamesAr.Add(reason.NameAr);
+            //        }
+            //        getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+            //    }
+
+            //    var ReasonHoldTitles = (from execlude in _context.HospitalHoldReasons
+            //                            join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+            //                            where trans.HospitalApplicationId == item.Id
+            //                            && item.AppTypeId == 2
+            //                            select execlude).ToList();
+            //    if (ReasonHoldTitles.Count > 0)
+            //    {
+            //        List<string> holdNames = new List<string>();
+            //        foreach (var reason in ReasonHoldTitles)
+            //        {
+            //            holdNames.Add(reason.Name);
+            //        }
+            //        getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+
+            //        List<string> holdNamesAr = new List<string>();
+            //        foreach (var reason in ReasonHoldTitles)
+            //        {
+            //            holdNamesAr.Add(reason.NameAr);
+            //        }
+            //        getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+            //    }
+
+
+            //    list.Add(getDataObj);
+            //}
+
+
+            //if (sortObj.GovernorateId == 0 && sortObj.CityId == 0 && sortObj.OrganizationId == 0 && sortObj.SubOrganizationId == 0 && sortObj.HospitalId == 0)
+            //{
+            //    list = list.ToList();
+            //}
+
+
+            //if (sortObj.GovernorateId > 0 && sortObj.CityId == 0 && sortObj.HospitalId == 0)
+            //{
+            //    list = list.Where(a => a.GovernorateId == sortObj.GovernorateId).ToList();
+            //}
+
+            //if (sortObj.GovernorateId > 0 && sortObj.CityId > 0 && sortObj.HospitalId == 0)
+            //{
+            //    list = list.Where(a => a.GovernorateId == sortObj.GovernorateId && a.CityId == sortObj.CityId).ToList();
+            //}
+            //if (sortObj.GovernorateId > 0 && sortObj.CityId > 0 && sortObj.HospitalId > 0)
+            //{
+
+            //    list = list.Where(a => a.GovernorateId == sortObj.GovernorateId && a.CityId == sortObj.CityId && a.Id == sortObj.HospitalId).ToList();
+            //}
+
+
+
+            //if (sortObj.OrganizationId > 0 && sortObj.SubOrganizationId == 0)
+            //{
+            //    list = list.Where(a => a.OrganizationId == sortObj.OrganizationId).ToList();
+            //}
+
+
+
+            //if (sortObj.OrganizationId > 0 && sortObj.SubOrganizationId > 0 && sortObj.HospitalId == 0)
+            //{
+
+            //    list = list.Where(a => a.OrganizationId == sortObj.OrganizationId && a.SubOrganizationId == sortObj.SubOrganizationId).ToList();
+            //}
+            //if (sortObj.OrganizationId > 0 && sortObj.SubOrganizationId > 0 && sortObj.HospitalId > 0)
+            //{
+            //    if (userRoleNames.Contains("AssetOwner"))
+            //    {
+            //    }
+            //    else
+            //    {
+            //        list = list.Where(a => a.OrganizationId == sortObj.OrganizationId && a.SubOrganizationId == sortObj.SubOrganizationId && a.Id == sortObj.HospitalId).ToList();
+            //    }
+            //}
+
+
+
+
             if (sortObj.AssetName != "")
             {
                 if (sortObj.SortStatus == "descending")
@@ -615,9 +778,9 @@ namespace Asset.Core.Repositories
             else if (sortObj.ReasonExTitles != "" || sortObj.ReasonHoldTitles != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.ReasonExTitles).ThenByDescending(d=>d.ReasonHoldTitles).ToList();
+                    list = list.OrderByDescending(d => d.ReasonExTitles).ThenByDescending(d => d.ReasonHoldTitles).ToList();
                 else
-                    list = list.OrderBy(d => d.ReasonExTitles).ThenBy(d=>d.ReasonHoldTitles).ToList();
+                    list = list.OrderBy(d => d.ReasonExTitles).ThenBy(d => d.ReasonHoldTitles).ToList();
             }
             else if (sortObj.ReasonExTitlesAr != "" || sortObj.ReasonHoldTitlesAr != "")
             {
@@ -661,6 +824,114 @@ namespace Asset.Core.Repositories
                 else
                     list = list.OrderBy(d => d.AppNumber).ToList();
             }
+            return list;
+        }
+
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByHospitalId(int hospitalId)
+        {
+            List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
+            var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+            foreach (var item in lstHospitalApplications)
+            {
+
+                IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
+                getDataObj.Id = item.Id;
+                getDataObj.AppNumber = item.AppNumber;
+                getDataObj.Date = item.AppDate.Value.ToShortDateString();
+                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
+                getDataObj.AppTypeId = item.AppTypeId;
+                getDataObj.UserName = item.User.UserName;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.TypeName = item.ApplicationType.Name;
+                getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+                getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
+                getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+                getDataObj.HospitalId = item.AssetDetail.HospitalId;
+
+                getDataObj.StatusId = item.StatusId;
+                if (item.StatusId == 1)
+                {
+                    getDataObj.StatusName = "Open";
+                    getDataObj.StatusNameAr = "فتح";
+                }
+                if (item.StatusId == 2)
+                {
+                    getDataObj.StatusName = "Approved";
+                    getDataObj.StatusNameAr = "موافقة";
+                }
+                if (item.StatusId == 3)
+                {
+                    getDataObj.StatusName = "Rejected";
+                    getDataObj.StatusNameAr = "رفض الطلب";
+                }
+                if (item.StatusId == 4)
+                {
+                    getDataObj.StatusName = "System Rejected";
+                    getDataObj.StatusNameAr = "استبعاد من النظام";
+                }
+
+                var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
+                                      join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                      where trans.HospitalApplicationId == item.Id
+                                      && item.AppTypeId == 1
+                                      select execlude).ToList();
+                if (ReasonExTitles.Count > 0)
+                {
+                    List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                    foreach (var reason in ReasonExTitles)
+                    {
+                        execludeNames.Add(reason.Name);
+                    }
+
+                    getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+                    List<string> execludeNamesAr = new List<string>();
+                    foreach (var reason in ReasonExTitles)
+                    {
+                        execludeNamesAr.Add(reason.NameAr);
+                    }
+                    getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                }
+
+                var ReasonHoldTitles = (from execlude in _context.HospitalHoldReasons
+                                        join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                        where trans.HospitalApplicationId == item.Id
+                                        && item.AppTypeId == 2
+                                        select execlude).ToList();
+                if (ReasonHoldTitles.Count > 0)
+                {
+                    List<string> holdNames = new List<string>();
+                    foreach (var reason in ReasonHoldTitles)
+                    {
+                        holdNames.Add(reason.Name);
+                    }
+                    getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+
+                    List<string> holdNamesAr = new List<string>();
+                    foreach (var reason in ReasonHoldTitles)
+                    {
+                        holdNamesAr.Add(reason.NameAr);
+                    }
+                    getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+                }
+
+
+                list.Add(getDataObj);
+            }
+            if (hospitalId == 0)
+            {
+                list = list.ToList();
+            }
+            else
+            {
+                list = list.Where(a => a.HospitalId == hospitalId).ToList();
+            }
+
             return list;
         }
     }
