@@ -11,6 +11,7 @@ namespace Asset.Domain.Services
   public  interface IBrandService
     {
         IEnumerable<IndexBrandVM.GetData> GetAll();
+        IEnumerable<IndexBrandVM.GetData> GetTop10Brands();
         EditBrandVM GetById(int id);
 
         IEnumerable<Brand> GetAllBrands();

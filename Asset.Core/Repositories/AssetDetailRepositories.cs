@@ -452,11 +452,8 @@ namespace Asset.Core.Repositories
                         lstAssetDetails = lstAssetDetails.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.HospitalId == userObj.HospitalId).ToList();
                     }
                     return lstAssetDetails;
-
                 }
-
             }
-
             return null;
         }
         public async Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetsByUserId(string userId)
@@ -580,7 +577,7 @@ namespace Asset.Core.Repositories
                 item.WarrantyEnd = assetDetailObj.WarrantyEnd != null ? assetDetailObj.WarrantyEnd.Value.ToShortDateString() : "";
                 item.CostCenter = assetDetailObj.CostCenter;
                 item.DepreciationRate = assetDetailObj.DepreciationRate;
-
+                item.QrFilePath = assetDetailObj.QrFilePath;
                 return item;
 
             }
@@ -709,7 +706,18 @@ namespace Asset.Core.Repositories
         public ViewAssetDetailVM ViewAssetDetailByMasterId(int id)
         {
             ViewAssetDetailVM model = new ViewAssetDetailVM();
-            var lstHospitalAssets = _context.AssetDetails.ToList().Where(a => a.Id == id).ToList();
+            var lstHospitalAssets = _context.AssetDetails.Include(a => a.Supplier)
+                                                    .Include(a => a.MasterAsset).Include(a => a.Hospital)
+                                                    .Include(a => a.Hospital.Governorate)
+                                                    .Include(a => a.Hospital.City)
+                                                    .Include(a => a.Hospital.Organization).Include(a => a.Hospital.SubOrganization)
+                                                    .Include(a => a.MasterAsset.brand)
+                                                    .Include(a => a.MasterAsset.Category)
+                                                    .Include(a => a.MasterAsset.SubCategory)
+                                                    .Include(a => a.MasterAsset.ECRIS)
+                                                    .Include(a => a.Department)
+                                                    .Include(a => a.Building).Include(a => a.Floor).Include(a => a.Room)
+                                                    .Include(a => a.MasterAsset.Origin).ToList().Where(a => a.Id == id).ToList();
             if (lstHospitalAssets.Count > 0)
             {
                 var detailObj = lstHospitalAssets[0];
@@ -730,6 +738,23 @@ namespace Asset.Core.Repositories
                 model.DepreciationRate = detailObj.DepreciationRate;
                 model.PONumber = detailObj.PONumber;
                 model.QrFilePath = detailObj.QrFilePath;
+
+                model.MasterAssetId = detailObj.MasterAsset.Id;
+                model.AssetName = detailObj.MasterAsset.Name;
+                model.AssetNameAr = detailObj.MasterAsset.NameAr;
+                model.MasterCode = detailObj.MasterAsset.Code;
+                model.VersionNumber = detailObj.MasterAsset.VersionNumber;
+                model.ModelNumber = detailObj.MasterAsset.ModelNumber;
+                model.ExpectedLifeTime = detailObj.MasterAsset.ExpectedLifeTime != 0 ? (int)detailObj.MasterAsset.ExpectedLifeTime : 0;
+                model.Description = detailObj.MasterAsset.Description;
+                model.DescriptionAr = detailObj.MasterAsset.DescriptionAr;
+                model.Length = detailObj.MasterAsset.Length.ToString();
+                model.Width = detailObj.MasterAsset.Width.ToString();
+                model.Weight = detailObj.MasterAsset.Weight.ToString();
+                model.Height = detailObj.MasterAsset.Height.ToString();
+                model.AssetImg = detailObj.MasterAsset.AssetImg;
+
+
                 var lstAssetStatus = _context.AssetStatusTransactions.Include(a => a.AssetStatus).Where(a => a.AssetDetailId == detailObj.Id).ToList().OrderByDescending(a => a.StatusDate).ToList();
 
                 if (lstAssetStatus.Count > 0)
@@ -737,136 +762,82 @@ namespace Asset.Core.Repositories
                     model.AssetStatus = lstAssetStatus[0].AssetStatus.Name;
                     model.AssetStatusAr = lstAssetStatus[0].AssetStatus.NameAr;
                 }
-
-
-
-                if (detailObj.BuildingId > 0)
+                if (detailObj.BuildingId != null)
                 {
-                    model.BuildName = _context.Buildings.Where(a => a.Id == detailObj.BuildingId).FirstOrDefault().Name;
-                    model.BuildNameAr = _context.Buildings.Where(a => a.Id == detailObj.BuildingId).FirstOrDefault().NameAr;
+                    model.BuildName = detailObj.Building.Name;
+                    model.BuildNameAr = detailObj.Building.NameAr;
                 }
-                if (detailObj.FloorId > 0)
+                if (detailObj.FloorId != null)
                 {
-                    model.FloorName = _context.Floors.Where(a => a.Id == detailObj.FloorId).FirstOrDefault().Name;
-                    model.FloorNameAr = _context.Floors.Where(a => a.Id == detailObj.FloorId).FirstOrDefault().NameAr;
+                    model.FloorName = detailObj.Floor.Name;
+                    model.FloorNameAr = detailObj.Floor.NameAr;
                 }
-                if (detailObj.RoomId > 0)
+                if (detailObj.RoomId != null)
                 {
-                    model.RoomName = _context.Rooms.Where(a => a.Id == detailObj.RoomId).FirstOrDefault().Name;
-                    model.RoomNameAr = _context.Rooms.Where(a => a.Id == detailObj.RoomId).FirstOrDefault().NameAr;
+                    model.RoomName = detailObj.Room.Name;
+                    model.RoomNameAr = detailObj.Room.NameAr;
                 }
-
-                if (detailObj.DepartmentId > 0)
+                if (detailObj.DepartmentId != null)
                 {
-                    model.DepartmentName = _context.Departments.Where(a => a.Id == detailObj.DepartmentId).FirstOrDefault().Name;
-                    model.DepartmentNameAr = _context.Departments.Where(a => a.Id == detailObj.DepartmentId).FirstOrDefault().NameAr;
+                    model.DepartmentName = detailObj.Department.Name;
+                    model.DepartmentNameAr = detailObj.Department.NameAr;
                 }
-
-
-
-                var lstMasterAssets = _context.MasterAssets.Where(a => a.Id == detailObj.MasterAssetId).ToList();
-                if (lstMasterAssets.Count > 0)
+                if (detailObj.MasterAsset.CategoryId != null)
                 {
-                    MasterAsset masterObj = lstMasterAssets[0];
-
-
-                    model.MasterAssetId = masterObj.Id;
-                    model.AssetName = masterObj.Name + " - " + detailObj.SerialNumber;
-                    model.AssetNameAr = masterObj.NameAr + " - " + detailObj.SerialNumber;
-                    model.MasterCode = masterObj.Code;
-                    model.VersionNumber = masterObj.VersionNumber;
-                    model.ModelNumber = masterObj.ModelNumber;
-                    model.ExpectedLifeTime = masterObj.ExpectedLifeTime != 0 ? (int)masterObj.ExpectedLifeTime : 0;
-                    model.Description = masterObj.Description;
-                    model.DescriptionAr = masterObj.DescriptionAr;
-                    model.Length = masterObj.Length.ToString();
-                    model.Width = masterObj.Width.ToString();
-                    model.Weight = masterObj.Weight.ToString();
-                    model.Height = masterObj.Height.ToString();
-                    model.AssetImg = masterObj.AssetImg;
-
-                    if (masterObj.CategoryId > 0)
-                    {
-                        var lstCategories = _context.Categories.Where(a => a.Id == masterObj.CategoryId).ToList();
-                        model.CategoryName = lstCategories[0].Name;
-                        model.CategoryNameAr = lstCategories[0].NameAr;
-                    }
-
-                    if (masterObj.SubCategoryId > 0)
-                    {
-                        var lstSubCategories = _context.SubCategories.Where(a => a.Id == masterObj.SubCategoryId).ToList();
-                        model.SubCategoryName = lstSubCategories[0].Name;
-                        model.SubCategoryNameAr = lstSubCategories[0].NameAr;
-                    }
-                    if (masterObj.OriginId > 0)
-                    {
-                        var lstOrigins = _context.Origins.Where(a => a.Id == masterObj.OriginId).ToList();
-                        model.OriginName = lstOrigins[0].Name;
-                        model.OriginNameAr = lstOrigins[0].NameAr;
-                    }
-                    if (masterObj.BrandId > 0)
-                    {
-                        var lstBrands = _context.Brands.Where(a => a.Id == masterObj.BrandId).ToList();
-                        model.BrandName = lstBrands[0].Name;
-                        model.BrandNameAr = lstBrands[0].NameAr;
-                    }
-
-                    var lstSuppliers = _context.AssetDetails.Include(a => a.Supplier).Where(a => a.MasterAssetId == masterObj.Id).Select(a => a.Supplier).ToList();
-                    if (lstSuppliers.Count > 0)
-                    {
-                        model.SupplierName = lstSuppliers[0].Name;
-                        model.SupplierNameAr = lstSuppliers[0].NameAr;
-                    }
-
-
-                    var lstHospitals = _context.AssetDetails.Include(a => a.Hospital).Where(a => a.MasterAssetId == masterObj.Id).Select(a => a.Hospital).ToList();
-                    if (lstHospitals.Count > 0)
-                    {
-                        model.HospitalName = lstHospitals[0].Name;
-                        model.HospitalNameAr = lstHospitals[0].NameAr;
-                    }
-
-
-
-
-                    var lstOrganizations = _context.AssetDetails.Include(a => a.Hospital.Organization).Where(a => a.MasterAssetId == masterObj.Id).Select(a => a.Hospital.Organization).ToList();
-                    if (lstOrganizations.Count > 0)
-                    {
-                        model.OrgName = lstOrganizations[0].Name;
-                        model.OrgNameAr = lstOrganizations[0].NameAr;
-                    }
-
-
-
-
-                    var lstSubOrganizations = _context.AssetDetails.Include(a => a.Hospital.Organization).Include(a => a.Hospital.SubOrganization)
-                        .Where(a => a.MasterAssetId == masterObj.Id).Select(a => a.Hospital.SubOrganization).ToList();
-                    if (lstSubOrganizations.Count > 0)
-                    {
-                        model.SubOrgName = lstSubOrganizations[0].Name;
-                        model.SubOrgNameAr = lstSubOrganizations[0].NameAr;
-                    }
-
-                    var lstGovernortes = _context.AssetDetails.Include(a => a.Hospital.Governorate)
-                       .Where(a => a.MasterAssetId == masterObj.Id).Select(a => a.Hospital.Governorate).ToList(); ;
-                    if (lstGovernortes.Count > 0)
-                    {
-                        model.GovernorateName = lstGovernortes[0].Name;
-                        model.GovernorateNameAr = lstGovernortes[0].NameAr;
-                    }
-
-
-
-                    var lstCities = _context.AssetDetails.Include(a => a.Hospital.City)
-                     .Where(a => a.MasterAssetId == masterObj.Id).Select(a => a.Hospital.City).ToList();
-                    if (lstCities.Count > 0)
-                    {
-                        model.CityName = lstGovernortes[0].Name;
-                        model.CityNameAr = lstGovernortes[0].NameAr;
-                    }
+                    model.CategoryName = detailObj.MasterAsset.Category.Name;
+                    model.CategoryNameAr = detailObj.MasterAsset.Category.NameAr;
+                }
+                if (detailObj.Hospital != null && detailObj.HospitalId != null)
+                {
+                    model.HospitalName = detailObj.Hospital.Name;
+                    model.HospitalNameAr = detailObj.Hospital.NameAr;
+                }
+                if (detailObj.Hospital.Governorate != null)
+                {
+                    model.GovernorateName = detailObj.Hospital.Governorate.Name;
+                    model.GovernorateNameAr = detailObj.Hospital.Governorate.NameAr;
+                }
+                if (detailObj.Hospital.City != null)
+                {
+                    model.CityName = detailObj.Hospital.City.Name;
+                    model.CityNameAr = detailObj.Hospital.City.NameAr;
+                }
+                if (detailObj.Hospital.Organization != null)
+                {
+                    model.OrgName = detailObj.Hospital.Organization.Name;
+                    model.OrgNameAr = detailObj.Hospital.Organization.NameAr;
                 }
 
-
+                if (detailObj.Hospital.SubOrganization != null)
+                {
+                    model.SubOrgName = detailObj.Hospital.SubOrganization.Name;
+                    model.SubOrgNameAr = detailObj.Hospital.SubOrganization.NameAr;
+                }
+                if (detailObj.Supplier != null)
+                {
+                    model.SupplierName = detailObj.Supplier.Name;
+                    model.SupplierNameAr = detailObj.Supplier.NameAr;
+                }
+                if (detailObj.MasterAsset.Category != null)
+                {
+                    model.CategoryName = detailObj.MasterAsset.Category.Name;
+                    model.CategoryNameAr = detailObj.MasterAsset.Category.NameAr;
+                }
+                if (detailObj.MasterAsset.SubCategory != null)
+                {
+                    model.SubCategoryName = detailObj.MasterAsset.SubCategory.Name;
+                    model.SubCategoryNameAr = detailObj.MasterAsset.SubCategory.NameAr;
+                }
+                if (detailObj.MasterAsset.Origin != null)
+                {
+                    model.OriginName = detailObj.MasterAsset.Origin.Name;
+                    model.OriginNameAr = detailObj.MasterAsset.Origin.NameAr;
+                }
+                if (detailObj.MasterAsset.brand != null)
+                {
+                    model.BrandName = detailObj.MasterAsset.brand.Name;
+                    model.BrandNameAr = detailObj.MasterAsset.brand.NameAr;
+                }
             }
             return model;
         }

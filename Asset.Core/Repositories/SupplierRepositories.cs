@@ -104,6 +104,17 @@ namespace Asset.Core.Repositories
             });
         }
 
+        public IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers()
+        {
+            return _context.Suppliers.Take(10).ToList().Select(item => new IndexSupplierVM.GetData
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                NameAr = item.NameAr
+            });
+        }
+
         public int Update(EditSupplierVM model)
         {
             try

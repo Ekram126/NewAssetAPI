@@ -101,6 +101,17 @@ namespace Asset.Core.Repositories
             }).First();
         }
 
+        public IEnumerable<IndexBrandVM.GetData> GetTop10Brands()
+        {
+            return _context.Brands.Take(10).ToList().Select(item => new IndexBrandVM.GetData
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                NameAr = item.NameAr
+            });
+        }
+
         public int Update(EditBrandVM model)
         {
             try

@@ -59,6 +59,11 @@ namespace Asset.Core.Services
             return _unitOfWork.BrandRepository.GetById(id);
         }
 
+        public IEnumerable<IndexBrandVM.GetData> GetTop10Brands()
+        {
+            return _unitOfWork.BrandRepository.GetTop10Brands();
+        }
+
         public int Update(EditBrandVM brandObj)
         {
             _unitOfWork.BrandRepository.Update(brandObj);

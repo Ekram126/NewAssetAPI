@@ -717,5 +717,31 @@ namespace Asset.Core.Repositories
             var lst = _context.MasterAssets.Where(a => a.Name.Contains(name) || a.NameAr.Contains(name)).ToList();
             return lst;
         }
+
+        public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset()
+        {
+            List<IndexMasterAssetVM.GetData> list = new List<IndexMasterAssetVM.GetData>();
+            var lstMasters = _context.MasterAssets.Take(10).Include(a => a.brand).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
+
+            foreach (var item in lstMasters)
+            {
+                IndexMasterAssetVM.GetData getDataObj = new IndexMasterAssetVM.GetData();
+                getDataObj.Id = item.Id;
+                getDataObj.Code = item.Code;
+                getDataObj.Model = item.ModelNumber;
+                getDataObj.PMColor = item.PMColor;
+                getDataObj.PMBGColor = item.PMBGColor;
+                getDataObj.ECRIName = item.ECRIId != null ? item.ECRIS.Name : "";
+                getDataObj.ECRINameAr = item.ECRIId != null ? item.ECRIS.NameAr : "";
+                getDataObj.Name = item.Name;
+                getDataObj.NameAr = item.NameAr;
+                getDataObj.OriginName = item.OriginId != null ? item.Origin.Name : "";
+                getDataObj.OriginNameAr = item.OriginId != null ? item.Origin.NameAr : "";
+                getDataObj.BrandName = item.BrandId != null ? item.brand.Name : "";
+                getDataObj.BrandNameAr = item.BrandId != null ? item.brand.NameAr : "";
+                list.Add(getDataObj);
+            }
+            return list;
+        }
     }
 }

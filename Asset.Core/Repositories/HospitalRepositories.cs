@@ -59,21 +59,23 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexHospitalVM.GetData> GetAll()
         {
-            var lstHospitals = _context.Hospitals.ToList().Select(item => new IndexHospitalVM.GetData
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                NameAr = item.NameAr,
-                CityName = item.CityId != 0 ? _context.Cities.Where(a => a.Id == item.CityId).ToList().First().Name : "",
-                CityNameAr = item.CityId != 0 ? _context.Cities.Where(a => a.Id == item.CityId).ToList().First().NameAr : "",
-                GovernorateName = item.GovernorateId != 0 ? _context.Governorates.Where(a => a.Id == item.GovernorateId).ToList().First().Name : "",
-                GovernorateNameAr = item.GovernorateId != 0 ? _context.Governorates.Where(a => a.Id == item.GovernorateId).ToList().First().NameAr : "",
-                OrgName = item.OrganizationId != 0 ? _context.Organizations.Where(a => a.Id == item.OrganizationId).ToList().First().Name : "",
-                OrgNameAr = item.OrganizationId != 0 ? _context.Organizations.Where(a => a.Id == item.OrganizationId).ToList().First().NameAr : "",
-                SubOrgName = item.SubOrganizationId != 0 ? _context.SubOrganizations.Where(a => a.Id == item.SubOrganizationId).ToList().First().Name : "",
-                SubOrgNameAr = item.SubOrganizationId != 0 ? _context.SubOrganizations.Where(a => a.Id == item.SubOrganizationId).ToList().First().NameAr : ""
-            });
+            var lstHospitals = _context.Hospitals.Take(10).Include(a => a.Governorate)
+                         .Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
+                         .ToList().Select(item => new IndexHospitalVM.GetData
+                         {
+                             Id = item.Id,
+                             Code = item.Code,
+                             Name = item.Name,
+                             NameAr = item.NameAr,
+                             CityName = (item.City != null) ? item.City.Name : "",
+                             CityNameAr = (item.City != null) ? item.City.NameAr : "",
+                             GovernorateName = (item.Governorate != null) ? item.Governorate.Name : "",
+                             GovernorateNameAr = (item.Governorate != null) ? item.Governorate.NameAr : "",
+                             OrgName = (item.Organization != null) ? item.Organization.Name : "",
+                             OrgNameAr = (item.Organization != null) ? item.Organization.NameAr : "",
+                             SubOrgName = (item.SubOrganization != null) ? item.SubOrganization.Name : "",
+                             SubOrgNameAr = (item.SubOrganization != null) ? item.SubOrganization.NameAr : ""
+                         });
 
             return lstHospitals;
         }
@@ -229,22 +231,42 @@ namespace Asset.Core.Repositories
                 lstHospitals = _context.Hospitals.Include(a => a.Governorate).Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
                      .Select(item => new IndexHospitalVM.GetData
                      {
+                         //Id = item.Id,
+                         //Code = item.Code,
+                         //Name = item.Name,
+                         //NameAr = item.NameAr,
+                         //CityId = item.CityId != 0 ? item.City.Id : 0,
+                         //CityName = item.CityId != 0 ? item.City.Name : "",
+                         //CityNameAr = item.CityId != 0 ? item.City.NameAr : "",
+                         //GovernorateId = item.GovernorateId != 0 ? item.Governorate.Id : 0,
+                         //GovernorateName = item.GovernorateId != 0 ? item.Governorate.Name : "",
+                         //GovernorateNameAr = item.GovernorateId != 0 ? item.Governorate.NameAr : "",
+                         //OrganizationId = item.OrganizationId != 0 ? item.Organization.Id : 0,
+                         //OrgName = item.OrganizationId != 0 ? item.Organization.Name : "",
+                         //OrgNameAr = item.OrganizationId != 0 ? item.Organization.NameAr : "",
+                         //SubOrganizationId = item.SubOrganizationId != 0 ? item.SubOrganization.Id : 0,
+                         //SubOrgName = item.SubOrganizationId != 0 ? item.SubOrganization.Name : "",
+                         //SubOrgNameAr = item.SubOrganizationId != 0 ? item.SubOrganization.NameAr : ""
+
+
                          Id = item.Id,
                          Code = item.Code,
                          Name = item.Name,
                          NameAr = item.NameAr,
-                         CityId = item.CityId != 0 ? item.City.Id : 0,
-                         CityName = item.CityId != 0 ? item.City.Name : "",
-                         CityNameAr = item.CityId != 0 ? item.City.NameAr : "",
-                         GovernorateId = item.GovernorateId != 0 ? item.Governorate.Id : 0,
-                         GovernorateName = item.GovernorateId != 0 ? item.Governorate.Name : "",
-                         GovernorateNameAr = item.GovernorateId != 0 ? item.Governorate.NameAr : "",
-                         OrganizationId = item.OrganizationId != 0 ? item.Organization.Id : 0,
-                         OrgName = item.OrganizationId != 0 ? item.Organization.Name : "",
-                         OrgNameAr = item.OrganizationId != 0 ? item.Organization.NameAr : "",
-                         SubOrganizationId = item.SubOrganizationId != 0 ? item.SubOrganization.Id : 0,
-                         SubOrgName = item.SubOrganizationId != 0 ? item.SubOrganization.Name : "",
-                         SubOrgNameAr = item.SubOrganizationId != 0 ? item.SubOrganization.NameAr : ""
+                         CityId = item.City != null ? item.City.Id : 0,
+                         CityName = (item.City != null) ? item.City.Name : "",
+                         CityNameAr = (item.City != null) ? item.City.NameAr : "",
+                         GovernorateId = item.Governorate != null ? item.Governorate.Id : 0,
+                         GovernorateName = (item.Governorate != null) ? item.Governorate.Name : "",
+                         GovernorateNameAr = (item.Governorate != null) ? item.Governorate.NameAr : "",
+                         OrganizationId = item.Organization != null ? item.Organization.Id : 0,
+                         OrgName = (item.Organization != null) ? item.Organization.Name : "",
+                         OrgNameAr = (item.Organization != null) ? item.Organization.NameAr : "",
+                         SubOrganizationId = item.SubOrganization != null ? item.SubOrganization.Id : 0,
+                         SubOrgName = (item.SubOrganization != null) ? item.SubOrganization.Name : "",
+                         SubOrgNameAr = (item.SubOrganization != null) ? item.SubOrganization.NameAr : ""
+
+
                      }).ToList();
 
                 if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
@@ -482,18 +504,18 @@ namespace Asset.Core.Repositories
                 getDataObj.Code = item.Code;
                 getDataObj.Name = item.Name;
                 getDataObj.NameAr = item.NameAr;
-                getDataObj.GovernorateId = item.Governorate.Id;
-                getDataObj.GovernorateName = item.Governorate.Name;
-                getDataObj.GovernorateNameAr = item.Governorate.NameAr;
-                getDataObj.CityId = item.City.Id;
-                getDataObj.CityName = item.City.Name;
-                getDataObj.CityNameAr = item.City.NameAr;
-                getDataObj.OrganizationId = item.Organization.Id;
-                getDataObj.OrgName = item.Organization.Name;
-                getDataObj.OrgNameAr = item.Organization.NameAr;
-                getDataObj.SubOrganizationId = item.SubOrganization.Id;
-                getDataObj.SubOrgName = item.SubOrganization.Name;
-                getDataObj.SubOrgNameAr = item.SubOrganization.NameAr;
+                getDataObj.GovernorateId = item.GovernorateId != null ? (int)item.GovernorateId : 0;
+                getDataObj.GovernorateName = item.GovernorateId != null ? item.Governorate.Name : "";
+                getDataObj.GovernorateNameAr = item.GovernorateId != null ? item.Governorate.NameAr : "";
+                getDataObj.CityId = item.CityId != null ? (int)item.CityId : 0;
+                getDataObj.CityName = item.CityId != null ? item.City.Name : "";
+                getDataObj.CityNameAr = item.CityId != null ? item.City.NameAr : "";
+                getDataObj.OrganizationId = item.OrganizationId != null ? (int)item.OrganizationId : 0;
+                getDataObj.OrgName = item.OrganizationId != null ? item.Organization.Name : "";
+                getDataObj.OrgNameAr = item.OrganizationId != null ? item.Organization.NameAr : "";
+                getDataObj.SubOrganizationId = item.SubOrganizationId != null ? (int)item.SubOrganizationId : 0;
+                getDataObj.SubOrgName = item.SubOrganizationId != null ? item.SubOrganization.Name : "";
+                getDataObj.SubOrgNameAr = item.SubOrganizationId != null ? item.SubOrganization.NameAr : "";
                 lstData.Add(getDataObj);
             }
 
@@ -573,18 +595,18 @@ namespace Asset.Core.Repositories
                 hospitalobj.Code = item.Code;
                 hospitalobj.Name = item.Name;
                 hospitalobj.NameAr = item.NameAr;
-                hospitalobj.GovernorateId = (int)item.GovernorateId;
-                hospitalobj.GovernorateName = item.Governorate.Name;
-                hospitalobj.GovernorateNameAr = item.Governorate.NameAr;
-                hospitalobj.OrganizationId = (int)item.OrganizationId;
-                hospitalobj.OrgName = item.Organization.Name;
-                hospitalobj.OrgNameAr = item.Organization.NameAr;
-                hospitalobj.SubOrganizationId = (int)item.SubOrganizationId;
-                hospitalobj.SubOrgName = item.SubOrganization.Name;
-                hospitalobj.SubOrgNameAr = item.SubOrganization.NameAr;
-                hospitalobj.CityId = (int)item.CityId;
-                hospitalobj.CityName = item.City.Name;
-                hospitalobj.CityNameAr = item.City.NameAr;
+                hospitalobj.GovernorateId = item.GovernorateId != null ? (int)item.GovernorateId : 0;
+                hospitalobj.GovernorateName = item.GovernorateId != null ? item.Governorate.Name : "";
+                hospitalobj.GovernorateNameAr = item.GovernorateId != null ? item.Governorate.NameAr : "";
+                hospitalobj.CityId = item.CityId != null ? (int)item.CityId : 0;
+                hospitalobj.CityName = item.CityId != null ? item.City.Name : "";
+                hospitalobj.CityNameAr = item.CityId != null ? item.City.NameAr : "";
+                hospitalobj.OrganizationId = item.OrganizationId != null ? (int)item.OrganizationId : 0;
+                hospitalobj.OrgName = item.OrganizationId != null ? item.Organization.Name : "";
+                hospitalobj.OrgNameAr = item.OrganizationId != null ? item.Organization.NameAr : "";
+                hospitalobj.SubOrganizationId = item.SubOrganizationId != null ? (int)item.SubOrganizationId : 0;
+                hospitalobj.SubOrgName = item.SubOrganizationId != null ? item.SubOrganization.Name : "";
+                hospitalobj.SubOrgNameAr = item.SubOrganizationId != null ? item.SubOrganization.NameAr : "";
                 lstHospital.Add(hospitalobj);
             }
 
@@ -708,6 +730,27 @@ namespace Asset.Core.Repositories
             return lstHospital;
         }
 
+        public IEnumerable<IndexHospitalVM.GetData> GetTop10Hospitals()
+        {
+            var lstHospitals = _context.Hospitals.Take(10).Include(a => a.Governorate)
+               .Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
+               .ToList().Select(item => new IndexHospitalVM.GetData
+               {
+                   Id = item.Id,
+                   Code = item.Code,
+                   Name = item.Name,
+                   NameAr = item.NameAr,
+                   CityName = (item.City != null) ? item.City.Name : "",
+                   CityNameAr = (item.City != null) ? item.City.NameAr : "",
+                   GovernorateName = (item.Governorate != null) ? item.Governorate.Name : "",
+                   GovernorateNameAr = (item.Governorate != null) ? item.Governorate.NameAr : "",
+                   OrgName = (item.Organization != null) ? item.Organization.Name : "",
+                   OrgNameAr = (item.Organization != null) ? item.Organization.NameAr : "",
+                   SubOrgName = (item.SubOrganization != null) ? item.SubOrganization.Name : "",
+                   SubOrgNameAr = (item.SubOrganization != null) ? item.SubOrganization.NameAr : ""
+               });
 
+            return lstHospitals;
+        }
     }
 }

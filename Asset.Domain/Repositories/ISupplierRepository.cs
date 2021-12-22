@@ -11,6 +11,7 @@ namespace Asset.Domain.Repositories
     public interface ISupplierRepository
     {
         IEnumerable<IndexSupplierVM.GetData> GetAll();
+        IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers();
         EditSupplierVM GetById(int id);
 
         IEnumerable<Supplier> GetAllSuppliers();

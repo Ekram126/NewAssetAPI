@@ -12,6 +12,7 @@ namespace Asset.Domain.Repositories
     public interface IMasterAssetRepository
     {
         IEnumerable<IndexMasterAssetVM.GetData> GetAll();
+        IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset();
         IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(SearchMasterAssetVM searchObj);
         IEnumerable<MasterAsset> GetAllMasterAssets();
         //IEnumerable<MasterAsset> GetAssetOwnerByHospitalId(int hospitalId, string userId);

@@ -42,6 +42,25 @@ namespace Asset.API.Controllers
         {
             return _HospitalService.GetAll().ToList();
         }
+
+
+        [HttpGet]
+        [Route("GetTop10Hospitals")]
+        public IEnumerable<IndexHospitalVM.GetData> GetTop10Hospitals()
+        {
+            return _HospitalService.GetTop10Hospitals();
+        }
+        [HttpGet]
+        [Route("GetTop10HospitalsCount")]
+        public int GetTop10HospitalsCount()
+        {
+            return _HospitalService.GetTop10Hospitals().ToList().Count;
+        }
+
+
+
+
+
         [HttpPut]
         [Route("GetAllWithPaging")]
         public IEnumerable<IndexHospitalVM.GetData> GetAllWithPaging(PagingParameter pageInfo)

@@ -40,6 +40,23 @@ namespace Asset.API.Controllers
             return _SupplierService.GetAll();
         }
 
+
+        [HttpGet]
+        [Route("GetTop10Suppliers")]
+        public IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers()
+        {
+            return _SupplierService.GetTop10Suppliers();
+        }
+        [HttpGet]
+        [Route("GetTop10SuppliersCount")]
+        public int GetTop10SuppliersCount()
+        {
+            return _SupplierService.GetTop10Suppliers().ToList().Count;
+        }
+
+
+
+
         [HttpPut]
         [Route("GetSuppliersWithPaging")]
         public IEnumerable<Supplier> GetAll(PagingParameter pageInfo)

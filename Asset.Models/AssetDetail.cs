@@ -33,11 +33,34 @@ namespace Asset.Models
 
 
         public int? BuildingId { get; set; }
+        [ForeignKey("BuildingId")]
+        public virtual Building Building { get; set; }
+
+
+
         public int? RoomId { get; set; }
+        [ForeignKey("RoomId")]
+        public virtual Room Room { get; set; }
+
+
+
+
+
+
         public int? FloorId { get; set; }
+        [ForeignKey("FloorId")]
+        public virtual Floor Floor { get; set; }
+
+
+
 
 
         public int? DepartmentId { get; set; }
+        [ForeignKey("DepartmentId")]
+        public virtual Department Department { get; set; }
+
+
+
         public int? SupplierId { get; set; }
         [ForeignKey("SupplierId")]
         public virtual Supplier Supplier { get; set; }

@@ -36,6 +36,25 @@ namespace Asset.API.Controllers
             return _BrandService.GetAll();
         }
 
+
+        [HttpGet]
+        [Route("GetTop10Brands")]
+        public IEnumerable<IndexBrandVM.GetData> GetTop10Brands()
+        {
+            return _BrandService.GetTop10Brands();
+        }
+        [HttpGet]
+        [Route("GetTop10BrandsCount")]
+        public int GetTop10BrandsCount()
+        {
+            return _BrandService.GetTop10Brands().ToList().Count;
+        }
+
+
+
+
+
+
         [HttpPut]
         [Route("GetBrandsWithPaging")]
         public IEnumerable<IndexBrandVM.GetData> GetAll(PagingParameter pageInfo)

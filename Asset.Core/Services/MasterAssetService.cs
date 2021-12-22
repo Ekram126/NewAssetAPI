@@ -95,6 +95,11 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterAssetRepository.GetById(id);
         }
 
+        public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset()
+        {
+            return _unitOfWork.MasterAssetRepository.GetTop10MasterAsset();
+        }
+
         public IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(SearchMasterAssetVM searchObj)
         {
             return _unitOfWork.MasterAssetRepository.SearchInMasterAssets(searchObj);

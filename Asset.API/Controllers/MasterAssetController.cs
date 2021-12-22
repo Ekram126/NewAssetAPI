@@ -45,6 +45,23 @@ namespace Asset.API.Controllers
         {
             return _MasterAssetService.GetAll();
         }
+
+        [HttpGet]
+        [Route("GetTop10MasterAsset")]
+        public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset()
+        {
+            return _MasterAssetService.GetTop10MasterAsset();
+        }
+
+        [HttpGet]
+        [Route("GetTop10MasterAssetCount")]
+        public int GetTop10MasterAssetCount()
+        {
+            var total = _MasterAssetService.GetTop10MasterAsset().ToList().Count();
+            return total;
+        }
+
+
         [HttpPut]
         [Route("GetMasterAssetsWithPaging")]
         public IEnumerable<IndexMasterAssetVM.GetData> GetAllWithPaging(PagingParameter pageInfo)
