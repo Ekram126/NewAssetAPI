@@ -22,7 +22,7 @@ namespace Asset.Domain.Repositories
 
         IndexRequestsVM GetRequestByWorkOrderId(int workOrderId);
         int GetTotalRequestForAssetInHospital(int assetDetailId);
-        int GetTotalOpenRequestInThisWeek(string userId);
+        int GetTotalOpenRequest(string userId);
         IndexRequestsVM GetById(int id);
         int Add(CreateRequestVM createRequestVM);
         void Update(int Id, EditRequestVM editRequestVM);

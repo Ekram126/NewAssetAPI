@@ -79,7 +79,7 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId)
         {
-            return _unitOfWork.Request.GetRequestsByUserIdAssetId(userId, statusId);
+            return _unitOfWork.Request.GetAllRequestsByStatusId(userId, statusId);
         }
 
         public IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId, int assetId)
@@ -97,9 +97,9 @@ namespace Asset.Core.Services
             return await _unitOfWork.Request.SortRequests(sortObj);
         }
 
-        public int GetTotalOpenRequestInThisWeek(string userId)
+        public int GetTotalOpenRequest(string userId)
         {
-            return _unitOfWork.Request.GetTotalOpenRequestInThisWeek(userId);
+            return _unitOfWork.Request.GetTotalOpenRequest(userId);
         }
     }
 }

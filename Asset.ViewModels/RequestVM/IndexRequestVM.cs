@@ -40,7 +40,7 @@ namespace Asset.ViewModels.RequestVM
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }
             public string StatusColor { get; set; }
-
+            public string StatusIcon { get; set; }
 
             public string PeriorityName { get; set; }
             public string PeriorityNameAr { get; set; }

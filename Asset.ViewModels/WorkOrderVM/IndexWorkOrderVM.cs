@@ -47,7 +47,7 @@ namespace Asset.ViewModels.WorkOrderVM
         public string StatusName { get; set; }
         public string StatusNameAr { get; set; }
         public string statusColor { get; set; }
-
+        public string statusIcon { get; set; }
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
         public string SerialNumber { get; set; }

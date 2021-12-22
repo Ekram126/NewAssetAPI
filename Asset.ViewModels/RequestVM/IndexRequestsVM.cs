@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Asset.ViewModels.RequestTrackingVM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,6 +30,8 @@ namespace Asset.ViewModels.RequestVM
         public int RequestPeriorityId { get; set; }
         public string PeriorityNameAr { get; set; }
         public string PeriorityName { get; set; }
+        public string PeriorityColor { get; set; }
+        public string PeriorityIcon { get; set; }
         public string CreatedById { get; set; }
         public string CreatedBy { get; set; }
         public int RequestTypeId { get; set; }
@@ -37,6 +40,7 @@ namespace Asset.ViewModels.RequestVM
         public int RequestTrackingId { get; set; }
         public int RequestStatusId { get; set; }
 
+        public string StatusIcon { get; set; }
         public int StatusId { get; set; }
         public string StatusColor { get; set; }
         public string StatusName { get; set; }
@@ -51,5 +55,9 @@ namespace Asset.ViewModels.RequestVM
         {
             get; set;
         }
+
+        public int CountListTracks { get; set; }
+        public int CountWorkOrder { get; set; }
+        public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
     }
 }

@@ -76,10 +76,10 @@ namespace Asset.API.Controllers
 
 
         [HttpGet]
-        [Route("GetTotalOpenRequestInThisWeek/{userId}")]
-        public int GetTotalOpenRequestInThisWeek(string userId)
+        [Route("GetTotalOpenRequest/{userId}")]
+        public int GetTotalOpenReques(string userId)
         {
-              return _requestService.GetTotalOpenRequestInThisWeek(userId);
+              return _requestService.GetTotalOpenRequest(userId);
         }
 
         // POST api/<RequestController>
