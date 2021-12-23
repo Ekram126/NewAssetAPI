@@ -110,8 +110,7 @@ namespace Asset.API
             services.AddTransient<IWorkOrderAssignService, WorkOrderAssignService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPagingService, PagingService>();
-            services.AddScoped<QrController, QrController>();
-
+            services.AddScoped<QrController, QrController>();        
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                  .AddEntityFrameworkStores<ApplicationDbContext>()

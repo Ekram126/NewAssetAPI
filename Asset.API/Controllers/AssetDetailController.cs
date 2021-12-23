@@ -20,22 +20,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Syncfusion.DocIO;
-using Syncfusion.DocIO.DLS;
-using Syncfusion.Pdf.Barcode;
 using System.Data;
 using System.Drawing;
-using FastMember;
-using Syncfusion.Pdf;
-using Syncfusion.Pdf.Graphics;
-using GemBox.Document;
 using System.Drawing.Imaging;
-using ZXing;
-using ZXing.Common;
-using GroupDocs.Signature.Options;
-using GroupDocs.Signature.Domain;
-using GroupDocs.Signature;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -254,7 +241,10 @@ namespace Asset.API.Controllers
         {
             var savedId = _AssetDetailService.Add(AssetDetailVM);
             _qrController.Index(AssetDetailVM.Id);
-
+            CreateAssetDetailAttachmentVM qrAttach = new CreateAssetDetailAttachmentVM();
+            qrAttach.AssetDetailId = AssetDetailVM.Id;
+            qrAttach.FileName = "equipment-" + AssetDetailVM.Id+".png";
+           CreateAssetDetailAttachments(qrAttach);
             return Ok(new { assetId = savedId });
 
         }
@@ -392,119 +382,7 @@ namespace Asset.API.Controllers
         }
 
 
-        //[HttpPost]
-        //[Route("CreateQrFile")]
-        //public void CreateQrFile()
-        //{
        
-
-      
-        //    using (Signature signature = new Signature(_webHostingEnvironment.ContentRootPath + "\\UploadedAttachments\\QrTemplates\\Template.docx")) // Provide any DOC, PDF, XLS, PPT, PNG, JPG, WebP file.
-        //    {
-        //        // Create QR Code option with predefined text
-        //        QrCodeSignOptions options = new QrCodeSignOptions("Signed by GroupDocs")
-        //        {
-        //            EncodeType = QrCodeTypes.QR,
-        //            // Set QR Code position & appearance
-        //            Left = 50,
-        //            Top = 50,
-        //            Width = 90,
-        //            Height = 90
-        //        };
-        //        SignResult result = signature.Sign(_webHostingEnvironment.ContentRootPath + "\\UploadedAttachments\\QrTemplates\\Yomna4-8.docx", options);
-
-        //        QrCodeSignOptions options1 = new QrCodeSignOptions("Signed by GroupDocs")
-        //        {
-        //            EncodeType = QrCodeTypes.QR,
-        //            // Set QR Code position & appearance
-        //            Left = 50,
-        //            Top = 50,
-        //            Width = 90,
-        //            Height = 90
-        //        };
-        //        // Sign document and save file
-        //        SignResult result1 = signature.Sign(_webHostingEnvironment.ContentRootPath + "\\UploadedAttachments\\QrTemplates\\Yomna4-8.docx", options1);
-        //    }
-
-
-
-
-        //}
-
-
-       // [HttpGet]
-       //// [Route("CreateQrFile")]
-       // public  List<FileStreamResult> Download()
-       // {
-       //     //var path = _webHostingEnvironment.ContentRootPath + "\\UploadedAttachments\\qrFiles\\"+"equipment-0.PNG";
-       //     var path = _webHostingEnvironment.ContentRootPath + "\\UploadedAttachments\\qrFiles";
-       //     List<FileStreamResult> listOfFiles = new List<FileStreamResult>().ToList();
-
-       //     foreach (var file in Directory.EnumerateFiles(
-       //     path,
-       //     "*",
-       //     SearchOption.AllDirectories)
-       //     )
-       //     {
-                
-                
-                
-       //         FileStream uploadFileStream = System.IO.File.OpenRead(file);
-       //         FileStreamResult filestrm= new FileStreamResult(uploadFileStream, "image/png");
-       //         listOfFiles.Add(filestrm);
-       //     }
-
-       //         return listOfFiles;
-       // }
-        //private static MemoryStream GenerateBarcodeStream(string data)
-        //{
-        //    var writer = new BarcodeWriter
-        //    {
-        //        Format = BarcodeFormat.PDF_417,
-        //        Options = new EncodingOptions
-        //        {
-        //            Width = 300,
-        //            Height = 150
-        //        }
-        //    };
-        //    var bitmap = writer.Write(data);
-        //    var stream = new MemoryStream();
-        //    bitmap.Save(stream, ImageFormat.Png);
-        //    return stream;
-        //}
-
-        //private void InsertBarcode(object sender, MergeImageFieldEventArgs args)
-        //{
-        //    if (args.FieldName == "QrFilePath")
-        //    {
-
-        //        // PdfPageBase page = new PdfPageBase();
-        //        //Generates barcode image for field value.
-        //              //     GenerateBarcodeImage(args.FieldName.ToString());
-
-        //        Image barcodeImage = GenerateBarcodeImage(args.FieldValue.ToString());
-        //        //Sets barcode image for merge field
-        //        //   args.ImageStream = barcodeImage;
-
-
-
-        //    }
-        //}
-
-        //private static Image GenerateBarcodeImage(string barcodeText)
-        //{
-        //    PdfQRBarcode qrCode = new PdfQRBarcode();
-        //    //Set the height and text for barcode
-        //    qrCode.Size = new Syncfusion.Drawing.SizeF(145, 45);
-        //    qrCode.Text = barcodeText;
-        //    //Convert the barcode to image
-        // //   Image barcodeImage = (Image)qrCode;
-        //    System.Drawing.Image barcodeImage = qrCode.ToImage(new System.Drawing.SizeF(300, 300));
-        //    return barcodeImage;
-
-
-
-        //}
 
     }
 }
