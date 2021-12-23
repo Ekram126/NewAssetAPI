@@ -39,7 +39,8 @@ namespace Asset.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+          //  services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfigurationVM>();
             services.AddSingleton(emailConfig);
             services.AddScoped<IEmailSender, EmailSender>();
@@ -110,8 +111,7 @@ namespace Asset.API
             services.AddTransient<IWorkOrderAssignService, WorkOrderAssignService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPagingService, PagingService>();
-            services.AddScoped<QrController, QrController>();
-
+            services.AddScoped<QrController, QrController>();        
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                  .AddEntityFrameworkStores<ApplicationDbContext>()
