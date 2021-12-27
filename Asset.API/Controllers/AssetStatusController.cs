@@ -2,6 +2,7 @@
 using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.AssetStatusVM;
+using Asset.ViewModels.PagingParameter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,13 @@ namespace Asset.API.Controllers
     public class AssetStatusController : ControllerBase
     {
 
-        private IAssetStatusService _AssetStatusService;
+        private IAssetStatusService _assetStatusService;
+        private IPagingService _pagingService;
 
-        public AssetStatusController(IAssetStatusService AssetStatusService)
+        public AssetStatusController(IAssetStatusService assetStatusService, IPagingService pagingService)
         {
-            _AssetStatusService = AssetStatusService;
+            _assetStatusService = assetStatusService;
+            _pagingService = pagingService;
         }
 
 
@@ -29,14 +32,31 @@ namespace Asset.API.Controllers
         [Route("ListAssetStatus")]
         public IEnumerable<IndexAssetStatusVM.GetData> GetAll()
         {
-            return _AssetStatusService.GetAll();
+            return _assetStatusService.GetAll();
+        }
+
+
+        [HttpPut]
+        [Route("GetAssetStatusWithPaging")]
+        public IEnumerable<IndexAssetStatusVM.GetData> GetAssetStatusWithPaging(PagingParameter pageInfo)
+        {
+            var HospitalAssets = _assetStatusService.GetAll().ToList();
+            return _pagingService.GetAll<IndexAssetStatusVM.GetData>(pageInfo, HospitalAssets);
+        }
+
+
+        [HttpGet]
+        [Route("GetAssetStatusCount")]
+        public int GetAssetStatusCount()
+       {
+            return _assetStatusService.GetAll().ToList().Count;// _AssetDetailService.GetAll().ToList().Count();
         }
 
         [HttpGet]
         [Route("GetById/{id}")]
         public ActionResult<EditAssetStatusVM> GetById(int id)
         {
-            return _AssetStatusService.GetById(id);
+            return _assetStatusService.GetById(id);
         }
         [HttpPut]
         [Route("UpdateAssetStatus")]
@@ -45,24 +65,24 @@ namespace Asset.API.Controllers
             try
             {
                 int id = AssetStatusVM.Id;
-                var lstCode = _AssetStatusService.GetAll().ToList().Where(a => a.Code == AssetStatusVM.Code && a.Id != id).ToList();
+                var lstCode = _assetStatusService.GetAll().ToList().Where(a => a.Code == AssetStatusVM.Code && a.Id != id).ToList();
                 if (lstCode.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "AssetStatus code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
                 }
-                var lstNames = _AssetStatusService.GetAll().ToList().Where(a => a.Name == AssetStatusVM.Name && a.Id != id).ToList();
+                var lstNames = _assetStatusService.GetAll().ToList().Where(a => a.Name == AssetStatusVM.Name && a.Id != id).ToList();
                 if (lstNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "AssetStatus name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
                 }
-                var lstArNames = _AssetStatusService.GetAll().ToList().Where(a => a.NameAr == AssetStatusVM.NameAr && a.Id != id).ToList();
+                var lstArNames = _assetStatusService.GetAll().ToList().Where(a => a.NameAr == AssetStatusVM.NameAr && a.Id != id).ToList();
                 if (lstArNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "AssetStatus arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
                 }
                 else
                 {
-                    int updatedRow = _AssetStatusService.Update(AssetStatusVM);
+                    int updatedRow = _assetStatusService.Update(AssetStatusVM);
                 }
             }
             catch (DbUpdateConcurrencyException ex)
@@ -79,24 +99,24 @@ namespace Asset.API.Controllers
         [Route("AddAssetStatus")]
         public ActionResult<AssetStatu> Add(CreateAssetStatusVM AssetStatusVM)
         {
-            var lstCode = _AssetStatusService.GetAll().ToList().Where(a => a.Code == AssetStatusVM.Code).ToList();
+            var lstCode = _assetStatusService.GetAll().ToList().Where(a => a.Code == AssetStatusVM.Code).ToList();
             if (lstCode.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "AssetStatus code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
             }
-            var lstNames = _AssetStatusService.GetAll().ToList().Where(a => a.Name == AssetStatusVM.Name).ToList();
+            var lstNames = _assetStatusService.GetAll().ToList().Where(a => a.Name == AssetStatusVM.Name).ToList();
             if (lstNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "AssetStatus name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstArNames = _AssetStatusService.GetAll().ToList().Where(a => a.NameAr == AssetStatusVM.NameAr).ToList();
+            var lstArNames = _assetStatusService.GetAll().ToList().Where(a => a.NameAr == AssetStatusVM.NameAr).ToList();
             if (lstArNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "AssetStatus arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {
-                var savedId = _AssetStatusService.Add(AssetStatusVM);
+                var savedId = _assetStatusService.Add(AssetStatusVM);
                 return CreatedAtAction("GetById", new { id = savedId }, AssetStatusVM);
             }
         }
@@ -108,7 +128,7 @@ namespace Asset.API.Controllers
             try
             {
 
-                int deletedRow = _AssetStatusService.Delete(id);
+                int deletedRow = _assetStatusService.Delete(id);
             }
             catch (DbUpdateConcurrencyException ex)
             {

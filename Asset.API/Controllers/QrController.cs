@@ -36,7 +36,7 @@ namespace Asset.API.Controllers
         {
             int assetId = eqId;
 
-            string url = "http://biomedicalupd-001-site1.itempurl.com/#/home/EquipmentDetails/" + assetId;
+            string url = "http://http://196.219.39.212:7777/#/AssetDetail/" + assetId;
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
 
@@ -59,7 +59,7 @@ namespace Asset.API.Controllers
             using (MemoryStream stream = new MemoryStream())
             {
                 img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                img.Save(Directory.GetCurrentDirectory() + "/UploadedAttachments/qrFiles/equipment-" + assetId + ".png", System.Drawing.Imaging.ImageFormat.Png);
+                img.Save(Directory.GetCurrentDirectory() + "/UploadedAttachments/qrFiles/asset-" + assetId + ".png", System.Drawing.Imaging.ImageFormat.Png);
 
                 return stream.ToArray();
             }

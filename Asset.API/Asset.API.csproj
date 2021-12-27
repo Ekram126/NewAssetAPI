@@ -37,6 +37,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="QRCoder" Version="1.4.1" />
   </ItemGroup>
 
@@ -112,6 +113,45 @@
     <None Include="bin\Debug\net5.0\System.IdentityModel.Tokens.Jwt.dll" />
     <None Include="bin\Debug\net5.0\System.Runtime.Caching.dll" />
     <None Include="bin\Debug\net5.0\System.Security.Cryptography.ProtectedData.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DevExpress.AspNetCore.Reporting.v21.1">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Standard\DevExpress.AspNetCore.Reporting.v21.1.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Data.v21.1">
+      <HintPath>bin\Debug\net5.0\DevExpress.Data.v21.1.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Pdf.v21.1.Core">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Standard\DevExpress.Pdf.v21.1.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Pdf.v21.1.Drawing">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Standard\DevExpress.Pdf.v21.1.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Pdf.v21.1.SkiaRenderer">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Standard\DevExpress.Pdf.v21.1.SkiaRenderer.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraReports.v21.1">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Standard\DevExpress.XtraReports.v21.1.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraReports.v21.1.Extensions">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\NetCore\DevExpress.XtraReports.v21.1.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraReports.v21.1.Service">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Standard\DevExpress.XtraReports.v21.1.Service.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraReports.v21.1.Web">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Standard\DevExpress.XtraReports.v21.1.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraReports.v21.1.Web.Azure">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Framework\DevExpress.XtraReports.v21.1.Web.Azure.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraReports.v21.1.Web.WebForms">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Framework\DevExpress.XtraReports.v21.1.Web.WebForms.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraRichEdit.v21.1">
+      <HintPath>C:\Program Files (x86)\DevExpress 21.1\Components\Bin\Framework\DevExpress.XtraRichEdit.v21.1.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

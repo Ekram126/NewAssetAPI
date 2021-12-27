@@ -50,6 +50,17 @@ namespace Asset.API.Controllers
             return _BrandService.GetTop10Brands().ToList().Count;
         }
 
+        [HttpPost]
+        [Route("SortBrands/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexBrandVM.GetData> SortAssets(int pagenumber, int pagesize, SortBrandVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list =  _BrandService.SortBrands(sortObj);
+            return _pagingService.GetAll<IndexBrandVM.GetData>(pageInfo, list.ToList());
+        }
+
 
 
 

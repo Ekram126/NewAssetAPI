@@ -21,5 +21,6 @@ namespace Asset.Domain.Services
         int Delete(int id);
 
         int CountBrands();
+        IEnumerable<IndexBrandVM.GetData> SortBrands(SortBrandVM sortObj);
     }
 }

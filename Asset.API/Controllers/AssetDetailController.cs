@@ -26,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Data.Entity;
+using System.Net;
 
 
 
@@ -82,7 +83,7 @@ namespace Asset.API.Controllers
 
         [HttpGet]
         [Route("ListAssetDetailCarouselByUserId/{userId}")]
-        public async Task< IEnumerable<IndexAssetDetailVM.GetData>> ListAssetDetailCarouselByUserId(string userId)
+        public async Task<IEnumerable<IndexAssetDetailVM.GetData>> ListAssetDetailCarouselByUserId(string userId)
         {
             return await _AssetDetailService.GetAssetDetailsByUserId(userId);
         }
@@ -138,7 +139,7 @@ namespace Asset.API.Controllers
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list =  _AssetDetailService.SearchAssetInHospital(searchObj).ToList();
+            var list = _AssetDetailService.SearchAssetInHospital(searchObj).ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
         }
 
@@ -146,7 +147,7 @@ namespace Asset.API.Controllers
         [Route("SearchAssetDetailsCount")]
         public int SearchInMasterAssetsCount(SearchMasterAssetVM searchObj)
         {
-            int count =  _AssetDetailService.SearchAssetInHospital(searchObj).ToList().Count();
+            int count = _AssetDetailService.SearchAssetInHospital(searchObj).ToList().Count();
             return count;
         }
 
@@ -405,8 +406,12 @@ namespace Asset.API.Controllers
         }
 
 
+        public static int cols = 0;
+
+        public static int rows = 0;
         [HttpGet]
         [Route("GenerateQRCode")]
+        [Obsolete]
         public ActionResult GenerateQRCode()
         {
 
@@ -416,7 +421,7 @@ namespace Asset.API.Controllers
             //string col1 = "LastName: " + dt.Rows[0]["LastName"].ToString() + '\n' + "Name: " + dt.Rows[0]["Name"].ToString();
             //string col2 = "FatherName: " + dt.Rows[0]["FatherName"].ToString() + '\n' + "Birthday: " + dt.Rows[0]["Birthday"].ToString();
             //string col3 = "Adress: " + dt.Rows[0]["Adress"].ToString();
-          //  string[,] data = new string[1, 3] { { col1, col2, col3 } };
+            //  string[,] data = new string[1, 3] { { col1, col2, col3 } };
 
 
             string strDate = DateTime.Today.Day + DateTime.Today.Month + DateTime.Today.Year + DateTime.Now.Hour + DateTime.Now.Minute.ToString() + DateTime.Now.Millisecond.ToString();
@@ -425,7 +430,6 @@ namespace Asset.API.Controllers
             {
                 var fs = System.IO.File.Create(path);
                 fs.Close();
-
             }
             using (WordprocessingDocument doc = WordprocessingDocument.Create(path, WordprocessingDocumentType.Document))
             {
@@ -433,53 +437,166 @@ namespace Asset.API.Controllers
                 mainDocumentPart.Document = new Document();
                 Body body = mainDocumentPart.Document.AppendChild(new Body());
 
-                AddTable(path, new string[,]{ { "Texas", "TX" },{ "California", "CA" },{ "New York", "NY" },{ "Massachusetts", "MA" } }, mainDocumentPart.Document);
+
+                List<IndexAssetDetailVM.GetData> lstQRs = _AssetDetailService.GetAll().ToList();
+                cols = 3;
+                rows = lstQRs.Count / 3;
+                //foreach (var item in lstQRs)
+                //{
+                //AddTable(path, new string[,] { { item.QrFilePath } }, mainDocumentPart.Document);
+                //}
+
+                //  WordprocessingDocument myDoc = WordprocessingDocument.Open(path, true);
+
+                //var docPart = doc.MainDocumentPart;
+                //var doc1 = docPart.Document;
+                var table = new Table();
+
+                var tb = new TopBorder();
+                tb.Val = BorderValues.DashDotStroked;
+                tb.Size = 12;
+
+                var borders = new TableBorders();
+                borders.TopBorder = tb;
+
+                borders.LeftBorder = new LeftBorder() { Val = BorderValues.Single, Size = 12 };
+                borders.RightBorder = new RightBorder() { Val = BorderValues.Single };
+                borders.BottomBorder = new BottomBorder() { Val = BorderValues.Single };
+                borders.InsideHorizontalBorder = new InsideHorizontalBorder() { Val = BorderValues.Single };
+                borders.InsideVerticalBorder = new InsideVerticalBorder() { Val = BorderValues.Single };
+
+                //var props = new TableProperties();
+                //props.Append(borders);
+
+                //table.Append(props);
+
+
+                //QRCodeDecoderLibrary.QRDecoder QRCodeDecoder;
+
+                //foreach (var c in lstQRs)
+                //{
+                //    var tr = new TableRow();
+                //    var customerName = c.QrFilePath;
+
+                //    var tc = new TableCell();
+
+                //    var runProp = new RunProperties();
+                //    runProp.Append(new Bold());
+                //    runProp.Append(new Color() { Val = "FF0000" });
+
+                //    var run = new Run();
+                //    run.Append(runProp);
+
+                //    var t = new Text(customerName);
+                //    run.Append(t);
+
+                //    //var img = new ImagePart();
+                //    //run.Append(img);
+
+                //    QRCodeDecoder = new QRCodeDecoderLibrary.QRDecoder();
+                //    string decoded = "";
+                //    System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(c.QrFilePath);
+                //    try
+                //    {
+                //        byte[][] DataByteArray = QRCodeDecoder.ImageDecoder(bitmap);
+                //        decoded = QRCodeResult(DataByteArray);
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        Program.WriteToLogFile(ex.ToString());
+                //    }
+                //    finally
+                //    {
+                //        bitmap.Dispose();
+                //    }
 
 
 
+                //    var justification = new Justification();
+                //    justification.Val = JustificationValues.Center;
+                //    var paraProps = new ParagraphProperties(justification);
 
-              //  doc.Save();
+                //    var p = new Paragraph();
+                //    p.Append(paraProps);
+                //    p.Append(run);
+                //    tc.Append(p);
+
+                //    var tcp = new TableCellProperties();
+                //    var tcw = new TableCellWidth();
+                //    tcw.Type = TableWidthUnitValues.Dxa;
+                //    tcw.Width = "2000";
+                //    tcp.Append(tcw);
+                //    tc.Append(tcp);
+                //    tr.Append(tc);
+                //    table.Append(tr);
+                //}
+                //body.Append(table);
+                //doc.Save();
+         
+
+
+
             }
             return Ok();
         }
 
 
-        public static void AddTable(string fileName, string[,] data,Document doc)
+        public static void AddTable(string fileName, string[,] data, Document doc)
         {
-            
-                var  document = doc.MainDocumentPart.Document;
-                DocumentFormat.OpenXml.Wordprocessing.Table table = new DocumentFormat.OpenXml.Wordprocessing.Table();
-                TableProperties props = new TableProperties(
-                    new TableBorders(
-                        new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-                        new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-                        new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-                        new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-                        new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-                        new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 }
-                    ));
-                table.ClearAllAttributes();
-                table.AppendChild<TableProperties>(props);
-                for (var i = 0; i <= data.GetUpperBound(0); i++)
+
+            var document = doc.MainDocumentPart.Document;
+            DocumentFormat.OpenXml.Wordprocessing.Table table = new DocumentFormat.OpenXml.Wordprocessing.Table();
+            TableProperties props = new TableProperties(
+                new TableBorders(
+                    new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                    new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                    new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                    new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                    new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+                    new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 }
+                ));
+            table.ClearAllAttributes();
+            table.AppendChild<TableProperties>(props);
+            for (var i = 0; i <= cols; i++)
+            {
+                var tr = new DocumentFormat.OpenXml.Wordprocessing.TableRow();
+                for (var j = 0; j <= rows; j++)
                 {
-                    var tr = new DocumentFormat.OpenXml.Wordprocessing.TableRow();
-                    for (var j = 0; j <= data.GetUpperBound(1); j++)
+                    var tc = new DocumentFormat.OpenXml.Wordprocessing.TableCell();
+                    string[] datas = data[i, j].ToString().Split('\n');
+                    for (int k = 0; k < datas.Length; k++)
                     {
-                        var tc = new DocumentFormat.OpenXml.Wordprocessing.TableCell();
-                        string[] datas = data[i, j].ToString().Split('\n');
-                        for (int k = 0; k < datas.Length; k++)
-                        {
-                            tc.Append(new Paragraph(new Run(new Text(datas[k]))));
-                            tc.Append(new TableCellProperties(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
-                        }
-                        //tc.Append(new TableCellProperties(new TableCellWidth { Type = TableWidthUnitValues.Auto }));
-                        tr.Append(tc);
+                        tc.Append(new Paragraph(new Run(new Text(datas[k]))));
+                        tc.Append(new TableCellProperties(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
                     }
-                    table.Append(tr);
+                    tc.Append(new TableCellProperties(new TableCellWidth { Type = TableWidthUnitValues.Auto }));
+                    tr.Append(tc);
                 }
+                table.Append(tr);
+            }
+
+
+
+            //for (var i = 0; i <= data.GetUpperBound(0); i++)
+            //{
+            //    var tr = new DocumentFormat.OpenXml.Wordprocessing.TableRow();
+            //    for (var j = 0; j <= data.GetUpperBound(1); j++)
+            //    {
+            //        var tc = new DocumentFormat.OpenXml.Wordprocessing.TableCell();
+            //        string[] datas = data[i, j].ToString().Split('\n');
+            //        for (int k = 0; k < datas.Length; k++)
+            //        {
+            //            tc.Append(new Paragraph(new Run(new Text(datas[k]))));
+            //            tc.Append(new TableCellProperties(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
+            //        }
+            //        tc.Append(new TableCellProperties(new TableCellWidth { Type = TableWidthUnitValues.Auto }));
+            //        tr.Append(tc);
+            //    }
+            //    table.Append(tr);
+            //}
             document.Body.Append(table);
             document.Save();
-            
+
         }
     }
 }

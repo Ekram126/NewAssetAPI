@@ -56,14 +56,14 @@ namespace Asset.API.Controllers
             return lstUsers;
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("ListUsersWithPaging")]
         public IEnumerable<IndexUserVM.GetData> GetUsers(PagingParameter paging)
         {
             List<IndexUserVM.GetData> lstUsers = new List<IndexUserVM.GetData>();
             var userlist = _applicationUser.Users.ToList();
-            var users = _pagingService.GetAll<ApplicationUser>(paging, userlist);
-            foreach (var item in users)
+            //var users = _pagingService.GetAll<ApplicationUser>(paging, userlist);
+            foreach (var item in userlist)
             {
                 IndexUserVM.GetData userObj = new IndexUserVM.GetData();
                 userObj.Id = item.Id;
@@ -80,27 +80,138 @@ namespace Asset.API.Controllers
                 }
 
                 strRoles = string.Join<string>(",", list);
-                //foreach (var roleName in list)
-                //{
-                //  //  strRoles = string.Join(",", roleName);
-                //}
-
                 userObj.DisplayName = strRoles;
-
-
                 userObj.CategoryRoleName = _roleCategoryService.GetById((int)item.RoleCategoryId).Name;
                 userObj.PhoneNumber = item.PhoneNumber;
                 userObj.Email = item.Email;
                 lstUsers.Add(userObj);
             }
-            return lstUsers;
+
+
+            return _pagingService.GetAll<IndexUserVM.GetData>(paging, lstUsers);
+            //  return lstUsers;
         }
+
+
+
+
+        //[HttpPost]
+        //[Route("SortHospitals/{pagenumber}/{pagesize}")]
+        //public IEnumerable<IndexHospitalVM.GetData> SortHospitals(int pagenumber, int pagesize, SortVM sortObj)
+        //{
+        //    PagingParameter pageInfo = new PagingParameter();
+        //    pageInfo.PageNumber = pagenumber;
+        //    pageInfo.PageSize = pagesize;
+        //    var list = _HospitalService.SortHospitals(sortObj).ToList();
+        //    return _pagingService.GetAll<IndexHospitalVM.GetData>(pageInfo, list);
+        //}
+
+        [HttpPost]
+        [Route("SortUsers/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexUserVM.GetData> SortUsers(int pagenumber, int pagesize, UserSortVM sortObj)
+        {
+
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            List<IndexUserVM.GetData> lstUsers = new List<IndexUserVM.GetData>();
+            var userlist = _applicationUser.Users.ToList();
+            foreach (var item in userlist)
+            {
+                IndexUserVM.GetData userObj = new IndexUserVM.GetData();
+                userObj.Id = item.Id;
+                userObj.UserName = item.UserName;
+                var roleNames = (from userRole in _context.UserRoles
+                                 join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+                                 where userRole.UserId == item.Id
+                                 select role.Name).ToList();
+                string strRoles = "";
+                var list = new List<string>();
+                foreach (var role in roleNames)
+                {
+                    list.Add(role);
+                }
+
+                strRoles = string.Join<string>(",", list);
+                userObj.DisplayName = strRoles;
+                userObj.CategoryRoleName = _roleCategoryService.GetById((int)item.RoleCategoryId).Name;
+                userObj.PhoneNumber = item.PhoneNumber;
+                userObj.Email = item.Email;
+                lstUsers.Add(userObj);
+            }
+
+            if (sortObj.UserName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstUsers = lstUsers.OrderByDescending(d => d.UserName).ToList();
+                else
+                    lstUsers = lstUsers.OrderBy(d => d.UserName).ToList();
+            }
+            if (sortObj.PhoneNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstUsers = lstUsers.OrderByDescending(d => d.PhoneNumber).ToList();
+                else
+                    lstUsers = lstUsers.OrderBy(d => d.PhoneNumber).ToList();
+            }
+            if (sortObj.DisplayName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstUsers = lstUsers.OrderByDescending(d => d.DisplayName).ToList();
+                else
+                    lstUsers = lstUsers.OrderBy(d => d.DisplayName).ToList();
+            }
+
+            if (sortObj.DisplayNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstUsers = lstUsers.OrderByDescending(d => d.DisplayName).ToList();
+                else
+                    lstUsers = lstUsers.OrderBy(d => d.DisplayName).ToList();
+            }
+
+
+
+
+            if (sortObj.Email != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstUsers = lstUsers.OrderByDescending(d => d.Email).ToList();
+                else
+                    lstUsers = lstUsers.OrderBy(d => d.Email).ToList();
+            }
+
+            if (sortObj.CategoryRoleName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstUsers = lstUsers.OrderByDescending(d => d.CategoryRoleName).ToList();
+                else
+                    lstUsers = lstUsers.OrderBy(d => d.CategoryRoleName).ToList();
+            }
+
+
+
+            return _pagingService.GetAll<IndexUserVM.GetData>(pageInfo, lstUsers);
+        }
+
+
+
         [HttpGet]
         [Route("getcount")]
         public int count()
         {
-            return _pagingService.Count<ApplicationUser>();
+            return _applicationUser.Users.ToList().Count;
         }
+
+        [HttpGet]
+        [Route("SortCount")]
+        public int SortCount()
+        {
+            return _applicationUser.Users.ToList().Count;
+        }
+
+
+
 
         [HttpGet]
         [Route("ListUsersByHospitalId/{HospitalId}")]
@@ -117,6 +228,12 @@ namespace Asset.API.Controllers
             }
             return lstUsers;
         }
+
+
+
+
+
+
 
 
         [HttpGet]

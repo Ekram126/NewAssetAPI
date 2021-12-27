@@ -231,25 +231,7 @@ namespace Asset.Core.Repositories
                 lstHospitals = _context.Hospitals.Include(a => a.Governorate).Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
                      .Select(item => new IndexHospitalVM.GetData
                      {
-                         //Id = item.Id,
-                         //Code = item.Code,
-                         //Name = item.Name,
-                         //NameAr = item.NameAr,
-                         //CityId = item.CityId != 0 ? item.City.Id : 0,
-                         //CityName = item.CityId != 0 ? item.City.Name : "",
-                         //CityNameAr = item.CityId != 0 ? item.City.NameAr : "",
-                         //GovernorateId = item.GovernorateId != 0 ? item.Governorate.Id : 0,
-                         //GovernorateName = item.GovernorateId != 0 ? item.Governorate.Name : "",
-                         //GovernorateNameAr = item.GovernorateId != 0 ? item.Governorate.NameAr : "",
-                         //OrganizationId = item.OrganizationId != 0 ? item.Organization.Id : 0,
-                         //OrgName = item.OrganizationId != 0 ? item.Organization.Name : "",
-                         //OrgNameAr = item.OrganizationId != 0 ? item.Organization.NameAr : "",
-                         //SubOrganizationId = item.SubOrganizationId != 0 ? item.SubOrganization.Id : 0,
-                         //SubOrgName = item.SubOrganizationId != 0 ? item.SubOrganization.Name : "",
-                         //SubOrgNameAr = item.SubOrganizationId != 0 ? item.SubOrganization.NameAr : ""
-
-
-                         Id = item.Id,
+                          Id = item.Id,
                          Code = item.Code,
                          Name = item.Name,
                          NameAr = item.NameAr,
