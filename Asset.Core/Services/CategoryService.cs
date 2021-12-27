@@ -48,6 +48,11 @@ namespace Asset.Core.Services
             return _unitOfWork.CategoryRepository.GetById(id);
         }
 
+        public IEnumerable<IndexCategoryVM.GetData> GetCategoryByCategoryTypeId(int categoryTypeId)
+        {
+            return _unitOfWork.CategoryRepository.GetCategoryByCategoryTypeId(categoryTypeId);
+        }
+
         public IEnumerable<IndexCategoryVM.GetData> GetCategoryByName(string categoryName)
         {
             return _unitOfWork.CategoryRepository.GetCategoryByName(categoryName);
@@ -56,7 +61,7 @@ namespace Asset.Core.Services
         public int Update(EditCategoryVM categoryObj)
         {
             _unitOfWork.CategoryRepository.Update(categoryObj);
-            _unitOfWork.CommitAsync();
+            //_unitOfWork.CommitAsync();
             return categoryObj.Id;
         }
     }

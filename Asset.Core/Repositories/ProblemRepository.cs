@@ -82,6 +82,20 @@ namespace Asset.Core.Repositories
             }).Where(e=>e.Id == id).FirstOrDefault();
         }
 
+        public IEnumerable<IndexProblemVM> GetProblemsByMasterAssetId(int masterAssetId)
+        {
+         
+            return _context.Problems.Where(a=>a.MasterAssetId == masterAssetId).Select(prob => new IndexProblemVM
+            {
+                Id = prob.Id,
+                Name = prob.Name,
+                NameAr = prob.NameAr,
+                Code = prob.Code,
+                MasterAssetId = (int)prob.MasterAssetId,
+                MasterAssetName = prob.MasterAsset.Name
+            }).ToList();
+        }
+
         public void Update(EditProblemVM editProblemVM)
         {
             try

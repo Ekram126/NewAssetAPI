@@ -16,6 +16,7 @@ namespace Asset.Domain.Services
 
         IEnumerable<Category> GetAllCategories();
         IEnumerable<IndexCategoryVM.GetData> GetCategoryByName(string categoryName);
+        IEnumerable<IndexCategoryVM.GetData> GetCategoryByCategoryTypeId(int categoryTypeId);
         int Add(CreateCategoryVM categoryVM);
         int Update(EditCategoryVM categoryVM);
         int Delete(int id);

@@ -30,6 +30,7 @@ namespace Asset.Models
         public DbSet<AssetDetail> AssetDetails { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Origin> Origins { get; set; }
+        public DbSet<CategoryType> CategoryTypes { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }

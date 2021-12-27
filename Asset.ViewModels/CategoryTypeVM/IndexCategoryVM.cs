@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Asset.ViewModels.CategoryVM
+namespace Asset.ViewModels.CategoryTypeVM
 {
-    public class IndexCategoryVM
+    public class IndexCategoryTypeVM
     {
 
         public List<GetData> Results { get; set; }
@@ -18,7 +18,6 @@ namespace Asset.ViewModels.CategoryVM
             public string Code { get; set; }
             public string Name { get; set; }
             public string NameAr { get; set; }
-            public int? CategoryTypeId { get; set; }
         }
     }
 }

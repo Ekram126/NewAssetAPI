@@ -1,11 +1,10 @@
-﻿namespace Asset.ViewModels.CategoryVM
+﻿namespace Asset.ViewModels.CategoryTypeVM
 {
-    public class EditCategoryVM
+    public class EditCategoryTypeVM
     {
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public string NameAr { get; set; }
-        public int? CategoryTypeId { get; set; }
     }
 }

@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Asset.Models
+namespace Asset.ViewModels.CategoryTypeVM
 {
-   public class Category
+    public class CreateCategoryTypeVM
     {
-        public int Id { get; set; }
-
-        [StringLength(5)]
         public string Code { get; set; }
-        public string Name { get; set; }
-        public string NameAr { get; set; }
-        public int? CategoryTypeId { get; set; }
 
+        public string Name { get; set; }
+      
+        public string NameAr { get; set; }
     }
 }

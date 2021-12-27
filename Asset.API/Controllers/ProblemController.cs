@@ -36,6 +36,14 @@ namespace Asset.API.Controllers
             return _problemService.GetProblemById(id);
         }
 
+
+        [HttpGet]
+        [Route("GetProblemByMasterAssetId/{masterAssetId}")]
+        public IEnumerable<IndexProblemVM> GetProblemsByMasterAssetId(int masterAssetId)
+        {
+            return _problemService.GetProblemsByMasterAssetId(masterAssetId);
+        }
+
         // POST api/<ProblemController>
         [HttpPost]
         [Route("AddProblem")]
@@ -58,10 +66,10 @@ namespace Asset.API.Controllers
             }
             else
             {
-               _problemService.AddProblem(createProblemVM);
+                _problemService.AddProblem(createProblemVM);
                 return Ok();
             }
-           
+
         }
 
         // PUT api/<ProblemController>/5

@@ -13,5 +13,7 @@ namespace Asset.ViewModels.CategoryVM
         public string Name { get; set; }
       
         public string NameAr { get; set; }
+
+        public int? CategoryTypeId { get; set; }
     }
 }

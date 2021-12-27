@@ -21,6 +21,8 @@ namespace Asset.Core
         private IAssetPeriorityRepository _assetPeriorityRepository;
         private IAssetDetailRepository _assetDetailRepository;
         private IBrandRepository _brandRepository;
+
+        private ICategoryTypeRepository _categoryTypeRepository;
         private ICategoryRepository _categoryRepository;
         private IEmployeeRepository _employeeRepository;
         private IMasterAssetRepository _masterAssetRepository;
@@ -121,6 +123,10 @@ namespace Asset.Core
         public IAssetDetailRepository AssetDetailRepository => _assetDetailRepository = _assetDetailRepository ?? new AssetDetailRepositories(_context);
 
         public IBrandRepository BrandRepository => _brandRepository = _brandRepository ?? new BrandRepositories(_context);
+
+        public ICategoryTypeRepository CategoryTypeRepository => _categoryTypeRepository = _categoryTypeRepository ?? new CategoryTypeRepositories(_context);
+
+
 
         public ICategoryRepository CategoryRepository => _categoryRepository = _categoryRepository ?? new CategoryRepositories(_context);
 

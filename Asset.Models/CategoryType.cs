@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Asset.Models
 {
-   public class CategoryTYpe
+   public class CategoryType
     {
         public int Id { get; set; }
 

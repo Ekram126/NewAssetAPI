@@ -1,7 +1,7 @@
 ﻿using Asset.API.Helpers;
 using Asset.Domain.Services;
 using Asset.Models;
-using Asset.ViewModels.CategoryVM;
+using Asset.ViewModels.CategoryTypeVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,62 +14,49 @@ namespace Asset.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class CategoryTypeController : ControllerBase
     {
 
-        private ICategoryService _CategoryService;
+        private ICategoryTypeService _categoryTypeService;
 
-        public CategoryController(ICategoryService CategoryService)
+        public CategoryTypeController(ICategoryTypeService categoryTypeService)
         {
-            _CategoryService = CategoryService;
+            _categoryTypeService = categoryTypeService;
         }
 
 
         [HttpGet]
-        [Route("ListCategories")]
-        public IEnumerable<IndexCategoryVM.GetData> GetAll()
+        [Route("ListCategoryTypes")]
+        public IEnumerable<IndexCategoryTypeVM.GetData> GetAll()
         {
-            return _CategoryService.GetAll();
+            return _categoryTypeService.GetAll();
         }
-
-
-        [HttpGet]
-        [Route("GetCategoryByCategoryTypeId/{typeId}")]
-        public IEnumerable<IndexCategoryVM.GetData> GetCategoryByCategoryTypeId(int typeId)
-        {
-            return _CategoryService.GetCategoryByCategoryTypeId(typeId);
-        }
-
-
-
 
         [HttpGet]
         [Route("GetById/{id}")]
-        public ActionResult<EditCategoryVM> GetById(int id)
+        public ActionResult<EditCategoryTypeVM> GetById(int id)
         {
-            return _CategoryService.GetById(id);
+            return _categoryTypeService.GetById(id);
         }
 
-
-
         [HttpPut]
-        [Route("UpdateCategory")]
-        public IActionResult Update(EditCategoryVM CategoryVM)
+        [Route("UpdateCategoryType")]
+        public IActionResult Update(EditCategoryTypeVM CategoryVM)
         {
             try
             {
                 int id = CategoryVM.Id;
-                var lstCategoryCode = _CategoryService.GetAllCategories().ToList().Where(a => a.Code == CategoryVM.Code && a.Id != id).ToList();
+                var lstCategoryCode = _categoryTypeService.GetAll().ToList().Where(a => a.Code == CategoryVM.Code && a.Id != id).ToList();
                 if (lstCategoryCode.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Category code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
                 }
-                var lstCategoryNames = _CategoryService.GetAllCategories().ToList().Where(a => a.Name == CategoryVM.Name && a.Id != id).ToList();
+                var lstCategoryNames = _categoryTypeService.GetAll().ToList().Where(a => a.Name == CategoryVM.Name && a.Id != id).ToList();
                 if (lstCategoryNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Category name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
                 }
-                var lstCategoryArNames = _CategoryService.GetAllCategories().ToList().Where(a => a.NameAr == CategoryVM.NameAr && a.Id != id).ToList();
+                var lstCategoryArNames = _categoryTypeService.GetAll().ToList().Where(a => a.NameAr == CategoryVM.NameAr && a.Id != id).ToList();
                 if (lstCategoryArNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "Category arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
@@ -77,7 +64,7 @@ namespace Asset.API.Controllers
 
                 else
                 {
-                    int updatedRow = _CategoryService.Update(CategoryVM);
+                    int updatedRow = _categoryTypeService.Update(CategoryVM);
                 }
             }
             catch (DbUpdateConcurrencyException ex)
@@ -91,27 +78,27 @@ namespace Asset.API.Controllers
 
 
         [HttpPost]
-        [Route("AddCategory")]
-        public ActionResult<Category> Add(CreateCategoryVM CategoryVM)
+        [Route("AddCategoryType")]
+        public ActionResult<Category> Add(CreateCategoryTypeVM CategoryVM)
         {
-            var lstCategoryCode = _CategoryService.GetAllCategories().ToList().Where(a => a.Code == CategoryVM.Code).ToList();
+            var lstCategoryCode = _categoryTypeService.GetAll().ToList().Where(a => a.Code == CategoryVM.Code).ToList();
             if (lstCategoryCode.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Category code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
             }
-            var lstCategoryNames = _CategoryService.GetAllCategories().ToList().Where(a => a.Name == CategoryVM.Name).ToList();
+            var lstCategoryNames = _categoryTypeService.GetAll().ToList().Where(a => a.Name == CategoryVM.Name).ToList();
             if (lstCategoryNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Category name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstCategoryArNames = _CategoryService.GetAllCategories().ToList().Where(a => a.NameAr == CategoryVM.NameAr).ToList();
+            var lstCategoryArNames = _categoryTypeService.GetAll().ToList().Where(a => a.NameAr == CategoryVM.NameAr).ToList();
             if (lstCategoryArNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "Category arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {
-                var savedId = _CategoryService.Add(CategoryVM);
+                var savedId = _categoryTypeService.Add(CategoryVM);
                 return CreatedAtAction("GetById", new { id = savedId }, CategoryVM);
            }
         }
@@ -123,7 +110,7 @@ namespace Asset.API.Controllers
             try
             {
 
-                int deletedRow = _CategoryService.Delete(id);
+                int deletedRow = _categoryTypeService.Delete(id);
             }
             catch (DbUpdateConcurrencyException ex)
             {

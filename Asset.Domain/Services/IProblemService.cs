@@ -10,6 +10,7 @@ namespace Asset.Domain.Services
     public interface IProblemService
     {
         IEnumerable<IndexProblemVM> GetAllProblems();
+        IEnumerable<IndexProblemVM> GetProblemsByMasterAssetId(int masterAssetId);
         IndexProblemVM GetProblemById(int id);
         void AddProblem(CreateProblemVM createProblemVM);
         void UpdateProblem(EditProblemVM editProblemVM);

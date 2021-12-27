@@ -10,6 +10,7 @@ namespace Asset.Domain.Repositories
     public interface IProblemRepository
     {
         IEnumerable<IndexProblemVM> GetAll();
+        IEnumerable<IndexProblemVM> GetProblemsByMasterAssetId(int masterAssetId);
         IndexProblemVM GetById(int id);
         void Add(CreateProblemVM createProblemVM);
         void Update(EditProblemVM editProblemVM);

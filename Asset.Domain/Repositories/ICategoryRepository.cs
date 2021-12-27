@@ -16,7 +16,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<Category> GetAllCategories();
         IEnumerable<IndexCategoryVM.GetData> GetCategoryByName(string categoryName);
 
-
+        IEnumerable<IndexCategoryVM.GetData> GetCategoryByCategoryTypeId(int categoryTypeId);
 
         EditCategoryVM GetById(int id);
         int Add(CreateCategoryVM categoryVM);

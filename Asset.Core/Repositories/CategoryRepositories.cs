@@ -31,6 +31,7 @@ namespace Asset.Core.Repositories
                     categoryObj.Code = model.Code;
                     categoryObj.Name = model.Name;
                     categoryObj.NameAr = model.NameAr;
+                    categoryObj.CategoryTypeId = model.CategoryTypeId;
                     _context.Categories.Add(categoryObj);
                     _context.SaveChanges();
                 }
@@ -67,7 +68,8 @@ namespace Asset.Core.Repositories
                 Id = item.Id,
                 Code = item.Code,
                 Name = item.Name,
-                NameAr = item.NameAr
+                NameAr = item.NameAr,
+                CategoryTypeId= item.CategoryTypeId
             });
         }
 
@@ -83,8 +85,21 @@ namespace Asset.Core.Repositories
                 Id = item.Id,
                 Code = item.Code,
                 Name = item.Name,
-                NameAr = item.NameAr
+                NameAr = item.NameAr,
+                CategoryTypeId= item.CategoryTypeId
             }).FirstOrDefault();
+        }
+
+        public IEnumerable<IndexCategoryVM.GetData> GetCategoryByCategoryTypeId(int categoryTypeId)
+        {
+            return _context.Categories.Where(a => a.CategoryTypeId == categoryTypeId).ToList().Select(item => new IndexCategoryVM.GetData
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                NameAr = item.NameAr,
+                CategoryTypeId = item.CategoryTypeId
+            });
         }
 
         public IEnumerable<IndexCategoryVM.GetData> GetCategoryByName(string categoryName)
@@ -94,7 +109,8 @@ namespace Asset.Core.Repositories
                 Id = item.Id,
                 Code = item.Code,
                 Name = item.Name,
-                NameAr = item.NameAr
+                NameAr = item.NameAr,
+                CategoryTypeId = item.CategoryTypeId
             });
         }
 
@@ -106,6 +122,7 @@ namespace Asset.Core.Repositories
                 categoryObj.Code = model.Code;
                 categoryObj.Name = model.Name;
                 categoryObj.NameAr = model.NameAr;
+                categoryObj.CategoryTypeId = model.CategoryTypeId;
                 _context.Entry(categoryObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return categoryObj.Id;

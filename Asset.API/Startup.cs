@@ -54,6 +54,7 @@ namespace Asset.API
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IAssetDetailService, AssetDetailService>();
             services.AddScoped<IAssetPeriorityService, AssetPeriorityService>();
+            services.AddScoped<ICategoryTypeService, CategoryTypeService>();
             services.AddScoped<IBrandService, BrandService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ISubCategoryService, SubCategoryService>();

@@ -20,6 +20,7 @@ namespace Asset.Domain
         IMasterAssetComponentRepository MasterAssetComponentRepository { get; }
         IAssetDetailRepository AssetDetailRepository { get; }
         IBrandRepository BrandRepository { get; }
+        ICategoryTypeRepository CategoryTypeRepository { get; }
         ICategoryRepository CategoryRepository { get; }
         IEmployeeRepository EmployeeRepository { get; }
         IOriginRepository OriginRepository { get; }
@@ -36,13 +37,6 @@ namespace Asset.Domain
         IHospitalExecludeReasonRepository HospitalExecludeReasonRepository { get; }
         IHospitalHoldReasonRepository HospitalHoldReasonRepository { get; }
    
-
-
-
-
-
-
-
         IAssetMovementRepository AssetMovementRepository { get; }
         IECRIRepository ECRIRepository { get; }
         IAssetStatusRepository AssetStatusRepository { get; }
