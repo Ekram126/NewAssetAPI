@@ -42,9 +42,9 @@ namespace Asset.Core.Services
             return _unitOfWork.SubProblem.GetById(id);
         }
 
-        public void UpdateSubProblem(int id, EditSubProblemVM editSubProblemVM)
+        public void UpdateSubProblem(EditSubProblemVM editSubProblemVM)
         {
-            _unitOfWork.SubProblem.Update(id, editSubProblemVM);
+            _unitOfWork.SubProblem.Update(editSubProblemVM);
         }
     }
 }

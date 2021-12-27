@@ -37,9 +37,9 @@ namespace Asset.Core.Services
             return _unitOfWork.Problem.GetById(id);
         }
 
-        public void UpdateProblem(int id, EditProblemVM editProblemVM)
+        public void UpdateProblem(EditProblemVM editProblemVM)
         {
-            _unitOfWork.Problem.Update(id, editProblemVM);
+            _unitOfWork.Problem.Update( editProblemVM);
         }
     }
 }

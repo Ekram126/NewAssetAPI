@@ -68,27 +68,28 @@ namespace Asset.API.Controllers
         }
 
         // PUT api/<SubProblemController>/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, EditSubProblemVM editSubProblemVM)
+        [HttpPut]
+        public IActionResult Put(EditSubProblemVM editSubProblemVM)
         {
-            var lstCode = _subProblemService.GetAllSubProblems().ToList().Where(a => a.Code == editSubProblemVM.Code && a.Id == editSubProblemVM.Id).ToList();
+            int id = editSubProblemVM.Id;
+            var lstCode = _subProblemService.GetAllSubProblems().ToList().Where(a => a.Code == editSubProblemVM.Code && a.Id != id).ToList();
             if (lstCode.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = " code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
             }
-            var lstNames = _subProblemService.GetAllSubProblems().ToList().Where(a => a.Name == editSubProblemVM.Name && a.Id == editSubProblemVM.Id).ToList();
+            var lstNames = _subProblemService.GetAllSubProblems().ToList().Where(a => a.Name == editSubProblemVM.Name && a.Id != id).ToList();
             if (lstNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = " name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstArNames = _subProblemService.GetAllSubProblems().ToList().Where(a => a.NameAr == editSubProblemVM.NameAr && a.Id == editSubProblemVM.Id).ToList();
+            var lstArNames = _subProblemService.GetAllSubProblems().ToList().Where(a => a.NameAr == editSubProblemVM.NameAr && a.Id != id).ToList();
             if (lstArNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = " arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = " arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {
-                _subProblemService.UpdateSubProblem(id, editSubProblemVM);
+                _subProblemService.UpdateSubProblem( editSubProblemVM);
                 return Ok();
             }
 

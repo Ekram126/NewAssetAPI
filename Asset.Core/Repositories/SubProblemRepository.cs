@@ -95,17 +95,17 @@ namespace Asset.Core.Repositories
             }).Where(e=>e.Id==id).FirstOrDefault();
         }
 
-        public void Update(int id, EditSubProblemVM editSubProblemVM)
+        public void Update(EditSubProblemVM editSubProblemVM)
         {
             try
             {
-                SubProblem subProblem = new SubProblem();
-                subProblem.Id = editSubProblemVM.Id;
-                subProblem.Name = editSubProblemVM.Name;
-                subProblem.NameAr = editSubProblemVM.NameAr;
-                subProblem.Code = editSubProblemVM.Code;
-                subProblem.ProblemId = editSubProblemVM.ProblemId;
-                _context.Entry(subProblem).State = EntityState.Modified;
+                SubProblem subProblemObj = _context.SubProblems.Find(editSubProblemVM.Id);
+                subProblemObj.Id = editSubProblemVM.Id;
+                subProblemObj.Name = editSubProblemVM.Name;
+                subProblemObj.NameAr = editSubProblemVM.NameAr;
+                subProblemObj.Code = editSubProblemVM.Code;
+                subProblemObj.ProblemId = editSubProblemVM.ProblemId;
+                _context.Entry(subProblemObj).State = EntityState.Modified;
                 _context.SaveChanges();
             }
             catch (Exception ex)

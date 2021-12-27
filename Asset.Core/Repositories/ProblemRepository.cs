@@ -82,17 +82,17 @@ namespace Asset.Core.Repositories
             }).Where(e=>e.Id == id).FirstOrDefault();
         }
 
-        public void Update(int id, EditProblemVM editProblemVM)
+        public void Update(EditProblemVM editProblemVM)
         {
             try
             {
-                Problem problem = new Problem();
-                problem.Id = editProblemVM.Id;
-                problem.Name = editProblemVM.Name;
-                problem.NameAr = editProblemVM.NameAr;
-                problem.Code = editProblemVM.Code;
-                problem.MasterAssetId = editProblemVM.MasterAssetId;
-                _context.Entry(problem).State = EntityState.Modified;
+                Problem problemObj = _context.Problems.Find(editProblemVM.Id);
+                problemObj.Id = editProblemVM.Id;
+                problemObj.Name = editProblemVM.Name;
+                problemObj.NameAr = editProblemVM.NameAr;
+                problemObj.Code = editProblemVM.Code;
+                problemObj.MasterAssetId = editProblemVM.MasterAssetId;
+                _context.Entry(problemObj).State = EntityState.Modified;
                 _context.SaveChanges();
             }
             catch (Exception ex)

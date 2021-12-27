@@ -13,7 +13,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexSubProblemVM> GetAllSubProblemsByProblemId(int ProblemId);
         IndexSubProblemVM GetSubProblemById(int id);
         void AddSubProblem(CreateSubProblemVM createSubProblemVM);
-        void UpdateSubProblem(int id, EditSubProblemVM editSubProblemVM);
+        void UpdateSubProblem(EditSubProblemVM editSubProblemVM);
         void DeleteSubProblem(int id);
     }
 }

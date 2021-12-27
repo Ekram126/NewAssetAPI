@@ -12,7 +12,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexProblemVM> GetAll();
         IndexProblemVM GetById(int id);
         void Add(CreateProblemVM createProblemVM);
-        void Update(int id, EditProblemVM editProblemVM);
+        void Update(EditProblemVM editProblemVM);
         void Delete(int id);
     }
 }

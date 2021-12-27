@@ -65,28 +65,28 @@ namespace Asset.API.Controllers
         }
 
         // PUT api/<ProblemController>/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, EditProblemVM editProblemVM)
+        [HttpPut]
+        public IActionResult Put(EditProblemVM editProblemVM)
         {
-            _problemService.UpdateProblem(id, editProblemVM);
-            var lstCode = _problemService.GetAllProblems().ToList().Where(a => a.Code != editProblemVM.Code).ToList();
+            int id = editProblemVM.Id;
+            var lstCode = _problemService.GetAllProblems().ToList().Where(a => a.Code == editProblemVM.Code && a.Id != id).ToList();
             if (lstCode.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Problem code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
             }
-            var lstNames = _problemService.GetAllProblems().ToList().Where(a => a.Name != editProblemVM.Name).ToList();
+            var lstNames = _problemService.GetAllProblems().ToList().Where(a => a.Name == editProblemVM.Name && a.Id != id).ToList();
             if (lstNames.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Problem name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstArNames = _problemService.GetAllProblems().ToList().Where(a => a.NameAr != editProblemVM.NameAr).ToList();
+            var lstArNames = _problemService.GetAllProblems().ToList().Where(a => a.NameAr == editProblemVM.NameAr && a.Id != id).ToList();
             if (lstArNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Problem arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "Problem arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {
-                _problemService.UpdateProblem(id, editProblemVM);
+                _problemService.UpdateProblem(editProblemVM);
                 return Ok();
             }
         }
