@@ -11,6 +11,7 @@ namespace Asset.Domain.Services
     {
         IEnumerable<IndexProblemVM> GetAllProblems();
         IEnumerable<IndexProblemVM> GetProblemsByMasterAssetId(int masterAssetId);
+        IEnumerable<IndexProblemVM> GetProblemBySubProblemId(int subProblemId);
         IndexProblemVM GetProblemById(int id);
         void AddProblem(CreateProblemVM createProblemVM);
         void UpdateProblem(EditProblemVM editProblemVM);

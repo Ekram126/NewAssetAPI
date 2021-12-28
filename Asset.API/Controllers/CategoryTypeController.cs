@@ -18,10 +18,17 @@ namespace Asset.API.Controllers
     {
 
         private ICategoryTypeService _categoryTypeService;
+        private ICategoryService _categoryService;
+        private ISubCategoryService _subCategoryService;
+        
 
-        public CategoryTypeController(ICategoryTypeService categoryTypeService)
+        public CategoryTypeController(ICategoryTypeService categoryTypeService, ICategoryService categoryService,
+            ISubCategoryService subCategoryService)
         {
             _categoryTypeService = categoryTypeService;
+            _categoryService = categoryService;
+            _subCategoryService = subCategoryService;
+
         }
 
 
@@ -104,13 +111,28 @@ namespace Asset.API.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteCategory/{id}")]
+        [Route("DeleteCategoryType/{id}")]
         public ActionResult<Category> Delete(int id)
         {
             try
             {
-
-                int deletedRow = _categoryTypeService.Delete(id);
+                var lstCategories = _categoryService.GetAll().Where(a => a.CategoryTypeId == id).ToList();
+                if (lstCategories.Count > 0)
+                {
+                    foreach (var item in lstCategories)
+                    {
+                        var lstSubCategories = _subCategoryService.GetAll().Where(a => a.CategoryId == item.Id).ToList();
+                        if(lstSubCategories.Count > 0)
+                        {
+                            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "categories", Message = "This Category has Sub Categories", MessageAr = "هذا التصنيف يحتوي على تصنيفات فرعية" });
+                        }
+                    }
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "categories", Message = "This Category Type has Categories", MessageAr = "هذا النوع من التصنيف يحتوي على تصنيفات " });
+                }
+                else
+                {
+                    int deletedRow = _categoryTypeService.Delete(id);
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {

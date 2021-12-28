@@ -27,6 +27,10 @@ namespace Asset.API.Controllers
         {
             return _subProblemService.GetAllSubProblemsByProblemId(ProblemId);
         }
+
+
+
+
         // GET: api/<SubProblemController>
         [HttpGet]
         public IEnumerable<IndexSubProblemVM> Get()

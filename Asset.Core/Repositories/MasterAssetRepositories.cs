@@ -152,7 +152,7 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexMasterAssetVM.GetData> GetAll()
         {
             List<IndexMasterAssetVM.GetData> list = new List<IndexMasterAssetVM.GetData>();
-            var lstMasters = _context.MasterAssets.Include(a => a.brand).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
+            var lstMasters = _context.MasterAssets.Include(a => a.brand).Include(a => a.Category).Include(a => a.SubCategory).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
 
             foreach (var item in lstMasters)
             {
@@ -160,6 +160,8 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = item.Id;
                 getDataObj.Code = item.Code;
                 getDataObj.Model = item.ModelNumber;
+                getDataObj.CategoryId = item.CategoryId;
+                getDataObj.SubCategoryId = item.SubCategoryId;
                 getDataObj.PMColor = item.PMColor;
                 getDataObj.PMBGColor = item.PMBGColor;
                 getDataObj.ECRIName = item.ECRIId != null ? item.ECRIS.Name : "";

@@ -11,6 +11,7 @@ namespace Asset.Domain.Repositories
     {
         IEnumerable<IndexProblemVM> GetAll();
         IEnumerable<IndexProblemVM> GetProblemsByMasterAssetId(int masterAssetId);
+        IEnumerable<IndexProblemVM> GetProblemBySubProblemId(int subProblemId);
         IndexProblemVM GetById(int id);
         void Add(CreateProblemVM createProblemVM);
         void Update(EditProblemVM editProblemVM);

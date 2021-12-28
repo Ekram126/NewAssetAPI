@@ -18,10 +18,12 @@ namespace Asset.API.Controllers
     {
 
         private ISubCategoryService _SubCategoryService;
+        private IMasterAssetService _masterAssetService;
 
-        public SubCategoryController(ISubCategoryService SubCategoryService)
+        public SubCategoryController(ISubCategoryService SubCategoryService, IMasterAssetService masterAssetService)
         {
             _SubCategoryService = SubCategoryService;
+            _masterAssetService = masterAssetService;
         }
 
 
@@ -125,8 +127,15 @@ namespace Asset.API.Controllers
         {
             try
             {
-
-                int deletedRow = _SubCategoryService.Delete(id);
+                var lstMasterCategories = _masterAssetService.GetAll().Where(a => a.SubCategoryId == id).ToList();
+                if (lstMasterCategories.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "mastersubcategories", Message = "This Sub Category has related master asset", MessageAr = "هذا التصنيف الفرعي يحتوي على الأصول الأساسية" });
+                }
+                else
+                {
+                    int deletedRow = _SubCategoryService.Delete(id);
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {
