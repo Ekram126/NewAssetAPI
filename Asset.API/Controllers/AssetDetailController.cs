@@ -48,6 +48,7 @@ namespace Asset.API.Controllers
 
         [Obsolete]
         IHostingEnvironment _webHostingEnvironment;
+        private object ComponentInfo;
 
         [Obsolete]
         public AssetDetailController(IAssetDetailService AssetDetailService, IAssetOwnerService assetOwnerService,
@@ -258,7 +259,10 @@ namespace Asset.API.Controllers
         {
             var savedId = _AssetDetailService.Add(AssetDetailVM);
             _qrController.Index(AssetDetailVM.Id);
-
+            CreateAssetDetailAttachmentVM qrAttach = new CreateAssetDetailAttachmentVM();
+            qrAttach.AssetDetailId = AssetDetailVM.Id;
+            qrAttach.FileName = "equipment-" + AssetDetailVM.Id+".png";
+           CreateAssetDetailAttachments(qrAttach);
             return Ok(new { assetId = savedId });
 
         }
