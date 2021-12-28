@@ -48,6 +48,12 @@ namespace Asset.ViewModels.RequestTrackingVM
         public string SubProblemName { get; set; }
         public string SubProblemNameAr { get; set; }
 
+        public int ProblemId { get; set; }
+        public string ProblemName { get; set; }
+        public string ProblemNameAr { get; set; }
+
+
+
         public List<RequestTrackingView> lstTracking { get; set; }
     }
 }

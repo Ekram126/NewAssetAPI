@@ -82,6 +82,21 @@ namespace Asset.Core.Repositories
             }).Where(e=>e.Id == id).FirstOrDefault();
         }
 
+        public IEnumerable<IndexProblemVM> GetProblemBySubProblemId(int subProblemId)
+        {
+            var lst = _context.SubProblems.Include(a=>a.Problem).Where(a=>a.Id == subProblemId).Select(item => new IndexProblemVM
+            {
+                Id = item.Problem.Id,
+                Name = item.Problem.Name,
+                NameAr = item.Problem.NameAr,
+                Code = item.Problem.Code,
+                MasterAssetId = (int)item.Problem.MasterAssetId,
+                MasterAssetName = item.Problem.MasterAsset.Name
+            }).ToList();
+
+            return lst;
+        }
+
         public IEnumerable<IndexProblemVM> GetProblemsByMasterAssetId(int masterAssetId)
         {
          

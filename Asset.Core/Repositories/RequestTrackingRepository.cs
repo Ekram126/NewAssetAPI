@@ -238,15 +238,15 @@ namespace Asset.Core.Repositories
 
                 RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
 
-                StatusName = req.RequestStatus.Name,
-                StatusNameAr = req.RequestStatus.NameAr
+                StatusName = req.RequestStatusId != null ? req.RequestStatus.Name:"",
+                StatusNameAr = req.RequestStatusId != null ? req.RequestStatus.NameAr:""
             }).OrderByDescending(t => t.DescriptionDate).ToList();
 
 
 
-            var lstRequestTracking = _context.RequestTracking.Include(t => t.Request.AssetDetail)
+            var lstRequestTracking = _context.RequestTracking.Include(t => t.Request.AssetDetail).Include(t => t.Request.AssetDetail.MasterAsset)
                 .Include(t => t.Request.RequestMode).Include(t => t.Request.RequestPeriority)
-                .Include(t => t.Request.SubProblem).Include(t => t.Request.RequestType).Include(r => r.RequestStatus)
+                .Include(t => t.Request.SubProblem).Include(t => t.Request.SubProblem.Problem).Include(t => t.Request.RequestType).Include(r => r.RequestStatus)
                 .Where(r => r.RequestId == RequestId).Select(req => new RequestDetails
                 {
                     Id = req.Id,
@@ -268,6 +268,11 @@ namespace Asset.Core.Repositories
 
                     PeriorityName = req.Request.RequestPeriority.Name,
                     PeriorityNameAr = req.Request.RequestPeriority.NameAr,
+
+                    ProblemId = req.Request.SubProblem.ProblemId,
+                    ProblemName = req.Request.SubProblem.Problem.Name,
+                    ProblemNameAr = req.Request.SubProblem.Problem.NameAr,
+
                     SubProblemId = req.Request.SubProblemId,
                     SubProblemName = req.Request.SubProblem.Name,
                     SubProblemNameAr = req.Request.SubProblem.NameAr,
@@ -277,10 +282,14 @@ namespace Asset.Core.Repositories
                  
                     StatusName = req.RequestStatus.Name,
                     StatusNameAr = req.RequestStatus.NameAr,
-                    AssetName = _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().Name,
-                    AssetNameAr = _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().NameAr,
+                    AssetName = req.Request.AssetDetail.MasterAsset.Name,
+                    AssetNameAr = req.Request.AssetDetail.MasterAsset.NameAr,
                     lstTracking = trackings
                 }).FirstOrDefault();
+
+
+
+
             return lstRequestTracking;
         }
 

@@ -25,7 +25,7 @@ namespace Asset.Domain.Repositories
         int GetTotalOpenRequest(string userId);
         IndexRequestsVM GetById(int id);
         int Add(CreateRequestVM createRequestVM);
-        void Update(int Id, EditRequestVM editRequestVM);
+        void Update( EditRequestVM editRequestVM);
         void Delete(int id);
 
 

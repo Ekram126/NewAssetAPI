@@ -23,7 +23,7 @@ namespace Asset.Domain.Services
         int GetTotalRequestForAssetInHospital(int assetDetailId);
         IndexRequestsVM GetRequestById(int id);
         int AddRequest(CreateRequestVM createRequestVM);
-        void UpdateRequest(int Id, EditRequestVM editRequestVM);
+        void UpdateRequest(EditRequestVM editRequestVM);
         void DeleteRequest(int id);
 
         GeneratedRequestNumberVM GenerateRequestNumber();

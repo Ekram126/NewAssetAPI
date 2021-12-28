@@ -146,12 +146,12 @@ namespace Asset.Core.Repositories
                 return requestDTO;
             }
         }
-        public void Update(int Id, EditRequestVM editRequestVM)
+        public void Update(EditRequestVM editRequestVM)
         {
 
             try
             {
-                Request request = new Request();
+                Request request = _context.Request.Find(editRequestVM.Id);
                 request.Id = editRequestVM.Id;
                 request.Subject = editRequestVM.Subject;
                 request.RequestCode = editRequestVM.RequestCode;

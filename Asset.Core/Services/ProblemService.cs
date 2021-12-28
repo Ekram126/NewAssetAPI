@@ -37,6 +37,11 @@ namespace Asset.Core.Services
             return _unitOfWork.Problem.GetById(id);
         }
 
+        public IEnumerable<IndexProblemVM> GetProblemBySubProblemId(int subProblemId)
+        {
+            return _unitOfWork.Problem.GetProblemBySubProblemId(subProblemId);
+        }
+
         public IEnumerable<IndexProblemVM> GetProblemsByMasterAssetId(int masterAssetId)
         {
             return _unitOfWork.Problem.GetProblemsByMasterAssetId(masterAssetId);

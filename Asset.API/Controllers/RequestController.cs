@@ -91,10 +91,11 @@ namespace Asset.API.Controllers
         }
 
         // PUT api/<RequestController>/5
-        [HttpPut("{id}")]
-        public IActionResult PutRequestDTO(int id, EditRequestVM editRequestVM)
+        [HttpPut]
+        [Route("UpdateRequest")]
+        public IActionResult PutRequestDTO(EditRequestVM editRequestVM)
         {
-            _requestService.UpdateRequest(id, editRequestVM);
+            _requestService.UpdateRequest(editRequestVM);
             return CreatedAtAction("GetRequestDTO", new { id = editRequestVM.Id }, editRequestVM);
         }
 

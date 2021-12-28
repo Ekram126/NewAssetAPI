@@ -44,6 +44,13 @@ namespace Asset.API.Controllers
             return _problemService.GetProblemsByMasterAssetId(masterAssetId);
         }
 
+        [HttpGet]
+        [Route("GetProblemBySubProblemId/{subProblemId}")]
+        public IEnumerable<IndexProblemVM> GetProblemBySubProblemId(int subProblemId)
+        {
+            return _problemService.GetProblemBySubProblemId(subProblemId);
+        }
+
         // POST api/<ProblemController>
         [HttpPost]
         [Route("AddProblem")]

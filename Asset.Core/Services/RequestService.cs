@@ -36,9 +36,9 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.GetById(id);
         }
-        public void UpdateRequest(int Id, EditRequestVM editRequestVM)
+        public void UpdateRequest(EditRequestVM editRequestVM)
         {
-            _unitOfWork.Request.Update(Id, editRequestVM);
+            _unitOfWork.Request.Update( editRequestVM);
         }
 
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserId(string userId)
