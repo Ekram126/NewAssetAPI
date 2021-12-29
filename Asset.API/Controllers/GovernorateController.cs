@@ -55,8 +55,6 @@ namespace Asset.API.Controllers
         }
 
 
-
-
         [HttpPut]
         [Route("UpdateGovernorate")]
         public IActionResult Update(EditGovernorateVM GovernorateVM)
@@ -155,6 +153,11 @@ namespace Asset.API.Controllers
             }
 
             return Ok();
+        }
+        [HttpGet("GetGovernorateWithHospitals")]
+        public IEnumerable<GovernorateWithHospitalsVM> GetGovernorateWithHospitals()
+        {
+            return _governorateService.GetGovernorateWithHospitals();
         }
     }
 }

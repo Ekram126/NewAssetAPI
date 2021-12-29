@@ -60,5 +60,9 @@ namespace Asset.Core.Services
             _unitOfWork.CommitAsync();
             return GovernorateVM.Id;
         }
+        public IEnumerable<GovernorateWithHospitalsVM> GetGovernorateWithHospitals()
+        {
+            return _unitOfWork.GovernorateRepository.GetGovernorateWithHospitals();
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Asset.Domain.Repositories;
 using Asset.Models;
 using Asset.ViewModels.GovernorateVM;
+using Asset.ViewModels.HospitalVM;
 using Asset.ViewModels.RoleCategoryVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -141,6 +142,17 @@ namespace Asset.Core.Repositories
 
 
 
+        }
+        
+        public IEnumerable<GovernorateWithHospitalsVM> GetGovernorateWithHospitals()
+        {
+            return _context.Governorates.ToList().Select(item => new GovernorateWithHospitalsVM
+            {
+                Id = item.Id,
+                Name = item.Name,
+                NameAr = item.NameAr,
+                HospitalsCount=_context.Hospitals.Where(h=>h.GovernorateId==item.Id).ToList().Count()
+            });
         }
     }
 }

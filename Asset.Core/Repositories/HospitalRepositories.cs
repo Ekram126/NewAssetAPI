@@ -372,9 +372,6 @@ namespace Asset.Core.Repositories
             return 0;
         }
 
-
-
-
         public List<HospitalDepartment> GetHospitalDepartmentByHospitalId(int hospitalId)
         {
             var lstHospitalDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == hospitalId).ToList();
@@ -733,6 +730,18 @@ namespace Asset.Core.Repositories
                });
 
             return lstHospitals;
+        }
+
+        public IEnumerable<HospitalWithAssetVM> GetHospitalsWithAssets()
+        {
+            return _context.Hospitals.ToList().Select(item => new HospitalWithAssetVM
+            {
+                Id = item.Id,
+                Name = item.Name,
+                NameAr = item.NameAr,
+                AssetCount = _context.AssetDetails.Where(a => a.HospitalId == item.Id).ToList().Count(),
+                Assetprice = _context.AssetDetails.Where(a => a.HospitalId == item.Id).FirstOrDefault().Price
+            });
         }
     }
 }
