@@ -169,16 +169,14 @@ namespace Asset.Core.Repositories
                            .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList().GroupBy(a => item.FirstOrDefault().Id).ToList();
                     if (lstStatus.Count > 0)
                     {
-
-                        //  work.TrackCreatedById = lstStatus[0].FirstOrDefault().CreatedById;
+     
                         work.AssignedTo = lstStatus[0].FirstOrDefault().AssignedTo;
-
-
                         work.WorkOrderStatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
 
                         if (work.WorkOrderStatusId == 3 || work.WorkOrderStatusId == 4 || work.WorkOrderStatusId == 5)
                         {
                             var pendingStatus = _context.WorkOrderStatuses.Where(a => a.Id == 6).ToList().FirstOrDefault();
+                           work.StatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
                             work.StatusName = lstStatus[0].FirstOrDefault().WorkOrderStatus.Name + " - " + pendingStatus.Name;
                             work.StatusNameAr = lstStatus[0].FirstOrDefault().WorkOrderStatus.NameAr + " - " + pendingStatus.NameAr;
                             work.statusColor = lstStatus[0].FirstOrDefault().WorkOrderStatus.Color;
@@ -187,6 +185,7 @@ namespace Asset.Core.Repositories
 
                         else
                         {
+                            work.StatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
                             work.StatusName = lstStatus[0].FirstOrDefault().WorkOrderStatus.Name;
                             work.StatusNameAr = lstStatus[0].FirstOrDefault().WorkOrderStatus.NameAr;
                             work.statusColor = lstStatus[0].FirstOrDefault().WorkOrderStatus.Color;
@@ -217,16 +216,16 @@ namespace Asset.Core.Repositories
                             work.AssignedTo = _context.WorkOrderTrackings.Where(a => a.AssignedTo == userId).FirstOrDefault().AssignedTo;
                         }
                     }
-                    //if (userId != null)
-                    //{
-                    //    var lstUsers = _context.WorkOrderTrackings.Where(a => a.CreatedById == userId).ToList();
-                    //    if (lstUsers.Count > 0)
-                    //    {
-                    //        work.TrackCreatedById = _context.WorkOrderTrackings.Where(a => a.CreatedById == userId).FirstOrDefault().CreatedById;
-                    //    }
-                    //}
 
 
+                    work.ListTracks = _context.WorkOrderTrackings.Include(a=>a.WorkOrderStatus).Where(a => a.WorkOrderId == work.Id)
+                    .ToList().Select(item => new LstWorkOrderFromTracking
+                    {
+                        Id = item.Id,
+                        StatusName = item.WorkOrderStatus.Name,
+                        StatusNameAr = item.WorkOrderStatus.NameAr,
+                        CreationDate= item.CreationDate
+                    }).ToList();
 
                     list.Add(work);
                 }

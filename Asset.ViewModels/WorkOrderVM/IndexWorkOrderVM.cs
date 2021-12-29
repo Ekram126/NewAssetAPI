@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Asset.ViewModels.WorkOrderTrackingVM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +45,8 @@ namespace Asset.ViewModels.WorkOrderVM
         public int WorkOrderTrackingId { get; set; }
         public int WorkOrderStatusId { get; set; }
 
+        public int StatusId { get; set; }
+
         public string StatusName { get; set; }
         public string StatusNameAr { get; set; }
         public string statusColor { get; set; }
@@ -64,6 +67,8 @@ namespace Asset.ViewModels.WorkOrderVM
         public int? OrganizationId { get; set; }
         public int? SubOrganizationId { get; set; }
         public string RoleId { get; set; }
+
+        public List<LstWorkOrderFromTracking> ListTracks { get; set; }
 
     }
 }
