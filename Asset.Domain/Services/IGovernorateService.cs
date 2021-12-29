@@ -14,5 +14,6 @@ namespace Asset.Domain.Services
         int Add(CreateGovernorateVM governorateObj); 
         int Update(EditGovernorateVM governorateObj);
         int Delete(int id);
+        public IEnumerable<GovernorateWithHospitalsVM> GetGovernorateWithHospitals();
     }
 }
