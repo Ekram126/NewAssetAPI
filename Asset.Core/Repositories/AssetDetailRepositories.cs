@@ -767,17 +767,17 @@ namespace Asset.Core.Repositories
                     model.BuildName = detailObj.Building.Name;
                     model.BuildNameAr = detailObj.Building.NameAr;
                 }
-                if (detailObj.FloorId != null)
+                if (detailObj.FloorId != null || detailObj.Floor != null)
                 {
                     model.FloorName = detailObj.Floor.Name;
                     model.FloorNameAr = detailObj.Floor.NameAr;
                 }
-                if (detailObj.RoomId != null)
+                if (detailObj.RoomId != null || detailObj.Room != null)
                 {
                     model.RoomName = detailObj.Room.Name;
                     model.RoomNameAr = detailObj.Room.NameAr;
                 }
-                if (detailObj.DepartmentId != null)
+                if (detailObj.DepartmentId != null || detailObj.Department != null)
                 {
                     model.DepartmentName = detailObj.Department.Name;
                     model.DepartmentNameAr = detailObj.Department.NameAr;
