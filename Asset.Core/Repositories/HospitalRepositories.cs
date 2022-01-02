@@ -733,14 +733,29 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<HospitalWithAssetVM> GetHospitalsWithAssets()
         {
-            return _context.Hospitals.ToList().Select(item => new HospitalWithAssetVM
+            decimal? price = 0;
+            var hosWithAsset= _context.Hospitals.ToList().Select(item => new HospitalWithAssetVM
             {
                 Id = item.Id,
                 Name = item.Name,
                 NameAr = item.NameAr,
                 AssetCount = _context.AssetDetails.Where(a => a.HospitalId == item.Id).ToList().Count(),
-                Assetprice = _context.AssetDetails.Where(a => a.HospitalId == item.Id).FirstOrDefault().Price
-            });
+                Assetprice =0
+            }).ToList();
+            for (var i=0;i< hosWithAsset.Count;i++)
+            {
+                if(hosWithAsset[i].AssetCount!=0)
+                {
+                    var Assets = _context.AssetDetails.Where(a => a.HospitalId == hosWithAsset[i].Id).ToList();
+                    foreach (var Ass in Assets)
+                    {
+                        price+= Ass.Price;
+                    }
+                    hosWithAsset[i].Assetprice = price;
+                    price = 0;
+                }
+            }
+            return hosWithAsset;
         }
     }
 }

@@ -123,6 +123,11 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.HospitalRepository.UpdateHospitalDepartment(hospitalDepartmentVM);
         }
-        
+        public IEnumerable<HospitalWithAssetVM> GetHospitalsWithAssets()
+        {
+            return _unitOfWork.HospitalRepository.GetHospitalsWithAssets();
+        }
+
+
     }
 }
