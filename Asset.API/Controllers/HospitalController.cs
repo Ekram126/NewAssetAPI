@@ -312,5 +312,11 @@ namespace Asset.API.Controllers
             var list = _HospitalService.SortHospitals(sortObj).ToList();
             return _pagingService.GetAll<IndexHospitalVM.GetData>(pageInfo, list);
         }
+
+        [HttpGet("GetHospitalsWithAssets")]
+        public IEnumerable<HospitalWithAssetVM> GetHospitalsWithAssets()
+        {
+            return _HospitalService.GetHospitalsWithAssets();
+        }
     }
 }
