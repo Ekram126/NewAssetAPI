@@ -26,31 +26,30 @@ namespace Asset.Core.Repositories
         public EditHospitalVM GetById(int id)
         {
             var HospitalObj = _context.Hospitals.Where(a => a.Id == id).Select(item => new EditHospitalVM
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                NameAr = item.NameAr,
-                Address = item.Address,
-                AddressAr = item.AddressAr,
-                Email = item.Email,
-                Mobile = item.Mobile,
-                Latitude = item.Latitude,
-                Longtitude = item.Longtitude,
-                ManagerName = item.ManagerName,
-                ManagerNameAr = item.ManagerNameAr,
-                GovernorateId = item.GovernorateId,
-                CityId = item.CityId,
-                OrganizationId = item.OrganizationId,
-                SubOrganizationId = item.SubOrganizationId,
-                Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList(),
-                EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
-                {
-                    DepartmentId = item.DepartmentId,
-                    IsActive = item.IsActive
-                }).ToList(),
-
-            }).First();
+             {
+                 Id = item.Id,
+                 Code = item.Code,
+                 Name = item.Name,
+                 NameAr = item.NameAr,
+                 Address = item.Address,
+                 AddressAr = item.AddressAr,
+                 Email = item.Email,
+                 Mobile = item.Mobile,
+                 Latitude = item.Latitude,
+                 Longtitude = item.Longtitude,
+                 ManagerName = item.ManagerName,
+                 ManagerNameAr = item.ManagerNameAr,
+                 GovernorateId = item.GovernorateId,
+                 CityId = item.CityId,
+                 OrganizationId = item.OrganizationId,
+                 SubOrganizationId = item.SubOrganizationId,
+                 Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList(),
+                 EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
+                 {
+                     DepartmentId = item.DepartmentId,
+                     IsActive = item.IsActive
+                 }).ToList()
+             }).First();
             return HospitalObj;
         }
 
@@ -59,7 +58,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexHospitalVM.GetData> GetAll()
         {
-            var lstHospitals = _context.Hospitals.Take(10).Include(a => a.Governorate)
+            var lstHospitals = _context.Hospitals.Include(a => a.Governorate)
                          .Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
                          .ToList().Select(item => new IndexHospitalVM.GetData
                          {

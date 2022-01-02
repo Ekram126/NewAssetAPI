@@ -1873,6 +1873,14 @@ namespace Asset.Core.Repositories
                     Assetobj.CityId = item.Hospital.CityId;
                     Assetobj.OrganizationId = item.Hospital.OrganizationId;
                     Assetobj.SubOrganizationId = item.Hospital.SubOrganizationId;
+                    Assetobj.GovernorateName = item.Hospital.Governorate.Name;
+                    Assetobj.GovernorateNameAr = item.Hospital.Governorate.NameAr;
+                    Assetobj.CityName = item.Hospital.City.Name;
+                    Assetobj.CityNameAr = item.Hospital.City.NameAr;
+                    Assetobj.OrgName = item.Hospital.Organization.Name;
+                    Assetobj.OrgNameAr = item.Hospital.Organization.NameAr;
+                    Assetobj.SubOrgName = item.Hospital.SubOrganization.Name;
+                    Assetobj.SubOrgNameAr = item.Hospital.SubOrganization.NameAr;
                     Assetobj.QrFilePath = item.QrFilePath;
                     lstAssetData.Add(Assetobj);
                 }

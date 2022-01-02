@@ -152,7 +152,9 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexMasterAssetVM.GetData> GetAll()
         {
             List<IndexMasterAssetVM.GetData> list = new List<IndexMasterAssetVM.GetData>();
-            var lstMasters = _context.MasterAssets.Include(a => a.brand).Include(a => a.Category).Include(a => a.SubCategory).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
+            var lstMasters = _context.MasterAssets.Include(a => a.brand).Include(a => a.Category)
+                
+                .Include(a => a.SubCategory).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
 
             foreach (var item in lstMasters)
             {
