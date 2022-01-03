@@ -742,17 +742,20 @@ namespace Asset.Core.Repositories
                 AssetCount = _context.AssetDetails.Where(a => a.HospitalId == item.Id).ToList().Count(),
                 Assetprice =0
             }).ToList();
-            for (var i=0;i< hosWithAsset.Count;i++)
+            if(hosWithAsset!=null)
             {
-                if(hosWithAsset[i].AssetCount!=0)
+                for (var i = 0; i < hosWithAsset.Count; i++)
                 {
-                    var Assets = _context.AssetDetails.Where(a => a.HospitalId == hosWithAsset[i].Id).ToList();
-                    foreach (var Ass in Assets)
+                    if (hosWithAsset[i].AssetCount != 0)
                     {
-                        price+= Ass.Price;
+                        var Assets = _context.AssetDetails.Where(a => a.HospitalId == hosWithAsset[i].Id).ToList();
+                        foreach (var Ass in Assets)
+                        {
+                            price += Ass.Price;
+                        }
+                        hosWithAsset[i].Assetprice = price;
+                        price = 0;
                     }
-                    hosWithAsset[i].Assetprice = price;
-                    price = 0;
                 }
             }
             return hosWithAsset;
