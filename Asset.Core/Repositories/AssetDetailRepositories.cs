@@ -772,7 +772,7 @@ namespace Asset.Core.Repositories
                     model.FloorName = detailObj.Floor.Name;
                     model.FloorNameAr = detailObj.Floor.NameAr;
                 }
-                if (detailObj.RoomId != null || detailObj.Room != null)
+                if (detailObj.Room != null)
                 {
                     model.RoomName = detailObj.Room.Name;
                     model.RoomNameAr = detailObj.Room.NameAr;
@@ -1815,43 +1815,11 @@ namespace Asset.Core.Repositories
                 var userObj = await _context.Users.FindAsync(sortObj.UserId);
                 ApplicationRole roleObj = new ApplicationRole();
                 Employee empObj = new Employee();
-                //  string userRoleName = "";
                 List<string> userRoleNames = new List<string>();
-                var obj = _context.ApplicationUser.Where(a => a.Id == sortObj.UserId).ToList();
-                userObj = obj[0];
-
-                var lstRoles = _context.ApplicationRole.Where(a => a.Id == userObj.RoleId).ToList();
-                if (lstRoles.Count > 0)
-                {
-                    roleObj = lstRoles[0];
-                    // userRoleName = roleObj.Name;
-
-                    var roles = (from userRole in _context.UserRoles
-                                 join role in _context.ApplicationRole on userRole.RoleId equals role.Id
-                                 where userRole.UserId == sortObj.UserId
-                                 select role);
-                    foreach (var role in roles)
-                    {
-                        userRoleNames.Add(role.Name);
-                    }
-                }
-
-                var lstEmployees = _context.Employees.Where(a => a.Email == userObj.Email).ToList();
-                if (lstEmployees.Count > 0)
-                {
-                    empObj = lstEmployees[0];
-                }
-
-
-
                 var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset)
-                .Include(a => a.MasterAsset.brand)
-                  .Include(a => a.Supplier)
-                 .Include(a => a.Hospital)
-                 .Include(a => a.Hospital.Governorate)
-                 .Include(a => a.Hospital.City)
-                 .Include(a => a.Hospital.Organization).Include(a => a.Hospital.SubOrganization)
-                 .ToList();
+                                                                .Include(a => a.MasterAsset.brand).Include(a => a.Supplier).Include(a => a.Hospital)
+                                                                 .Include(a => a.Hospital.Governorate).Include(a => a.Hospital.City).Include(a => a.Hospital.Organization).Include(a => a.Hospital.SubOrganization)
+                                                                 .ToList();
                 foreach (var item in lstAssetDetails)
                 {
                     IndexAssetDetailVM.GetData Assetobj = new IndexAssetDetailVM.GetData();
@@ -1863,16 +1831,21 @@ namespace Asset.Core.Repositories
                     Assetobj.BrandNameAr = item.MasterAsset.BrandId > 0 ? item.MasterAsset.brand.NameAr : "";
                     Assetobj.SupplierName = item.SupplierId > 0 ? item.Supplier.Name : "";
                     Assetobj.SupplierNameAr = item.SupplierId > 0 ? item.Supplier.NameAr : "";
+                    Assetobj.HospitalId = item.HospitalId;
                     Assetobj.HospitalName = item.HospitalId > 0 ? item.Hospital.Name : "";
                     Assetobj.HospitalNameAr = item.HospitalId > 0 ? item.Hospital.NameAr : "";
                     Assetobj.AssetName = item.MasterAssetId > 0 ? item.MasterAsset.Name : "";
                     Assetobj.AssetNameAr = item.MasterAssetId > 0 ? item.MasterAsset.NameAr : "";
                     Assetobj.GovernorateName = item.HospitalId > 0 ? item.Hospital.Governorate.Name : "";
                     Assetobj.GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "";
+
+
                     Assetobj.GovernorateId = item.Hospital.GovernorateId;
                     Assetobj.CityId = item.Hospital.CityId;
                     Assetobj.OrganizationId = item.Hospital.OrganizationId;
                     Assetobj.SubOrganizationId = item.Hospital.SubOrganizationId;
+
+
                     Assetobj.GovernorateName = item.Hospital.Governorate.Name;
                     Assetobj.GovernorateNameAr = item.Hospital.Governorate.NameAr;
                     Assetobj.CityName = item.Hospital.City.Name;
@@ -1886,6 +1859,24 @@ namespace Asset.Core.Repositories
                 }
 
 
+                var obj = _context.ApplicationUser.Where(a => a.Id == sortObj.UserId).ToList();
+                userObj = obj[0];
+
+                var roles = (from userRole in _context.UserRoles
+                             join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+                             where userRole.UserId == userObj.Id
+                             select role);
+                foreach (var role in roles)
+                {
+                    userRoleNames.Add(role.Name);
+                }
+
+
+                var lstEmployees = _context.Employees.Where(a => a.Email == userObj.Email).ToList();
+                if (lstEmployees.Count > 0)
+                {
+                    empObj = lstEmployees[0];
+                }
 
 
                 if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
@@ -1906,9 +1897,6 @@ namespace Asset.Core.Repositories
                 {
                     if (userRoleNames.Contains("AssetOwner"))
                     {
-
-                        //lstAssetData = lstAssetData.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId && a.HospitalId == userObj.HospitalId).ToList();
-
 
                         var lstAssetOwners = _context.AssetOwners
                                                 .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital)
@@ -1968,7 +1956,7 @@ namespace Asset.Core.Repositories
 
                 if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
                 {
-                    lstAssetData = lstAssetData.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.HospitalId == userObj.HospitalId).ToList();
+                    lstAssetData = lstAssetData.Where(a => a.HospitalId == userObj.HospitalId).ToList();
                 }
 
 
