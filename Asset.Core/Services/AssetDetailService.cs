@@ -177,5 +177,15 @@ namespace Asset.Core.Services
         {
             return await _unitOfWork.AssetDetailRepository.SortAssets(sortObj);
         }
+
+        public List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetsByAgeGroup(hospitalId);
+        }
+
+        public List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge model)
+        {
+            return _unitOfWork.AssetDetailRepository.GetGeneralAssetsByAgeGroup(model);
+        }
     }
 }

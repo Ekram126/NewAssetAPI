@@ -2109,6 +2109,151 @@ namespace Asset.Core.Repositories
             return lstAssetData;
 
         }
+
+
+
+
+        public List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)
+        {
+
+            List<HospitalAssetAge> lstHospitalAssets = new List<HospitalAssetAge>();
+            if (hospitalId != 0)
+            {
+                lstHospitalAssets = _context.AssetDetails
+                            .Where(a => a.HospitalId == hospitalId && a.InstallationDate != null).ToList()
+                            .GroupBy(p => (DateTime.Today.Year - p.InstallationDate.Value.Year) / 5)
+                           .OrderBy(p => p.Key)
+                            .Select(gr => new HospitalAssetAge
+                            {
+                                AgeGroup = String.Format("{0}-{1}", gr.Key * 5, (gr.Key + 1) * 5),
+                                Count = gr.Count()
+                            }).ToList();
+            }
+            else
+            {
+                lstHospitalAssets = _context.AssetDetails.Where(a => a.InstallationDate != null).ToList()
+                    .GroupBy(p => (DateTime.Today.Year - p.InstallationDate.Value.Year) / 5)
+                    .OrderBy(p=>p.Key)
+                            .Select(gr => new HospitalAssetAge
+                            {
+                                AgeGroup = String.Format("{0}-{1}", gr.Key * 5, (gr.Key + 1) * 5),
+                                Count = gr.Count()
+                            }).ToList();
+            }
+            return lstHospitalAssets;
+        }
+
+        public List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge searchObj)
+        {
+
+            List<HospitalAssetAge> lstHospitalAssets = new List<HospitalAssetAge>();
+
+
+            var lstHostAssets = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Supplier).Include(a => a.MasterAsset.brand)
+                        .Include(a => a.Hospital).Include(a => a.Hospital.Governorate).Include(a => a.Hospital.City)
+                        .Include(a => a.Hospital.Organization).Include(a => a.Hospital.SubOrganization).ToList()
+                        .Select(item => new IndexAssetDetailVM.GetData
+                        {
+
+                            Id = item.Id,
+                            Code = item.Code,
+                            Model = item.MasterAsset.ModelNumber,
+                            BrandName = item.MasterAsset.brand.Name,
+                            BrandNameAr = item.MasterAsset.brand.NameAr,
+                            SerialNumber = item.SerialNumber,
+                            HospitalId = item.HospitalId,
+                            SupplierId = item.SupplierId,
+                            MasterAssetId = item.MasterAsset.Id,
+                            AssetName = item.MasterAsset.Name,
+                            BrandId = item.MasterAsset.BrandId,
+                            OriginId = item.MasterAsset.OriginId,
+                            GovernorateId = item.Hospital.GovernorateId,
+                            CityId = item.Hospital.CityId,
+                            OrganizationId = item.Hospital.OrganizationId,
+                            SubOrganizationId = item.Hospital.SubOrganizationId,
+                            InstallationDate=item.InstallationDate
+                        }).ToList();
+
+
+            if (searchObj.GovernorateId != 0)
+            {
+                lstHostAssets = lstHostAssets.Where(a => a.GovernorateId == searchObj.GovernorateId).ToList();
+            }
+            else
+                lstHostAssets = lstHostAssets.ToList();
+
+
+            if (searchObj.CityId != 0)
+            {
+                lstHostAssets = lstHostAssets.Where(a => a.CityId == searchObj.CityId).ToList();
+            }
+            else
+                lstHostAssets = lstHostAssets.ToList();
+
+            if (searchObj.OrganizationId != 0)
+            {
+                lstHostAssets = lstHostAssets.Where(a => a.OrganizationId == searchObj.OrganizationId).ToList();
+            }
+            else
+                lstHostAssets = lstHostAssets.ToList();
+
+            if (searchObj.SubOrganizationId != 0)
+            {
+                lstHostAssets = lstHostAssets.Where(a => a.SubOrganizationId == searchObj.SubOrganizationId).ToList();
+            }
+            else
+                lstHostAssets = lstHostAssets.ToList();
+
+
+            if (searchObj.SupplierId != 0)
+            {
+                lstHostAssets = lstHostAssets.Where(a => a.SupplierId == searchObj.SupplierId).ToList();
+            }
+            else
+                lstHostAssets = lstHostAssets.ToList();
+
+
+            if (searchObj.OriginId != 0)
+            {
+                lstHostAssets = lstHostAssets.Where(a => a.OriginId == searchObj.OriginId).ToList();
+            }
+            else
+                lstHostAssets = lstHostAssets.ToList();
+
+
+
+            if (searchObj.BrandId != 0)
+            {
+                lstHostAssets = lstHostAssets.Where(a => a.BrandId == searchObj.BrandId).ToList();
+            }
+            else
+                lstHostAssets = lstHostAssets.ToList();
+
+
+            if (searchObj.HospitalId != 0)
+            {
+                lstHostAssets = lstHostAssets.Where(a => a.HospitalId == searchObj.HospitalId).ToList();
+            }
+            else
+                lstHostAssets = lstHostAssets.ToList();
+  
+            if (searchObj.Model != "")
+            {
+                lstHostAssets = lstHostAssets.Where(b => b.Model == searchObj.Model).ToList();
+            }
+
+
+            lstHospitalAssets = lstHostAssets.Where(a=>a.InstallationDate != null).GroupBy(p => (DateTime.Today.Year - p.InstallationDate.Value.Year) / 5)
+                                          .OrderBy(p => p.Key).Select(gr => new HospitalAssetAge
+                                          {
+                                              AgeGroup = String.Format("{0}-{1}", gr.Key * 5, (gr.Key + 1) * 5),
+                                              Count = gr.Count()
+                                          }).ToList();
+
+ 
+            return lstHospitalAssets;
+        }
+
     }
 }
 

@@ -733,6 +733,8 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<HospitalWithAssetVM> GetHospitalsWithAssets()
         {
+
+            //   var byAge = _context.Hospitals.ToList().GroupBy(x => 10 * (x.Id / 10));
             decimal? price = 0;
             var hosWithAsset= _context.Hospitals.ToList().Select(item => new HospitalWithAssetVM
             {

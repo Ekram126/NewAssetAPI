@@ -55,5 +55,9 @@ namespace Asset.Domain.Repositories
         List<GroupOrganizationVM> GetAssetByOrganization(List<IndexAssetDetailVM.GetData> AssetModel);
         Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj);
 
+
+        List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId);
+
+        List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge model);
     }
 }

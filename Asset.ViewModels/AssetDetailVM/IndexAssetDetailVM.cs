@@ -69,7 +69,11 @@ namespace Asset.ViewModels.AssetDetailVM
             public List<int> ListAssetIds { get; set; }
 
             public string MasterImg { get; set; }
-           
+
+
+            public DateTime? InstallationDate{ get; set; }
+
+
         }
     }
 }
