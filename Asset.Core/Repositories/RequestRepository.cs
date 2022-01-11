@@ -310,7 +310,7 @@ namespace Asset.Core.Repositories
                 if (userRoleNames.Contains("EngDepManager"))
                 {
 
-                    list = list.Where(t =>t.OrganizationId== UserObj.OrganizationId && t.SubOrganizationId== UserObj.SubOrganizationId && t.HospitalId == UserObj.HospitalId).ToList();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
                 if (userRoleNames.Contains("EngManager"))
                 {
@@ -352,7 +352,7 @@ namespace Asset.Core.Repositories
                 }
                 if (userRoleNames.Contains("EngDepManager"))
                 {
-                    list = list.Where(t => t.GovernorateId == UserObj.GovernorateId && t.CityId == UserObj.CityId && t.HospitalId == UserObj.HospitalId).ToList();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
                 if (userRoleNames.Contains("EngManager"))
                 {

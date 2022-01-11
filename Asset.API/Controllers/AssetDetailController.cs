@@ -297,9 +297,12 @@ namespace Asset.API.Controllers
         public ActionResult UploadInFiles(IFormFile file)
         {
             string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/AssetDetails/" + file.FileName;
-            Stream stream = new FileStream(path, FileMode.Create);
-            file.CopyTo(stream);
-            stream.Close();
+            if (!System.IO.File.Exists(path))
+            {
+                Stream stream = new FileStream(path, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
             return StatusCode(StatusCodes.Status201Created);
         }
 

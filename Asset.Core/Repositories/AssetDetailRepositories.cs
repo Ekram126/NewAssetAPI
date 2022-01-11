@@ -47,9 +47,12 @@ namespace Asset.Core.Repositories
                     assetDetailObj.Barcode = model.Barcode;
                     if (model.InstallationDate != "")
                         assetDetailObj.InstallationDate = DateTime.Parse(model.InstallationDate);
+
+
                     assetDetailObj.RoomId = model.RoomId;
                     assetDetailObj.FloorId = model.FloorId;
                     assetDetailObj.BuildingId = model.BuildingId;
+
                     if (model.ReceivingDate != "")
                         assetDetailObj.ReceivingDate = DateTime.Parse(model.ReceivingDate);
                     if (model.OperationDate != "")
@@ -545,14 +548,14 @@ namespace Asset.Core.Repositories
 
         public EditAssetDetailVM GetById(int id)
         {
-            var assetDetailObj = _context.AssetDetails.Find(id);
+            var assetDetailObj = _context.AssetDetails.Include(a=>a.MasterAsset).Where(a=>a.Id == id).FirstOrDefault();
             if (assetDetailObj != null)
             {
                 EditAssetDetailVM item = new EditAssetDetailVM();
 
                 item.Id = assetDetailObj.Id;
-                item.AssetName = _context.MasterAssets.Where(a => a.Id == assetDetailObj.MasterAssetId).FirstOrDefault().Name;
-                item.AssetNameAr = _context.MasterAssets.Where(a => a.Id == assetDetailObj.MasterAssetId).FirstOrDefault().NameAr;
+                item.AssetName = assetDetailObj.MasterAsset.Name;
+                item.AssetNameAr = assetDetailObj.MasterAsset.NameAr;
                 item.Code = assetDetailObj.Code;
                 // item.PurchaseDateString = assetDetailObj.PurchaseDate != 0 ? assetDetailObj.PurchaseDate.Value.ToShortDateString() : "";
 
@@ -598,7 +601,7 @@ namespace Asset.Core.Repositories
                 assetDetailObj.SerialNumber = model.SerialNumber;
                 assetDetailObj.Remarks = model.Remarks;
                 assetDetailObj.Barcode = model.Barcode;
-                assetDetailObj.InstallationDate = model.InstallationDate != null ? DateTime.Parse(model.InstallationDate).AddDays(1) : null;
+                assetDetailObj.InstallationDate = model.InstallationDate != null ? DateTime.Parse(model.InstallationDate) : null;
                 assetDetailObj.RoomId = model.RoomId;
                 assetDetailObj.FloorId = model.FloorId;
                 assetDetailObj.BuildingId = model.BuildingId;
@@ -895,8 +898,8 @@ namespace Asset.Core.Repositories
                          SerialNumber = detail.AssetDetail.SerialNumber,
                          HospitalId = detail.AssetDetail.HospitalId,
                          SupplierId = detail.AssetDetail.SupplierId,
-
-                         BrandName = detail.AssetDetail.MasterAsset.brand.Name,
+                         QrFilePath = detail.AssetDetail.QrFilePath,
+                        BrandName = detail.AssetDetail.MasterAsset.brand.Name,
                          BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
 
                          SupplierName = detail.AssetDetail.Supplier.Name,
@@ -956,7 +959,7 @@ namespace Asset.Core.Repositories
 
                         SupplierName = item.Supplier.Name,
                         SupplierNameAr = item.Supplier.NameAr,
-
+                        Serial = item.SerialNumber,
                         SerialNumber = item.SerialNumber,
                         HospitalId = item.HospitalId,
                         SupplierId = item.SupplierId,
