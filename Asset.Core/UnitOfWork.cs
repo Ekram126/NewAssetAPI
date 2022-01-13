@@ -72,7 +72,7 @@ namespace Asset.Core
 
         private SupplierExecludeReasonRepositories _supplierExecludeReasonRepositories;
         private SupplierExecludeAssetRepositories _supplierExecludeAssetRepositories;
-
+        private HospitalSupplierStatusRepository _hospitalSupplierStatusRepository;
 
 
         private ApplicationTypeRepositories _applicationTypeRepositories;
@@ -226,6 +226,8 @@ namespace Asset.Core
         public IHospitalHoldReasonRepository HospitalHoldReasonRepository => _hospitalHoldReasonRepositories = _hospitalHoldReasonRepositories ?? new HospitalHoldReasonRepositories(_context);
         public IHospitalApplicationRepository HospitalApplicationRepository => _hospitalApplicationRepositories = _hospitalApplicationRepositories ?? new HospitalApplicationRepositories(_context);
 
+
+        public IHospitalSupplierStatusRepository HospitalSupplierStatusRepository => _hospitalSupplierStatusRepository = _hospitalSupplierStatusRepository ?? new HospitalSupplierStatusRepository(_context);
 
 
         public IPagingRepository pagingRepository => _pagingRepository = _pagingRepository ?? new PagingRepository(_context);

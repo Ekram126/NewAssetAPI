@@ -36,6 +36,8 @@ namespace Asset.Domain
         IHospitalApplicationRepository HospitalApplicationRepository { get; }
         IHospitalExecludeReasonRepository HospitalExecludeReasonRepository { get; }
         IHospitalHoldReasonRepository HospitalHoldReasonRepository { get; }
+
+        IHospitalSupplierStatusRepository HospitalSupplierStatusRepository { get; }
    
         IAssetMovementRepository AssetMovementRepository { get; }
         IECRIRepository ECRIRepository { get; }

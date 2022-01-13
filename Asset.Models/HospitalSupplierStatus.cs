@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Asset.Models
 {
-    public class RequestStatus
+    public class HospitalSupplierStatus
     {
 
         public int Id { get; set; }

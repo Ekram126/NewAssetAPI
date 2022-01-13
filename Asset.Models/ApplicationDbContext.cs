@@ -89,7 +89,7 @@ namespace Asset.Models
         public DbSet<SupplierExecludeReason> SupplierExecludeReasons { get; set; }    
         public DbSet<SupplierExecludeAsset> SupplierExecludeAssets { get; set; }
         public DbSet<SupplierExecludeAttachment> SupplierExecludeAttachments { get; set; }
-
+        public DbSet<HospitalSupplierStatus> HospitalSupplierStatuses { get; set; }
 
         public DbSet<ApplicationType> ApplicationTypes { get; set; }
         public DbSet<HospitalExecludeReason> HospitalExecludeReasons { get; set; }

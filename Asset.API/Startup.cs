@@ -89,6 +89,8 @@ namespace Asset.API
             services.AddScoped<IPMTimeService, PMTimeService>();
             services.AddScoped<IPMAssetTimeService, PMAssetTimeService>();
             services.AddScoped<IPMAssetTaskScheduleService, PMAssetTaskScheduleService>();
+            services.AddScoped<IHospitalSupplierStatusService, HospitalSupplierStatusService>();
+
 
             services.AddScoped<ISupplierExecludeReasonService, SupplierExecludeReasonService>();
             services.AddScoped<ISupplierExecludeAssetService, SupplierExecludeAssetService>();
