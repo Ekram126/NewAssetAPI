@@ -11,7 +11,7 @@ namespace Asset.Domain.Services
     public interface IHospitalApplicationService
     {
         IEnumerable<IndexHospitalApplicationVM.GetData> GetAll();
-        IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(int statusId);
+        IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(int statusId,int hospitalId);
         EditHospitalApplicationVM GetById(int id);
         IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByHospitalId(int hospitalId);
 

@@ -1,4 +1,5 @@
 ﻿using Asset.Models;
+using Asset.ViewModels.HospitalSupplierStatusVM;
 using Asset.ViewModels.RequestStatusVM;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,8 @@ namespace Asset.Domain.Services
 {
     public interface IHospitalSupplierStatusService
     {
-        IEnumerable<HospitalSupplierStatus> GetAll();
+        IndexHospitalSupplierStatusVM GetAll(int? hospitalId);
+        IndexHospitalSupplierStatusVM GetAllByHospitals();
         HospitalSupplierStatus GetById(int id);
 
     }

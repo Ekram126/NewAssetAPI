@@ -1,5 +1,6 @@
 ﻿using Asset.Domain.Repositories;
 using Asset.Models;
+using Asset.ViewModels.HospitalSupplierStatusVM;
 using Asset.ViewModels.RequestStatusVM;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,13 +19,99 @@ namespace Asset.Core.Repositories
         {
             _context = context;
         }
-
-        public IEnumerable<HospitalSupplierStatus> GetAll()
+        public IndexHospitalSupplierStatusVM GetAllByHospitals()
         {
-            return _context.HospitalSupplierStatuses.ToList();
+            IndexHospitalSupplierStatusVM ItemObj = new IndexHospitalSupplierStatusVM();
+            var list = _context.HospitalSupplierStatuses.ToList();
+            ItemObj.ListStatus = list;
+            foreach (var itm in list)
+            {
+                var lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Where(a => a.StatusId == itm.Id).ToList();
+
+                if (itm.Id == 1)
+                {
+                    ItemObj.OpenStatus = lstHospitalStatus.Count;
+                }
+                if (itm.Id == 2)
+                {
+                    ItemObj.ApproveStatus = lstHospitalStatus.Count;
+                }
+                if (itm.Id == 3)
+                {
+                    ItemObj.RejectStatus = lstHospitalStatus.Count;
+                }
+                if (itm.Id == 4)
+                {
+                    ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
+                }
+            }
+            return ItemObj;
         }
 
-  
+        public IndexHospitalSupplierStatusVM GetAll(int? hospitalId)
+        {
+
+            IndexHospitalSupplierStatusVM ItemObj = new IndexHospitalSupplierStatusVM();
+            var list = _context.HospitalSupplierStatuses.ToList();
+            ItemObj.ListStatus = list;
+
+
+
+            if (hospitalId == null || hospitalId == 0)
+            {
+                if (list.Count > 0)
+                {
+                    foreach (var itm in list)
+                    {
+                        var lstStatus = _context.SupplierExecludeAssets.Where(a => a.StatusId == itm.Id).ToList();
+                        if (itm.Id == 1)
+                        {
+                            ItemObj.OpenStatus = lstStatus.Count;
+                        }
+                        if (itm.Id == 2)
+                        {
+                            ItemObj.ApproveStatus = lstStatus.Count;
+                        }
+                        if (itm.Id == 3)
+                        {
+                            ItemObj.RejectStatus = lstStatus.Count;
+                        }
+                        if (itm.Id == 4)
+                        {
+                            ItemObj.SystemRejectStatus = lstStatus.Count;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (var itm in list)
+                {
+                    var lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Where(a => a.AssetDetail.HospitalId == hospitalId && a.StatusId == itm.Id).ToList();
+
+                    if (itm.Id == 1)
+                    {
+                        ItemObj.OpenStatus = lstHospitalStatus.Count;
+                    }
+                    if (itm.Id == 2)
+                    {
+                        ItemObj.ApproveStatus = lstHospitalStatus.Count;
+                    }
+                    if (itm.Id == 3)
+                    {
+                        ItemObj.RejectStatus = lstHospitalStatus.Count;
+                    }
+                    if (itm.Id == 4)
+                    {
+                        ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
+                    }
+
+                }
+            }
+            return ItemObj;
+        }
+
+
         public HospitalSupplierStatus GetById(int id)
         {
             return _context.HospitalSupplierStatuses.Find(id);

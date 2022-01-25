@@ -81,18 +81,18 @@ namespace Asset.API.Controllers
         }
 
         [HttpPut]
-        [Route("GetAllHospitalsByStatusId/{statusId}")]
-        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(PagingParameter pageInfo, int statusId)
+        [Route("GetAllHospitalsByStatusId/{statusId}/{hospitalId}")]
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(PagingParameter pageInfo, int statusId, int hospitalId)
         {
-            var lstHospitalApplications = _hospitalApplicationService.GetAllByStatusId(statusId).ToList();
+            var lstHospitalApplications = _hospitalApplicationService.GetAllByStatusId(statusId,hospitalId).ToList();
             return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstHospitalApplications);
         }
 
         [HttpGet]
-        [Route("GetHospitalCountAfterFilterStatusId/{statusId}")]
-        public int GetCountAfterFilterStatusId(int statusId)
+        [Route("GetHospitalCountAfterFilterStatusId/{statusId}/{hospitalId}")]
+        public int GetCountAfterFilterStatusId(int statusId,int hospitalId)
         {
-            return _hospitalApplicationService.GetAllByStatusId(statusId).ToList().Count;
+            return _hospitalApplicationService.GetAllByStatusId(statusId,hospitalId).ToList().Count;
         }
 
         [HttpGet]

@@ -1,6 +1,7 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.HospitalSupplierStatusVM;
 using Asset.ViewModels.RequestStatusVM;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,14 @@ namespace Asset.Core.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public IEnumerable<HospitalSupplierStatus> GetAll()
+        public IndexHospitalSupplierStatusVM GetAll(int? hospitalId)
         {
-           return _unitOfWork.HospitalSupplierStatusRepository.GetAll();
+           return _unitOfWork.HospitalSupplierStatusRepository.GetAll(hospitalId);
         }
-      
+        public IndexHospitalSupplierStatusVM GetAllByHospitals()
+        {
+            return _unitOfWork.HospitalSupplierStatusRepository.GetAllByHospitals();
+        }
 
         public HospitalSupplierStatus GetById(int id)
         {

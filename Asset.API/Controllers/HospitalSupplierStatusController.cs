@@ -1,6 +1,7 @@
 ﻿using Asset.API.Helpers;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.HospitalSupplierStatusVM;
 using Asset.ViewModels.RequestStatusVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,10 +29,18 @@ namespace Asset.API.Controllers
        
      
         [HttpGet]
-        [Route("GetAll")]
-        public IEnumerable<HospitalSupplierStatus> GetAll()
+        [Route("GetAll/{hospitalId}")]
+        public IndexHospitalSupplierStatusVM GetAll(int? hospitalId)
         {
-            return _hospitalSupplierStatusService.GetAll();
+            return _hospitalSupplierStatusService.GetAll(hospitalId);
+        }
+
+
+        [HttpGet]
+        [Route("GetAllByHospitals")]
+        public IndexHospitalSupplierStatusVM GetAllByHospitals()
+        {
+            return _hospitalSupplierStatusService.GetAllByHospitals();
         }
 
 

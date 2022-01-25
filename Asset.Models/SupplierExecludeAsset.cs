@@ -17,6 +17,9 @@ namespace Asset.Models
         public virtual AssetDetail AssetDetail { get; set; }
 
         public int? StatusId { get; set; }
+        [ForeignKey("StatusId")]
+        public virtual HospitalSupplierStatus HospitalSupplierStatus { get; set; }
+
 
 
         public string UserId { get; set; }

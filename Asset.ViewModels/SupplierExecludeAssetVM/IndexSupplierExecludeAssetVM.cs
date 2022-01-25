@@ -30,6 +30,17 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }
 
+
+
+      
+            public int? OpenStatus { get; set; }
+            public int? ApproveStatus { get; set; }
+            public int? RejectStatus { get; set; }
+            public int? SystemRejectStatus { get; set; }
+
+
+
+
             public int DiffMonths { get; set; }
 
             public bool IsMoreThan3Months { get; set; }

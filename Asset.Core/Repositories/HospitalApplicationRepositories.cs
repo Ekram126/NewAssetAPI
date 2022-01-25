@@ -471,7 +471,7 @@ namespace Asset.Core.Repositories
             return hospitalId;
         }
 
-        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(int statusId)
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(int statusId, int hospitalId)
         {
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
             var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
@@ -479,6 +479,10 @@ namespace Asset.Core.Repositories
             if (statusId != 0)
             {
                 lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == statusId).ToList();
+            }
+            if(hospitalId != 0)
+            {
+                lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
             }
 
             foreach (var item in lstHospitalApplications)
@@ -499,26 +503,43 @@ namespace Asset.Core.Repositories
                 getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
 
+
+
+
                 getDataObj.StatusId = item.StatusId;
-                if (item.StatusId == 1)
+
+                foreach (var itm in lstHospitalApplications)
                 {
-                    getDataObj.StatusName = "Open";
-                    getDataObj.StatusNameAr = "فتح";
-                }
-                if (item.StatusId == 2)
-                {
-                    getDataObj.StatusName = "Approved";
-                    getDataObj.StatusNameAr = "موافقة";
-                }
-                if (item.StatusId == 3)
-                {
-                    getDataObj.StatusName = "Rejected";
-                    getDataObj.StatusNameAr = "رفض الطلب";
-                }
-                if (item.StatusId == 4)
-                {
-                    getDataObj.StatusName = "System Rejected";
-                    getDataObj.StatusNameAr = "استبعاد من النظام";
+                    if (item.StatusId == 1)
+                    {
+                      
+                      //  lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
+                        getDataObj.OpenStatus = lstHospitalApplications.Count;
+                        getDataObj.StatusName = _context.HospitalSupplierStatuses.FirstOrDefault(a=>a.Id == itm.StatusId).Name;
+                        getDataObj.StatusNameAr = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).NameAr;
+                    }
+                    if (item.StatusId == 2)
+                    {
+                        getDataObj.StatusName = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).Name;
+                        getDataObj.StatusNameAr = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).NameAr;
+                       // lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
+                        getDataObj.ApproveStatus = lstHospitalApplications.Count;
+                    }
+                    if (item.StatusId == 3)
+                    {
+                      //  lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
+                        getDataObj.StatusName = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).Name;
+                        getDataObj.StatusNameAr = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).NameAr;
+
+                        getDataObj.RejectStatus = lstHospitalApplications.Count;
+                    }
+                    if (item.StatusId == 4)
+                    {
+                        getDataObj.StatusName = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).Name;
+                        getDataObj.StatusNameAr = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).NameAr;
+                     //   lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
+                        getDataObj.SystemRejectStatus = lstHospitalApplications.Count;
+                    }
                 }
 
                 var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons

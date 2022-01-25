@@ -54,9 +54,9 @@ namespace Asset.Core.Services
             return _unitOfWork.HospitalApplicationRepository.GetAllByHospitalId(hospitalId);
         }
 
-        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(int statusId)
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(int statusId, int hospitalId)
         {
-            return _unitOfWork.HospitalApplicationRepository.GetAllByStatusId(statusId);
+            return _unitOfWork.HospitalApplicationRepository.GetAllByStatusId(statusId, hospitalId);
         }
 
         public int GetAssetHospitalId(int assetId)

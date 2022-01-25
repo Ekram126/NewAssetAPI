@@ -50,6 +50,15 @@ namespace Asset.ViewModels.HospitalApplicationVM
             public int CityId { get; set; }
             public int OrganizationId { get; set; }
             public int SubOrganizationId { get; set; }
+
+
+
+
+
+            public int? OpenStatus { get; set; }
+            public int? ApproveStatus { get; set; }
+            public int? RejectStatus { get; set; }
+            public int? SystemRejectStatus { get; set; }
         }
     }
 }
