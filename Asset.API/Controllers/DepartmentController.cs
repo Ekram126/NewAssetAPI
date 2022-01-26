@@ -44,11 +44,22 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexDepartmentVM.GetData>(pageInfo, lstdepts);
         }
 
+        [HttpPost]
+        [Route("SortDepartments/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexDepartmentVM.GetData> SortAssets(int pagenumber, int pagesize, SortDepartmentVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _DepartmentService.SortDepartments(sortObj);
+            return _pagingService.GetAll<IndexDepartmentVM.GetData>(pageInfo, list.ToList());
+        }
+
         [HttpGet]
         [Route("getcount")]
         public int count()
         {
-            return _pagingService.Count<Department>();
+            return _DepartmentService.GetAll().ToList().Count;
         }
 
 

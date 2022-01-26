@@ -123,5 +123,37 @@ namespace Asset.Core.Repositories
         {
             return _context.Departments.ToList();
         }
+
+
+        public IEnumerable<IndexDepartmentVM.GetData> SortDepartments(SortDepartmentVM sortObj)
+        {
+            var lstDepartments = GetAll().ToList();
+            if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstDepartments = lstDepartments.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstDepartments = lstDepartments.OrderBy(d => d.Code).ToList();
+            }
+            else if (sortObj.Name != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstDepartments = lstDepartments.OrderByDescending(d => d.Name).ToList();
+                else
+                    lstDepartments = lstDepartments.OrderBy(d => d.Name).ToList();
+            }
+
+            else if (sortObj.NameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstDepartments = lstDepartments.OrderByDescending(d => d.NameAr).ToList();
+                else
+                    lstDepartments = lstDepartments.OrderBy(d => d.NameAr).ToList();
+            }
+
+            return lstDepartments;
+        }
+
+
     }
 }

@@ -15,5 +15,8 @@ namespace Asset.Domain.Repositories
         int Add(CreateDepartmentVM Department); 
         int Update(EditDepartmentVM Department);
         int Delete(int id);
+
+
+        IEnumerable<IndexDepartmentVM.GetData> SortDepartments(SortDepartmentVM sortObj);
     }
 }

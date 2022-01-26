@@ -15,5 +15,7 @@ namespace Asset.Domain.Repositories
         void Add(CreateWorkOrderStatusVM createWorkOrderStatusVM);
         void Update(int id, EditWorkOrderStatusVM editWorkOrderStatusVM);
         void Delete(int id);
+
+        IEnumerable<IndexWorkOrderStatusVM> SortWOStatuses(SortWorkOrderStatusVM sortObj);
     }
 }

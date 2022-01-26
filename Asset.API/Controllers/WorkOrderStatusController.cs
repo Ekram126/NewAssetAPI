@@ -1,6 +1,7 @@
 ﻿using Asset.API.Helpers;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.WorkOrderStatusVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,11 +20,14 @@ namespace Asset.API.Controllers
     {
         private IWorkOrderTrackingService _workOrderTrackingService;
         private IWorkOrderStatusService _workOrderStatusService;
+        private IPagingService _pagingService;
 
-        public WorkOrderStatusController(IWorkOrderStatusService workOrderStatusService, IWorkOrderTrackingService workOrderTrackingService)
+
+        public WorkOrderStatusController(IWorkOrderStatusService workOrderStatusService, IWorkOrderTrackingService workOrderTrackingService, IPagingService pagingService)
         {
             _workOrderTrackingService = workOrderTrackingService;
             _workOrderStatusService = workOrderStatusService;
+            _pagingService = pagingService;
         }
 
         [HttpGet]
@@ -46,6 +50,31 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpPost]
+        [Route("SortWOStatuses/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexWorkOrderStatusVM> SortWOStatuses(int pagenumber, int pagesize, SortWorkOrderStatusVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _workOrderStatusService.SortWOStatuses(sortObj);
+            return _pagingService.GetAll<IndexWorkOrderStatusVM>(pageInfo, list.ToList());
+        }
+        [HttpPut]
+        [Route("GetWOStatusWithPaging")]
+        public IEnumerable<IndexWorkOrderStatusVM> GetAll(PagingParameter pageInfo)
+        {
+            var lstWOStatus = _workOrderStatusService.GetAllWorkOrderStatuses().ToList();
+            return _pagingService.GetAll<IndexWorkOrderStatusVM>(pageInfo, lstWOStatus);
+        }
+        [HttpGet]
+        [Route("getcount")]
+        public int count()
+        {
+            return _workOrderStatusService.GetAllWorkOrderStatuses().ToList().Count;
+        }
+
+
 
         [HttpPost]
         public IActionResult Post(CreateWorkOrderStatusVM createWorkOrderStatusVM)
@@ -63,7 +92,7 @@ namespace Asset.API.Controllers
             var lstArNames = _workOrderStatusService.GetAllWorkOrderStatuses().ToList().Where(a => a.NameAr == createWorkOrderStatusVM.NameAr).ToList();
             if (lstArNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = " arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = " arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {

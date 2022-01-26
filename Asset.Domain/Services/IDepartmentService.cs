@@ -13,5 +13,7 @@ namespace Asset.Domain.Services
         int Add(CreateDepartmentVM Department); 
         int Update(EditDepartmentVM Department);
         int Delete(int id);
+
+        IEnumerable<IndexDepartmentVM.GetData> SortDepartments(SortDepartmentVM sortObj);
     }
 }

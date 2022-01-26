@@ -327,5 +327,36 @@ namespace Asset.Core.Repositories
                 msg = ex.Message;
             }
         }
+
+
+        public IEnumerable<IndexWorkOrderStatusVM> SortWOStatuses(SortWorkOrderStatusVM sortObj)
+        {
+            var lstWOStatuses= GetAll().ToList();
+            if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstWOStatuses = lstWOStatuses.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstWOStatuses = lstWOStatuses.OrderBy(d => d.Code).ToList();
+            }
+            else if (sortObj.Name != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstWOStatuses = lstWOStatuses.OrderByDescending(d => d.Name).ToList();
+                else
+                    lstWOStatuses = lstWOStatuses.OrderBy(d => d.Name).ToList();
+            }
+
+            else if (sortObj.NameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstWOStatuses = lstWOStatuses.OrderByDescending(d => d.NameAr).ToList();
+                else
+                    lstWOStatuses = lstWOStatuses.OrderBy(d => d.NameAr).ToList();
+            }
+
+            return lstWOStatuses;
+        }
+
     }
 }

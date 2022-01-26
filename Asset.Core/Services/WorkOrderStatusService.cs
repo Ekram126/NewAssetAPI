@@ -46,6 +46,11 @@ namespace Asset.Core.Services
         {
             _unitOfWork.WorkOrderStatus.Update(id, editWorkOrderStatusVM);
         }
+
+        public IEnumerable<IndexWorkOrderStatusVM> SortWOStatuses(SortWorkOrderStatusVM sortObj)
+        {
+            return _unitOfWork.WorkOrderStatus.SortWOStatuses(sortObj);
+        }
     }
 }
 

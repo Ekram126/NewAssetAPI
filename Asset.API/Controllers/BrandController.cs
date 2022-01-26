@@ -52,7 +52,7 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("SortBrands/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexBrandVM.GetData> SortAssets(int pagenumber, int pagesize, SortBrandVM sortObj)
+        public IEnumerable<IndexBrandVM.GetData> SortBrands(int pagenumber, int pagesize, SortBrandVM sortObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;

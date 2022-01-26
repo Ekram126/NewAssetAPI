@@ -15,5 +15,8 @@ namespace Asset.Domain.Services
         void AddWorkOrderStatus(CreateWorkOrderStatusVM createWorkOrderStatusVM);
         void UpdateWorkOrderStatus(int id, EditWorkOrderStatusVM editWorkOrderStatusVM);
         void DeleteWorkOrderStatus(int id);
+
+        IEnumerable<IndexWorkOrderStatusVM> SortWOStatuses(SortWorkOrderStatusVM sortObj);
+
     }
 }

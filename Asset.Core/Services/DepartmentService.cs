@@ -49,6 +49,11 @@ namespace Asset.Core.Services
             return _unitOfWork.DepartmentRepository.GetById(id);
         }
 
+        public IEnumerable<IndexDepartmentVM.GetData> SortDepartments(SortDepartmentVM sortObj)
+        {
+            return _unitOfWork.DepartmentRepository.SortDepartments(sortObj);
+        }
+
         public int Update(EditDepartmentVM DepartmentVM)
         {
             _unitOfWork.DepartmentRepository.Update(DepartmentVM);
