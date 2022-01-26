@@ -22,5 +22,7 @@ namespace Asset.Domain.Repositories
 
         int CountSuppliers();
         int Delete(int id);
+
+        IEnumerable<IndexSupplierVM.GetData> SortSuppliers(SortSupplierVM sortObj);
     }
 }

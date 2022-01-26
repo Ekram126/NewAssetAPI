@@ -55,21 +55,30 @@ namespace Asset.API.Controllers
         }
 
 
-
+        [HttpPost]
+        [Route("SortSuppliers/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexSupplierVM.GetData> SortAssets(int pagenumber, int pagesize, SortSupplierVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _SupplierService.SortSuppliers(sortObj);
+            return _pagingService.GetAll<IndexSupplierVM.GetData>(pageInfo, list.ToList());
+        }
 
         [HttpPut]
         [Route("GetSuppliersWithPaging")]
-        public IEnumerable<Supplier> GetAll(PagingParameter pageInfo)
+        public IEnumerable<IndexSupplierVM.GetData> GetAll(PagingParameter pageInfo)
         {
-            var lstSuppliers = _SupplierService.GetAllSuppliers().ToList();
-            return _pagingService.GetAll<Supplier>(pageInfo, lstSuppliers);
+            var lstSuppliers = _SupplierService.GetAll().ToList();
+            return _pagingService.GetAll<IndexSupplierVM.GetData>(pageInfo, lstSuppliers);
         }
 
         [HttpGet]
         [Route("getcount")]
         public int count()
         {
-            return _pagingService.Count<Supplier>();
+            return _SupplierService.GetAll().ToList().Count;
         }
 
 

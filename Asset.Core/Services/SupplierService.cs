@@ -69,5 +69,10 @@ namespace Asset.Core.Services
             _unitOfWork.CommitAsync();
             return supplierObj.Id;
         }
+
+        public IEnumerable<IndexSupplierVM.GetData> SortSuppliers(SortSupplierVM sortObj)
+        {
+            return _unitOfWork.SupplierRepository.SortSuppliers(sortObj);
+        }
     }
 }

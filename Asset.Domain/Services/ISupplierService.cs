@@ -22,5 +22,8 @@ namespace Asset.Domain.Services
 
         int CountSuppliers();
         int Delete(int id);
+
+
+        IEnumerable<IndexSupplierVM.GetData> SortSuppliers(SortSupplierVM sortObj);
     }
 }
