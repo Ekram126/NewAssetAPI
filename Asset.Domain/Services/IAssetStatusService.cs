@@ -16,6 +16,8 @@ namespace Asset.Domain.Services
 
         IEnumerable<AssetStatu> GetAllAssetStatus();
         IEnumerable<IndexAssetStatusVM.GetData> GetAssetStatusByName(string AssetStatusName);
+        IEnumerable<IndexAssetStatusVM.GetData> SortAssetStatuses(SortAssetStatusVM sortObj);
+
         int Add(CreateAssetStatusVM AssetStatusVM);
         int Update(EditAssetStatusVM AssetStatusVM);
         int Delete(int id);

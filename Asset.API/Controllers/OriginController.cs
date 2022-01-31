@@ -79,9 +79,21 @@ namespace Asset.API.Controllers
         [Route("getcount")]
         public int count()
         {
-            return _pagingService.Count<Origin>();
+            return _OriginService.GetAll().ToList().Count;
         }
 
+
+
+        [HttpPost]
+        [Route("SortOrigins/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexOriginVM.GetData> SortOrigins(int pagenumber, int pagesize, SortOriginVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _OriginService.SortOrigins(sortObj);
+            return _pagingService.GetAll<IndexOriginVM.GetData>(pageInfo, list.ToList());
+        }
 
 
         [HttpPut]

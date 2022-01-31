@@ -14,7 +14,7 @@ namespace Asset.Domain.Repositories
 
         IEnumerable<Origin> GetAllOrigins();
         IEnumerable<IndexOriginVM.GetData> GetOriginByName(string originName);
-
+        IEnumerable<IndexOriginVM.GetData> SortOrigins(SortOriginVM sortObj);
 
         EditOriginVM GetById(int id);
         int Add(CreateOriginVM originObj);

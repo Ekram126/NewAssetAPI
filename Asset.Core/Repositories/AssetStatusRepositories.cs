@@ -116,5 +116,34 @@ namespace Asset.Core.Repositories
             }
             return 0;
         }
+
+        public IEnumerable<IndexAssetStatusVM.GetData> SortAssetStatuses(SortAssetStatusVM sortObj)
+        {
+            var lstAssetStatuses = GetAll().ToList();
+            if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstAssetStatuses = lstAssetStatuses.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstAssetStatuses = lstAssetStatuses.OrderBy(d => d.Code).ToList();
+            }
+            else if (sortObj.Name != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstAssetStatuses = lstAssetStatuses.OrderByDescending(d => d.Name).ToList();
+                else
+                    lstAssetStatuses = lstAssetStatuses.OrderBy(d => d.Name).ToList();
+            }
+
+            else if (sortObj.NameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstAssetStatuses = lstAssetStatuses.OrderByDescending(d => d.NameAr).ToList();
+                else
+                    lstAssetStatuses = lstAssetStatuses.OrderBy(d => d.NameAr).ToList();
+            }
+
+            return lstAssetStatuses;
+        }
     }
 }

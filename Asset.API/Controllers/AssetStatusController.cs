@@ -48,9 +48,24 @@ namespace Asset.API.Controllers
         [HttpGet]
         [Route("GetAssetStatusCount")]
         public int GetAssetStatusCount()
-       {
+        {
             return _assetStatusService.GetAll().ToList().Count;// _AssetDetailService.GetAll().ToList().Count();
         }
+
+
+        [HttpPost]
+        [Route("SortAssetStatuses/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexAssetStatusVM.GetData> SortAssetStatuses(int pagenumber, int pagesize, SortAssetStatusVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _assetStatusService.SortAssetStatuses(sortObj);
+            return _pagingService.GetAll<IndexAssetStatusVM.GetData>(pageInfo, list.ToList());
+        }
+
+
+
 
         [HttpGet]
         [Route("GetById/{id}")]

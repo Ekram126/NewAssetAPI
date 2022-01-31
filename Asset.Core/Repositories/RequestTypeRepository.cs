@@ -111,7 +111,6 @@ namespace Asset.Core.Repositories
         {
             try
             {
-                //RequestType requestType = new RequestType();
                 var requestTypeObj = _context.RequestTypes.Find(editRequestTypeVM.Id);
                 requestTypeObj.Id = editRequestTypeVM.Id;
                 requestTypeObj.Name = editRequestTypeVM.Name;

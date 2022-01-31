@@ -98,6 +98,35 @@ namespace Asset.Core.Repositories
             });
         }
 
+        public IEnumerable<IndexOriginVM.GetData> SortOrigins(SortOriginVM sortObj)
+        {
+            var lstOrigins = GetAll().ToList();
+            if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstOrigins = lstOrigins.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstOrigins = lstOrigins.OrderBy(d => d.Code).ToList();
+            }
+            else if (sortObj.Name != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstOrigins = lstOrigins.OrderByDescending(d => d.Name).ToList();
+                else
+                    lstOrigins = lstOrigins.OrderBy(d => d.Name).ToList();
+            }
+
+            else if (sortObj.NameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstOrigins = lstOrigins.OrderByDescending(d => d.NameAr).ToList();
+                else
+                    lstOrigins = lstOrigins.OrderBy(d => d.NameAr).ToList();
+            }
+
+            return lstOrigins;
+        }
+
         public int Update(EditOriginVM model)
         {
             try

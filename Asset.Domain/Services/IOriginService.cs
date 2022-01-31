@@ -15,6 +15,7 @@ namespace Asset.Domain.Services
 
         IEnumerable<Origin> GetAllOrigins();
         IEnumerable<IndexOriginVM.GetData> GetOriginByName(string originName);
+        IEnumerable<IndexOriginVM.GetData> SortOrigins(SortOriginVM sortObj);
         int Add(CreateOriginVM originObj);
         int Update(EditOriginVM originObj);
         int Delete(int id);

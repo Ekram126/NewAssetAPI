@@ -59,5 +59,10 @@ namespace Asset.Core.Services
             _unitOfWork.CommitAsync();
             return AssetStatusObj.Id;
         }
+
+        public IEnumerable<IndexAssetStatusVM.GetData> SortAssetStatuses(SortAssetStatusVM sortObj)
+        {
+            return _unitOfWork.AssetStatusRepository.SortAssetStatuses(sortObj);
+        }
     }
 }

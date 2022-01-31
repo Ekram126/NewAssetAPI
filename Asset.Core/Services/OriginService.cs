@@ -21,8 +21,8 @@ namespace Asset.Core.Services
 
         public int Add(CreateOriginVM originObj)
         {
-            _unitOfWork.OriginRepository.Add(originObj);
-            return _unitOfWork.CommitAsync();
+          return  _unitOfWork.OriginRepository.Add(originObj);
+           // return _unitOfWork.CommitAsync();
         }
 
         public int Delete(int id)
@@ -51,6 +51,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexOriginVM.GetData> GetOriginByName(string originName)
         {
             return _unitOfWork.OriginRepository.GetOriginByName(originName);
+        }
+
+        public IEnumerable<IndexOriginVM.GetData> SortOrigins(SortOriginVM sortObj)
+        {
+            return _unitOfWork.OriginRepository.SortOrigins(sortObj);
         }
 
         public int Update(EditOriginVM originObj)

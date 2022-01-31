@@ -15,7 +15,7 @@ namespace Asset.Domain.Repositories
 
         IEnumerable<AssetStatu> GetAllAssetStatus();
         IEnumerable<IndexAssetStatusVM.GetData> GetAssetStatusByName(string AssetStatusName);
-
+        IEnumerable<IndexAssetStatusVM.GetData> SortAssetStatuses(SortAssetStatusVM sortObj);
 
 
         EditAssetStatusVM GetById(int id);
