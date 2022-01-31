@@ -1,5 +1,6 @@
 ﻿using Asset.Domain.Repositories;
 using Asset.Models;
+using Asset.ViewModels.ClassificationVM;
 using Asset.ViewModels.OriginVM;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -70,7 +71,36 @@ namespace Asset.Core.Repositories
             return _context.Classifications.Find(id);
         }
 
-                public int Update(Classification model)
+        public IEnumerable<Classification> SortClassification(SortClassificationVM sortObj)
+        {
+            var lstClassify = GetAll().ToList();
+            if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstClassify = lstClassify.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstClassify = lstClassify.OrderBy(d => d.Code).ToList();
+            }
+            else if (sortObj.Name != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstClassify = lstClassify.OrderByDescending(d => d.Name).ToList();
+                else
+                    lstClassify = lstClassify.OrderBy(d => d.Name).ToList();
+            }
+
+            else if (sortObj.NameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstClassify = lstClassify.OrderByDescending(d => d.NameAr).ToList();
+                else
+                    lstClassify = lstClassify.OrderBy(d => d.NameAr).ToList();
+            }
+
+            return lstClassify;
+        }
+
+        public int Update(Classification model)
         {
             try
             {

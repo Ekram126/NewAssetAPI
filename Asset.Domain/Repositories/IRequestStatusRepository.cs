@@ -17,5 +17,8 @@ namespace Asset.Domain.Repositories
         int Update(RequestStatus editRequestVM);
         int Delete(int id);
 
+
+        IEnumerable<IndexRequestStatusVM.GetData> SortRequestStatuses(SortRequestStatusVM sortObj);
+
     }
 }

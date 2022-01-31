@@ -54,10 +54,9 @@ namespace Asset.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Invalid Password!" });
 
 
-
-
             if (user != null && await _userManager.CheckPasswordAsync(user, userObj.PasswordHash))
             {
+      
 
                 var userRoles = await _userManager.GetRolesAsync(user);
 
@@ -65,7 +64,7 @@ namespace Asset.API.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim("key","value"),
+                   // new Claim("key","value"),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 

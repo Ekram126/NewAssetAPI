@@ -14,5 +14,7 @@ namespace Asset.Domain.Services
         void AddWorkOrderType(CreateWorkOrderTypeVM createWorkOrderTypeVM);
         void UpdateWorkOrderType(int id, EditWorkOrderTypeVM editWorkOrderTypeVM);
         void DeleteWorkOrderType(int id);
+
+        IEnumerable<IndexWorkOrderTypeVM> SortWorkOrderTypes(SortWorkOrderTypeVM sortObj);
     }
 }

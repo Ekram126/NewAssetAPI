@@ -16,5 +16,8 @@ namespace Asset.Domain.Services
         int Add(RequestStatus createRequestVM);
         int Update(RequestStatus editRequestVM);
         int Delete(int id);
+
+
+        IEnumerable<IndexRequestStatusVM.GetData> SortRequestStatuses(SortRequestStatusVM sortObj);
     }
 }

@@ -37,6 +37,11 @@ namespace Asset.Core.Services
             return _unitOfWork.RequestType.GetById(id);
         }
 
+        public IEnumerable<IndexRequestTypeVM> SortRequestTypes(SortRequestTypeVM sortObj)
+        {
+            return _unitOfWork.RequestType.SortRequestTypes(sortObj);
+        }
+
         public void UpdateRequestType(EditRequestTypeVM editRequestTypeVM)
         {
             _unitOfWork.RequestType.Update(editRequestTypeVM);

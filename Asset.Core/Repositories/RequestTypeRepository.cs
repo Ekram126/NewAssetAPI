@@ -78,6 +78,35 @@ namespace Asset.Core.Repositories
             }).Where(e => e.Id == id).FirstOrDefault();
         }
 
+        public IEnumerable<IndexRequestTypeVM> SortRequestTypes(SortRequestTypeVM sortObj)
+        {
+            var lstRequestTypes = GetAll().ToList();
+            if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstRequestTypes = lstRequestTypes.OrderByDescending(d => d.Code).ToList();
+                else
+                    lstRequestTypes = lstRequestTypes.OrderBy(d => d.Code).ToList();
+            }
+            if (sortObj.Name != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstRequestTypes = lstRequestTypes.OrderByDescending(d => d.Name).ToList();
+                else
+                    lstRequestTypes = lstRequestTypes.OrderBy(d => d.Name).ToList();
+            }
+
+            else if (sortObj.NameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstRequestTypes = lstRequestTypes.OrderByDescending(d => d.NameAr).ToList();
+                else
+                    lstRequestTypes = lstRequestTypes.OrderBy(d => d.NameAr).ToList();
+            }
+
+            return lstRequestTypes;
+        }
+
         public void Update(EditRequestTypeVM editRequestTypeVM)
         {
             try

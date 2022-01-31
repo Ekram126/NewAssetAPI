@@ -14,5 +14,7 @@ namespace Asset.Domain.Repositories
         void Add(CreateRequestTypeVM createRequestTypeVM);
         void Update(EditRequestTypeVM editRequestTypeVM);
         void Delete(int id);
+
+        IEnumerable<IndexRequestTypeVM> SortRequestTypes(SortRequestTypeVM sortObj);
     }
 }

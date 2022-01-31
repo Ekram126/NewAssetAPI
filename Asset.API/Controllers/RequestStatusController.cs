@@ -1,6 +1,7 @@
 ﻿using Asset.API.Helpers;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.RequestStatusVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +21,13 @@ namespace Asset.API.Controllers
     {
         private IRequestStatusService _requestStatusService;
         private IRequestTrackingService _requestTrackingService;
+        private IPagingService _pagingService;
 
-        public RequestStatusController(IRequestStatusService requestStatusService, IRequestTrackingService requestTrackingService)
+        public RequestStatusController(IRequestStatusService requestStatusService, IRequestTrackingService requestTrackingService, IPagingService pagingService)
         {
             _requestStatusService = requestStatusService;
             _requestTrackingService = requestTrackingService;
+            _pagingService = pagingService;
         }
         // GET: api/<RequestStatusController>
         [HttpGet]
@@ -39,6 +42,39 @@ namespace Asset.API.Controllers
         {
             return _requestStatusService.GetAll(userId);
         }
+
+
+
+
+        [HttpPut]
+        [Route("GetRequestStatusesWithPaging")]
+        public IEnumerable<IndexRequestStatusVM.GetData> GetAll(PagingParameter pageInfo)
+        {
+            var lstBrands = _requestStatusService.GetAllRequestStatus().ToList();
+            return _pagingService.GetAll<IndexRequestStatusVM.GetData>(pageInfo, lstBrands);
+        }
+
+        [HttpGet]
+        [Route("GetCount")]
+        public int count()
+        {
+            return _requestStatusService.GetAllRequestStatus().ToList().Count;
+        }
+
+
+        [HttpPost]
+        [Route("SortRequestStatuses/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexRequestStatusVM.GetData> SortWorkOrderTypes(int pagenumber, int pagesize, SortRequestStatusVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _requestStatusService.SortRequestStatuses(sortObj);
+            return _pagingService.GetAll<IndexRequestStatusVM.GetData>(pageInfo, list.ToList());
+        }
+
+
+
 
 
         [HttpGet]

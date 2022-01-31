@@ -11,7 +11,8 @@ namespace Asset.ViewModels.WorkOrderVM
     {
         public int Id { get; set; }
         public string Subject { get; set; }
-       
+        public string MasterAssetCode { get; set; }
+        public string AssetCode { get; set; }
         public string WorkOrderNumber { get; set; }
         public DateTime? CreationDate { get; set; }
         public DateTime? PlannedStartDate { get; set; }

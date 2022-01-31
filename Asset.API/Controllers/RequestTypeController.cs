@@ -1,5 +1,6 @@
 ﻿using Asset.API.Helpers;
 using Asset.Domain.Services;
+using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.RequestTypeVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,11 @@ namespace Asset.API.Controllers
     public class RequestTypeController : ControllerBase
     {
         private IRequestTypeService _requestTypeService;
-
-        public RequestTypeController(IRequestTypeService requestTypeService)
+        private IPagingService _pagingService;
+        public RequestTypeController(IRequestTypeService requestTypeService, IPagingService pagingService)
         {
             _requestTypeService = requestTypeService;
+            _pagingService = pagingService;
         }
         // GET: api/<RequestTypeController>
         [HttpGet]
@@ -35,6 +37,36 @@ namespace Asset.API.Controllers
         {
             return _requestTypeService.GetRequestTypeById(id);
         }
+
+        [HttpPut]
+        [Route("GetRequestTypesWithPaging")]
+        public IEnumerable<IndexRequestTypeVM> GetAllRequestTypes(PagingParameter pageInfo)
+        {
+            var lstcategories = _requestTypeService.GetAllRequestTypes().ToList();
+            return _pagingService.GetAll<IndexRequestTypeVM>(pageInfo, lstcategories);
+        }
+
+        [HttpGet]
+        [Route("CountRequestTypes")]
+        public int count()
+        {
+            return  _requestTypeService.GetAllRequestTypes().ToList().Count;
+        }
+
+        [HttpPost]
+        [Route("SortRequestTypes/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexRequestTypeVM> SortRequestTypes(int pagenumber, int pagesize, SortRequestTypeVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _requestTypeService.SortRequestTypes(sortObj);
+            return _pagingService.GetAll<IndexRequestTypeVM>(pageInfo, list.ToList());
+        }
+
+
+
+
 
         // POST api/<RequestTypeController>
         [HttpPost]

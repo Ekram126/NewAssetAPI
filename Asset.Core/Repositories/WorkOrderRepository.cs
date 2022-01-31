@@ -974,6 +974,12 @@ namespace Asset.Core.Repositories
 
                 printWorkObj.Id = work.Id;
                 printWorkObj.Subject = work.Subject;
+                printWorkObj.MasterAssetCode = work.Request.AssetDetail.MasterAsset.Code;
+                printWorkObj.AssetCode = work.Request.AssetDetail.Code;
+
+
+
+
                 printWorkObj.WorkOrderNumber = work.WorkOrderNumber;
                 printWorkObj.CreationDate = work.CreationDate;
                 printWorkObj.PlannedStartDate = work.PlannedStartDate;

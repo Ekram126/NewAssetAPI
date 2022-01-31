@@ -248,6 +248,35 @@ namespace Asset.Core.Repositories
             return _context.RequestStatus.Find(id);
         }
 
+        public IEnumerable<IndexRequestStatusVM.GetData> SortRequestStatuses(SortRequestStatusVM sortObj)
+        {
+            var lstBrands = GetAll().ToList();
+            //if (sortObj.Code != "")
+            //{
+            //    if (sortObj.SortStatus == "descending")
+            //        lstBrands = lstBrands.OrderByDescending(d => d.Code).ToList();
+            //    else
+            //        lstBrands = lstBrands.OrderBy(d => d.Code).ToList();
+            //}
+             if (sortObj.Name != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstBrands = lstBrands.OrderByDescending(d => d.Name).ToList();
+                else
+                    lstBrands = lstBrands.OrderBy(d => d.Name).ToList();
+            }
+
+            else if (sortObj.NameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstBrands = lstBrands.OrderByDescending(d => d.NameAr).ToList();
+                else
+                    lstBrands = lstBrands.OrderBy(d => d.NameAr).ToList();
+            }
+
+            return lstBrands;
+        }
+
         public int Update(RequestStatus editRequestVM)
         {
             try

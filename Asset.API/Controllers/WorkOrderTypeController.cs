@@ -1,5 +1,6 @@
 ﻿using Asset.API.Helpers;
 using Asset.Domain.Services;
+using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.WorkOrderTypeVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,12 @@ namespace Asset.API.Controllers
     public class WorkOrderTypeController : ControllerBase
     {
         private IWorkOrderTypeService _workOrderTypeService;
+        private IPagingService _pagingService;
 
-        public WorkOrderTypeController(IWorkOrderTypeService workOrderTypeService)
+        public WorkOrderTypeController(IWorkOrderTypeService workOrderTypeService, IPagingService pagingService)
         {
             _workOrderTypeService = workOrderTypeService;
+            _pagingService = pagingService;
         }
         // GET: api/<WorkOrderTypeController>
         [HttpGet]
@@ -28,6 +31,37 @@ namespace Asset.API.Controllers
         {
             return _workOrderTypeService.GetAllWorkOrderTypes();
         }
+
+
+
+        [HttpPut]
+        [Route("GetWOTypesWithPaging")]
+        public IEnumerable<IndexWorkOrderTypeVM> GetAll(PagingParameter pageInfo)
+        {
+            var lstBrands = _workOrderTypeService.GetAllWorkOrderTypes().ToList();
+            return _pagingService.GetAll<IndexWorkOrderTypeVM>(pageInfo, lstBrands);
+        }
+
+        [HttpGet]
+        [Route("GetCount")]
+        public int count()
+        {
+            return _workOrderTypeService.GetAllWorkOrderTypes().ToList().Count;
+        }
+
+
+        [HttpPost]
+        [Route("SortWorkOrderTypes/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexWorkOrderTypeVM> SortWorkOrderTypes(int pagenumber, int pagesize, SortWorkOrderTypeVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _workOrderTypeService.SortWorkOrderTypes(sortObj);
+            return _pagingService.GetAll<IndexWorkOrderTypeVM>(pageInfo, list.ToList());
+        }
+
+
 
         // GET api/<WorkOrderTypeController>/5
         [HttpGet("{id}")]

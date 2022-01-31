@@ -1,6 +1,7 @@
 ﻿using Asset.API.Helpers;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.ClassificationVM;
 using Asset.ViewModels.PagingParameter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -50,6 +51,19 @@ namespace Asset.API.Controllers
         {
             return _pagingService.Count<Classification>();
         }
+
+        [HttpPost]
+        [Route("SortClassifications/{pagenumber}/{pagesize}")]
+        public IEnumerable<Classification> SortClassifications(int pagenumber, int pagesize, SortClassificationVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list = _ClassificationService.SortClassification(sortObj);
+            return _pagingService.GetAll<Classification>(pageInfo, list.ToList());
+        }
+
+
 
 
 

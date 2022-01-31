@@ -39,7 +39,9 @@ namespace Asset.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-          //  services.AddControllers();
+            //services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromSeconds(30));
+
+            //  services.AddControllers();
             services.AddControllers().AddNewtonsoftJson();
             var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfigurationVM>();
             services.AddSingleton(emailConfig);
@@ -114,7 +116,7 @@ namespace Asset.API
             services.AddTransient<IWorkOrderAssignService, WorkOrderAssignService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPagingService, PagingService>();
-            services.AddScoped<QrController, QrController>();        
+            services.AddScoped<QrController, QrController>();
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                  .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -183,7 +185,10 @@ namespace Asset.API
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
+
 
             app.UseCors();
             app.UseEndpoints(endpoints =>

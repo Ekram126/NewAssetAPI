@@ -1,6 +1,7 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.ClassificationVM;
 using Asset.ViewModels.OriginVM;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,11 @@ namespace Asset.Core.Services
         public Classification GetById(int id)
         {
             return _unitOfWork.ClassificationRepository.GetById(id);
+        }
+
+        public IEnumerable<Classification> SortClassification(SortClassificationVM sortObj)
+        {
+            return _unitOfWork.ClassificationRepository.SortClassification(sortObj);
         }
 
         public int Update(Classification classObj)

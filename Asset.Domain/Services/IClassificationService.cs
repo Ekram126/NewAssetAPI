@@ -1,4 +1,5 @@
 ﻿using Asset.Models;
+using Asset.ViewModels.ClassificationVM;
 using Asset.ViewModels.OriginVM;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,7 @@ namespace Asset.Domain.Services
         int Add(Classification classObj);
         int Update(Classification classObj);
         int Delete(int id);
+
+        IEnumerable<Classification> SortClassification(SortClassificationVM sortObj);
     }
 }

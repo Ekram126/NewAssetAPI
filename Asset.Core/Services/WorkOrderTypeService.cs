@@ -37,6 +37,11 @@ namespace Asset.Core.Services
             return _unitOfWork.WorkOrderType.GetById(id);
         }
 
+        public IEnumerable<IndexWorkOrderTypeVM> SortWorkOrderTypes(SortWorkOrderTypeVM sortObj)
+        {
+            return _unitOfWork.WorkOrderType.SortWorkOrderTypes(sortObj);
+        }
+
         public void UpdateWorkOrderType(int id, EditWorkOrderTypeVM editWorkOrderTypeVM)
         {
             _unitOfWork.WorkOrderType.Update(id, editWorkOrderTypeVM);

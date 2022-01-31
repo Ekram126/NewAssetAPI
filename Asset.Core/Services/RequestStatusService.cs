@@ -53,5 +53,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.RequestStatus.GetAll(userId);
         }
+
+        public IEnumerable<IndexRequestStatusVM.GetData> SortRequestStatuses(SortRequestStatusVM sortObj)
+        {
+            return _unitOfWork.RequestStatus.SortRequestStatuses(sortObj);
+        }
     }
 }
