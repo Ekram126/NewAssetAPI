@@ -150,15 +150,26 @@ namespace Asset.Core.Repositories
         {
             if(govName != "null")
             {
-              return _context.Governorates.Where(g => g.Name == govName).FirstOrDefault().Id;
+                var lstGovNames = _context.Governorates.Where(g => g.Name == govName || g.NameAr == govName).ToList();
+                if(lstGovNames.Count > 0)
+                {
+                    return lstGovNames[0].Id;
+                }
+             
             }
             return 0;
         }
         public int GetCityIdByName(string name)
         {
+            int id = 0;
             if (name != "null")
             {
-                int id= _context.Cities.Where(h => h.Name == name || h.NameAr==name).FirstOrDefault().Id;
+                var lstCitiesNames = _context.Cities.Where(g => g.Name == name || g.NameAr == name).ToList();
+                if (lstCitiesNames.Count > 0)
+                {
+                     id = lstCitiesNames[0].Id;
+                }
+                  //  int id= _context.Cities.Where(h => h.Name == name || h.NameAr==name).FirstOrDefault().Id;
                 return id;
             }
             return 0;
