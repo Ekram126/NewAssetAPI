@@ -548,7 +548,7 @@ namespace Asset.Core.Repositories
 
         public EditAssetDetailVM GetById(int id)
         {
-            var assetDetailObj = _context.AssetDetails.Include(a=>a.MasterAsset).Where(a=>a.Id == id).FirstOrDefault();
+            var assetDetailObj = _context.AssetDetails.Include(a => a.MasterAsset).Where(a => a.Id == id).FirstOrDefault();
             if (assetDetailObj != null)
             {
                 EditAssetDetailVM item = new EditAssetDetailVM();
@@ -899,7 +899,7 @@ namespace Asset.Core.Repositories
                          HospitalId = detail.AssetDetail.HospitalId,
                          SupplierId = detail.AssetDetail.SupplierId,
                          QrFilePath = detail.AssetDetail.QrFilePath,
-                        BrandName = detail.AssetDetail.MasterAsset.brand.Name,
+                         BrandName = detail.AssetDetail.MasterAsset.brand.Name,
                          BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
 
                          SupplierName = detail.AssetDetail.Supplier.Name,
@@ -2136,7 +2136,7 @@ namespace Asset.Core.Repositories
             {
                 lstHospitalAssets = _context.AssetDetails.Where(a => a.InstallationDate != null).ToList()
                     .GroupBy(p => (DateTime.Today.Year - p.InstallationDate.Value.Year) / 5)
-                    .OrderBy(p=>p.Key)
+                    .OrderBy(p => p.Key)
                             .Select(gr => new HospitalAssetAge
                             {
                                 AgeGroup = String.Format("{0}-{1}", gr.Key * 5, (gr.Key + 1) * 5),
@@ -2174,7 +2174,7 @@ namespace Asset.Core.Repositories
                             CityId = item.Hospital.CityId,
                             OrganizationId = item.Hospital.OrganizationId,
                             SubOrganizationId = item.Hospital.SubOrganizationId,
-                            InstallationDate=item.InstallationDate
+                            InstallationDate = item.InstallationDate
                         }).ToList();
 
 
@@ -2239,24 +2239,51 @@ namespace Asset.Core.Repositories
             }
             else
                 lstHostAssets = lstHostAssets.ToList();
-  
+
             if (searchObj.Model != "")
             {
                 lstHostAssets = lstHostAssets.Where(b => b.Model == searchObj.Model).ToList();
             }
 
 
-            lstHospitalAssets = lstHostAssets.Where(a=>a.InstallationDate != null).GroupBy(p => (DateTime.Today.Year - p.InstallationDate.Value.Year) / 5)
+            lstHospitalAssets = lstHostAssets.Where(a => a.InstallationDate != null).GroupBy(p => (DateTime.Today.Year - p.InstallationDate.Value.Year) / 5)
                                           .OrderBy(p => p.Key).Select(gr => new HospitalAssetAge
                                           {
                                               AgeGroup = String.Format("{0}-{1}", gr.Key * 5, (gr.Key + 1) * 5),
                                               Count = gr.Count()
                                           }).ToList();
 
- 
+
             return lstHospitalAssets;
         }
 
+
+
+
+        public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId)
+        {
+            var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital)
+                .Where(a => a.Barcode.Contains(barcode) && a.HospitalId == hospitalId).ToList().Select(a => new IndexAssetDetailVM.GetData
+                {
+                    Id = a.Id,
+                    Code = a.Code,
+                    Price = a.Price,
+                    MasterAssetName = a.MasterAsset.Name,
+                    MasterAssetNameAr = a.MasterAsset.NameAr,
+                    AssetBarCode = a.Barcode,
+                    BarCode = a.Barcode,
+                    Serial = a.SerialNumber,
+                    SerialNumber = a.SerialNumber,
+                    MasterAssetId = a.MasterAssetId,
+                    PurchaseDate = a.PurchaseDate,
+                    HospitalId = a.HospitalId,
+                    HospitalName = a.Hospital.Name,
+                    HospitalNameAr = a.Hospital.NameAr,
+                    AssetName = a.MasterAsset.Name,
+                    AssetNameAr = a.MasterAsset.NameAr
+                }).ToList();
+            return lst;
+        }
     }
 }
 

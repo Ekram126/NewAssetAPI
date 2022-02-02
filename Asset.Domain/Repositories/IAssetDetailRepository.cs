@@ -59,5 +59,7 @@ namespace Asset.Domain.Repositories
         List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId);
 
         List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge model);
+
+        IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId);
     }
 }

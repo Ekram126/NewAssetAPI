@@ -187,5 +187,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.GetGeneralAssetsByAgeGroup(model);
         }
+
+        public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.AutoCompleteAssetBarCode(barcode,hospitalId);
+        }
     }
 }

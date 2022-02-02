@@ -32,6 +32,7 @@ namespace Asset.ViewModels.RequestTrackingVM
         public string StatusNameAr { get; set; }
 
 
+        public string AssetCode { get; set; }
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
         public string SerialNumber { get; set; }

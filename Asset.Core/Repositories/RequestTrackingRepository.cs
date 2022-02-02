@@ -254,6 +254,7 @@ namespace Asset.Core.Repositories
                     CreatedById = req.CreatedById,
                     UserName = req.User.UserName,
                     Subject = req.Request.Subject,
+                    AssetCode = req.Request.AssetDetail.Code,
                     RequestCode = req.Request.RequestCode,
                     RequestDate = req.Request.RequestDate,
                     AssetDetailId = req.Request.AssetDetailId!=null ? (int)req.Request.AssetDetailId:0,
@@ -295,13 +296,14 @@ namespace Asset.Core.Repositories
 
         public IndexRequestTracking GetById(int id)
         {
-            var RequestTrackingObj = _context.RequestTracking.Select(req => new IndexRequestTracking
+            var RequestTrackingObj = _context.RequestTracking.Include(a=>a.Request).Include(a => a.Request.AssetDetail).Select(req => new IndexRequestTracking
             {
                 Id = req.Id,
                 RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                 Description = req.Description,
                 DescriptionDate = req.DescriptionDate,
                 CreatedById = req.CreatedById,
+                AssetCode = req.Request.AssetDetail.Code,
                 UserName = req.User.UserName
             }).FirstOrDefault();
             return RequestTrackingObj;

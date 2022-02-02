@@ -44,11 +44,12 @@ namespace Asset.Core.Repositories
                  OrganizationId = item.OrganizationId,
                  SubOrganizationId = item.SubOrganizationId,
                  Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList(),
-                 EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
+                 EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).ToList().Count> 0 ? 
+                 _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
                  {
                      DepartmentId = item.DepartmentId,
                      IsActive = item.IsActive
-                 }).ToList()
+                 }).ToList() :  null
              }).First();
             return HospitalObj;
         }

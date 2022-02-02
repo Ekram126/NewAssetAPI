@@ -11,6 +11,7 @@ namespace Asset.ViewModels.RequestVM
         public int Id { get; set; }
         public string Subject { get; set; }
         public string Code { get; set; }
+        public string AssetCode { get; set; }
         public string RequestCode { get; set; }
         public string Description { get; set; }
         public DateTime RequestDate { get; set; }

@@ -90,7 +90,12 @@ namespace Asset.API.Controllers
         }
 
 
-
+        [HttpGet]
+        [Route("AutoCompleteAssetBarCode/{barcode}/{hospitalId}")]
+        public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId)
+        {
+            return _AssetDetailService.AutoCompleteAssetBarCode(barcode,hospitalId);
+        }
 
         [HttpGet]
         [Route("getcount/{userId}")]

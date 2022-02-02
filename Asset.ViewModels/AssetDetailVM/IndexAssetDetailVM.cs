@@ -71,9 +71,13 @@ namespace Asset.ViewModels.AssetDetailVM
             public string MasterImg { get; set; }
 
 
-            public DateTime? InstallationDate{ get; set; }
+            public DateTime? InstallationDate { get; set; }
 
 
+            public string BarCode { get; set; }
+            public string AssetBarCode { get; set; }
+            public string MasterAssetName { get; set; }
+            public string MasterAssetNameAr { get; set; }
         }
     }
 }
