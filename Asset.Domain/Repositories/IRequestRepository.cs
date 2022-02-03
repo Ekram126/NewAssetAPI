@@ -8,15 +8,16 @@ using System.Threading.Tasks;
 
 namespace Asset.Domain.Repositories
 {
-   public interface IRequestRepository 
+    public interface IRequestRepository
     {
         IEnumerable<IndexRequestsVM> GetAll();
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserId(string userId);
-        IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId,int statusId);
+        IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId);
         IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId, int assetId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId, string userId);
-       
+
+        IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId);
 
 
 
@@ -25,12 +26,13 @@ namespace Asset.Domain.Repositories
         int GetTotalOpenRequest(string userId);
         IndexRequestsVM GetById(int id);
         int Add(CreateRequestVM createRequestVM);
-        void Update( EditRequestVM editRequestVM);
+        void Update(EditRequestVM editRequestVM);
         void Delete(int id);
 
 
         GeneratedRequestNumberVM GenerateRequestNumber();
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
-       Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj);
+        Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj);
+        IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj);
     }
 }

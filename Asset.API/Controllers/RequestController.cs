@@ -67,6 +67,22 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpPost]
+        [Route("GetAllRequestsByAssetId/{assetId}/{hospitalId}")]
+        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId, PagingParameter pageInfo)
+        {
+            var lstRequests = _requestService.GetAllRequestsByAssetId(assetId,hospitalId).ToList();
+            return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, lstRequests);
+        }
+
+        [HttpGet("CountAllRequestsByAssetId/{assetId}/{hospitalId}")]
+        public int CountAllRequestsByAssetId(int assetId ,int hospitalId)
+        {
+            return _requestService.GetAllRequestsByAssetId(assetId,hospitalId).ToList().Count;
+
+        }
+
+
         [HttpGet("GetTotalRequestForAssetInHospital/{assetDetailId}")]
         public int GetTotalRequestForAssetInHospital(int assetDetailId)
         {
@@ -79,7 +95,7 @@ namespace Asset.API.Controllers
         [Route("GetTotalOpenRequest/{userId}")]
         public int GetTotalOpenReques(string userId)
         {
-              return _requestService.GetTotalOpenRequest(userId);
+            return _requestService.GetTotalOpenRequest(userId);
         }
 
         // POST api/<RequestController>
@@ -87,7 +103,6 @@ namespace Asset.API.Controllers
         public int PostRequestDTO(CreateRequestVM createRequestVM)
         {
             return _requestService.AddRequest(createRequestVM);
-            //return CreatedAtAction("GetRequestDTO", new { id = requestDTO.Id }, requestDTO);
         }
 
         // PUT api/<RequestController>/5
@@ -190,7 +205,7 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("SortRequests/{pagenumber}/{pagesize}")]
-        public async Task< IEnumerable<IndexRequestsVM>> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj)
+        public async Task<IEnumerable<IndexRequestsVM>> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
@@ -199,5 +214,16 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list.ToList());
         }
 
+
+        [HttpPost]
+        [Route("SortRequestsByAssetId/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexRequestsVM> SortRequestsByAssetId(int pagenumber, int pagesize, SortRequestVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list =  _requestService.SortRequestsByAssetId(sortObj);
+            return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list.ToList());
+        }
     }
 }

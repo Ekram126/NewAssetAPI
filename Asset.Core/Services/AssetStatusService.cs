@@ -21,8 +21,8 @@ namespace Asset.Core.Services
 
         public int Add(CreateAssetStatusVM AssetStatusObj)
         {
-            _unitOfWork.AssetStatusRepository.Add(AssetStatusObj);
-            return _unitOfWork.CommitAsync();
+            return _unitOfWork.AssetStatusRepository.Add(AssetStatusObj);
+            //return _unitOfWork.CommitAsync();
         }
 
         public int Delete(int id)
@@ -63,6 +63,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexAssetStatusVM.GetData> SortAssetStatuses(SortAssetStatusVM sortObj)
         {
             return _unitOfWork.AssetStatusRepository.SortAssetStatuses(sortObj);
+        }
+
+        public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusCount()
+        {
+            return _unitOfWork.AssetStatusRepository.GetAllAssetsGroupByStatusCount();
         }
     }
 }

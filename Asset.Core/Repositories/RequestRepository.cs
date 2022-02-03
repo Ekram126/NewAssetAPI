@@ -920,6 +920,62 @@ namespace Asset.Core.Repositories
         {
             throw new NotImplementedException();
         }
+
+
+
+        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId)
+        {
+            List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
+            var lstRequests = _context.Request
+                      .Include(t => t.AssetDetail)
+                      .Include(t => t.AssetDetail.MasterAsset)
+                      .Include(t => t.User)
+                      .Include(t => t.RequestMode)
+                      .Include(t => t.RequestPeriority)
+                      .Where(a => a.AssetDetailId == assetId && a.AssetDetail.HospitalId == hospitalId).ToList();
+            foreach (var req in lstRequests)
+            {
+                IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
+                getDataObj.RequestId = req.Id;
+                getDataObj.Id = req.Id;
+                getDataObj.Code = req.RequestCode;
+                getDataObj.CreatedById = req.CreatedById;
+                getDataObj.UserName = req.User.UserName;
+                getDataObj.Subject = req.Subject;
+                getDataObj.RequestDate = req.RequestDate;
+                getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
+                getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                var lstStatus = _context.RequestTracking
+                                 .Include(t => t.Request).Include(t => t.RequestStatus)
+                                 .Where(a => a.RequestId == req.Id).ToList().OrderByDescending(a => a.Id).ToList();
+                if (lstStatus.Count > 0)
+                {
+                    getDataObj.StatusId = lstStatus[0].RequestStatus.Id;
+                    getDataObj.StatusName = lstStatus[0].RequestStatus.Name;
+                    getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
+                    getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
+                    getDataObj.StatusIcon = lstStatus[0].RequestStatus.Icon;
+                }
+                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
+                getDataObj.ModeName = req.RequestMode.Name;
+                getDataObj.ModeNameAr = req.RequestMode.NameAr;
+                getDataObj.PeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
+                getDataObj.PeriorityName = req.RequestPeriority.Name;
+                getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
+                getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
+                getDataObj.GovernorateId = req.User.GovernorateId;
+                getDataObj.CityId = req.User.CityId;
+                getDataObj.OrganizationId = req.User.OrganizationId;
+                getDataObj.SubOrganizationId = req.User.SubOrganizationId;
+                list.Add(getDataObj);
+            }
+            return list;
+        }
+
+
         public IndexRequestsVM GetRequestByWorkOrderId(int workOrderId)
         {
 
@@ -937,7 +993,7 @@ namespace Asset.Core.Repositories
                                         RequestCode = item.Request.RequestCode,
                                         CreatedById = item.CreatedById,
                                         Subject = item.Request.Subject,
-                                        AssetCode= item.Request.AssetDetail.Code,
+                                        AssetCode = item.Request.AssetDetail.Code,
                                         RequestDate = item.Request.RequestDate,
                                         //  AssetDetailId = item.Request.AssetDetailId,
                                         AssetDetailId = item.Request.AssetDetailId != null ? (int)item.Request.AssetDetailId : 0,
@@ -1512,6 +1568,153 @@ namespace Asset.Core.Repositories
                         request = request.OrderBy(d => d.RequestDate).ToList();
                 }
             }
+            return request;
+        }
+
+
+
+        public IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj)
+        {
+            List<IndexRequestsVM> request = new List<IndexRequestsVM>();
+
+            var lstRequests = _context.Request.Include(r => r.RequestPeriority)
+                                     .Include(r => r.AssetDetail).Include(r => r.AssetDetail.MasterAsset)
+                                     .Include(r => r.AssetDetail.Hospital).Include(r => r.AssetDetail.Hospital.Governorate)
+                                     .Include(r => r.AssetDetail.Hospital.City).Include(r => r.AssetDetail.Hospital.Organization).Include(r => r.AssetDetail.Hospital.SubOrganization)
+                                     .Include(r => r.RequestType)
+                                     .Include(r => r.SubProblem)
+                                     .Include(r => r.RequestMode)
+                                     .Include(r => r.User).OrderByDescending(p => p.RequestDate)
+                                     .Where(a => a.AssetDetail.HospitalId == sortObj.HospitalId && a.AssetDetailId == sortObj.AssetId).ToList();
+
+            foreach (var req in lstRequests)
+            {
+                IndexRequestsVM getDataObj = new IndexRequestsVM();
+                getDataObj.Id = req.Id;
+                getDataObj.Code = req.RequestCode;
+                getDataObj.Subject = req.Subject;
+                getDataObj.RequestCode = req.RequestCode;
+                getDataObj.Description = req.Description;
+                getDataObj.RequestDate = req.RequestDate;
+                getDataObj.RequestModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
+                getDataObj.ModeName = req.RequestMode.Name;
+                getDataObj.ModeNameAr = req.RequestMode.NameAr;
+                getDataObj.SubProblemId = req.SubProblemId;
+                getDataObj.SubProblemName = req.SubProblem.Name;
+                getDataObj.RequestTypeId = req.RequestTypeId;
+                getDataObj.RequestTypeName = req.RequestType.Name;
+                getDataObj.RequestPeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
+                getDataObj.PeriorityName = req.RequestPeriority.Name;
+                getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
+                getDataObj.PeriorityColor = req.RequestPeriority.Color;
+                getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
+                getDataObj.CreatedById = req.CreatedById;
+                getDataObj.CreatedBy = req.User.UserName;
+                getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
+                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                getDataObj.UserId = req.User.Id;
+                getDataObj.HospitalId = (int)req.AssetDetail.HospitalId;
+                getDataObj.GovernorateId = (int)req.AssetDetail.Hospital.GovernorateId;
+                getDataObj.CityId = (int)req.AssetDetail.Hospital.CityId;
+                getDataObj.OrganizationId = (int)req.AssetDetail.Hospital.OrganizationId;
+                getDataObj.SubOrganizationId = (int)req.AssetDetail.Hospital.SubOrganizationId;
+
+                var lstStatus = _context.RequestTracking
+                                 .Include(t => t.Request).Include(t => t.RequestStatus)
+                                 .Where(a => a.RequestId == req.Id).ToList().OrderByDescending(a => a.Id).ToList();
+                if (lstStatus.Count > 0)
+                {
+                    getDataObj.StatusId = lstStatus[0].RequestStatus.Id;
+                    getDataObj.StatusName = lstStatus[0].RequestStatus.Name;
+                    getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
+                    getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
+                    getDataObj.StatusIcon = lstStatus[0].RequestStatus.Icon;
+                }
+
+                request.Add(getDataObj);
+            }
+
+
+            if (sortObj.Code != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.RequestCode).ToList();
+                else
+                    request = request.OrderBy(d => d.RequestCode).ToList();
+            }
+            //else if (sortObj.AssetName != "")
+            //{
+            //    if (sortObj.SortStatus == "descending")
+            //        request = request.OrderByDescending(d => d.AssetName).ToList();
+            //    else
+            //        request = request.OrderBy(d => d.AssetName).ToList();
+            //}
+            //else if (sortObj.AssetNameAr != "")
+            //{
+            //    if (sortObj.SortStatus == "descending")
+            //        request = request.OrderByDescending(d => d.AssetNameAr).ToList();
+            //    else
+            //        request = request.OrderBy(d => d.AssetNameAr).ToList();
+            //}
+            else if (sortObj.Subject != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.Subject).ToList();
+                else
+                    request = request.OrderBy(d => d.Subject).ToList();
+            }
+            else if (sortObj.PeriorityName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.PeriorityName).ToList();
+                else
+                    request = request.OrderBy(d => d.PeriorityName).ToList();
+            }
+            else if (sortObj.PeriorityNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.PeriorityNameAr).ToList();
+                else
+                    request = request.OrderBy(d => d.PeriorityNameAr).ToList();
+            }
+            else if (sortObj.StatusName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.StatusName).ToList();
+                else
+                    request = request.OrderBy(d => d.StatusName).ToList();
+            }
+            else if (sortObj.StatusNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.StatusNameAr).ToList();
+                else
+                    request = request.OrderBy(d => d.StatusNameAr).ToList();
+            }
+            else if (sortObj.ModeName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.ModeName).ToList();
+                else
+                    request = request.OrderBy(d => d.ModeName).ToList();
+            }
+            else if (sortObj.ModeNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.ModeNameAr).ToList();
+                else
+                    request = request.OrderBy(d => d.ModeNameAr).ToList();
+            }
+            else if (sortObj.RequestDate != null)
+            {
+                if (sortObj.SortStatus == "descending")
+                    request = request.OrderByDescending(d => d.RequestDate).ToList();
+                else
+                    request = request.OrderBy(d => d.RequestDate).ToList();
+            }
+
             return request;
         }
         public int GetTotalOpenRequest(string userId)

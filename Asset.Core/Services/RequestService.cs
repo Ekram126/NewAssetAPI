@@ -51,10 +51,7 @@ namespace Asset.Core.Services
             throw new NotImplementedException();
         }
 
-        //public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId, string userId)
-        //{
-        //    throw new NotImplementedException();
-        //}
+
 
         public IndexRequestsVM GetRequestByWorkOrderId(int workOrderId)
         { 
@@ -100,6 +97,16 @@ namespace Asset.Core.Services
         public int GetTotalOpenRequest(string userId)
         {
             return _unitOfWork.Request.GetTotalOpenRequest(userId);
+        }
+
+        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId)
+        {
+            return _unitOfWork.Request.GetAllRequestsByAssetId(assetId,hospitalId);
+        }
+
+        public IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj)
+        {   return _unitOfWork.Request.SortRequestsByAssetId(sortObj);
+            
         }
     }
 }

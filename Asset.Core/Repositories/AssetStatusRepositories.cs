@@ -98,6 +98,10 @@ namespace Asset.Core.Repositories
             });
         }
 
+
+
+
+
         public int Update(EditAssetStatusVM model)
         {
             try
@@ -144,6 +148,72 @@ namespace Asset.Core.Repositories
             }
 
             return lstAssetStatuses;
+        }
+
+        public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusCount()
+        {
+            List<IndexAssetStatusVM.GetData> list = new List<IndexAssetStatusVM.GetData>();
+
+            List<AssetStatusTransaction> lstNeedRepair = new List<AssetStatusTransaction>();
+            List<AssetStatusTransaction> lstInActive = new List<AssetStatusTransaction>();
+            List<AssetStatusTransaction> lstWorking = new List<AssetStatusTransaction>();
+            List<AssetStatusTransaction> lstUnderMaintenance = new List<AssetStatusTransaction>();
+            List<AssetStatusTransaction> lstUnderInstallation = new List<AssetStatusTransaction>();
+            List<AssetStatusTransaction> lstNotWorking = new List<AssetStatusTransaction>();
+            List<AssetStatusTransaction> lstShutdown = new List<AssetStatusTransaction>();
+            List<AssetStatusTransaction> lstExecluded = new List<AssetStatusTransaction>();
+            List<AssetStatusTransaction> lstHold = new List<AssetStatusTransaction>();
+
+
+            IndexAssetStatusVM.GetData getDataObj = new IndexAssetStatusVM.GetData();
+
+
+
+            var lstStatus = _context.AssetStatus.ToList();
+            //getDataObj.ListStatus = lstStatus;
+
+
+            var lstTransactions = _context.AssetStatusTransactions.Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+            if (lstTransactions.Count > 0)
+            {
+                foreach (var trans in lstTransactions)
+                {
+                    //var trackObj = _context.RequestTracking.OrderByDescending(a => a.Id).FirstOrDefault(a => a.RequestId == req.Id);
+                    //if (trackObj != null)
+                    //{
+                    //    RequestTracking trk = trackObj;
+
+                    //    if (trk.RequestStatusId == 1)
+                    //    {
+                    //        lstOpenTracks.Add(trk);
+                    //    }
+                    //    if (trk.RequestStatusId == 2)
+                    //    {
+                    //        lstCloseTracks.Add(trk);
+                    //    }
+                    //    if (trk.RequestStatusId == 3)
+                    //    {
+                    //        lstInProgressTracks.Add(trk);
+                    //    }
+                    //    if (trk.RequestStatusId == 4)
+                    //    {
+                    //        lstSolvedTracks.Add(trk);
+                    //    }
+                    //    if (trk.RequestStatusId == 5)
+                    //    {
+                    //        lstApprovedTracks.Add(trk);
+                    //    }
+                    //}
+                }
+            }
+
+            //getDataObj.CountOpen = lstOpenTracks.Count;
+            //getDataObj.CountClosed = lstCloseTracks.Count;
+            //getDataObj.CountInProgress = lstInProgressTracks.Count;
+            //getDataObj.CountSolved = lstSolvedTracks.Count;
+            //getDataObj.CountApproved = lstApprovedTracks.Count;
+            list.Add(getDataObj);
+            return list;
         }
     }
 }

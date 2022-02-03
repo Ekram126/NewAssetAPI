@@ -16,7 +16,9 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId,int assetId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId,string userId);
-       // List<Request> GetLastRequestAndWorkOrderByAssetId(int assetId);
+        IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId);
+
+        // List<Request> GetLastRequestAndWorkOrderByAssetId(int assetId);
         int GetTotalOpenRequest(string userId);
         IndexRequestsVM GetRequestByWorkOrderId(int workOrderId);
 
@@ -30,5 +32,6 @@ namespace Asset.Domain.Services
 
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
         Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj);
+        IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj);
     }
 }
