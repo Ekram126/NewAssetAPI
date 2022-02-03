@@ -108,5 +108,11 @@ namespace Asset.Core.Services
         {   return _unitOfWork.Request.SortRequestsByAssetId(sortObj);
             
         }
+
+        public PrintServiceRequestVM PrintServiceRequestById(int id)
+        {
+            return _unitOfWork.Request.PrintServiceRequestById(id);
+           
+        }
     }
 }

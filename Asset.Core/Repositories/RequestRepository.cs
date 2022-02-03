@@ -2,6 +2,7 @@
 using Asset.Models;
 using Asset.ViewModels.RequestTrackingVM;
 using Asset.ViewModels.RequestVM;
+using Asset.ViewModels.WorkOrderTrackingVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -1842,6 +1843,128 @@ namespace Asset.Core.Repositories
                 }
             }
             return listCountRequests.Count;
+        }
+
+        public PrintServiceRequestVM PrintServiceRequestById(int id)
+        {
+            List<LstWorkOrderFromTracking> lstTracking = new List<LstWorkOrderFromTracking>();
+
+            List<IndexRequestTracking> lstServiceTracking = new List<IndexRequestTracking>();
+            PrintServiceRequestVM printSRObj = new PrintServiceRequestVM();
+
+            var lstRequests = _context.Request.Where(a => a.Id == id).Include(a => a.AssetDetail)
+                .Include(a => a.RequestType).Include(a => a.SubProblem).Include(a => a.SubProblem.Problem)
+                .Include(a => a.RequestMode)
+                .Include(a => a.AssetDetail.Hospital)
+                .Include(a => a.AssetDetail.MasterAsset)
+                .Include(w => w.RequestPeriority).Include(w => w.User).ToList();
+
+            if (lstRequests.Count > 0)
+            {
+
+                var requestObj = lstRequests[0];
+                printSRObj.RequestId = requestObj.Id;
+                printSRObj.AssetCode = requestObj.AssetDetail.Code;
+                printSRObj.RequestSubject = requestObj.Subject;
+                printSRObj.RequestDate = requestObj.RequestDate.ToShortDateString();
+                printSRObj.RequestCode = requestObj.RequestCode;
+                printSRObj.RequestTypeName = requestObj.RequestType.Name;
+                printSRObj.RequestTypeNameAr = requestObj.RequestType.NameAr;
+                printSRObj.ModeName = requestObj.RequestMode.Name;
+                printSRObj.ModeNameAr = requestObj.RequestMode.NameAr;
+                printSRObj.SubProblemName = requestObj.SubProblem.Name;
+                printSRObj.SubProblemNameAr = requestObj.SubProblem.NameAr;
+                printSRObj.ProblemName = requestObj.SubProblem.Problem.Name;
+                printSRObj.ProblemNameAr = requestObj.SubProblem.Problem.NameAr;
+
+                printSRObj.HospitalId = requestObj.AssetDetail.HospitalId;
+                printSRObj.HospitalName = requestObj.AssetDetail.Hospital.Name;
+                printSRObj.HospitalNameAr = requestObj.AssetDetail.Hospital.NameAr;
+                printSRObj.AssetName = requestObj.AssetDetail.MasterAsset.Name;
+                printSRObj.AssetNameAr = requestObj.AssetDetail.MasterAsset.NameAr;
+                printSRObj.SerialNumber = requestObj.AssetDetail.SerialNumber;
+
+
+                var lstMainWorkOrders = _context.WorkOrders.Where(a => a.RequestId == requestObj.Id).Include(a => a.Request.AssetDetail)
+                .Include(a => a.Request.RequestType).Include(a => a.Request.SubProblem).Include(a => a.Request.SubProblem.Problem)
+                .Include(a => a.Request.RequestMode)
+                .Include(a => a.Request.AssetDetail.Hospital)
+                .Include(a => a.Request.AssetDetail.MasterAsset)
+                .Include(w => w.WorkOrderType).Include(w => w.WorkOrderPeriority).Include(w => w.User).ToList();
+                if (lstMainWorkOrders.Count > 0)
+                {
+                    var woObj = lstMainWorkOrders[0];
+
+
+                    printSRObj.Subject = woObj.Subject != "" ? woObj.Subject : "";
+                    printSRObj.WorkOrderNumber = woObj.WorkOrderNumber != "" ? woObj.WorkOrderNumber : "";
+                    printSRObj.CreationDate = woObj.CreationDate;
+                    printSRObj.PlannedStartDate = woObj.PlannedStartDate;
+                    printSRObj.PlannedEndDate = woObj.PlannedEndDate;
+                    printSRObj.ActualStartDate = woObj.ActualStartDate;
+                    printSRObj.ActualEndDate = woObj.ActualEndDate;
+                    printSRObj.Note = woObj.Note;
+                    printSRObj.CreatedById = woObj.CreatedById;
+                    printSRObj.CreatedBy = woObj.User.UserName;
+                    printSRObj.PeriorityName =woObj.WorkOrderPeriority != null ?  woObj.WorkOrderPeriority.Name:"";
+                    printSRObj.PeriorityNameAr =woObj.WorkOrderPeriority != null ? woObj.WorkOrderPeriority.NameAr:"";
+                    printSRObj.TypeName = woObj.WorkOrderType != null ? woObj.WorkOrderType.Name : "";
+                    printSRObj.TypeNameAr = woObj.WorkOrderType != null ? woObj.WorkOrderType.NameAr : "";
+
+
+
+
+                    var lstTracks = _context.WorkOrderTrackings
+                                                          .Include(A => A.WorkOrderStatus)
+                                                          .Include(A => A.User)
+                                                         .Where(t => t.WorkOrderId == woObj.Id).ToList();
+
+                    if (lstTracks.Count > 0)
+                    {
+                        foreach (var item in lstTracks)
+                        {
+                            LstWorkOrderFromTracking trackObj = new LstWorkOrderFromTracking();
+                            if (item.ActualStartDate != null)
+                                trackObj.ActualStartDate = DateTime.Parse(item.ActualStartDate.Value.ToShortDateString());
+
+
+                            if (item.ActualEndDate != null)
+                                trackObj.ActualEndDate = DateTime.Parse(item.ActualEndDate.Value.ToShortDateString());
+                            trackObj.Notes = item.Notes;
+                            trackObj.CreatedBy = _context.ApplicationUser.Where(a => a.Id == item.CreatedById).ToList().FirstOrDefault().UserName;
+                            trackObj.StatusName = item.WorkOrderStatus.Name;
+                            trackObj.StatusNameAr = item.WorkOrderStatus.NameAr;
+                            if (item.AssignedTo != "")
+                                trackObj.AssignedToName = _context.ApplicationUser.Where(a => a.Id == item.AssignedTo).ToList().FirstOrDefault().UserName;
+                            lstTracking.Add(trackObj);
+
+                        }
+                        printSRObj.LstWorkOrderTracking = lstTracking;
+                    }
+                }
+
+                var lstServiceTracks = _context.RequestTracking
+                                                 .Include(A => A.RequestStatus)
+                                                 .Include(A => A.User)
+                                                .Where(t => t.RequestId == id).ToList();
+
+                if (lstServiceTracks.Count > 0)
+                {
+                    foreach (var item in lstServiceTracks)
+                    {
+                        IndexRequestTracking trackObj = new IndexRequestTracking();
+                        trackObj.Description = item.Description;
+                        trackObj.DescriptionDate = item.DescriptionDate;
+                        trackObj.CreatedById = item.User.UserName;
+                        trackObj.StatusName = item.RequestStatus.Name;
+                        trackObj.StatusNameAr = item.RequestStatus.NameAr;
+                        lstServiceTracking.Add(trackObj);
+
+                    }
+                    printSRObj.RequestTrackingList = lstServiceTracking;
+                }
+            }
+            return printSRObj;
         }
     }
 }

@@ -121,12 +121,22 @@ namespace Asset.API.Controllers
 
 
 
-        //[HttpPost]
-        //[Route("SearchAssetDetails")]
-        //public  IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM model)
-        //{
-        //    return  _AssetDetailService.SearchAssetInHospital(model);
-        //}
+
+        [HttpPost]
+        [Route("GetAllAssetsByStatusId/{userId}/{statusId}")]
+        public IEnumerable<IndexAssetDetailVM.GetData> GetAllRequestsByStatusId(int statusId, string userId, PagingParameter pageInfo)
+        {
+            var lstAssets = _AssetDetailService.GetAllAssetsByStatusId(statusId, userId).ToList();
+            return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, lstAssets);
+        }
+        [HttpPost]
+        [Route("GetAllAssetsCountByStatusId/{userId}/{statusId}")]
+        public int GetCountByStatusId(int statusId,string userId)
+        {
+            return _AssetDetailService.GetAllAssetsByStatusId(statusId, userId).ToList().Count;
+        }
+
+
 
 
         [HttpPost]

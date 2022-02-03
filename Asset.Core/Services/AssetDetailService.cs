@@ -192,5 +192,11 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.AutoCompleteAssetBarCode(barcode,hospitalId);
         }
+
+        public IEnumerable<IndexAssetDetailVM.GetData> GetAllAssetsByStatusId(int statusId, string userId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAllAssetsByStatusId(statusId, userId);
+          
+        }
     }
 }

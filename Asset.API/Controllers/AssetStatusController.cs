@@ -65,6 +65,23 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpPost] 
+        [Route("GetAllAssetsGroupByStatusId/{statusId}/{userId}")]
+        public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId)
+        {
+            var lstAssetStatuses = _assetStatusService.GetAllAssetsGroupByStatusId(statusId,userId).ToList();
+            return lstAssetStatuses;
+        }
+
+        //[HttpPost]
+        //[Route("CountAssetsGroupByStatusId/{statusId}")]
+        //public  int CountAssetsGroupByStatusId(int statusId, string userId)
+        //{
+        //    return _assetStatusService.GetAllAssetsGroupByStatusId(statusId,userId).ToList().Count;
+        //}
+
+
+
 
 
         [HttpGet]

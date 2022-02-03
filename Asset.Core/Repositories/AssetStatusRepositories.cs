@@ -150,10 +150,9 @@ namespace Asset.Core.Repositories
             return lstAssetStatuses;
         }
 
-        public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusCount()
+        public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId)
         {
             List<IndexAssetStatusVM.GetData> list = new List<IndexAssetStatusVM.GetData>();
-
             List<AssetStatusTransaction> lstNeedRepair = new List<AssetStatusTransaction>();
             List<AssetStatusTransaction> lstInActive = new List<AssetStatusTransaction>();
             List<AssetStatusTransaction> lstWorking = new List<AssetStatusTransaction>();
@@ -163,56 +162,181 @@ namespace Asset.Core.Repositories
             List<AssetStatusTransaction> lstShutdown = new List<AssetStatusTransaction>();
             List<AssetStatusTransaction> lstExecluded = new List<AssetStatusTransaction>();
             List<AssetStatusTransaction> lstHold = new List<AssetStatusTransaction>();
-
-
             IndexAssetStatusVM.GetData getDataObj = new IndexAssetStatusVM.GetData();
 
+            ApplicationUser UserObj = new ApplicationUser();
+            List<string> lstRoleNames = new List<string>();
+            var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+            if (obj.Count > 0)
+            {
+                UserObj = obj[0];
 
-
+                var roleNames = (from userRole in _context.UserRoles
+                                 join role in _context.Roles on userRole.RoleId equals role.Id
+                                 where userRole.UserId == userId
+                                 select role);
+                foreach (var item in roleNames)
+                {
+                    lstRoleNames.Add(item.Name);
+                }
+            }
             var lstStatus = _context.AssetStatus.ToList();
-            //getDataObj.ListStatus = lstStatus;
+            getDataObj.ListStatus = lstStatus;
+            var lstTransactions = _context.AssetStatusTransactions
+                                        .Include(a => a.AssetDetail)
+                                        .Include(a => a.AssetDetail.Hospital)
+                                        .Include(a => a.AssetDetail.MasterAsset).ToList();
 
 
-            var lstTransactions = _context.AssetStatusTransactions.Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+
+            if (statusId != 0)
+            {
+                lstTransactions = lstTransactions.Where(a => a.AssetStatusId == statusId).ToList();
+            }
+            getDataObj.HospitalId = lstTransactions[0].AssetDetail.HospitalId;
+            getDataObj.GovernorateId = lstTransactions[0].AssetDetail.Hospital.GovernorateId;
+            getDataObj.CityId = lstTransactions[0].AssetDetail.Hospital.CityId;
+            getDataObj.OrganizationId = lstTransactions[0].AssetDetail.Hospital.OrganizationId;
+            getDataObj.SubOrganizationId = lstTransactions[0].AssetDetail.Hospital.SubOrganizationId;
+
+            if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                lstTransactions = lstTransactions.ToList();
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
+            {
+                lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
+            {
+                lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
+            {
+                lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+            {
+                if (lstRoleNames.Contains("Admin"))
+                {
+                    lstTransactions = lstTransactions.ToList();
+                }
+                if (lstRoleNames.Contains("TLHospitalManager"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("EngDepManager"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("EngManager"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("Eng"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("AssetOwner"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+            {
+                if (lstRoleNames.Contains("Admin"))
+                {
+                    lstTransactions = lstTransactions.ToList();
+                }
+                if (lstRoleNames.Contains("TLHospitalManager"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("EngDepManager"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("EngManager"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("AssetOwner"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("Eng"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+
+            }
             if (lstTransactions.Count > 0)
             {
                 foreach (var trans in lstTransactions)
                 {
-                    //var trackObj = _context.RequestTracking.OrderByDescending(a => a.Id).FirstOrDefault(a => a.RequestId == req.Id);
-                    //if (trackObj != null)
-                    //{
-                    //    RequestTracking trk = trackObj;
+                    var transObj = _context.AssetStatusTransactions.OrderByDescending(a => a.Id).FirstOrDefault(a => a.AssetStatusId == trans.AssetStatusId);
+                    if (transObj != null)
+                    {
+                        AssetStatusTransaction trk = transObj;
 
-                    //    if (trk.RequestStatusId == 1)
-                    //    {
-                    //        lstOpenTracks.Add(trk);
-                    //    }
-                    //    if (trk.RequestStatusId == 2)
-                    //    {
-                    //        lstCloseTracks.Add(trk);
-                    //    }
-                    //    if (trk.RequestStatusId == 3)
-                    //    {
-                    //        lstInProgressTracks.Add(trk);
-                    //    }
-                    //    if (trk.RequestStatusId == 4)
-                    //    {
-                    //        lstSolvedTracks.Add(trk);
-                    //    }
-                    //    if (trk.RequestStatusId == 5)
-                    //    {
-                    //        lstApprovedTracks.Add(trk);
-                    //    }
-                    //}
+                        if (trk.AssetStatusId == 1)
+                        {
+                            lstNeedRepair.Add(trk);
+                        }
+                        if (trk.AssetStatusId == 2)
+                        {
+                            lstInActive.Add(trk);
+                        }
+                        if (trk.AssetStatusId == 3)
+                        {
+                            lstWorking.Add(trk);
+                        }
+                        if (trk.AssetStatusId == 4)
+                        {
+                            lstUnderMaintenance.Add(trk);
+                        }
+                        if (trk.AssetStatusId == 5)
+                        {
+                            lstUnderInstallation.Add(trk);
+                        }
+                        if (trk.AssetStatusId == 6)
+                        {
+                            lstNotWorking.Add(trk);
+                        }
+                        if (trk.AssetStatusId == 7)
+                        {
+                            lstShutdown.Add(trk);
+                        }
+                        if (trk.AssetStatusId == 8)
+                        {
+                            lstExecluded.Add(trk);
+                        }
+                        if (trk.AssetStatusId == 9)
+                        {
+                            lstHold.Add(trk);
+                        }
+                    }
                 }
             }
 
-            //getDataObj.CountOpen = lstOpenTracks.Count;
-            //getDataObj.CountClosed = lstCloseTracks.Count;
-            //getDataObj.CountInProgress = lstInProgressTracks.Count;
-            //getDataObj.CountSolved = lstSolvedTracks.Count;
-            //getDataObj.CountApproved = lstApprovedTracks.Count;
+            getDataObj.CountNeedRepair = lstNeedRepair.Count;
+            getDataObj.CountInActive = lstInActive.Count;
+            getDataObj.CountWorking = lstWorking.Count;
+            getDataObj.CountUnderMaintenance = lstUnderMaintenance.Count;
+            getDataObj.CountUnderInstallation = lstUnderInstallation.Count;
+            getDataObj.CountNotWorking = lstNotWorking.Count;
+            getDataObj.CountShutdown = lstShutdown.Count;
+            getDataObj.CountExecluded = lstExecluded.Count;
+            getDataObj.CountHold = lstHold.Count;
+
+
             list.Add(getDataObj);
+
+
             return list;
         }
     }

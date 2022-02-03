@@ -91,6 +91,17 @@ namespace Asset.API.Controllers
         }
 
 
+
+        [HttpGet("PrintServiceRequestById/{id}")]
+        public ActionResult<PrintServiceRequestVM> PrintWorkOrderById(int id)
+        {
+            return _requestService.PrintServiceRequestById(id);
+        }
+
+
+
+
+
         [HttpGet]
         [Route("GetTotalOpenRequest/{userId}")]
         public int GetTotalOpenReques(string userId)

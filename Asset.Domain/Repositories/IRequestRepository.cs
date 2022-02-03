@@ -29,6 +29,10 @@ namespace Asset.Domain.Repositories
         void Update(EditRequestVM editRequestVM);
         void Delete(int id);
 
+        PrintServiceRequestVM PrintServiceRequestById(int id);
+
+
+
 
         GeneratedRequestNumberVM GenerateRequestNumber();
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);

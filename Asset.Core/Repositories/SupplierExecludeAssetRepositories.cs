@@ -70,34 +70,39 @@ namespace Asset.Core.Repositories
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
-
                 getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
-
-
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
-
                 getDataObj.StatusId = item.StatusId;
 
-                if (item.StatusId == 1)
+                var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
+                if (lstStatuses.Count > 0)
                 {
-                    getDataObj.StatusName = "Open";
-                    getDataObj.StatusNameAr = "فتح";
+                    getDataObj.StatusName = lstStatuses[0].Name;
+                    getDataObj.StatusNameAr = lstStatuses[0].NameAr;
                 }
-                if (item.StatusId == 2)
-                {
-                    getDataObj.StatusName = "Approved";
-                    getDataObj.StatusNameAr = "موافقة";
-                }
-                if (item.StatusId == 3)
-                {
-                    getDataObj.StatusName = "Rejected";
-                    getDataObj.StatusNameAr = "رفض الطلب";
-                }
-                if (item.StatusId == 4)
-                {
-                    getDataObj.StatusName = "System Rejected";
-                    getDataObj.StatusNameAr = "استبعاد من النظام";
-                }
+                //if (item.StatusId == 1)
+                //{
+                //    getDataObj.StatusName = "Open";
+                //    getDataObj.StatusNameAr = "فتح";
+
+                //    getDataObj.StatusName = item.HospitalSupplierStatus.Name;
+                //    getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                //}
+                //if (item.StatusId == 2)
+                //{
+                //    getDataObj.StatusName = "Approved";
+                //    getDataObj.StatusNameAr = "موافقة";
+                //}
+                //if (item.StatusId == 3)
+                //{
+                //    getDataObj.StatusName = "Rejected";
+                //    getDataObj.StatusNameAr = "رفض الطلب";
+                //}
+                //if (item.StatusId == 4)
+                //{
+                //    getDataObj.StatusName = "System Rejected";
+                //    getDataObj.StatusNameAr = "استبعاد من النظام";
+                //}
                 var lstExTitles = (from execlude in _context.SupplierExecludeReasons
                                    join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
                                    where trans.SupplierExecludeAssetId == item.Id
@@ -328,9 +333,9 @@ namespace Asset.Core.Repositories
 
 
             var reasonNames = (from execlude in _context.SupplierExecludeReasons
-                             join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
-                             where trans.SupplierExecludeAssetId == id
-                             select execlude).ToList();
+                               join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                               where trans.SupplierExecludeAssetId == id
+                               select execlude).ToList();
 
 
 
@@ -353,7 +358,7 @@ namespace Asset.Core.Repositories
                                             assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
                                             assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber,
 
-                                            
+
                                             HospitalName = item.AssetDetail.Hospital.Name,
                                             HospitalNameAr = item.AssetDetail.Hospital.NameAr,
 
@@ -382,7 +387,7 @@ namespace Asset.Core.Repositories
             var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
 
                 .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
-            if(statusId != 0)
+            if (statusId != 0)
             {
                 lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.StatusId == statusId).ToList();
             }

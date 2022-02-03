@@ -17,7 +17,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexAssetStatusVM.GetData> GetAssetStatusByName(string AssetStatusName);
         IEnumerable<IndexAssetStatusVM.GetData> SortAssetStatuses(SortAssetStatusVM sortObj);
 
-        IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusCount();
+        IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId,string userId);
 
         EditAssetStatusVM GetById(int id);
         int Add(CreateAssetStatusVM AssetStatusVM);

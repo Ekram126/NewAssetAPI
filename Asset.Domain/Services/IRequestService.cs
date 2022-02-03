@@ -29,6 +29,8 @@ namespace Asset.Domain.Services
         void DeleteRequest(int id);
 
         GeneratedRequestNumberVM GenerateRequestNumber();
+        PrintServiceRequestVM PrintServiceRequestById(int id);
+
 
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
         Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj);
