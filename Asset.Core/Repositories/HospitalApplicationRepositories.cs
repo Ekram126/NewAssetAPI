@@ -89,26 +89,37 @@ namespace Asset.Core.Repositories
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
 
                 getDataObj.StatusId = item.StatusId;
-                if (item.StatusId == 1)
+                //if (item.StatusId == 1)
+                //{
+                //    getDataObj.StatusName = "Open";
+                //    getDataObj.StatusNameAr = "فتح";
+                //}
+                //if (item.StatusId == 2)
+                //{
+                //    getDataObj.StatusName = "Approved";
+                //    getDataObj.StatusNameAr = "موافقة";
+                //}
+                //if (item.StatusId == 3)
+                //{
+                //    getDataObj.StatusName = "Rejected";
+                //    getDataObj.StatusNameAr = "رفض الطلب";
+                //}
+                //if (item.StatusId == 4)
+                //{
+                //    getDataObj.StatusName = "System Rejected";
+                //    getDataObj.StatusNameAr = "استبعاد من النظام";
+                //}
+
+
+                var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
+                if (lstStatuses.Count > 0)
                 {
-                    getDataObj.StatusName = "Open";
-                    getDataObj.StatusNameAr = "فتح";
+                    getDataObj.StatusName = lstStatuses[0].Name;
+                    getDataObj.StatusNameAr = lstStatuses[0].NameAr;
                 }
-                if (item.StatusId == 2)
-                {
-                    getDataObj.StatusName = "Approved";
-                    getDataObj.StatusNameAr = "موافقة";
-                }
-                if (item.StatusId == 3)
-                {
-                    getDataObj.StatusName = "Rejected";
-                    getDataObj.StatusNameAr = "رفض الطلب";
-                }
-                if (item.StatusId == 4)
-                {
-                    getDataObj.StatusName = "System Rejected";
-                    getDataObj.StatusNameAr = "استبعاد من النظام";
-                }
+
+
+
 
                 var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
                                       join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
@@ -852,7 +863,7 @@ namespace Asset.Core.Repositories
         {
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
             var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
-                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a=>a.AppDate).ToList();
             foreach (var item in lstHospitalApplications)
             {
 

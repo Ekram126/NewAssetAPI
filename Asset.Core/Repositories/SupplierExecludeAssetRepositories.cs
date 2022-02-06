@@ -58,7 +58,9 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAll()
         {
             List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
-            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
+                .Include(a => a.AssetDetail)
+                .Include(a => a.AssetDetail.MasterAsset).OrderByDescending(a=>a.Date).ToList();
             foreach (var item in lstSupplierExecludeAssets)
             {
 
@@ -410,26 +412,36 @@ namespace Asset.Core.Repositories
 
                 getDataObj.StatusId = item.StatusId;
 
-                if (item.StatusId == 1)
+                var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
+                if (lstStatuses.Count > 0)
                 {
-                    getDataObj.StatusName = "Open";
-                    getDataObj.StatusNameAr = "فتح";
+                    getDataObj.StatusName = lstStatuses[0].Name;
+                    getDataObj.StatusNameAr = lstStatuses[0].NameAr;
                 }
-                if (item.StatusId == 2)
-                {
-                    getDataObj.StatusName = "Approved";
-                    getDataObj.StatusNameAr = "موافقة";
-                }
-                if (item.StatusId == 3)
-                {
-                    getDataObj.StatusName = "Rejected";
-                    getDataObj.StatusNameAr = "رفض الطلب";
-                }
-                if (item.StatusId == 4)
-                {
-                    getDataObj.StatusName = "System Rejected";
-                    getDataObj.StatusNameAr = "استبعاد من النظام";
-                }
+
+
+
+
+                //if (item.StatusId == 1)
+                //{
+                //    getDataObj.StatusName = "Open";
+                //    getDataObj.StatusNameAr = "فتح";
+                //}
+                //if (item.StatusId == 2)
+                //{
+                //    getDataObj.StatusName = "Approved";
+                //    getDataObj.StatusNameAr = "موافقة";
+                //}
+                //if (item.StatusId == 3)
+                //{
+                //    getDataObj.StatusName = "Rejected";
+                //    getDataObj.StatusNameAr = "رفض الطلب";
+                //}
+                //if (item.StatusId == 4)
+                //{
+                //    getDataObj.StatusName = "System Rejected";
+                //    getDataObj.StatusNameAr = "استبعاد من النظام";
+                //}
                 var lstExTitles = (from execlude in _context.SupplierExecludeReasons
                                    join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
                                    where trans.SupplierExecludeAssetId == item.Id
@@ -454,6 +466,89 @@ namespace Asset.Core.Repositories
                 list.Add(getDataObj);
             }
 
+            return list;
+        }
+
+
+
+
+
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(SortSupplierExecludeAssetVM sortObj)
+        {
+            var list = GetAll();
+         
+            if (sortObj.AssetName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetName).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetName).ToList();
+            }
+            else if (sortObj.AssetNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetNameAr).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetNameAr).ToList();
+            }
+            else if (sortObj.AssetName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetName).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetName).ToList();
+            }
+         
+           
+            else if (sortObj.ReasonExTitles != "" || sortObj.ReasonHoldTitles != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ReasonExTitles).ThenByDescending(d => d.ReasonExTitles).ToList();
+                else
+                    list = list.OrderBy(d => d.ReasonExTitles).ThenBy(d => d.ReasonExTitles).ToList();
+            }
+            else if (sortObj.ReasonExTitlesAr != "" || sortObj.ReasonHoldTitlesAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ReasonExTitlesAr).ThenByDescending(d => d.ReasonExTitlesAr).ToList();
+                else
+                    list = list.OrderBy(d => d.ReasonExTitlesAr).ThenBy(d => d.ReasonExTitlesAr).ToList();
+            }
+            else if (sortObj.Date != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.Date).ToList();
+                else
+                    list = list.OrderBy(d => d.Date).ToList();
+            }
+            else if (sortObj.StatusName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.StatusName).ToList();
+                else
+                    list = list.OrderBy(d => d.StatusName).ToList();
+            }
+            else if (sortObj.StatusNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.StatusNameAr).ToList();
+                else
+                    list = list.OrderBy(d => d.StatusNameAr).ToList();
+            }
+            else if (sortObj.DueDate != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ExecludeDate).ToList();
+                else
+                    list = list.OrderBy(d => d.ExecludeDate).ToList();
+            }
+            else if (sortObj.AppNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ExNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.ExNumber).ToList();
+            }
             return list;
         }
     }

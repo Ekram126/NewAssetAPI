@@ -21,7 +21,7 @@ namespace Asset.Domain.Repositories
         int Delete(int id);
 
 
-
+        IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(SortSupplierExecludeAssetVM sortObj);
         int CreateSupplierExecludAttachments(SupplierExecludeAttachment attachObj);
         IEnumerable<SupplierExecludeAttachment> GetAttachmentBySupplierExecludeAssetId(int assetId);
         int DeleteSupplierExecludeAttachment(int id);

@@ -68,6 +68,11 @@ namespace Asset.Core.Services
             return _unitOfWork.SupplierExecludeAssetRepository.GetSupplierExecludeAssetDetailById(id);
         }
 
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(SortSupplierExecludeAssetVM sortObj)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.SortSuplierApp(sortObj);
+        }
+
         public int Update(EditSupplierExecludeAssetVM SupplierExecludeAssetObj)
         {
             return _unitOfWork.SupplierExecludeAssetRepository.Update(SupplierExecludeAssetObj);

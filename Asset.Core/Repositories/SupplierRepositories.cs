@@ -28,8 +28,8 @@ namespace Asset.Core.Repositories
                 if (model != null)
                 {
                     supplierObj.Code = model.Code;
-                    supplierObj.Name = model.Name;
-                    supplierObj.NameAr = model.NameAr;
+                    supplierObj.Name = model.Name.Trim();
+                    supplierObj.NameAr = model.NameAr.Trim();
                     supplierObj.Mobile = model.Mobile;
                     supplierObj.Website = model.Website;
                     supplierObj.EMail = model.EMail;
@@ -72,8 +72,8 @@ namespace Asset.Core.Repositories
             {
                 Id = item.Id,
                 Code=item.Code,
-                Name = item.Name,
-                NameAr = item.NameAr
+                Name = item.Name.Trim(),
+                NameAr = item.NameAr.Trim()
             });
         }
 
@@ -88,8 +88,8 @@ namespace Asset.Core.Repositories
             {
                 Id = item.Id,
                 Code = item.Code,
-                Name = item.Name,
-                NameAr = item.NameAr
+                Name = item.Name.Trim(),
+                NameAr = item.NameAr.Trim()
             }).First();
         }
 
@@ -99,8 +99,8 @@ namespace Asset.Core.Repositories
             {
                 Id = item.Id,
                 Code = item.Code,
-                Name = item.Name,
-                NameAr = item.NameAr
+                Name = item.Name.Trim(),
+                NameAr = item.NameAr.Trim()
             });
         }
 
@@ -110,8 +110,8 @@ namespace Asset.Core.Repositories
             {
                 Id = item.Id,
                 Code = item.Code,
-                Name = item.Name,
-                NameAr = item.NameAr
+                Name = item.Name.Trim(),
+                NameAr = item.NameAr.Trim()
             });
         }
 

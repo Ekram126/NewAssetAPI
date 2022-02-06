@@ -73,6 +73,24 @@ namespace Asset.API.Controllers
 
 
 
+
+        [HttpPost]
+        [Route("SortSuplierApp/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(int pagenumber, int pagesize, SortSupplierExecludeAssetVM sortObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var list =  _supplierExecludeAssetService.SortSuplierApp(sortObj);
+            return _pagingService.GetAll<IndexSupplierExecludeAssetVM.GetData>(pageInfo, list.ToList());
+        }
+
+
+
+
+
+
+
         [HttpGet]
         [Route("GetById/{id}")]
         public ActionResult<EditSupplierExecludeAssetVM> GetById(int id)
