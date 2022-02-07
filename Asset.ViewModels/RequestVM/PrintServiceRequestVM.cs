@@ -14,6 +14,7 @@ namespace Asset.ViewModels.RequestVM
         public string Subject { get; set; }
         public string MasterAssetCode { get; set; }
         public string AssetCode { get; set; }
+        public string WorkOrderSubject{ get; set; }
         public string WorkOrderNumber { get; set; }
         public DateTime? CreationDate { get; set; }
         public DateTime? PlannedStartDate { get; set; }
@@ -32,6 +33,7 @@ namespace Asset.ViewModels.RequestVM
         public string RequestSubject { get; set; }
         public string RequestDate { get; set; }
         public string RequestCode { get; set; }
+        public string RequestNote { get; set; }
         public string ProblemName { get; set; }
         public string ProblemNameAr { get; set; }
         public string SubProblemName { get; set; }

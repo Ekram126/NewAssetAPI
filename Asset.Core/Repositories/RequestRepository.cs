@@ -1884,6 +1884,15 @@ namespace Asset.Core.Repositories
                 printSRObj.AssetNameAr = requestObj.AssetDetail.MasterAsset.NameAr;
                 printSRObj.SerialNumber = requestObj.AssetDetail.SerialNumber;
 
+                var lstRequestNote = _context.RequestTracking.Where(a => a.RequestId == requestObj.Id && a.RequestStatusId == 1).Include(a => a.Request.AssetDetail).ToList();
+                if(lstRequestNote.Count > 0)
+                {
+                    var note = lstRequestNote[0].Description;
+                    printSRObj.RequestNote = note;
+                }
+
+
+
 
                 var lstMainWorkOrders = _context.WorkOrders.Where(a => a.RequestId == requestObj.Id).Include(a => a.Request.AssetDetail)
                 .Include(a => a.Request.RequestType).Include(a => a.Request.SubProblem).Include(a => a.Request.SubProblem.Problem)
@@ -1921,16 +1930,17 @@ namespace Asset.Core.Repositories
 
                     if (lstTracks.Count > 0)
                     {
+                        printSRObj.WorkOrderSubject = lstTracks[0].WorkOrder.Subject;
+
                         foreach (var item in lstTracks)
                         {
                             LstWorkOrderFromTracking trackObj = new LstWorkOrderFromTracking();
                             if (item.ActualStartDate != null)
-                                trackObj.ActualStartDate = DateTime.Parse(item.ActualStartDate.Value.ToShortDateString());
-
+                                trackObj.ActualStartDate = DateTime.Parse(item.ActualStartDate.ToString());
 
                             if (item.ActualEndDate != null)
-                                trackObj.ActualEndDate = DateTime.Parse(item.ActualEndDate.Value.ToShortDateString());
-                            trackObj.Notes = item.Notes;
+                                trackObj.ActualEndDate = DateTime.Parse(item.ActualEndDate.ToString());
+                            trackObj.Notes = item.Notes;                        
                             trackObj.CreatedBy = _context.ApplicationUser.Where(a => a.Id == item.CreatedById).ToList().FirstOrDefault().UserName;
                             trackObj.StatusName = item.WorkOrderStatus.Name;
                             trackObj.StatusNameAr = item.WorkOrderStatus.NameAr;
