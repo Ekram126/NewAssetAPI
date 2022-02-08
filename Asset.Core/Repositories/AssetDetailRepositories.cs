@@ -499,6 +499,7 @@ namespace Asset.Core.Repositories
                               OrgNameAr = a.Hospital.Organization.NameAr,
                               SubOrgName = a.Hospital.SubOrganization.Name,
                               SubOrgNameAr = a.Hospital.SubOrganization.NameAr,
+                              SubOrganizationId = a.Hospital.SubOrganization.Id,
                               BrandId = a.MasterAsset.brand.Id,
                               BrandName = a.MasterAsset.brand.Name,
                               BrandNameAr = a.MasterAsset.brand.NameAr,

@@ -35,5 +35,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
         Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj);
         IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj);
+
+        IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
     }
 }

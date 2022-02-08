@@ -921,9 +921,6 @@ namespace Asset.Core.Repositories
         {
             throw new NotImplementedException();
         }
-
-
-
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId)
         {
             List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
@@ -975,8 +972,6 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
-
-
         public IndexRequestsVM GetRequestByWorkOrderId(int workOrderId)
         {
 
@@ -1571,9 +1566,6 @@ namespace Asset.Core.Repositories
             }
             return request;
         }
-
-
-
         public IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj)
         {
             List<IndexRequestsVM> request = new List<IndexRequestsVM>();
@@ -1844,7 +1836,6 @@ namespace Asset.Core.Repositories
             }
             return listCountRequests.Count;
         }
-
         public PrintServiceRequestVM PrintServiceRequestById(int id)
         {
             List<LstWorkOrderFromTracking> lstTracking = new List<LstWorkOrderFromTracking>();
@@ -1885,7 +1876,7 @@ namespace Asset.Core.Repositories
                 printSRObj.SerialNumber = requestObj.AssetDetail.SerialNumber;
 
                 var lstRequestNote = _context.RequestTracking.Where(a => a.RequestId == requestObj.Id && a.RequestStatusId == 1).Include(a => a.Request.AssetDetail).ToList();
-                if(lstRequestNote.Count > 0)
+                if (lstRequestNote.Count > 0)
                 {
                     var note = lstRequestNote[0].Description;
                     printSRObj.RequestNote = note;
@@ -1915,8 +1906,8 @@ namespace Asset.Core.Repositories
                     printSRObj.Note = woObj.Note;
                     printSRObj.CreatedById = woObj.CreatedById;
                     printSRObj.CreatedBy = woObj.User.UserName;
-                    printSRObj.PeriorityName =woObj.WorkOrderPeriority != null ?  woObj.WorkOrderPeriority.Name:"";
-                    printSRObj.PeriorityNameAr =woObj.WorkOrderPeriority != null ? woObj.WorkOrderPeriority.NameAr:"";
+                    printSRObj.PeriorityName = woObj.WorkOrderPeriority != null ? woObj.WorkOrderPeriority.Name : "";
+                    printSRObj.PeriorityNameAr = woObj.WorkOrderPeriority != null ? woObj.WorkOrderPeriority.NameAr : "";
                     printSRObj.TypeName = woObj.WorkOrderType != null ? woObj.WorkOrderType.Name : "";
                     printSRObj.TypeNameAr = woObj.WorkOrderType != null ? woObj.WorkOrderType.NameAr : "";
 
@@ -1940,7 +1931,7 @@ namespace Asset.Core.Repositories
 
                             if (item.ActualEndDate != null)
                                 trackObj.ActualEndDate = DateTime.Parse(item.ActualEndDate.ToString());
-                            trackObj.Notes = item.Notes;                        
+                            trackObj.Notes = item.Notes;
                             trackObj.CreatedBy = _context.ApplicationUser.Where(a => a.Id == item.CreatedById).ToList().FirstOrDefault().UserName;
                             trackObj.StatusName = item.WorkOrderStatus.Name;
                             trackObj.StatusNameAr = item.WorkOrderStatus.NameAr;
@@ -1975,6 +1966,230 @@ namespace Asset.Core.Repositories
                 }
             }
             return printSRObj;
+        }
+
+        public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj)
+        {
+            List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
+            ApplicationUser UserObj = new ApplicationUser();
+            ApplicationRole roleObj = new ApplicationRole();
+
+            List<string> userRoleNames = new List<string>();
+            var obj = _context.ApplicationUser.Where(a => a.Id == requestDateObj.UserId).ToList();
+            if (obj.Count > 0)
+            {
+                UserObj = obj[0];
+                var roles = (from userRole in _context.UserRoles
+                             join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+                             where userRole.UserId == requestDateObj.UserId
+                             select role);
+                foreach (var role in roles)
+                {
+                    userRoleNames.Add(role.Name);
+                }
+            }
+            if (requestDateObj.StrStartDate != "")
+                requestDateObj.StartDate = DateTime.Parse(requestDateObj.StrStartDate);
+            else
+                requestDateObj.StartDate = DateTime.Today.Date;
+
+
+            if (requestDateObj.StrEndDate != "")
+                requestDateObj.EndDate = DateTime.Parse(requestDateObj.StrEndDate);
+            else
+                requestDateObj.EndDate = DateTime.Today.Date;
+
+            var lstRequests = _context.Request
+                               .Include(t => t.AssetDetail)
+                               .Include(t => t.AssetDetail.MasterAsset)
+                               .Include(t => t.User)
+                               .Include(t => t.RequestMode)
+                               .Include(t => t.RequestPeriority).OrderByDescending(a => a.RequestDate)
+                               .Where(a =>
+                               (a.RequestDate.Year >= requestDateObj.StartDate.Value.Year && a.RequestDate.Month >= requestDateObj.StartDate.Value.Month  && a.RequestDate.Day >= requestDateObj.StartDate.Value.Day)
+                               || (a.RequestDate.Year <= requestDateObj.EndDate.Value.Year && a.RequestDate.Month <= requestDateObj.EndDate.Value.Month && a.RequestDate.Day <= requestDateObj.EndDate.Value.Day)
+
+
+
+          //(a.RequestDate.Year >= requestDateObj.StartDate.Value.Year && a.RequestDate.Year <= requestDateObj.EndDate.Value.Year)
+          //                     || (a.RequestDate.Month >= requestDateObj.StartDate.Value.Month && a.RequestDate.Month <= requestDateObj.EndDate.Value.Month)
+          //                     || (a.RequestDate.Day >= requestDateObj.StartDate.Value.Day && a.RequestDate.Day <= requestDateObj.EndDate.Value.Day)
+
+                               ).ToList();
+
+            foreach (var req in lstRequests)
+            {
+                IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
+                getDataObj.RequestId = req.Id;
+                getDataObj.Id = req.Id;
+                getDataObj.Code = req.RequestCode;
+                getDataObj.CreatedById = req.CreatedById;
+                getDataObj.UserName = req.User.UserName;
+                getDataObj.Subject = req.Subject;
+                getDataObj.RequestDate = req.RequestDate;
+                getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
+                getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                var lstStatus = _context.RequestTracking
+                                 .Include(t => t.Request).Include(t => t.RequestStatus)
+                                 .Where(a => a.RequestId == req.Id).ToList().OrderByDescending(a => a.Id).ToList();
+                if (lstStatus.Count > 0)
+                {
+                    getDataObj.StatusId = lstStatus[0].RequestStatus.Id;
+                    getDataObj.StatusName = lstStatus[0].RequestStatus.Name;
+                    getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
+                    getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
+                    getDataObj.StatusIcon = lstStatus[0].RequestStatus.Icon;
+                }
+                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                getDataObj.ModeId = req.RequestMode.Id;
+                getDataObj.ModeName = req.RequestMode.Name;
+                getDataObj.ModeNameAr = req.RequestMode.NameAr;
+
+
+                getDataObj.PeriorityId = req.RequestPeriority.Id;
+                getDataObj.PeriorityName = req.RequestPeriority.Name;
+                getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
+                getDataObj.PeriorityColor = req.RequestPeriority.Color;
+                getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
+
+
+                getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
+                        .ToList().Select(item => new IndexRequestTrackingVM.GetData
+                        {
+                            Id = item.Id,
+                            StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
+                            StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                            Description = item.Description,
+                            Date = item.DescriptionDate,
+                            StatusId = item.RequestStatus.Id,
+                            isExpanded = (_context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
+                            ListDocuments = _context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).ToList(),
+                        }).ToList();
+
+                var lstWOStatus = _context.WorkOrderTrackings
+                        .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
+                        .OrderByDescending(a => a.CreationDate).ToList();
+
+                if (lstWOStatus.Count > 0)
+                {
+                    getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                    getDataObj.StatusName = lstStatus[0].RequestStatus.Name;
+                    getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
+                    getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
+                }
+                getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
+                getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count;
+                getDataObj.GovernorateId = req.User.GovernorateId;
+                getDataObj.CityId = req.User.CityId;
+                getDataObj.OrganizationId = req.User.OrganizationId;
+                getDataObj.SubOrganizationId = req.User.SubOrganizationId;
+
+
+                list.Add(getDataObj);
+            }
+
+
+
+            if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                list = list.ToList();
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                list = list.Where(t => t.GovernorateId == UserObj.GovernorateId).ToList();
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
+            {
+                list = list.Where(t => t.CityId == UserObj.CityId).ToList();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
+            {
+                list = list.Where(t => t.OrganizationId == UserObj.OrganizationId).ToList();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
+            {
+                list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
+            }
+
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+            {
+                if (userRoleNames.Contains("Admin"))
+                {
+                    list = list.ToList();
+                }
+                if (userRoleNames.Contains("TLHospitalManager"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+
+                if (userRoleNames.Contains("EngDepManager"))
+                {
+
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("EngManager"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("Eng"))
+                {
+
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                }
+                if (userRoleNames.Contains("AssetOwner"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                }
+                if (userRoleNames.Contains("DE"))
+                {
+                    list = list = new List<IndexRequestVM.GetData>();
+                }
+                if (userRoleNames.Contains("HR"))
+                {
+                    list = list = new List<IndexRequestVM.GetData>();
+                }
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+            {
+                if (userRoleNames.Contains("Admin"))
+                {
+                    list = list.ToList();
+                }
+                if (userRoleNames.Contains("TLHospitalManager"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("EngDepManager"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("EngManager"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("AssetOwner"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                }
+                if (userRoleNames.Contains("Eng"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                }
+
+                if (userRoleNames.Contains("DE"))
+                {
+                    list = list = new List<IndexRequestVM.GetData>();
+                }
+                if (userRoleNames.Contains("HR"))
+                {
+                    list = list = new List<IndexRequestVM.GetData>();
+                }
+            }
+
+            return list;
+
         }
     }
 }

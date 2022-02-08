@@ -16,11 +16,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId, int assetId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId, string userId);
-
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId);
-
-
-
         IndexRequestsVM GetRequestByWorkOrderId(int workOrderId);
         int GetTotalRequestForAssetInHospital(int assetDetailId);
         int GetTotalOpenRequest(string userId);
@@ -28,15 +24,12 @@ namespace Asset.Domain.Repositories
         int Add(CreateRequestVM createRequestVM);
         void Update(EditRequestVM editRequestVM);
         void Delete(int id);
-
         PrintServiceRequestVM PrintServiceRequestById(int id);
-
-
-
-
         GeneratedRequestNumberVM GenerateRequestNumber();
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
         Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj);
         IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj);
+
+        IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
     }
 }

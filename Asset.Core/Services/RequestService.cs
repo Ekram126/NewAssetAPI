@@ -114,5 +114,12 @@ namespace Asset.Core.Services
             return _unitOfWork.Request.PrintServiceRequestById(id);
            
         }
+
+        public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj)
+        {
+
+            return _unitOfWork.Request.GetRequestsByDate(requestDateObj);
+          
+        }
     }
 }

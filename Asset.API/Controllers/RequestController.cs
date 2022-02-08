@@ -71,14 +71,38 @@ namespace Asset.API.Controllers
         [Route("GetAllRequestsByAssetId/{assetId}/{hospitalId}")]
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId, PagingParameter pageInfo)
         {
-            var lstRequests = _requestService.GetAllRequestsByAssetId(assetId,hospitalId).ToList();
+            var lstRequests = _requestService.GetAllRequestsByAssetId(assetId, hospitalId).ToList();
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, lstRequests);
         }
 
-        [HttpGet("CountAllRequestsByAssetId/{assetId}/{hospitalId}")]
-        public int CountAllRequestsByAssetId(int assetId ,int hospitalId)
+
+
+
+        [HttpPost]
+        [Route("GetRequestsByDate/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(int pagenumber, int pagesize, SearchRequestDateVM requestDateObj)
         {
-            return _requestService.GetAllRequestsByAssetId(assetId,hospitalId).ToList().Count;
+
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var lstRequests = _requestService.GetRequestsByDate(requestDateObj).ToList();
+            return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, lstRequests);
+        }
+
+
+        [HttpPost]
+        [Route("CountGetRequestsByDate")]
+        public int CountGetRequestsByDate(SearchRequestDateVM requestDateObj)
+        {
+            return _requestService.GetRequestsByDate(requestDateObj).ToList().Count;
+
+        }
+
+        [HttpGet("CountAllRequestsByAssetId/{assetId}/{hospitalId}")]
+        public int CountAllRequestsByAssetId(int assetId, int hospitalId)
+        {
+            return _requestService.GetAllRequestsByAssetId(assetId, hospitalId).ToList().Count;
 
         }
 
@@ -233,7 +257,7 @@ namespace Asset.API.Controllers
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list =  _requestService.SortRequestsByAssetId(sortObj);
+            var list = _requestService.SortRequestsByAssetId(sortObj);
             return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list.ToList());
         }
     }
