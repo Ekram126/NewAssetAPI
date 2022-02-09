@@ -125,6 +125,13 @@ namespace Asset.API.Controllers
 
 
 
+        [HttpGet("GetByRequestCode/{code}")]
+        public IndexRequestsVM GetByRequestCode(string code)
+        {
+            return _requestService.GetByRequestCode(code);
+        }
+
+
 
         [HttpGet]
         [Route("GetTotalOpenRequest/{userId}")]

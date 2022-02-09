@@ -121,5 +121,10 @@ namespace Asset.Core.Services
             return _unitOfWork.Request.GetRequestsByDate(requestDateObj);
           
         }
+
+        public IndexRequestsVM GetByRequestCode(string code)
+        {
+            return _unitOfWork.Request.GetByRequestCode(code);
+        }
     }
 }

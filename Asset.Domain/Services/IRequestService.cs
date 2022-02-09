@@ -27,7 +27,7 @@ namespace Asset.Domain.Services
         int AddRequest(CreateRequestVM createRequestVM);
         void UpdateRequest(EditRequestVM editRequestVM);
         void DeleteRequest(int id);
-
+        IndexRequestsVM GetByRequestCode(string code);
         GeneratedRequestNumberVM GenerateRequestNumber();
         PrintServiceRequestVM PrintServiceRequestById(int id);
 

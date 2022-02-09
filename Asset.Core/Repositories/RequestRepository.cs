@@ -2006,14 +2006,14 @@ namespace Asset.Core.Repositories
                                .Include(t => t.RequestMode)
                                .Include(t => t.RequestPeriority).OrderByDescending(a => a.RequestDate)
                                .Where(a =>
-                               (a.RequestDate.Year >= requestDateObj.StartDate.Value.Year && a.RequestDate.Month >= requestDateObj.StartDate.Value.Month  && a.RequestDate.Day >= requestDateObj.StartDate.Value.Day)
+                               (a.RequestDate.Year >= requestDateObj.StartDate.Value.Year && a.RequestDate.Month >= requestDateObj.StartDate.Value.Month && a.RequestDate.Day >= requestDateObj.StartDate.Value.Day)
                                || (a.RequestDate.Year <= requestDateObj.EndDate.Value.Year && a.RequestDate.Month <= requestDateObj.EndDate.Value.Month && a.RequestDate.Day <= requestDateObj.EndDate.Value.Day)
 
 
 
-          //(a.RequestDate.Year >= requestDateObj.StartDate.Value.Year && a.RequestDate.Year <= requestDateObj.EndDate.Value.Year)
-          //                     || (a.RequestDate.Month >= requestDateObj.StartDate.Value.Month && a.RequestDate.Month <= requestDateObj.EndDate.Value.Month)
-          //                     || (a.RequestDate.Day >= requestDateObj.StartDate.Value.Day && a.RequestDate.Day <= requestDateObj.EndDate.Value.Day)
+                               //(a.RequestDate.Year >= requestDateObj.StartDate.Value.Year && a.RequestDate.Year <= requestDateObj.EndDate.Value.Year)
+                               //                     || (a.RequestDate.Month >= requestDateObj.StartDate.Value.Month && a.RequestDate.Month <= requestDateObj.EndDate.Value.Month)
+                               //                     || (a.RequestDate.Day >= requestDateObj.StartDate.Value.Day && a.RequestDate.Day <= requestDateObj.EndDate.Value.Day)
 
                                ).ToList();
 
@@ -2190,6 +2190,20 @@ namespace Asset.Core.Repositories
 
             return list;
 
+        }
+
+        public IndexRequestsVM GetByRequestCode(string code)
+        {
+            var request = _context.Request.Where(a=>a.RequestCode == code)
+                                        .Select(req => new IndexRequestsVM
+                                        {
+                                            Id = req.Id,
+                                            Subject = req.Subject,
+                                            RequestCode = req.RequestCode,
+                                            AssetCode = req.AssetDetail.Code
+                                        }).FirstOrDefault();
+
+            return request;
         }
     }
 }

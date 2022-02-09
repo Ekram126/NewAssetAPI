@@ -21,6 +21,8 @@ namespace Asset.Domain.Repositories
         int GetTotalRequestForAssetInHospital(int assetDetailId);
         int GetTotalOpenRequest(string userId);
         IndexRequestsVM GetById(int id);
+        IndexRequestsVM GetByRequestCode(string code);
+
         int Add(CreateRequestVM createRequestVM);
         void Update(EditRequestVM editRequestVM);
         void Delete(int id);
