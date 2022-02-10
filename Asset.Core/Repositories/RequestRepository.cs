@@ -2007,15 +2007,7 @@ namespace Asset.Core.Repositories
                                .Include(t => t.RequestPeriority).OrderByDescending(a => a.RequestDate)
                                .Where(a =>
                                (a.RequestDate.Year >= requestDateObj.StartDate.Value.Year && a.RequestDate.Month >= requestDateObj.StartDate.Value.Month && a.RequestDate.Day >= requestDateObj.StartDate.Value.Day)
-                               || (a.RequestDate.Year <= requestDateObj.EndDate.Value.Year && a.RequestDate.Month <= requestDateObj.EndDate.Value.Month && a.RequestDate.Day <= requestDateObj.EndDate.Value.Day)
-
-
-
-                               //(a.RequestDate.Year >= requestDateObj.StartDate.Value.Year && a.RequestDate.Year <= requestDateObj.EndDate.Value.Year)
-                               //                     || (a.RequestDate.Month >= requestDateObj.StartDate.Value.Month && a.RequestDate.Month <= requestDateObj.EndDate.Value.Month)
-                               //                     || (a.RequestDate.Day >= requestDateObj.StartDate.Value.Day && a.RequestDate.Day <= requestDateObj.EndDate.Value.Day)
-
-                               ).ToList();
+                            || (a.RequestDate.Year <= requestDateObj.EndDate.Value.Year && a.RequestDate.Month <= requestDateObj.EndDate.Value.Month && a.RequestDate.Day <= requestDateObj.EndDate.Value.Day)).ToList();
 
             foreach (var req in lstRequests)
             {
@@ -2047,13 +2039,13 @@ namespace Asset.Core.Repositories
 
 
                 getDataObj.PeriorityId = req.RequestPeriority.Id;
-                getDataObj.PeriorityName = req.RequestPeriority.Name;
-                getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
-                getDataObj.PeriorityColor = req.RequestPeriority.Color;
+                getDataObj.PeriorityName = req.RequestPeriority.Name.Trim();
+                getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr.Trim();
+                getDataObj.PeriorityColor = req.RequestPeriority.Color.Trim();
                 getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
 
 
-                getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                getDataObj.AssetName = req.AssetDetail.MasterAsset.Name.Trim();
                 getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
                 getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
                         .ToList().Select(item => new IndexRequestTrackingVM.GetData
