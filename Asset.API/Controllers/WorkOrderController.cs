@@ -83,12 +83,27 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders.ToList());
         }
 
-        //[HttpGet]
-        //[Route("getcount")]
-        //public int count()
-        //{
-        //    return _pagingService.Count<WorkOrder>();
-        //}
+
+        [HttpPost]
+        [Route("GetWorkOrdersByDate/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexWorkOrderVM> GetRequestsByDate(int pagenumber, int pagesize, SearchWorkOrderByDateVM woDateObj)
+        {
+
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var lstRequests = _workOrderService.GetWorkOrdersByDate(woDateObj).ToList();
+            return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstRequests);
+        }
+
+
+        [HttpPost]
+        [Route("CountGetWorkOrdersByDate")]
+        public int CountGetRequestsByDate(SearchWorkOrderByDateVM woDateObj)
+        {
+            return _workOrderService.GetWorkOrdersByDate(woDateObj).ToList().Count;
+
+        }
 
 
         [HttpGet]

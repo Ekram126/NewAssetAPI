@@ -29,5 +29,8 @@ namespace Asset.Domain.Repositories
 
         PrintWorkOrderVM PrintWorkOrderById(int id);
         IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId,string userId,SortWorkOrderVM sortObj);
+
+
+        IEnumerable<IndexWorkOrderVM> GetWorkOrdersByDate(SearchWorkOrderByDateVM woDateObj);
     }
 }

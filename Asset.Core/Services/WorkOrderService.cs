@@ -98,5 +98,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WorkOrder.GetLastRequestAndWorkOrderByAssetId(assetId);
         }
+
+        public IEnumerable<IndexWorkOrderVM> GetWorkOrdersByDate(SearchWorkOrderByDateVM woDateObj)
+        {
+            return _unitOfWork.WorkOrder.GetWorkOrdersByDate(woDateObj);
+        }
     }
 }

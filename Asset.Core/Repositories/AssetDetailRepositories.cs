@@ -781,17 +781,17 @@ namespace Asset.Core.Repositories
                     model.RoomName = detailObj.Room.Name;
                     model.RoomNameAr = detailObj.Room.NameAr;
                 }
-                if (detailObj.DepartmentId != null || detailObj.Department != null)
+                if (detailObj.Department != null)
                 {
                     model.DepartmentName = detailObj.Department.Name;
                     model.DepartmentNameAr = detailObj.Department.NameAr;
                 }
-                if (detailObj.MasterAsset.CategoryId != null)
+                if (detailObj.MasterAsset.Category != null)
                 {
                     model.CategoryName = detailObj.MasterAsset.Category.Name;
                     model.CategoryNameAr = detailObj.MasterAsset.Category.NameAr;
                 }
-                if (detailObj.Hospital != null && detailObj.HospitalId != null)
+                if (detailObj.Hospital != null)
                 {
                     model.HospitalName = detailObj.Hospital.Name;
                     model.HospitalNameAr = detailObj.Hospital.NameAr;

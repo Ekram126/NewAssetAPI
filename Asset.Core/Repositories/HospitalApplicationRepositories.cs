@@ -440,10 +440,10 @@ namespace Asset.Core.Repositories
                                 select execlude).ToList();
 
 
-            var holdNames = (from execlude in _context.HospitalHoldReasons
-                             join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+            var holdNames = (from hold in _context.HospitalHoldReasons
+                             join trans in _context.HospitalReasonTransactions on hold.Id equals trans.ReasonId
                              where trans.HospitalApplicationId == id
-                             select execlude).ToList();
+                             select hold).ToList();
 
 
 
@@ -464,6 +464,7 @@ namespace Asset.Core.Repositories
                     Comment = item.Comment,
                     ReasonNames = execludNames,
                     HoldReasonNames = holdNames,
+                    AssetId = item.AssetDetail.Id,
                     assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
                     assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber
 
