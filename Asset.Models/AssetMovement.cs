@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Asset.Models
 {
-   public class AssetMovement
+    public class AssetMovement
     {
         public int Id { get; set; }
         public int AssetDetailId { get; set; }
@@ -17,15 +18,8 @@ namespace Asset.Models
         public int? FloorId { get; set; }
 
         public int? RoomId { get; set; }
+        [StringLength(500)]
+        public string MoveDesc { get; set; }
 
-
-        //public string BuildingName { get; set; }
-        //public string BuildingNameAr { get; set; }
-
-        //public string FloorName { get; set; }
-        //public string FloorNameAr { get; set; }
-
-        //public string RoomName { get; set; }
-        //public string RoomNameAr { get; set; }
     }
 }

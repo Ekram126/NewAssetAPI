@@ -798,16 +798,19 @@ namespace Asset.Core.Repositories
                 }
                 if (detailObj.BuildingId != null)
                 {
+                    model.BuildId = detailObj.Building.Id;
                     model.BuildName = detailObj.Building.Name;
                     model.BuildNameAr = detailObj.Building.NameAr;
                 }
-                if (detailObj.FloorId != null || detailObj.Floor != null)
+                if (detailObj.Floor != null)
                 {
+                    model.FloorId = detailObj.Floor.Id;
                     model.FloorName = detailObj.Floor.Name;
                     model.FloorNameAr = detailObj.Floor.NameAr;
                 }
                 if (detailObj.Room != null)
                 {
+                    model.RoomId = detailObj.Room.Id;
                     model.RoomName = detailObj.Room.Name;
                     model.RoomNameAr = detailObj.Room.NameAr;
                 }

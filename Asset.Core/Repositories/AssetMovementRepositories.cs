@@ -34,6 +34,10 @@ namespace Asset.Core.Repositories
                     assetMovementObj.FloorId = movementObj.FloorId;
                     assetMovementObj.BuildingId = movementObj.BuildingId;
                     assetMovementObj.AssetDetailId = movementObj.AssetDetailId;
+
+ assetMovementObj.MoveDesc = movementObj.MoveDesc;
+
+
                     _context.AssetMovements.Add(assetMovementObj);
                     _context.SaveChanges();
 
@@ -159,6 +163,7 @@ namespace Asset.Core.Repositories
                 assetDetailObj.BuildingId = movementObj.BuildingId;
                 assetDetailObj.FloorId = movementObj.FloorId;
                 assetDetailObj.RoomId = movementObj.RoomId;
+                assetDetailObj.MoveDesc = movementObj.MoveDesc;
                 _context.Entry(assetDetailObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return assetDetailObj.Id;

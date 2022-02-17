@@ -15,5 +15,7 @@ namespace Asset.ViewModels.AssetMovementVM
         public int? FloorId { get; set; }
 
         public int? RoomId { get; set; }
+
+        public string MoveDesc { get; set; }
     }
 }

@@ -34,11 +34,14 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public string WarrantyExpires { get; set; }
 
-
+        public int BuildId { get; set; }
         public string BuildName { get; set; }
         public string BuildNameAr { get; set; }
+
+        public int RoomId { get; set; }
         public string RoomName { get; set; }
         public string RoomNameAr { get; set; }
+        public int FloorId { get; set; }
         public string FloorName { get; set; }
         public string FloorNameAr { get; set; }
 
