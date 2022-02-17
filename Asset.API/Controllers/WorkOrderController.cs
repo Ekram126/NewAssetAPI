@@ -213,13 +213,13 @@ namespace Asset.API.Controllers
             return Ok();
         }
         [HttpPost]
-        [Route("SortWorkOrders/{hosId}/{userId}/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, int pagenumber, int pagesize, SortWorkOrderVM sortObj)
+        [Route("SortWorkOrders/{hosId}/{userId}/{pagenumber}/{pagesize}/{statusId}")]
+        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, int pagenumber, int pagesize, SortWorkOrderVM sortObj,int statusId)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list = _workOrderService.SortWorkOrders(hosId, userId, sortObj).ToList();
+            var list = _workOrderService.SortWorkOrders(hosId, userId, sortObj, statusId).ToList();
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, list);
         }
     }

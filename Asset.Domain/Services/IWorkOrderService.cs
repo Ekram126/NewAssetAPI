@@ -30,7 +30,7 @@ namespace Asset.Domain.Services
         GeneratedWorkOrderNumberVM GenerateWorOrderNumber();
         int GetTotalWorkOrdersForAssetInHospital(int assetDetailId);
         PrintWorkOrderVM PrintWorkOrderById(int id);
-        IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj);
+        IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj, int statusId);
 
         IEnumerable<IndexWorkOrderVM> GetWorkOrdersByDate(SearchWorkOrderByDateVM woDateObj);
     }

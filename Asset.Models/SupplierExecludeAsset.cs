@@ -32,6 +32,7 @@ namespace Asset.Models
         [StringLength(50)]
         public string ExNumber { get; set; }
 
-
+        [StringLength(500)]
+        public string Comment { get; set; }
     }
 }

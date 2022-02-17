@@ -549,7 +549,9 @@ namespace Asset.Core.Repositories
 
         public EditAssetDetailVM GetById(int id)
         {
-            var assetDetailObj = _context.AssetDetails.Include(a => a.MasterAsset).Where(a => a.Id == id).FirstOrDefault();
+            var assetDetailObj = _context.AssetDetails.Include(a => a.Building)
+                                .Include(a => a.Floor).Include(a => a.Room)
+                                .Include(a => a.MasterAsset).Where(a => a.Id == id).FirstOrDefault();
             if (assetDetailObj != null)
             {
                 EditAssetDetailVM item = new EditAssetDetailVM();
@@ -570,9 +572,37 @@ namespace Asset.Core.Repositories
                 item.ReceivingDate = assetDetailObj.ReceivingDate != null ? assetDetailObj.ReceivingDate.Value.ToShortDateString() : "";
                 item.PONumber = assetDetailObj.PONumber;
                 item.WarrantyExpires = assetDetailObj.WarrantyExpires;
+
+
+
                 item.BuildingId = assetDetailObj.BuildingId;
+                if (assetDetailObj.BuildingId != null)
+                {
+                    item.BuildName = assetDetailObj.Building.Name;
+                    item.BuildNameAr = assetDetailObj.Building.NameAr;
+                }
                 item.RoomId = assetDetailObj.RoomId;
+                if (assetDetailObj.RoomId != null)
+                {
+                    item.RoomName = assetDetailObj.Room.Name;
+                    item.RoomNameAr = assetDetailObj.Room.NameAr;
+                }
                 item.FloorId = assetDetailObj.FloorId;
+                if (assetDetailObj.FloorId != null)
+                {
+                    item.FloorName = assetDetailObj.Floor.Name;
+                    item.FloorNameAr = assetDetailObj.Floor.NameAr;
+                }
+
+
+                var lstAssetStatus = _context.AssetStatusTransactions.Include(a => a.AssetStatus).Where(a => a.AssetDetailId == assetDetailObj.Id).ToList().OrderByDescending(a => a.StatusDate).ToList();
+
+                if (lstAssetStatus.Count > 0)
+                {
+                    item.AssetStatus = lstAssetStatus[0].AssetStatus.Name;
+                    item.AssetStatusAr = lstAssetStatus[0].AssetStatus.NameAr;
+                }
+
                 item.DepartmentId = assetDetailObj.DepartmentId;
                 item.SupplierId = assetDetailObj.SupplierId;
                 item.HospitalId = assetDetailObj.HospitalId;
@@ -2357,12 +2387,12 @@ namespace Asset.Core.Repositories
                     detail.QrFilePath = asset.AssetDetail.QrFilePath;
                     list.Add(detail);
                 }
-      
+
                 if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0 && UserObj.OrganizationId == 0 && UserObj.SubOrganizationId == 0)
                 {
                     list = list.ToList();
                 }
-               else if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+                else if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
                 {
                     list = list.Where(t => t.GovernorateId == UserObj.GovernorateId).ToList();
                 }

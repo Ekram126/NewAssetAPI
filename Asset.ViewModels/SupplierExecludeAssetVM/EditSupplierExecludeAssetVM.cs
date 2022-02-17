@@ -27,6 +27,7 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
 
         public string assetNameAr { get; set; }
 
+        public string Comment { get; set; }
 
     }
 }

@@ -64,8 +64,8 @@ namespace Asset.Core.Repositories
                 Name = prob.Name,
                 NameAr = prob.NameAr,
                 Code = prob.Code,
-                ProblemId=prob.ProblemId,
-                ProblemName=prob.Problem.Name
+                ProblemId=prob.ProblemId != null ? (int)prob.ProblemId : 0,
+                ProblemName= prob.ProblemId != null ? prob.Problem.Name:""
             }).ToList();
         }
 
@@ -77,8 +77,8 @@ namespace Asset.Core.Repositories
                 Name = prob.Name,
                 NameAr = prob.NameAr,
                 Code = prob.Code,
-                ProblemId = prob.ProblemId,
-                ProblemName = prob.Problem.Name
+                ProblemId = prob.ProblemId != null ? (int)prob.ProblemId:0,
+                ProblemName = prob.ProblemId != null ? prob.Problem.Name:""
             }).ToList();
         }
 
@@ -90,8 +90,9 @@ namespace Asset.Core.Repositories
                 Name = prob.Name,
                 NameAr = prob.NameAr,
                 Code = prob.Code,
-                ProblemId = prob.ProblemId,
-                ProblemName = prob.Problem.Name
+                ProblemId = prob.ProblemId != null? (int)prob.ProblemId:0,
+                ProblemName = prob.ProblemId != null ? prob.Problem.Name:""
+                
             }).Where(e=>e.Id==id).FirstOrDefault();
         }
 

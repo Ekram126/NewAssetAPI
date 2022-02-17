@@ -1313,9 +1313,18 @@ namespace Asset.Core.Repositories
             return lstData;
         }
 
-        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj)
+        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj, int statusId)
         {
             var list = GetAllWorkOrdersByHospitalId(hosId, userId);
+
+            if (statusId == 0)
+                list = list.ToList();
+            else
+                list = list.Where(a => a.StatusId == statusId).ToList();
+
+
+
+
             if (sortObj.WorkOrderNumber != "")
             {
                 if (sortObj.SortStatus == "descending")

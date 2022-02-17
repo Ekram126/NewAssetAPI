@@ -13,7 +13,7 @@ namespace Asset.Models
         public string Code { get; set; }
         public string Name { get; set; }
         public string NameAr { get; set; }
-        public int ProblemId { get; set; }
+        public  Nullable< int> ProblemId { get; set; }
         [ForeignKey("ProblemId")]
         public virtual Problem Problem { get; set; }
     }

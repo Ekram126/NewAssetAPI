@@ -264,22 +264,21 @@ namespace Asset.Core.Repositories
                     RequestPeriorityId = req.Request.RequestPeriorityId != null ? (int)req.Request.RequestPeriorityId : 0,
                     RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
              
-                    ModeName = req.Request.RequestMode.Name,
-                    ModeNameAr = req.Request.RequestMode.NameAr,
+                    ModeName = req.Request.RequestModeId != null ?   req.Request.RequestMode.Name:"",
+                    ModeNameAr = req.Request.RequestModeId != null ? req.Request.RequestMode.NameAr:"",
 
                     PeriorityName = req.Request.RequestPeriority.Name,
                     PeriorityNameAr = req.Request.RequestPeriority.NameAr,
 
-                    ProblemId = req.Request.SubProblem.ProblemId,
-                    ProblemName = req.Request.SubProblem.Problem.Name,
-                    ProblemNameAr = req.Request.SubProblem.Problem.NameAr,
+                   
+                    ProblemId = req.Request.SubProblemId != null ? (int)req.Request.SubProblem.ProblemId:0,
+                    ProblemName = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.Name:"",
+                    ProblemNameAr = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.NameAr:"",
 
-                    SubProblemId = req.Request.SubProblemId,
-                    SubProblemName = req.Request.SubProblem.Name,
-                    SubProblemNameAr = req.Request.SubProblem.NameAr,
-                    RequestTypeId = req.Request.RequestTypeId,
-                    RequestTypeName = req.Request.RequestType.Name,
-                    RequestTypeNameAr = req.Request.RequestType.NameAr,
+
+                    RequestTypeId =req.Request.RequestTypeId != null ? (int) req.Request.RequestTypeId:0,
+                    RequestTypeName = req.Request.RequestTypeId != null ? req.Request.RequestType.Name:"",
+                    RequestTypeNameAr = req.Request.RequestTypeId != null ? req.Request.RequestType.NameAr:"",
                  
                     StatusName = req.RequestStatus.Name,
                     StatusNameAr = req.RequestStatus.NameAr,

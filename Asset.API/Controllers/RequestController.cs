@@ -246,13 +246,13 @@ namespace Asset.API.Controllers
         }
 
         [HttpPost]
-        [Route("SortRequests/{pagenumber}/{pagesize}")]
-        public async Task<IEnumerable<IndexRequestsVM>> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj)
+        [Route("SortRequests/{pagenumber}/{pagesize}/{statusId}")]
+        public async Task<IEnumerable<IndexRequestsVM>> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj,int statusId)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list = await _requestService.SortRequests(sortObj);
+            var list = await _requestService.SortRequests(sortObj, statusId);
             return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list.ToList());
         }
 

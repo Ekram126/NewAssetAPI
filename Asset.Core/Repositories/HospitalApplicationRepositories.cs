@@ -405,8 +405,11 @@ namespace Asset.Core.Repositories
                 hospitalApplicationObj.DueDate = DateTime.Parse(model.DueDate);
             if (model.StatusId == 3)
                 hospitalApplicationObj.DueDate = DateTime.Today.Date;
+
+
             hospitalApplicationObj.DueDate = DateTime.Parse(model.DueDate.ToString());
             hospitalApplicationObj.UserId = model.UserId;
+            hospitalApplicationObj.Comment = model.Comment;
             _context.Entry(hospitalApplicationObj).State = EntityState.Modified;
             _context.SaveChanges();
 
@@ -416,7 +419,7 @@ namespace Asset.Core.Repositories
                 AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
                 assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                 assetStatusTransactionObj.AssetStatusId = 8;
-                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;         
                 _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                 _context.SaveChanges();
             }
@@ -884,27 +887,34 @@ namespace Asset.Core.Repositories
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
                 getDataObj.HospitalId = item.AssetDetail.HospitalId;
 
-                getDataObj.StatusId = item.StatusId;
-                if (item.StatusId == 1)
+                var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
+                if (lstStatuses.Count > 0)
                 {
-                    getDataObj.StatusName = "Open";
-                    getDataObj.StatusNameAr = "فتح";
+                    getDataObj.StatusName = lstStatuses[0].Name;
+                    getDataObj.StatusNameAr = lstStatuses[0].NameAr;
                 }
-                if (item.StatusId == 2)
-                {
-                    getDataObj.StatusName = "Approved";
-                    getDataObj.StatusNameAr = "موافقة";
-                }
-                if (item.StatusId == 3)
-                {
-                    getDataObj.StatusName = "Rejected";
-                    getDataObj.StatusNameAr = "رفض الطلب";
-                }
-                if (item.StatusId == 4)
-                {
-                    getDataObj.StatusName = "System Rejected";
-                    getDataObj.StatusNameAr = "استبعاد من النظام";
-                }
+
+                //getDataObj.StatusId = item.StatusId;
+                //if (item.StatusId == 1)
+                //{
+                //    getDataObj.StatusName = "Open";
+                //    getDataObj.StatusNameAr = "فتح";
+                //}
+                //if (item.StatusId == 2)
+                //{
+                //    getDataObj.StatusName = "Approved";
+                //    getDataObj.StatusNameAr = "موافقة";
+                //}
+                //if (item.StatusId == 3)
+                //{
+                //    getDataObj.StatusName = "Rejected";
+                //    getDataObj.StatusNameAr = "رفض الطلب";
+                //}
+                //if (item.StatusId == 4)
+                //{
+                //    getDataObj.StatusName = "System Rejected";
+                //    getDataObj.StatusNameAr = "استبعاد من النظام";
+                //}
 
                 var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
                                       join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId

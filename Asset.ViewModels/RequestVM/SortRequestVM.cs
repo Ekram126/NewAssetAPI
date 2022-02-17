@@ -33,5 +33,7 @@ namespace Asset.ViewModels.RequestVM
         public int CountWorkOrder { get; set; }
         public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
 
+       
+
     }
 }

@@ -15,7 +15,7 @@ namespace Asset.ViewModels.RequestVM
         public DateTime RequestDate { get; set; }
         public string RequestTime { get; set; }
         public int RequestModeId { get; set; }
-        public int SubProblemId { get; set; }
+        public int? SubProblemId { get; set; }
         public int AssetDetailId { get; set; }
         public string SerialNumber { get; set; }
         public int RequestPeriorityId { get; set; }

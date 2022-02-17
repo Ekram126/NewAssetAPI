@@ -68,8 +68,7 @@ namespace Asset.API.Controllers
         [Route("getcount/{hospitalId}")]
         public int count(int? hospitalId)
         {
-            //  List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
-            int listCount = 0;
+                   int listCount = 0;
             if (hospitalId != 0)
 
                 listCount = _hospitalApplicationService.GetAllByHospitalId(int.Parse(hospitalId.ToString())).ToList().Count;

@@ -7,14 +7,14 @@ namespace Asset.ViewModels.AssetDetailVM
     {
         public int Id { get; set; }
 
-        public  string AssetName { get; set; }
+        public string AssetName { get; set; }
 
 
         public string AssetNameAr { get; set; }
 
 
         public string Code { get; set; }
-       public string PurchaseDate { get; set; }
+        public string PurchaseDate { get; set; }
 
 
         public decimal? Price { get; set; }
@@ -49,5 +49,15 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public List<int?> ListOwners { get; set; }
         public string QrFilePath { get; set; }
+
+        public string BuildName { get; set; }
+        public string BuildNameAr { get; set; }
+        public string FloorName { get; set; }
+        public string FloorNameAr { get; set; }
+        public string RoomNameAr { get; set; }
+        public string RoomName { get; set; } 
+        
+        public string AssetStatus { get; set; }
+        public string AssetStatusAr { get; set; }
     }
 }

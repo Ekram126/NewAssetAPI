@@ -60,7 +60,7 @@ namespace Asset.Core.Repositories
             List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
             var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
                 .Include(a => a.AssetDetail)
-                .Include(a => a.AssetDetail.MasterAsset).OrderByDescending(a=>a.Date).ToList();
+                .Include(a => a.AssetDetail.MasterAsset).OrderByDescending(a => a.Date).ToList();
             foreach (var item in lstSupplierExecludeAssets)
             {
 
@@ -306,8 +306,9 @@ namespace Asset.Core.Repositories
                 if (model.StatusId == 3)
                     supplierExecludeAssetObj.ExecludeDate = DateTime.Today.Date;
 
-
                 supplierExecludeAssetObj.UserId = model.UserId;
+                supplierExecludeAssetObj.Comment = model.Comment;
+
                 _context.Entry(supplierExecludeAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -476,7 +477,7 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(SortSupplierExecludeAssetVM sortObj)
         {
             var list = GetAll();
-         
+
             if (sortObj.AssetName != "")
             {
                 if (sortObj.SortStatus == "descending")
@@ -498,8 +499,8 @@ namespace Asset.Core.Repositories
                 else
                     list = list.OrderBy(d => d.AssetName).ToList();
             }
-         
-           
+
+
             else if (sortObj.ReasonExTitles != "" || sortObj.ReasonHoldTitles != "")
             {
                 if (sortObj.SortStatus == "descending")

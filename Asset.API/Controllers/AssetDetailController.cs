@@ -27,6 +27,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data.Entity;
 using System.Net;
+using Asset.API.Helpers;
 
 
 
@@ -41,7 +42,8 @@ namespace Asset.API.Controllers
         private IAssetDetailService _AssetDetailService;
 
         private IAssetOwnerService _assetOwnerService;
-
+        private IAssetMovementService _assetMovementService;
+        private IRequestService _requestService;
         private IPMAssetTimeService _pMAssetTimeService;
         private IPagingService _pagingService;
         private QrController _qrController;
@@ -52,11 +54,13 @@ namespace Asset.API.Controllers
 
         [Obsolete]
         public AssetDetailController(IAssetDetailService AssetDetailService, IAssetOwnerService assetOwnerService,
-            IPMAssetTimeService pMAssetTimeService, IPagingService pagingService,
-            QrController qrController,
+            IPMAssetTimeService pMAssetTimeService, IPagingService pagingService, IAssetMovementService assetMovementService,
+            QrController qrController, IRequestService requestService,
             IHostingEnvironment webHostingEnvironment)
         {
             _AssetDetailService = AssetDetailService;
+            _assetMovementService = assetMovementService;
+            _requestService = requestService;
             _webHostingEnvironment = webHostingEnvironment;
             _assetOwnerService = assetOwnerService;
             _pMAssetTimeService = pMAssetTimeService;
@@ -288,8 +292,21 @@ namespace Asset.API.Controllers
         {
             try
             {
-
-                int deletedRow = _AssetDetailService.Delete(id);
+                var assetObj = _AssetDetailService.GetById(id);
+                var lstMovements = _assetMovementService.GetMovementByAssetDetailId(id).ToList();
+                if(lstMovements.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "move", Message = "You cannot delete this asset it has movement", MessageAr = "لا يمكن مسح هذا الأصل لأن له حركات في المستشفى" });
+                }              
+                var lstRequests = _requestService.GetAllRequestsByAssetId(id,int.Parse( assetObj.HospitalId.ToString())).ToList();
+                if (lstRequests.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "request", Message = "You cannot delete this asset it has requests", MessageAr = "لا يمكن مسح هذا الأصل لأن له بلاغات صيانة " });
+                }
+                else
+                {
+                    int deletedRow = _AssetDetailService.Delete(id);
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {

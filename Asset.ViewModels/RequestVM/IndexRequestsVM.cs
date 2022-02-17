@@ -20,7 +20,7 @@ namespace Asset.ViewModels.RequestVM
         public string ModeName { get; set; }
         public string ModeNameAr { get; set; }
         public int ProblemId { get; set; }
-        public int SubProblemId { get; set; }
+        public int? SubProblemId { get; set; }
         public string SubProblemName { get; set; }
         public string SubProblemNameAr { get; set; }
         public int MasterAssetId { get; set; }

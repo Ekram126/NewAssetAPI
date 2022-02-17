@@ -17,6 +17,5 @@ namespace Asset.ViewModels.EmployeeVM
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }
         public string SortStatus { get; set; }
-        
     }
 }

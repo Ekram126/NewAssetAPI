@@ -89,9 +89,9 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WorkOrder.SearchWorkOrders(searchObj);
         }
-        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj)
+        public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj, int statusId)
         {
-            return _unitOfWork.WorkOrder.SortWorkOrders(hosId, userId, sortObj);
+            return _unitOfWork.WorkOrder.SortWorkOrders(hosId, userId, sortObj,  statusId);
         }
 
         public List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId)

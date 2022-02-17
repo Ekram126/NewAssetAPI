@@ -33,5 +33,7 @@ namespace Asset.Domain.Repositories
         int DeleteHospitalApplicationAttachment(int id);
         IEnumerable<IndexHospitalApplicationVM.GetData> SortHospitalApp(SortHospitalApplication sortObj);
 
+
+
     }
 }

@@ -29,7 +29,7 @@ namespace Asset.Domain.Repositories
         PrintServiceRequestVM PrintServiceRequestById(int id);
         GeneratedRequestNumberVM GenerateRequestNumber();
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
-        Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj);
+        Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj,int statusId);
         IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj);
 
         IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
