@@ -13,7 +13,7 @@ namespace Asset.Core.Repositories
     public class CityRepositories : ICityRepository
     {
         private ApplicationDbContext _context;
-       
+
 
         public CityRepositories(ApplicationDbContext context)
         {
@@ -37,6 +37,8 @@ namespace Asset.Core.Repositories
                 Id = item.Id,
                 Name = item.Name,
                 NameAr = item.NameAr,
+                Latitude = item.Latitude,
+                Longtitude = item.Longtitude,
                 Code = item.Code
             });
 
@@ -53,6 +55,8 @@ namespace Asset.Core.Repositories
                     cityObj.Code = cityVM.Code;
                     cityObj.Name = cityVM.Name;
                     cityObj.NameAr = cityVM.NameAr;
+                    cityObj.Latitude = cityVM.Latitude;
+                    cityObj.Longtitude = cityVM.Longtitude;
                     cityObj.GovernorateId = cityVM.GovernorateId;
                     _context.Cities.Add(cityObj);
                     _context.SaveChanges();
@@ -61,7 +65,7 @@ namespace Asset.Core.Repositories
             }
             catch (Exception ex)
             {
-                string str  = ex.Message;
+                string str = ex.Message;
             }
             return cityObj.Id;
         }
@@ -95,13 +99,15 @@ namespace Asset.Core.Repositories
                 cityObj.Name = cityVM.Name;
                 cityObj.NameAr = cityVM.NameAr;
                 cityObj.GovernorateId = cityVM.GovernorateId;
+                cityObj.Latitude = cityVM.Latitude;
+                cityObj.Longtitude = cityVM.Longtitude;
                 _context.Entry(cityObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return cityObj.Id;
             }
             catch (Exception ex)
             {
-              string  msg = ex.Message;
+                string msg = ex.Message;
             }
 
             return 0;
@@ -122,18 +128,20 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexCityVM.GetData> GetCitiesByGovernorateName(string govName)
         {
-         return   (from gov in _context.Governorates
-             join city in _context.Cities on gov.Id equals city.GovernorateId
-             where (gov.Name == govName || gov.NameAr == govName)
-            select city).ToList().Select(item => new IndexCityVM.GetData
-            {
-                Id = item.Id,
-                Name = item.Name,
-                NameAr = item.NameAr,
-                Code = item.Code
-            });
+            return (from gov in _context.Governorates
+                    join city in _context.Cities on gov.Id equals city.GovernorateId
+                    where (gov.Name == govName || gov.NameAr == govName)
+                    select city).ToList().Select(item => new IndexCityVM.GetData
+                    {
+                        Id = item.Id,
+                        Name = item.Name,
+                        NameAr = item.NameAr,
+                        Latitude = item.Latitude,
+                        Longtitude = item.Longtitude,
+                        Code = item.Code
+                    });
 
-             
+
         }
 
 
@@ -148,14 +156,14 @@ namespace Asset.Core.Repositories
         }
         public int GetGovIdByGovernorateName(string govName)
         {
-            if(govName != "null")
+            if (govName != "null")
             {
                 var lstGovNames = _context.Governorates.Where(g => g.Name == govName || g.NameAr == govName).ToList();
-                if(lstGovNames.Count > 0)
+                if (lstGovNames.Count > 0)
                 {
                     return lstGovNames[0].Id;
                 }
-             
+
             }
             return 0;
         }
@@ -167,9 +175,8 @@ namespace Asset.Core.Repositories
                 var lstCitiesNames = _context.Cities.Where(g => g.Name == name || g.NameAr == name).ToList();
                 if (lstCitiesNames.Count > 0)
                 {
-                     id = lstCitiesNames[0].Id;
+                    id = lstCitiesNames[0].Id;
                 }
-                  //  int id= _context.Cities.Where(h => h.Name == name || h.NameAr==name).FirstOrDefault().Id;
                 return id;
             }
             return 0;

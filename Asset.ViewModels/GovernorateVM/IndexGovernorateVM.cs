@@ -21,6 +21,9 @@ namespace Asset.ViewModels.GovernorateVM
             public string Population { get; set; }
 
             public string Area { get; set; }
+
+            public decimal? Latitude { get; set; }
+            public decimal? Longtitude { get; set; }
         }
     }
 }

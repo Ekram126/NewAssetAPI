@@ -31,6 +31,8 @@ namespace Asset.Core.Repositories
                 Name = item.Name,
                 NameAr = item.NameAr,
                 Population = item.Population,
+                Latitude = item.Latitude,
+                Longtitude = item.Longtitude,
                 Area = item.Area
             }).First();
         }
@@ -47,7 +49,9 @@ namespace Asset.Core.Repositories
                 NameAr = item.NameAr,
                 Code = item.Code,
                 Population = item.Population.ToString(),
-                Area = item.Area.ToString()
+                Area = item.Area.ToString(),
+                Latitude = item.Latitude,
+                Longtitude = item.Longtitude,
             });
         }
 
@@ -64,7 +68,8 @@ namespace Asset.Core.Repositories
                     GovernorateObj.NameAr = GovernorateVM.NameAr;
                     GovernorateObj.Population = GovernorateVM.Population;
                     GovernorateObj.Area = GovernorateVM.Area;
-
+                    GovernorateObj.Latitude = GovernorateVM.Latitude;
+                    GovernorateObj.Longtitude = GovernorateVM.Longtitude;
                     _context.Governorates.Add(GovernorateObj);
                     _context.SaveChanges();
 
@@ -108,6 +113,8 @@ namespace Asset.Core.Repositories
                 GovernorateObj.NameAr = GovernorateVM.NameAr;
                 GovernorateObj.Population = GovernorateVM.Population;
                 GovernorateObj.Area = GovernorateVM.Area;
+                GovernorateObj.Latitude = GovernorateVM.Latitude;
+                GovernorateObj.Longtitude = GovernorateVM.Longtitude;
                 _context.Entry(GovernorateObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return GovernorateObj.Id;
@@ -137,13 +144,15 @@ namespace Asset.Core.Repositories
                 Name = item.Name,
                 NameAr = item.NameAr,
                 Population = item.Population,
-                Area = item.Area
+                Area = item.Area,
+                Latitude = item.Latitude,
+                Longtitude = item.Longtitude,
             }).First();
 
 
 
         }
-        
+
         public IEnumerable<GovernorateWithHospitalsVM> GetGovernorateWithHospitals()
         {
             return _context.Governorates.ToList().Select(item => new GovernorateWithHospitalsVM
@@ -151,7 +160,11 @@ namespace Asset.Core.Repositories
                 Id = item.Id,
                 Name = item.Name,
                 NameAr = item.NameAr,
-                HospitalsCount=_context.Hospitals.Where(h=>h.GovernorateId==item.Id).ToList().Count()
+                Latitude = item.Latitude,
+                Longtitude = item.Longtitude,
+                Population = item.Population,
+                Area = item.Area,
+                HospitalsCount = _context.Hospitals.Where(h => h.GovernorateId == item.Id).ToList().Count()
             });
         }
     }

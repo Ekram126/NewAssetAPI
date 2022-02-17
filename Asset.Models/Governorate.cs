@@ -23,5 +23,7 @@ public class Governorate
         public decimal? Population { get; set; }
 
         public decimal? Area { get; set; }
+        public decimal? Latitude { get; set; }
+        public decimal? Longtitude { get; set; }
     }
 }

@@ -12,5 +12,7 @@ namespace Asset.ViewModels.CityVM
         public string Name { get; set; }
         public string NameAr { get; set; }
         public int GovernorateId { get; set; }
+        public decimal? Latitude { get; set; }
+        public decimal? Longtitude { get; set; }
     }
 }
