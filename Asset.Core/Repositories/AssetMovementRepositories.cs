@@ -34,10 +34,7 @@ namespace Asset.Core.Repositories
                     assetMovementObj.FloorId = movementObj.FloorId;
                     assetMovementObj.BuildingId = movementObj.BuildingId;
                     assetMovementObj.AssetDetailId = movementObj.AssetDetailId;
-
- assetMovementObj.MoveDesc = movementObj.MoveDesc;
-
-
+                    assetMovementObj.MoveDesc = movementObj.MoveDesc;
                     _context.AssetMovements.Add(assetMovementObj);
                     _context.SaveChanges();
 

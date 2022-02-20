@@ -182,10 +182,12 @@ namespace Asset.Core.Repositories
             }
             var lstStatus = _context.AssetStatus.ToList();
             getDataObj.ListStatus = lstStatus;
+
+
             var lstTransactions = _context.AssetStatusTransactions
-                                        .Include(a => a.AssetDetail)
-                                        .Include(a => a.AssetDetail.Hospital)
-                                        .Include(a => a.AssetDetail.MasterAsset).ToList();
+                            .Include(a => a.AssetDetail)
+                            .Include(a => a.AssetDetail.Hospital)
+                            .Include(a => a.AssetDetail.MasterAsset).OrderByDescending(a => a.StatusDate.Value.Date).ToList();
 
 
 
@@ -258,68 +260,58 @@ namespace Asset.Core.Repositories
                 }
                 if (lstRoleNames.Contains("EngDepManager"))
                 {
-                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
                 if (lstRoleNames.Contains("EngManager"))
                 {
-                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
                 if (lstRoleNames.Contains("AssetOwner"))
                 {
-                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
                 if (lstRoleNames.Contains("Eng"))
                 {
-                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
 
             }
             if (lstTransactions.Count > 0)
             {
-                foreach (var trans in lstTransactions)
+                var groupassets = lstTransactions.GroupBy(a => a.AssetDetailId).ToList();
+                foreach (var trans in groupassets)
                 {
-                    var transObj = _context.AssetStatusTransactions.OrderByDescending(a => a.Id).FirstOrDefault(a => a.AssetStatusId == trans.AssetStatusId);
-                    if (transObj != null)
+                    switch (trans.Last().AssetStatusId)
                     {
-                        AssetStatusTransaction trk = transObj;
-
-                        if (trk.AssetStatusId == 1)
-                        {
-                            lstNeedRepair.Add(trk);
-                        }
-                        if (trk.AssetStatusId == 2)
-                        {
-                            lstInActive.Add(trk);
-                        }
-                        if (trk.AssetStatusId == 3)
-                        {
-                            lstWorking.Add(trk);
-                        }
-                        if (trk.AssetStatusId == 4)
-                        {
-                            lstUnderMaintenance.Add(trk);
-                        }
-                        if (trk.AssetStatusId == 5)
-                        {
-                            lstUnderInstallation.Add(trk);
-                        }
-                        if (trk.AssetStatusId == 6)
-                        {
-                            lstNotWorking.Add(trk);
-                        }
-                        if (trk.AssetStatusId == 7)
-                        {
-                            lstShutdown.Add(trk);
-                        }
-                        if (trk.AssetStatusId == 8)
-                        {
-                            lstExecluded.Add(trk);
-                        }
-                        if (trk.AssetStatusId == 9)
-                        {
-                            lstHold.Add(trk);
-                        }
+                        case 1:
+                            lstNeedRepair.Add(trans.Last());
+                            break;
+                        case 2:
+                            lstInActive.Add(trans.Last());
+                            break;
+                        case 3:
+                            lstWorking.Add(trans.Last());
+                            break;
+                        case 4:
+                            lstUnderMaintenance.Add(trans.Last());
+                            break;
+                        case 5:
+                            lstUnderInstallation.Add(trans.Last());
+                            break;
+                        case 6:
+                            lstNotWorking.Add(trans.Last());
+                            break;
+                        case 7:
+                            lstShutdown.Add(trans.Last());
+                            break;
+                        case 8:
+                            lstExecluded.Add(trans.Last());
+                            break;
+                        case 9:
+                            lstHold.Add(trans.Last());
+                            break;
                     }
+
                 }
             }
 

@@ -68,7 +68,7 @@ namespace Asset.API.Controllers
         [HttpPost] 
         [Route("GetAllAssetsGroupByStatusId/{statusId}/{userId}")]
         public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId)
-        {
+         {
             var lstAssetStatuses = _assetStatusService.GetAllAssetsGroupByStatusId(statusId,userId).ToList();
             return lstAssetStatuses;
         }
