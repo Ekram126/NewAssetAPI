@@ -69,7 +69,7 @@ namespace Asset.Core.Services
         public int Update(EditAssetDetailVM assetDetailObj)
         {
             _unitOfWork.AssetDetailRepository.Update(assetDetailObj);
-            _unitOfWork.CommitAsync();
+            //_unitOfWork.CommitAsync();
             return assetDetailObj.Id;
         }
 

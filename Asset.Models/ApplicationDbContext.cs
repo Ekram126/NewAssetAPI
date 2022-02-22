@@ -86,7 +86,8 @@ namespace Asset.Models
 
 
         public DbSet<SupplierExeclude> SupplierExecludes { get; set; }
-        public DbSet<SupplierExecludeReason> SupplierExecludeReasons { get; set; }    
+        public DbSet<SupplierExecludeReason> SupplierExecludeReasons { get; set; }
+        public DbSet<SupplierHoldReason> SupplierHoldReasons { get; set; }
         public DbSet<SupplierExecludeAsset> SupplierExecludeAssets { get; set; }
         public DbSet<SupplierExecludeAttachment> SupplierExecludeAttachments { get; set; }
         public DbSet<HospitalSupplierStatus> HospitalSupplierStatuses { get; set; }

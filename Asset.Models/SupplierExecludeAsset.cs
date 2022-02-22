@@ -20,7 +20,9 @@ namespace Asset.Models
         [ForeignKey("StatusId")]
         public virtual HospitalSupplierStatus HospitalSupplierStatus { get; set; }
 
-
+        public int? AppTypeId { get; set; }
+        [ForeignKey("AppTypeId")]
+        public virtual ApplicationType ApplicationType { get; set; }
 
         public string UserId { get; set; }
         [ForeignKey("UserId")]

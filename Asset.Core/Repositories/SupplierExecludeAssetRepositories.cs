@@ -28,23 +28,28 @@ namespace Asset.Core.Repositories
             var reasonIds = (from execlude in _context.SupplierExecludeReasons
                              join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
                              where trans.SupplierExecludeAssetId == id
+                              && trans.SupplierExecludeAsset.AppTypeId == 1
                              select execlude.Id).ToList();
 
-
-
-
-
+            var holdIds = (from execlude in _context.SupplierHoldReasons
+                           join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                           where trans.SupplierExecludeAssetId == id
+                           && trans.SupplierExecludeAsset.AppTypeId == 2
+                           select execlude.Id).ToList();
 
             return _context.SupplierExecludeAssets.Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Where(a => a.Id == id).Select(item => new EditSupplierExecludeAssetVM
             {
                 Id = item.Id,
                 AssetId = item.AssetId,
+                AppTypeId = item.AppTypeId,
                 StatusId = item.StatusId,
                 Date = item.Date,
                 ExecludeDate = item.ExecludeDate,
                 ExNumber = item.ExNumber,
                 UserId = item.User.UserName,
                 ReasonIds = reasonIds,
+                HoldReasonIds = holdIds,
+                Comment = item.Comment,
                 assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
                 assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber
 
@@ -60,7 +65,7 @@ namespace Asset.Core.Repositories
             List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
             var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
                 .Include(a => a.AssetDetail)
-                .Include(a => a.AssetDetail.MasterAsset).OrderByDescending(a => a.Date).ToList();
+                .Include(a => a.AssetDetail.MasterAsset).OrderByDescending(a => a.Date.Value.Date).ToList();
             foreach (var item in lstSupplierExecludeAssets)
             {
 
@@ -82,35 +87,10 @@ namespace Asset.Core.Repositories
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
                 }
-                //if (item.StatusId == 1)
-                //{
-                //    getDataObj.StatusName = "Open";
-                //    getDataObj.StatusNameAr = "فتح";
-
-                //    getDataObj.StatusName = item.HospitalSupplierStatus.Name;
-                //    getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
-                //}
-                //if (item.StatusId == 2)
-                //{
-                //    getDataObj.StatusName = "Approved";
-                //    getDataObj.StatusNameAr = "موافقة";
-                //}
-                //if (item.StatusId == 3)
-                //{
-                //    getDataObj.StatusName = "Rejected";
-                //    getDataObj.StatusNameAr = "رفض الطلب";
-                //}
-                //if (item.StatusId == 4)
-                //{
-                //    getDataObj.StatusName = "System Rejected";
-                //    getDataObj.StatusNameAr = "استبعاد من النظام";
-                //}
                 var lstExTitles = (from execlude in _context.SupplierExecludeReasons
                                    join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
                                    where trans.SupplierExecludeAssetId == item.Id
                                    select execlude).ToList();
-
-
                 if (lstExTitles.Count > 0)
                 {
                     List<string> execludeNames = new List<string>();
@@ -120,12 +100,9 @@ namespace Asset.Core.Repositories
                         execludeNames.Add(reason.Name);
                         execludeNamesAr.Add(reason.NameAr);
                     }
-
                     getDataObj.ReasonExTitles = string.Join(",", execludeNames);
                     getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
-
                 }
-
                 list.Add(getDataObj);
             }
 
@@ -142,6 +119,9 @@ namespace Asset.Core.Repositories
                     supplierExecludeAssetObj.Id = model.Id;
                     supplierExecludeAssetObj.AssetId = model.AssetId;
                     supplierExecludeAssetObj.StatusId = 1;
+                    supplierExecludeAssetObj.AppTypeId = model.AppTypeId;
+                    supplierExecludeAssetObj.Comment = model.Comment;
+
                     supplierExecludeAssetObj.Date = DateTime.Today.Date;
                     if (model.ExecludeDate != "")
                         supplierExecludeAssetObj.ExecludeDate = DateTime.Parse(model.ExecludeDate.ToString());
@@ -201,6 +181,7 @@ namespace Asset.Core.Repositories
                 supplierExecludeAssetObj.ExecludeDate = model.ExecludeDate;
                 supplierExecludeAssetObj.ExNumber = model.ExNumber;
                 supplierExecludeAssetObj.UserId = model.UserId;
+                supplierExecludeAssetObj.Comment = model.Comment;
                 _context.Entry(supplierExecludeAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -338,9 +319,15 @@ namespace Asset.Core.Repositories
             var reasonNames = (from execlude in _context.SupplierExecludeReasons
                                join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
                                where trans.SupplierExecludeAssetId == id
+                               && trans.SupplierExecludeAsset.AppTypeId == 1
                                select execlude).ToList();
 
 
+            var holdReasonNames = (from execlude in _context.SupplierHoldReasons
+                               join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                               where trans.SupplierExecludeAssetId == id
+                                    && trans.SupplierExecludeAsset.AppTypeId == 2
+                               select execlude).ToList();
 
 
 
@@ -355,9 +342,11 @@ namespace Asset.Core.Repositories
                                             StatusId = item.StatusId,
                                             Date = item.Date,
                                             ExecludeDate = item.ExecludeDate,
+                                            Comment = item.Comment,
                                             ExNumber = item.ExNumber,
                                             UserId = item.User.UserName,
                                             ReasonNames = reasonNames,
+                                            HoldReasonNames = holdReasonNames,
                                             assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
                                             assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber,
 
@@ -379,6 +368,8 @@ namespace Asset.Core.Repositories
                                             SubOrgNameAr = item.AssetDetail.Hospital.SubOrganization.NameAr,
 
 
+                                            appTypeName = item.ApplicationType.Name,
+                                            appTypeNameAr = item.ApplicationType.NameAr,
 
                                         }).FirstOrDefault();
 
@@ -388,8 +379,7 @@ namespace Asset.Core.Repositories
         {
             List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
             var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
-
-                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a=>a.Date.Value.Date).ToList();
             if (statusId != 0)
             {
                 lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.StatusId == statusId).ToList();
@@ -419,30 +409,6 @@ namespace Asset.Core.Repositories
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
                 }
-
-
-
-
-                //if (item.StatusId == 1)
-                //{
-                //    getDataObj.StatusName = "Open";
-                //    getDataObj.StatusNameAr = "فتح";
-                //}
-                //if (item.StatusId == 2)
-                //{
-                //    getDataObj.StatusName = "Approved";
-                //    getDataObj.StatusNameAr = "موافقة";
-                //}
-                //if (item.StatusId == 3)
-                //{
-                //    getDataObj.StatusName = "Rejected";
-                //    getDataObj.StatusNameAr = "رفض الطلب";
-                //}
-                //if (item.StatusId == 4)
-                //{
-                //    getDataObj.StatusName = "System Rejected";
-                //    getDataObj.StatusNameAr = "استبعاد من النظام";
-                //}
                 var lstExTitles = (from execlude in _context.SupplierExecludeReasons
                                    join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
                                    where trans.SupplierExecludeAssetId == item.Id
@@ -550,6 +516,92 @@ namespace Asset.Core.Repositories
                 else
                     list = list.OrderBy(d => d.ExNumber).ToList();
             }
+            return list;
+        }
+
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByAppTypeId(int appTypeId)
+        {
+            List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
+            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets
+                .Include(a => a.User)
+                .Include(a => a.ApplicationType)
+                .Include(a => a.HospitalSupplierStatus)
+                .Include(a => a.AssetDetail)
+                .Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a => a.Date.Value.Date).ToList(); 
+            if (appTypeId != 0)
+            {
+                lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.AppTypeId == appTypeId).ToList();
+            }
+            foreach (var item in lstSupplierExecludeAssets)
+            {
+
+                IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
+                getDataObj.Id = item.Id;
+                getDataObj.ExNumber = item.ExNumber;
+                getDataObj.Comment = item.Comment;
+                getDataObj.AppTypeId = item.AppTypeId;
+                getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
+                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
+                getDataObj.UserName = item.User.UserName;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber : "";
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber : "";
+
+                getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
+
+
+                getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                getDataObj.StatusId = item.StatusId;
+
+                var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
+                if (lstStatuses.Count > 0)
+                {
+                    getDataObj.StatusName = lstStatuses[0].Name;
+                    getDataObj.StatusNameAr = lstStatuses[0].NameAr;
+                }
+                if (appTypeId == 1)
+                {
+                    var lstExTitles = (from execlude in _context.SupplierExecludeReasons
+                                       join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                                       where trans.SupplierExecludeAssetId == item.Id
+                                       && item.AppTypeId == 1
+                                       select execlude).ToList();
+                    if (lstExTitles.Count > 0)
+                    {
+                        List<string> execludeNames = new List<string>();
+                        List<string> execludeNamesAr = new List<string>();
+                        foreach (var reason in lstExTitles)
+                        {
+                            execludeNames.Add(reason.Name);
+                            execludeNamesAr.Add(reason.NameAr);
+                        }
+                        getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+                        getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+                    }
+                }
+                if (appTypeId == 2)
+                {
+                    var lstHoldTitles = (from execlude in _context.SupplierHoldReasons
+                                         join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                                         where trans.SupplierExecludeAssetId == item.Id
+                                            && item.AppTypeId == 2
+                                         select execlude).ToList();
+                    if (lstHoldTitles.Count > 0)
+                    {
+                        List<string> holdNames = new List<string>();
+                        List<string> holdNamesAr = new List<string>();
+                        foreach (var reason in lstHoldTitles)
+                        {
+                            holdNames.Add(reason.Name);
+                            holdNamesAr.Add(reason.NameAr);
+                        }
+                        getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+                        getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+                    }
+                }
+                list.Add(getDataObj);
+            }
+
             return list;
         }
     }

@@ -93,7 +93,7 @@ namespace Asset.API
             services.AddScoped<IPMAssetTaskScheduleService, PMAssetTaskScheduleService>();
             services.AddScoped<IHospitalSupplierStatusService, HospitalSupplierStatusService>();
 
-
+            services.AddScoped<ISupplierHoldReasonService, SupplierHoldReasonService>();
             services.AddScoped<ISupplierExecludeReasonService, SupplierExecludeReasonService>();
             services.AddScoped<ISupplierExecludeAssetService, SupplierExecludeAssetService>();
             services.AddTransient<IRequestService, RequestService>();

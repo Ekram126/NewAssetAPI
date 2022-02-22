@@ -14,7 +14,7 @@ namespace Asset.ViewModels.AssetMovementVM
         {
             public int Id { get; set; }
             public int AssetDetailId { get; set; }
-
+            public string MoveDesc { get; set; }
             public DateTime? MovementDate { get; set; }
             public string BuildingName { get; set; }
             public string BuildingNameAr { get; set; }

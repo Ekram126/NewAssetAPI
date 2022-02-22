@@ -27,7 +27,7 @@ namespace Asset.Domain
         ISubCategoryRepository SubCategoryRepository { get; }
         ISupplierRepository SupplierRepository { get; }
 
-
+        ISupplierHoldReasonRepository SupplierHoldReasonRepository { get; }
         ISupplierExecludeReasonRepository SupplierExecludeReasonRepository { get; }
         ISupplierExecludeAssetRepository SupplierExecludeAssetRepository { get; }
 

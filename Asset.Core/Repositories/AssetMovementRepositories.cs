@@ -85,6 +85,7 @@ namespace Asset.Core.Repositories
             {
                 Id = item.Id,
                 MovementDate = item.MovementDate,
+                MoveDesc = item.MoveDesc,
                 RoomName = _context.Rooms.ToList().Where(a => a.Id == item.RoomId).ToList().First().Name,
                 RoomNameAr = _context.Rooms.ToList().Where(a => a.Id == item.RoomId).ToList().First().NameAr,
                 FloorName = _context.Floors.ToList().Where(a => a.Id == item.FloorId).ToList().First().Name,

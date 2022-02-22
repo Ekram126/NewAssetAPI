@@ -651,17 +651,16 @@ namespace Asset.Core.Repositories
                         movementObj.RoomId = model.RoomId;
                         movementObj.FloorId = model.FloorId;
                         movementObj.BuildingId = model.BuildingId;
+                        movementObj.AssetDetailId = model.Id;
+                        movementObj.MovementDate = DateTime.Now;
                         _context.AssetMovements.Add(movementObj);
                         _context.SaveChanges();
                     }
                 }
-                else
-                {
-                    assetDetailObj.RoomId = model.RoomId;
-                    assetDetailObj.FloorId = model.FloorId;
-                    assetDetailObj.BuildingId = model.BuildingId;
-                }
 
+                assetDetailObj.RoomId = model.RoomId;
+                assetDetailObj.FloorId = model.FloorId;
+                assetDetailObj.BuildingId = model.BuildingId;
                 assetDetailObj.ReceivingDate = model.ReceivingDate != null ? DateTime.Parse(model.ReceivingDate) : null;
                 assetDetailObj.OperationDate = model.OperationDate != null ? DateTime.Parse(model.OperationDate) : null;
                 assetDetailObj.PONumber = model.PONumber;
@@ -2393,7 +2392,7 @@ namespace Asset.Core.Repositories
                 {
                     IndexAssetDetailVM.GetData detail = new IndexAssetDetailVM.GetData();
                     detail.Id = asset.Id;
-                    var lstStatus = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == asset.Id).OrderByDescending(a=>a.StatusDate.Value.Date).ToList();
+                    var lstStatus = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == asset.Id).OrderByDescending(a => a.StatusDate.Value.Date).ToList();
                     if (lstStatus.Count > 0)
                     {
                         detail.AssetStatusId = lstStatus.Last().AssetStatusId;

@@ -64,6 +64,16 @@ namespace Asset.API.Controllers
             var lstSupplierExecludeAssets = _supplierExecludeAssetService.GetAll().ToList();
             return _pagingService.GetAll<IndexSupplierExecludeAssetVM.GetData>(pageInfo, lstSupplierExecludeAssets);
         }
+
+
+
+        [HttpPut]
+        [Route("ListSupplierExcludeAssetsWithPagingAndTypeId/{appTypeId}")]
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> ListSupplierExcludeAssetsWithPagingAndTypeId(int appTypeId, PagingParameter pageInfo)
+        {
+            var lstSupplierExecludeAssets = _supplierExecludeAssetService.GetAllByAppTypeId(appTypeId).ToList();
+            return _pagingService.GetAll<IndexSupplierExecludeAssetVM.GetData>(pageInfo, lstSupplierExecludeAssets);
+        }
         [HttpGet]
         [Route("getcount")]
         public int count()
@@ -72,6 +82,12 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetcountByAppTypeId/{appTypeId}")]
+        public int GetcountByAppTypeId(int appTypeId)
+        {
+            return _supplierExecludeAssetService.GetAllByAppTypeId(appTypeId).ToList().Count;
+        }
 
 
         [HttpPost]

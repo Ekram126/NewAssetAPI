@@ -21,11 +21,16 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
             public string Date { get; set; }
             public string ExecludeDate { get; set; }
             public string ExNumber { get; set; }
-
+            public int? AppTypeId { get; set; }
+            public string Comment { get; set; }
 
 
             public string ReasonExTitles { get; set; }
             public string ReasonExTitlesAr { get; set; }
+
+            public string ReasonHoldTitles { get; set; }
+            public string ReasonHoldTitlesAr { get; set; }
+
 
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }

@@ -16,8 +16,8 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public DateTime? Date { get; set; }
         public string ExecludeDate { get; set; }
         public string ExNumber { get; set; }
-
+        public string Comment { get; set; }
+        public int? AppTypeId { get; set; }
         public List<int> ReasonIds { get; set; }
-
     }
 }

@@ -34,7 +34,7 @@ namespace Asset.Core.Services
         {
             var SupplierExecludeAssetObj = _unitOfWork.SupplierExecludeAssetRepository.GetById(id);
             _unitOfWork.SupplierExecludeAssetRepository.Delete(SupplierExecludeAssetObj.Id);
-            _unitOfWork.CommitAsync();
+           // _unitOfWork.CommitAsync();
             return SupplierExecludeAssetObj.Id;
         }
 
@@ -46,6 +46,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAll()
         {
             return _unitOfWork.SupplierExecludeAssetRepository.GetAll();
+        }
+
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByAppTypeId(int appTypeId)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.GetAllByAppTypeId(appTypeId);
         }
 
         public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByStatusId(int statusId)

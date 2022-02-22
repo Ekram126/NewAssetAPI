@@ -24,7 +24,8 @@ namespace Asset.Models
 
 
         public int? StatusId { get; set; }
-
+        [ForeignKey("StatusId")]
+        public virtual HospitalSupplierStatus HospitalSupplierStatus { get; set; }
 
         public string UserId { get; set; }
         [ForeignKey("UserId")]

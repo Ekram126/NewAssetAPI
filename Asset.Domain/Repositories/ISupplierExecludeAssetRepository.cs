@@ -13,6 +13,7 @@ namespace Asset.Domain.Repositories
 
         IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAll();
         IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByStatusId(int statusId);
+        IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByAppTypeId(int appTypeId);
         EditSupplierExecludeAssetVM GetById(int id);
         ViewSupplierExecludeAssetVM GetSupplierExecludeAssetDetailById(int id);
         int Add(CreateSupplierExecludeAssetVM execludeAssetObj);

@@ -20,6 +20,10 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public DateTime? ExecludeDate { get; set; }
         public string ExNumber { get; set; }
         public List<SupplierExecludeReason> ReasonNames { get; set; }
+        public List<SupplierHoldReason> HoldReasonNames { get; set; }
+
+        public string appTypeName { get; set; }
+        public string appTypeNameAr { get; set; }
 
         public string assetName { get; set; }
         public string assetNameAr { get; set; }
@@ -44,6 +48,8 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
 
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }
+
+        public string Comment { get; set; }
 
     }
 }

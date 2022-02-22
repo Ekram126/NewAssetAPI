@@ -69,7 +69,7 @@ namespace Asset.Core
         private WorkOrderAssignRepositories _workOrderAssignRepository;
 
 
-
+        private SupplierHoldReasonRepositories _supplierHoldReasonRepositories;
         private SupplierExecludeReasonRepositories _supplierExecludeReasonRepositories;
         private SupplierExecludeAssetRepositories _supplierExecludeAssetRepositories;
         private HospitalSupplierStatusRepository _hospitalSupplierStatusRepository;
@@ -213,6 +213,7 @@ namespace Asset.Core
 
         public IPMAssetTaskScheduleRepository pMAssetTaskScheduleRepository => _pMAssetTaskScheduleRepository = _pMAssetTaskScheduleRepository ?? new PMAssetTaskScheduleRepository(_context);
 
+        public ISupplierHoldReasonRepository SupplierHoldReasonRepository => _supplierHoldReasonRepositories = _supplierHoldReasonRepositories ?? new SupplierHoldReasonRepositories(_context);
 
 
         public ISupplierExecludeReasonRepository SupplierExecludeReasonRepository => _supplierExecludeReasonRepositories = _supplierExecludeReasonRepositories ?? new SupplierExecludeReasonRepositories(_context);

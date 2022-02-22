@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Asset.ViewModels.SupplierExecludeAssetVM
 {
-   public class EditSupplierExecludeAssetVM
+    public class EditSupplierExecludeAssetVM
     {
 
 
@@ -19,10 +19,13 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public DateTime? ExecludeDate { get; set; }
         public string ExNumber { get; set; }
 
-
+        public int? AppTypeId
+        {
+            get; set;
+        }
        // [NotMapped]
         public List<int> ReasonIds { get; set; }
-
+        public List<int> HoldReasonIds { get; set; }
         public string assetName { get; set; }
 
         public string assetNameAr { get; set; }
