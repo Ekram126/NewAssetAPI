@@ -49,6 +49,11 @@ namespace Asset.Core.Services
             return _unitOfWork.HospitalApplicationRepository.GetAll();
         }
 
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByAppTypeId(int appTypeId)
+        {
+            return _unitOfWork.HospitalApplicationRepository.GetAllByAppTypeId(appTypeId);
+        }
+
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByHospitalId(int hospitalId)
         {
             return _unitOfWork.HospitalApplicationRepository.GetAllByHospitalId(hospitalId);

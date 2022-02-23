@@ -69,7 +69,7 @@ namespace Asset.Core.Repositories
         {
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
             var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
-                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList();
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a=>a.AppDate.Value.Date).ToList();
             foreach (var item in lstHospitalApplications)
             {
 
@@ -89,27 +89,6 @@ namespace Asset.Core.Repositories
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
 
                 getDataObj.StatusId = item.StatusId;
-                //if (item.StatusId == 1)
-                //{
-                //    getDataObj.StatusName = "Open";
-                //    getDataObj.StatusNameAr = "فتح";
-                //}
-                //if (item.StatusId == 2)
-                //{
-                //    getDataObj.StatusName = "Approved";
-                //    getDataObj.StatusNameAr = "موافقة";
-                //}
-                //if (item.StatusId == 3)
-                //{
-                //    getDataObj.StatusName = "Rejected";
-                //    getDataObj.StatusNameAr = "رفض الطلب";
-                //}
-                //if (item.StatusId == 4)
-                //{
-                //    getDataObj.StatusName = "System Rejected";
-                //    getDataObj.StatusNameAr = "استبعاد من النظام";
-                //}
-
 
                 var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
                 if (lstStatuses.Count > 0)
@@ -973,6 +952,100 @@ namespace Asset.Core.Repositories
             else
             {
                 list = list.Where(a => a.HospitalId == hospitalId).ToList();
+            }
+
+            return list;
+        }
+
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByAppTypeId(int appTypeId)
+        {
+            List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
+            var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a => a.AppDate.Value.Date).ToList();
+
+            if (appTypeId != 0)
+                lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == appTypeId).ToList();
+
+
+            foreach (var item in lstHospitalApplications)
+            {
+
+                IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
+                getDataObj.Id = item.Id;
+                getDataObj.AppNumber = item.AppNumber;
+                getDataObj.Date = item.AppDate.Value.ToShortDateString();
+                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
+                getDataObj.AppTypeId = item.AppTypeId;
+                getDataObj.UserName = item.User.UserName;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.TypeName = item.ApplicationType.Name;
+                getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+                getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
+                getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                getDataObj.StatusId = item.StatusId;
+
+                var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
+                if (lstStatuses.Count > 0)
+                {
+                    getDataObj.StatusName = lstStatuses[0].Name;
+                    getDataObj.StatusNameAr = lstStatuses[0].NameAr;
+                }
+
+
+
+              
+                var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
+                                      join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                      where trans.HospitalApplicationId == item.Id
+                                      && item.AppTypeId == 1
+                                      select execlude).ToList();
+                if (ReasonExTitles.Count > 0)
+                {
+                    List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                    foreach (var reason in ReasonExTitles)
+                    {
+                        execludeNames.Add(reason.Name);
+                    }
+
+                    getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+                    List<string> execludeNamesAr = new List<string>();
+                    foreach (var reason in ReasonExTitles)
+                    {
+                        execludeNamesAr.Add(reason.NameAr);
+                    }
+                    getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                }
+
+                var ReasonHoldTitles = (from execlude in _context.HospitalHoldReasons
+                                        join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                        where trans.HospitalApplicationId == item.Id
+                                        && item.AppTypeId == 2
+                                        select execlude).ToList();
+                if (ReasonHoldTitles.Count > 0)
+                {
+                    List<string> holdNames = new List<string>();
+                    foreach (var reason in ReasonHoldTitles)
+                    {
+                        holdNames.Add(reason.Name);
+                    }
+                    getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+
+                    List<string> holdNamesAr = new List<string>();
+                    foreach (var reason in ReasonHoldTitles)
+                    {
+                        holdNamesAr.Add(reason.NameAr);
+                    }
+                    getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+                }
+
+
+                list.Add(getDataObj);
             }
 
             return list;

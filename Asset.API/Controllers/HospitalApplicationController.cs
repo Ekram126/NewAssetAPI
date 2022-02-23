@@ -116,6 +116,25 @@ namespace Asset.API.Controllers
         }
 
         [HttpPut]
+        [Route("ListHospitalApplicationsWithPagingAndTypeId/{appTypeId}")]
+        public IEnumerable<IndexHospitalApplicationVM.GetData> ListSupplierExcludeAssetsWithPagingAndTypeId(int appTypeId, PagingParameter pageInfo)
+        {
+            var lstSupplierExecludeAssets = _hospitalApplicationService.GetAllByAppTypeId(appTypeId).ToList();
+            return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstSupplierExecludeAssets);
+        }
+        [HttpGet]
+        [Route("GetCountByAppTypeId/{appTypeId}")]
+        public int GetcountByAppTypeId(int appTypeId)
+        {
+            return _hospitalApplicationService.GetAllByAppTypeId(appTypeId).ToList().Count;
+        }
+
+
+
+
+
+
+        [HttpPut]
         [Route("UpdateHospitalApplication")]
         public IActionResult Update(EditHospitalApplicationVM hospitalApplicationVM)
         {

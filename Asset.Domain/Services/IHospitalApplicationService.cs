@@ -14,7 +14,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(int statusId,int hospitalId);
         EditHospitalApplicationVM GetById(int id);
         IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByHospitalId(int hospitalId);
-
+        IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByAppTypeId(int appTypeId);
         ViewHospitalApplicationVM GetHospitalApplicationById(int id);
         int GetAssetHospitalId(int assetId);
 
