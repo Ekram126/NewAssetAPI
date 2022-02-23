@@ -19,9 +19,9 @@ namespace Asset.Core.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public IndexHospitalSupplierStatusVM GetAll(int? hospitalId)
+        public IndexHospitalSupplierStatusVM GetAll(int appTypeId, int? hospitalId)
         {
-           return _unitOfWork.HospitalSupplierStatusRepository.GetAll(hospitalId);
+           return _unitOfWork.HospitalSupplierStatusRepository.GetAll(appTypeId, hospitalId);
         }
         public IndexHospitalSupplierStatusVM GetAllByHospitals()
         {

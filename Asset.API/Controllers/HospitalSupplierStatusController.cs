@@ -29,10 +29,10 @@ namespace Asset.API.Controllers
        
      
         [HttpGet]
-        [Route("GetAll/{hospitalId}")]
-        public IndexHospitalSupplierStatusVM GetAll(int? hospitalId)
+        [Route("GetAll/{appTypeId}/{hospitalId}")]
+        public IndexHospitalSupplierStatusVM GetAll(int appTypeId, int? hospitalId)
         {
-            return _hospitalSupplierStatusService.GetAll(hospitalId);
+            return _hospitalSupplierStatusService.GetAll( appTypeId, hospitalId);
         }
 
 

@@ -48,7 +48,7 @@ namespace Asset.Core.Repositories
             return ItemObj;
         }
 
-        public IndexHospitalSupplierStatusVM GetAll(int? hospitalId)
+        public IndexHospitalSupplierStatusVM GetAll(int appTypeId,int? hospitalId)
         {
 
             IndexHospitalSupplierStatusVM ItemObj = new IndexHospitalSupplierStatusVM();
@@ -63,7 +63,7 @@ namespace Asset.Core.Repositories
                 {
                     foreach (var itm in list)
                     {
-                        var lstStatus = _context.SupplierExecludeAssets.Where(a => a.StatusId == itm.Id).ToList();
+                        var lstStatus = _context.SupplierExecludeAssets.Where(a => a.StatusId == itm.Id && a.AppTypeId == appTypeId).ToList();
                         if (itm.Id == 1)
                         {
                             ItemObj.OpenStatus = lstStatus.Count;
@@ -87,7 +87,7 @@ namespace Asset.Core.Repositories
             {
                 foreach (var itm in list)
                 {
-                    var lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Where(a => a.AssetDetail.HospitalId == hospitalId && a.StatusId == itm.Id).ToList();
+                    var lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Where(a => a.AssetDetail.HospitalId == hospitalId && a.StatusId == itm.Id && a.AppTypeId == appTypeId).ToList();
 
                     if (itm.Id == 1)
                     {
