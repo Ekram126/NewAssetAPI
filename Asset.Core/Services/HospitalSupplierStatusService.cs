@@ -19,15 +19,19 @@ namespace Asset.Core.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public IndexHospitalSupplierStatusVM GetAll(int appTypeId, int? hospitalId)
+        public IndexHospitalSupplierStatusVM GetAll(int statusId, int appTypeId, int? hospitalId)
         {
-           return _unitOfWork.HospitalSupplierStatusRepository.GetAll(appTypeId, hospitalId);
+            return _unitOfWork.HospitalSupplierStatusRepository.GetAll(statusId, appTypeId, hospitalId);
         }
         public IndexHospitalSupplierStatusVM GetAllByHospitals()
         {
             return _unitOfWork.HospitalSupplierStatusRepository.GetAllByHospitals();
         }
 
+        public IndexHospitalSupplierStatusVM GetAllByHospitals(int statusId, int appTypeId, int? hospitalId)
+        {
+            return _unitOfWork.HospitalSupplierStatusRepository.GetAllByHospitals(statusId, appTypeId, hospitalId);
+        }
         public HospitalSupplierStatus GetById(int id)
         {
             return _unitOfWork.HospitalSupplierStatusRepository.GetById(id);

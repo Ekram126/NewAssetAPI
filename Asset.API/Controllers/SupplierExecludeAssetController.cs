@@ -90,6 +90,24 @@ namespace Asset.API.Controllers
         }
 
 
+
+
+
+
+        [HttpPut]
+        [Route("ListSupplierExcludeAssetsWithPagingWithStatusIdAndTypeId/{statusId}/{appTypeId}")]
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> ListSupplierExcludeAssetsWithPagingWithStatusIdAndTypeId(int statusId,int appTypeId, PagingParameter pageInfo)
+        {
+            var lstSupplierExecludeAssets = _supplierExecludeAssetService.GetAllByStatusIdAndAppTypeId(statusId, appTypeId).ToList();
+            return _pagingService.GetAll<IndexSupplierExecludeAssetVM.GetData>(pageInfo, lstSupplierExecludeAssets);
+        }
+        [HttpGet]
+        [Route("CountListSupplierExcludeAssetsWithPagingWithStatusIdAndTypeId/{statusId}/{appTypeId}")]
+        public int CountListSupplierExcludeAssetsWithPagingWithStatusIdAndTypeId(int statusId, int appTypeId)
+        {
+            return _supplierExecludeAssetService.GetAllByStatusIdAndAppTypeId(statusId, appTypeId).ToList().Count;
+        }
+
         [HttpPost]
         [Route("SortSuplierApp/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(int pagenumber, int pagesize, SortSupplierExecludeAssetVM sortObj)

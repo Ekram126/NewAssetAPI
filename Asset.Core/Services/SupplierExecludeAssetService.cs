@@ -58,6 +58,11 @@ namespace Asset.Core.Services
             return _unitOfWork.SupplierExecludeAssetRepository.GetAllByStatusId(statusId);
         }
 
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByStatusIdAndAppTypeId(int statusId, int appTypeId)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.GetAllByStatusIdAndAppTypeId(statusId, appTypeId);
+        }
+
         public IEnumerable<SupplierExecludeAttachment> GetAttachmentBySupplierExecludeAssetId(int assetId)
         {
             return _unitOfWork.SupplierExecludeAssetRepository.GetAttachmentBySupplierExecludeAssetId(assetId);

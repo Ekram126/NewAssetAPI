@@ -19,22 +19,29 @@ namespace Asset.API.Controllers
     [ApiController]
     public class HospitalSupplierStatusController : ControllerBase
     {
-        private IHospitalSupplierStatusService  _hospitalSupplierStatusService;
-      
+        private IHospitalSupplierStatusService _hospitalSupplierStatusService;
+
 
         public HospitalSupplierStatusController(IHospitalSupplierStatusService hospitalSupplierStatusService)
         {
             _hospitalSupplierStatusService = hospitalSupplierStatusService;
         }
-       
-     
+
+
         [HttpGet]
         [Route("GetAll/{appTypeId}/{hospitalId}")]
-        public IndexHospitalSupplierStatusVM GetAll(int appTypeId, int? hospitalId)
+        public IndexHospitalSupplierStatusVM GetAll(int statusId, int appTypeId, int? hospitalId)
         {
-            return _hospitalSupplierStatusService.GetAll( appTypeId, hospitalId);
+            return _hospitalSupplierStatusService.GetAll(statusId, appTypeId, hospitalId);
         }
 
+
+        [HttpGet]
+        [Route("GetAllByAtatusAppTypeId/{statusId}/{appTypeId}/{hospitalId}")]
+        public IndexHospitalSupplierStatusVM GetAllByAtatusAppTypeId(int statusId, int appTypeId, int? hospitalId)
+        {
+            return _hospitalSupplierStatusService.GetAll(statusId, appTypeId, hospitalId);
+        }
 
         [HttpGet]
         [Route("GetAllByHospitals")]
@@ -42,6 +49,15 @@ namespace Asset.API.Controllers
         {
             return _hospitalSupplierStatusService.GetAllByHospitals();
         }
+
+        //(int statusId, int appTypeId, int? hospitalId);
+        [HttpGet]
+        [Route("GetHospitalByStatusAppTypeId/{statusId}/{appTypeId}/{hospitalId}")]
+        public IndexHospitalSupplierStatusVM GetAllByHospitals(int statusId, int appTypeId, int? hospitalId)
+        {
+            return _hospitalSupplierStatusService.GetAllByHospitals(statusId, appTypeId, hospitalId);
+        }
+
 
 
         [HttpGet]

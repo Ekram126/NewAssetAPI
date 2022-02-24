@@ -94,6 +94,27 @@ namespace Asset.API.Controllers
             return _hospitalApplicationService.GetAllByStatusId(statusId,hospitalId).ToList().Count;
         }
 
+
+
+
+        //[HttpPut]
+        //[Route("ListHospitalApplicationsWithPagingWithStatusIdAndTypeId/{statusId}/{appTypeId}")]
+        //public IEnumerable<IndexHospitalApplicationVM.GetData> ListHospitalApplicationsWithPagingWithStatusIdAndTypeId(int statusId, int appTypeId, PagingParameter pageInfo)
+        //{
+        //    var lstSupplierExecludeAssets = _hospitalApplicationService.GetAllByStatusIdAndAppTypeId(statusId, appTypeId).ToList();
+        //    return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstSupplierExecludeAssets);
+        //}
+        //[HttpGet]
+        //[Route("CountListHospitalApplicationsWithPagingWithStatusIdAndTypeId/{statusId}/{appTypeId}")]
+        //public int CountListHospitalApplicationsWithPagingWithStatusIdAndTypeId(int statusId, int appTypeId)
+        //{
+        //    return _hospitalApplicationService.GetAllByStatusIdAndAppTypeId(statusId, appTypeId).ToList().Count;
+        //}
+
+
+
+
+
         [HttpGet]
         [Route("GetById/{id}")]
         public ActionResult<EditHospitalApplicationVM> GetById(int id)
@@ -134,17 +155,18 @@ namespace Asset.API.Controllers
 
 
         [HttpPut]
-        [Route("ListHospitalApplicationsByTypeIdAndStatusId/{hospitalId}/{appTypeId}/{statusId}")]
-        public IEnumerable<IndexHospitalApplicationVM.GetData> ListHospitalApplicationsByTypeIdAndStatusId(int hospitalId,int appTypeId,int statusId, PagingParameter pageInfo)
+        [Route("ListHospitalApplicationsByTypeIdAndStatusId/{statusId}/{appTypeId}/{hospitalId}")]
+        public IEnumerable<IndexHospitalApplicationVM.GetData> ListHospitalApplicationsByTypeIdAndStatusId(int statusId, int appTypeId,int hospitalId, PagingParameter pageInfo)
         {
-            var lstSupplierExecludeAssets = _hospitalApplicationService.GetAllByAppTypeIdAndStatusId(hospitalId, appTypeId, statusId).ToList();
+            var lstSupplierExecludeAssets = _hospitalApplicationService.GetAllByAppTypeIdAndStatusId(statusId,  appTypeId, hospitalId).ToList();
             return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstSupplierExecludeAssets);
         }
         [HttpGet]
-        [Route("GetcountByAppTypeIdAndStatusId/{hospitalId}/{appTypeId}/{statusId}")]
-        public int GetcountByAppTypeIdAndStatusId(int hospitalId,int appTypeId, int statusId)
+        [Route("GetcountByAppTypeIdAndStatusId/{statusId}/{appTypeId}/{hospitalId}")]
+        public int GetcountByAppTypeIdAndStatusId(int statusId, int appTypeId, int hospitalId)
         {
-            return _hospitalApplicationService.GetAllByAppTypeIdAndStatusId(hospitalId, appTypeId,statusId).ToList().Count;
+            var total = _hospitalApplicationService.GetAllByAppTypeIdAndStatusId(statusId, appTypeId, hospitalId).ToList().Count;
+            return total;
         }
 
 

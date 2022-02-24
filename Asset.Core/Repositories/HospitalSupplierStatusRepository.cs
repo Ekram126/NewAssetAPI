@@ -48,7 +48,54 @@ namespace Asset.Core.Repositories
             return ItemObj;
         }
 
-        public IndexHospitalSupplierStatusVM GetAll(int appTypeId,int? hospitalId)
+
+
+
+
+        public IndexHospitalSupplierStatusVM GetAllByHospitals(int statusId, int appTypeId, int? hospitalId)
+        {
+            IndexHospitalSupplierStatusVM ItemObj = new IndexHospitalSupplierStatusVM();
+            var list = _context.HospitalSupplierStatuses.ToList();
+            ItemObj.ListStatus = list;
+            foreach (var itm in list)
+            {
+                var lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
+                    .Where(a => a.StatusId == itm.Id && a.AssetDetail.HospitalId == hospitalId && a.AppTypeId == appTypeId).ToList();
+
+                if (itm.Id == 1)
+                {
+                    ItemObj.OpenStatus = lstHospitalStatus.Count;
+                }
+                if (itm.Id == 2)
+                {
+                    ItemObj.ApproveStatus = lstHospitalStatus.Count;
+                }
+                if (itm.Id == 3)
+                {
+                    ItemObj.RejectStatus = lstHospitalStatus.Count;
+                }
+                if (itm.Id == 4)
+                {
+                    ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
+                }
+            }
+            return ItemObj;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public IndexHospitalSupplierStatusVM GetAll(int statusId, int appTypeId, int? hospitalId)
         {
 
             IndexHospitalSupplierStatusVM ItemObj = new IndexHospitalSupplierStatusVM();

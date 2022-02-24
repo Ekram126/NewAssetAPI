@@ -7,8 +7,9 @@ namespace Asset.Domain.Repositories
 {
     public interface IHospitalSupplierStatusRepository
     {
-        IndexHospitalSupplierStatusVM GetAll(int appTypeId, int? hospitalId);
+        IndexHospitalSupplierStatusVM GetAll(int statusId, int appTypeId, int? hospitalId);
         IndexHospitalSupplierStatusVM GetAllByHospitals();
+        IndexHospitalSupplierStatusVM GetAllByHospitals(int statusId, int appTypeId, int? hospitalId);
         HospitalSupplierStatus GetById(int id);
 
     }

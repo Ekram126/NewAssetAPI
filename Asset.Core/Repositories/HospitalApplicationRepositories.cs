@@ -69,7 +69,7 @@ namespace Asset.Core.Repositories
         {
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
             var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
-                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a=>a.AppDate.Value.Date).ToList();
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a => a.AppDate.Value.Date).ToList();
             foreach (var item in lstHospitalApplications)
             {
 
@@ -398,7 +398,7 @@ namespace Asset.Core.Repositories
                 AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
                 assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                 assetStatusTransactionObj.AssetStatusId = 8;
-                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;         
+                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
                 _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                 _context.SaveChanges();
             }
@@ -474,7 +474,7 @@ namespace Asset.Core.Repositories
             {
                 lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == statusId).ToList();
             }
-            if(hospitalId != 0)
+            if (hospitalId != 0)
             {
                 lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
             }
@@ -506,22 +506,22 @@ namespace Asset.Core.Repositories
                 {
                     if (item.StatusId == 1)
                     {
-                      
-                      //  lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
+
+                        //  lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
                         getDataObj.OpenStatus = lstHospitalApplications.Count;
-                        getDataObj.StatusName = _context.HospitalSupplierStatuses.FirstOrDefault(a=>a.Id == itm.StatusId).Name;
+                        getDataObj.StatusName = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).Name;
                         getDataObj.StatusNameAr = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).NameAr;
                     }
                     if (item.StatusId == 2)
                     {
                         getDataObj.StatusName = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).Name;
                         getDataObj.StatusNameAr = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).NameAr;
-                       // lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
+                        // lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
                         getDataObj.ApproveStatus = lstHospitalApplications.Count;
                     }
                     if (item.StatusId == 3)
                     {
-                      //  lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
+                        //  lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
                         getDataObj.StatusName = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).Name;
                         getDataObj.StatusNameAr = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).NameAr;
 
@@ -531,7 +531,7 @@ namespace Asset.Core.Repositories
                     {
                         getDataObj.StatusName = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).Name;
                         getDataObj.StatusNameAr = _context.HospitalSupplierStatuses.FirstOrDefault(a => a.Id == itm.StatusId).NameAr;
-                     //   lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
+                        //   lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == itm.StatusId).ToList();
                         getDataObj.SystemRejectStatus = lstHospitalApplications.Count;
                     }
                 }
@@ -846,7 +846,7 @@ namespace Asset.Core.Repositories
         {
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
             var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
-                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a=>a.AppDate).ToList();
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a => a.AppDate).ToList();
             foreach (var item in lstHospitalApplications)
             {
 
@@ -996,7 +996,7 @@ namespace Asset.Core.Repositories
 
 
 
-              
+
                 var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
                                       join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
                                       where trans.HospitalApplicationId == item.Id
@@ -1051,11 +1051,17 @@ namespace Asset.Core.Repositories
             return list;
         }
 
-        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByAppTypeIdAndStatusId(int hospitalId,int appTypeId, int statusId)
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByAppTypeIdAndStatusId(int statusId, int appTypeId, int hospitalId)
         {
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
             var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+                .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
                 .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a => a.AppDate.Value.Date).ToList();
+
+            if (hospitalId != 0)
+                lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
+
+
 
             if (appTypeId != 0)
                 lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == appTypeId).ToList();
@@ -1063,8 +1069,6 @@ namespace Asset.Core.Repositories
             if (statusId != 0)
                 lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == statusId).ToList();
 
-            if (hospitalId != 0)
-                lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
 
 
             foreach (var item in lstHospitalApplications)
@@ -1086,64 +1090,61 @@ namespace Asset.Core.Repositories
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
 
                 getDataObj.StatusId = item.StatusId;
+                getDataObj.StatusName = item.HospitalSupplierStatus.Name;
+                getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
 
-                var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
-                if (lstStatuses.Count > 0)
+                if (appTypeId == 1)
                 {
-                    getDataObj.StatusName = lstStatuses[0].Name;
-                    getDataObj.StatusNameAr = lstStatuses[0].NameAr;
+
+                    var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
+                                          join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                          where trans.HospitalApplicationId == item.Id
+                                          && item.AppTypeId == 1
+                                          select execlude).ToList();
+                    if (ReasonExTitles.Count > 0)
+                    {
+                        List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                        foreach (var reason in ReasonExTitles)
+                        {
+                            execludeNames.Add(reason.Name);
+                        }
+
+                        getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+                        List<string> execludeNamesAr = new List<string>();
+                        foreach (var reason in ReasonExTitles)
+                        {
+                            execludeNamesAr.Add(reason.NameAr);
+                        }
+                        getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                    }
                 }
-
-
-
-
-                var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
-                                      join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
-                                      where trans.HospitalApplicationId == item.Id
-                                      && item.AppTypeId == 1
-                                      select execlude).ToList();
-                if (ReasonExTitles.Count > 0)
+                if (appTypeId == 2)
                 {
-                    List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
-                    foreach (var reason in ReasonExTitles)
+                    var ReasonHoldTitles = (from execlude in _context.HospitalHoldReasons
+                                            join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                            where trans.HospitalApplicationId == item.Id
+                                            && item.AppTypeId == 2
+                                            select execlude).ToList();
+                    if (ReasonHoldTitles.Count > 0)
                     {
-                        execludeNames.Add(reason.Name);
+                        List<string> holdNames = new List<string>();
+                        foreach (var reason in ReasonHoldTitles)
+                        {
+                            holdNames.Add(reason.Name);
+                        }
+                        getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+
+                        List<string> holdNamesAr = new List<string>();
+                        foreach (var reason in ReasonHoldTitles)
+                        {
+                            holdNamesAr.Add(reason.NameAr);
+                        }
+                        getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
                     }
-
-                    getDataObj.ReasonExTitles = string.Join(",", execludeNames);
-
-
-                    List<string> execludeNamesAr = new List<string>();
-                    foreach (var reason in ReasonExTitles)
-                    {
-                        execludeNamesAr.Add(reason.NameAr);
-                    }
-                    getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
-
                 }
-
-                var ReasonHoldTitles = (from execlude in _context.HospitalHoldReasons
-                                        join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
-                                        where trans.HospitalApplicationId == item.Id
-                                        && item.AppTypeId == 2
-                                        select execlude).ToList();
-                if (ReasonHoldTitles.Count > 0)
-                {
-                    List<string> holdNames = new List<string>();
-                    foreach (var reason in ReasonHoldTitles)
-                    {
-                        holdNames.Add(reason.Name);
-                    }
-                    getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
-
-                    List<string> holdNamesAr = new List<string>();
-                    foreach (var reason in ReasonHoldTitles)
-                    {
-                        holdNamesAr.Add(reason.NameAr);
-                    }
-                    getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
-                }
-
 
                 list.Add(getDataObj);
             }

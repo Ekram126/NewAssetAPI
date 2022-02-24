@@ -14,6 +14,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAll();
         IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByStatusId(int statusId);
         IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByAppTypeId(int appTypeId);
+        IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAllByStatusIdAndAppTypeId(int statusId, int appTypeId);
         EditSupplierExecludeAssetVM GetById(int id);
         ViewSupplierExecludeAssetVM GetSupplierExecludeAssetDetailById(int id);
         int Add(CreateSupplierExecludeAssetVM execludeAssetObj);
