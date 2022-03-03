@@ -250,9 +250,16 @@ namespace Asset.API.Controllers
         public ActionResult UploadHospitalApplicationFiles(IFormFile file)
         {
             string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/HospitalApplications/" + file.FileName;
-            Stream stream = new FileStream(path, FileMode.Create);
-            file.CopyTo(stream);
-            stream.Close();
+            if (System.IO.File.Exists(path))
+            {
+
+            }
+            else
+            {
+                Stream stream = new FileStream(path, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
             return StatusCode(StatusCodes.Status201Created);
         }
 
@@ -262,6 +269,7 @@ namespace Asset.API.Controllers
         {
             return _hospitalApplicationService.GetAttachmentByHospitalApplicationId(hospitalApplicationId);
         }
+
 
         [HttpDelete]
         [Route("DeleteHospitalApplicationAttachment/{id}")]

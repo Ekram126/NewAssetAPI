@@ -523,25 +523,30 @@ namespace Asset.Core.Repositories
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
                     }
 
-                    if (userRoleNames.Contains("EngDepManager"))
+                    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
                     }
-                    if (userRoleNames.Contains("EngManager"))
+                    //if (userRoleNames.Contains("EngManager") && !userRoleNames.Contains("Eng"))
+                    //{
+                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
+                    //}
+
+                    if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
                     {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
 
-                    if (userRoleNames.Contains("Eng"))
+                    if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
                     {
-
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId && t.StatusId == statusId).ToList();
-
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
+
+
 
                     if (userRoleNames.Contains("AssetOwner"))
                     {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId && t.StatusId == statusId).ToList();
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
                     if (userRoleNames.Contains("DE"))
                     {
@@ -559,13 +564,21 @@ namespace Asset.Core.Repositories
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    if (userRoleNames.Contains("EngDepManager"))
+                    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    if (userRoleNames.Contains("EngManager"))
+                    //if (userRoleNames.Contains("EngManager"))
+                    //{
+                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    //}
+                    if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
                     {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    }
+                    if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
                     if (userRoleNames.Contains("AssetOwner"))
                     {
@@ -573,7 +586,7 @@ namespace Asset.Core.Repositories
                     }
                     if (userRoleNames.Contains("Eng"))
                     {
-                        //      list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
 
                     if (userRoleNames.Contains("DE"))
@@ -588,8 +601,8 @@ namespace Asset.Core.Repositories
                 }
             }
 
-            if(statusId ==0)
-            { 
+            if (statusId == 0)
+            {
                 list = list.ToList();
             }
             else
@@ -1403,7 +1416,7 @@ namespace Asset.Core.Repositories
                     getDataObj.ModeName = req.RequestMode.Name;
                     getDataObj.ModeNameAr = req.RequestMode.NameAr;
                     getDataObj.SubProblemId = req.SubProblem != null ? (int)req.SubProblemId : 0;
-                    getDataObj.SubProblemName = req.SubProblem != null? req.SubProblem.Name:"";
+                    getDataObj.SubProblemName = req.SubProblem != null ? req.SubProblem.Name : "";
                     getDataObj.RequestTypeId = req.RequestTypeId != null ? (int)req.RequestTypeId : 0;
                     getDataObj.RequestTypeName = req.RequestType.Name;
                     getDataObj.RequestPeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
@@ -1436,7 +1449,7 @@ namespace Asset.Core.Repositories
                         getDataObj.StatusIcon = lstStatus[0].RequestStatus.Icon;
                     }
 
-                   
+
                     getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
                                             .ToList().Select(item => new IndexRequestTrackingVM.GetData
                                             {
@@ -1458,7 +1471,7 @@ namespace Asset.Core.Repositories
                 if (statusId == 0)
                     request = request.ToList();
                 else
-                    request = request.Where(a=>a.StatusId == statusId).ToList();
+                    request = request.Where(a => a.StatusId == statusId).ToList();
 
                 if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
                 {
@@ -1586,8 +1599,8 @@ namespace Asset.Core.Repositories
                 }
             }
 
-            
-         
+
+
             return request;
         }
         public IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj)
@@ -1887,10 +1900,10 @@ namespace Asset.Core.Repositories
                 printSRObj.RequestTypeNameAr = requestObj.RequestType.NameAr;
                 printSRObj.ModeName = requestObj.RequestMode.Name;
                 printSRObj.ModeNameAr = requestObj.RequestMode.NameAr;
-                printSRObj.SubProblemName = requestObj.SubProblem != null ? requestObj.SubProblem.Name:"";
-                printSRObj.SubProblemNameAr = requestObj.SubProblem != null ? requestObj.SubProblem.NameAr:"";
-                printSRObj.ProblemName = requestObj.SubProblem != null ? requestObj.SubProblem.Problem.Name:"";
-                printSRObj.ProblemNameAr = requestObj.SubProblem != null ? requestObj.SubProblem.Problem.NameAr:"";
+                printSRObj.SubProblemName = requestObj.SubProblem != null ? requestObj.SubProblem.Name : "";
+                printSRObj.SubProblemNameAr = requestObj.SubProblem != null ? requestObj.SubProblem.NameAr : "";
+                printSRObj.ProblemName = requestObj.SubProblem != null ? requestObj.SubProblem.Problem.Name : "";
+                printSRObj.ProblemNameAr = requestObj.SubProblem != null ? requestObj.SubProblem.Problem.NameAr : "";
 
                 printSRObj.HospitalId = requestObj.AssetDetail.HospitalId;
                 printSRObj.HospitalName = requestObj.AssetDetail.Hospital.Name;

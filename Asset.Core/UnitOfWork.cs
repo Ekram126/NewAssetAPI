@@ -80,6 +80,7 @@ namespace Asset.Core
         private HospitalHoldReasonRepositories _hospitalHoldReasonRepositories;
         private HospitalApplicationRepositories _hospitalApplicationRepositories;
 
+        private HospitalReasonTransactionRepositories _hospitalReasonTransactionRepositories;
 
         private ApplicationDbContext _context;
 
@@ -234,6 +235,8 @@ namespace Asset.Core
         public IPagingRepository pagingRepository => _pagingRepository = _pagingRepository ?? new PagingRepository(_context);
 
         public IGroupingRepository groupingRepository => _groupingRepository = _groupingRepository ?? new GroupingRepository(_context);
+
+        public IHospitalReasonTransactionRepository HospitalReasonTransactionRepository => _hospitalReasonTransactionRepositories = _hospitalReasonTransactionRepositories ?? new HospitalReasonTransactionRepositories(_context);
     }
 }
 

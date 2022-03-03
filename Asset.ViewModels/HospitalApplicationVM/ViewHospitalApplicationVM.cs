@@ -24,6 +24,8 @@ namespace Asset.ViewModels.HospitalApplicationVM
         public List<HospitalExecludeReason> ReasonNames { get; set; }
         public List<HospitalHoldReason> HoldReasonNames { get; set; }
 
+    
+
         public int HospitalId { get; set; }
 
         public string assetName { get; set; }

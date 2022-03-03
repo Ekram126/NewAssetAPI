@@ -12,9 +12,9 @@ namespace Asset.Models
 
         public int Id { get; set; }
 
-        public int? HospitalApplicationId { get; set; }
-        [ForeignKey("HospitalApplicationId")]
-        public virtual HospitalApplication HospitalApplication { get; set; }
+        public int? HospitalReasonTransactionId { get; set; }
+        [ForeignKey("HospitalReasonTransactionId")]
+        public virtual HospitalReasonTransaction HospitalReasonTransaction { get; set; }
 
 
 

@@ -143,20 +143,20 @@ namespace Asset.Core.Repositories
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
-                    if (lstRoleNames.Contains("EngDepManager"))
+                    //if (lstRoleNames.Contains("EngDepManager"))
+                    //{
+                    //    workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    //}
+                    if (lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
-                    if (lstRoleNames.Contains("EngManager"))
-                    {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    }
-                    if (lstRoleNames.Contains("Eng"))
+                    if (lstRoleNames.Contains("Eng") && !lstRoleNames.Contains("EngDepManager"))
                     {
                         List<WorkOrder> list = new List<WorkOrder>();
                         var lstEngWorkorders = _context.WorkOrderTrackings.Include(a => a.WorkOrder)
                             .Where(t => t.AssignedTo == userId && t.WorkOrder.Request.AssetDetail.Hospital.Id == UserObj.HospitalId)
-                            .Select(a=>a.WorkOrder).ToList().GroupBy(a=>a.Id).ToList();
+                            .Select(a => a.WorkOrder).ToList().GroupBy(a => a.Id).ToList();
                         foreach (var item in lstEngWorkorders)
                         {
                             WorkOrder workOrderObj = new WorkOrder();
@@ -166,6 +166,12 @@ namespace Asset.Core.Repositories
                         }
                         workorders = list.ToList();
                     }
+                    if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+                    {
+                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    }
+
+
                     if (lstRoleNames.Contains("AssetOwner"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
@@ -181,23 +187,27 @@ namespace Asset.Core.Repositories
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
-                    if (lstRoleNames.Contains("EngDepManager"))
+                    if (lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
-                    if (lstRoleNames.Contains("EngManager"))
-                    {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    }
+                    //if (lstRoleNames.Contains("EngManager"))
+                    //{
+                    //    workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    //}
                     if (lstRoleNames.Contains("AssetOwner"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
-                    if (lstRoleNames.Contains("Eng"))
+                    if (lstRoleNames.Contains("Eng") && !lstRoleNames.Contains("EngDepManager"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
-
+                    if (lstRoleNames.Contains("Eng") && lstRoleNames.Contains("EngDepManager"))
+                    {
+                        //  workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    }
                 }
 
 
@@ -331,7 +341,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexWorkOrderStatusVM> SortWOStatuses(SortWorkOrderStatusVM sortObj)
         {
-            var lstWOStatuses= GetAll().ToList();
+            var lstWOStatuses = GetAll().ToList();
             if (sortObj.Code != "")
             {
                 if (sortObj.SortStatus == "descending")

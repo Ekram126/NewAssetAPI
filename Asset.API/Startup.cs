@@ -68,7 +68,7 @@ namespace Asset.API
             services.AddScoped<IHospitalApplicationService, HospitalApplicationService>();
             services.AddScoped<IHospitalExecludeReasonService, HospitalExecludeReasonService>();
             services.AddScoped<IHospitalHoldReasonService, HospitalHoldReasonService>();
-
+            services.AddScoped<IHospitalReasonTransactionService, HospitalReasonTransactionService>();
             services.AddScoped<IApplicationTypeService, ApplicationTypeService>();
 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Asset.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Asset.ViewModels.HospitalReasonTransactionVM
     {
         public int Id { get; set; }
         public int? HospitalApplicationId { get; set; }
-        public int? ReasonId { get; set; }
-   
+        public int ReasonId { get; set; }
+      //  public List<int> ReasonIds { get; set; }
     }
 }
