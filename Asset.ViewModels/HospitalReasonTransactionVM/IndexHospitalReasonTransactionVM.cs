@@ -12,7 +12,8 @@ namespace Asset.ViewModels.HospitalReasonTransactionVM
         public List<GetData> Results { get; set; }
         public class GetData
         {
-  
+
+            public int ReasonId { get; set; }
             public string ReasonName { get; set; }
             public string ReasonNameAr { get; set; }
 

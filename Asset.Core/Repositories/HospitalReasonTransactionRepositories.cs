@@ -96,6 +96,7 @@ namespace Asset.Core.Repositories
                     {
                         if (_context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).ToList().Count > 0)
                         {
+                            getDataObj.ReasonId = _context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Id;
                             getDataObj.ReasonName = _context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Name;
                             getDataObj.ReasonNameAr = _context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().NameAr;
                             getDataObj.Attachments = lstAttachments;
@@ -106,6 +107,7 @@ namespace Asset.Core.Repositories
                     {
                         if (_context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).ToList().Count > 0)
                         {
+                            getDataObj.ReasonId = _context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Id;
                             getDataObj.ReasonName = _context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Name;
                             getDataObj.ReasonNameAr = _context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().NameAr;
                             getDataObj.Attachments = lstAttachments;
