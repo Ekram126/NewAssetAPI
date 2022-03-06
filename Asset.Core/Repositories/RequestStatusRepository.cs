@@ -132,17 +132,18 @@ namespace Asset.Core.Repositories
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
-                if (lstRoleNames.Contains("EngDepManager"))
+                if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
-                if (lstRoleNames.Contains("EngManager"))
-                {
-                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                }
-                if (lstRoleNames.Contains("Eng"))
+                if (!lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                }
+
+                if (!lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
                 if (lstRoleNames.Contains("AssetOwner"))
                 {
@@ -159,11 +160,16 @@ namespace Asset.Core.Repositories
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
-                if (lstRoleNames.Contains("EngDepManager"))
+                if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
-                if (lstRoleNames.Contains("EngManager"))
+                if (!lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                }
+
+                if (!lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
@@ -171,10 +177,7 @@ namespace Asset.Core.Repositories
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-                if (lstRoleNames.Contains("Eng"))
-                {
-                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                }
+          
 
             }
 

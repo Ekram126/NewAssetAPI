@@ -11,22 +11,15 @@ using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.PMAssetTaskScheduleVM;
 using Asset.ViewModels.PmAssetTimeVM;
 using Asset.ViewModels.SupplierVM;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Data.Entity;
-using System.Net;
 using Asset.API.Helpers;
 
 
@@ -50,7 +43,7 @@ namespace Asset.API.Controllers
 
         [Obsolete]
         IHostingEnvironment _webHostingEnvironment;
-       // private object ComponentInfo;
+        // private object ComponentInfo;
 
         [Obsolete]
         public AssetDetailController(IAssetDetailService AssetDetailService, IAssetOwnerService assetOwnerService,
@@ -67,8 +60,6 @@ namespace Asset.API.Controllers
             _pagingService = pagingService;
             _qrController = qrController;
         }
-
-
         [HttpGet]
         [Route("ListAssetDetails")]
         public IEnumerable<IndexAssetDetailVM.GetData> GetAll()
@@ -82,25 +73,18 @@ namespace Asset.API.Controllers
             var HospitalAssets = _AssetDetailService.GetAll().ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, HospitalAssets);
         }
-
-
-
-
         [HttpGet]
         [Route("ListAssetDetailCarouselByUserId/{userId}")]
         public async Task<IEnumerable<IndexAssetDetailVM.GetData>> ListAssetDetailCarouselByUserId(string userId)
         {
             return await _AssetDetailService.GetAssetDetailsByUserId(userId);
         }
-
-
         [HttpGet]
         [Route("AutoCompleteAssetBarCode/{barcode}/{hospitalId}")]
         public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId)
         {
-            return _AssetDetailService.AutoCompleteAssetBarCode(barcode,hospitalId);
+            return _AssetDetailService.AutoCompleteAssetBarCode(barcode, hospitalId);
         }
-
         [HttpGet]
         [Route("getcount/{userId}")]
         public int count(string userId)
@@ -113,19 +97,12 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.GetAllSerialsByMasterAssetIdAndHospitalId(masterAssetId, hospitalId);
         }
-
-
-
         [HttpGet]
         [Route("GetAllAssetDetailsByHospitalId/{hospitalId}")]
         public IEnumerable<AssetDetail> GetAllAssetDetailsByHospitalId(int hospitalId)
         {
             return _AssetDetailService.GetAllAssetDetailsByHospitalId(hospitalId);
         }
-
-
-
-
         [HttpPost]
         [Route("GetAllAssetsByStatusId/{userId}/{statusId}")]
         public IEnumerable<IndexAssetDetailVM.GetData> GetAllRequestsByStatusId(int statusId, string userId, PagingParameter pageInfo)
@@ -135,23 +112,16 @@ namespace Asset.API.Controllers
         }
         [HttpPost]
         [Route("GetAllAssetsCountByStatusId/{userId}/{statusId}")]
-        public int GetCountByStatusId(int statusId,string userId)
+        public int GetCountByStatusId(int statusId, string userId)
         {
             return _AssetDetailService.GetAllAssetsByStatusId(statusId, userId).ToList().Count;
         }
-
-
-
-
         [HttpPost]
         [Route("SearchAssetDetailsByHospitalId")]
         public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetDetailsByHospitalId(SearchMasterAssetVM model)
         {
             return _AssetDetailService.SearchAssetInHospitalByHospitalId(model);
         }
-
-
-
         [HttpPost]
         [Route("SearchAssetDetails/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexAssetDetailVM.GetData> SearchInMasterAssets(int pagenumber, int pagesize, SearchMasterAssetVM searchObj)
@@ -162,7 +132,6 @@ namespace Asset.API.Controllers
             var list = _AssetDetailService.SearchAssetInHospital(searchObj).ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
         }
-
         [HttpPost]
         [Route("SearchAssetDetailsCount")]
         public int SearchInMasterAssetsCount(SearchMasterAssetVM searchObj)
@@ -170,61 +139,42 @@ namespace Asset.API.Controllers
             int count = _AssetDetailService.SearchAssetInHospital(searchObj).ToList().Count();
             return count;
         }
-
-
-
-
         [HttpGet]
         [Route("GetAssetDetailsByAssetId/{assetId}")]
         public IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByAssetId(int assetId)
         {
             return _AssetDetailService.GetAssetDetailsByAssetId(assetId);
         }
-
-
         [HttpGet]
         [Route("GetDateByAssetDetailId/{assetDetailId}")]
         public IEnumerable<PMAssetTime> GetDateByAssetDetailId(int assetDetailId)
         {
             return _pMAssetTimeService.GetDateByAssetDetailId(assetDetailId);
         }
-
-
-
-
-
         [HttpGet]
         [Route("GetById/{id}")]
         public ActionResult<EditAssetDetailVM> GetById(int id)
         {
             return _AssetDetailService.GetById(id);
         }
-
-
         [HttpGet]
         [Route("ViewAssetDetailByMasterId/{masterId}")]
         public ActionResult<ViewAssetDetailVM> ViewAssetDetailByMasterId(int masterId)
         {
             return _AssetDetailService.ViewAssetDetailByMasterId(masterId);
         }
-
         [HttpGet]
         [Route("ViewAllAssetDetailByMasterId/{MasterAssetId}")]
         public IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId)
         {
             return _AssetDetailService.ViewAllAssetDetailByMasterId(MasterAssetId);
         }
-
-
-
         [HttpGet]
         [Route("GetListOfAssetDetailsByHospitalId/{hospitalId}")]
         public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId)
         {
             return _AssetDetailService.GetListOfAssetDetailsByHospitalId(hospitalId);
         }
-
-
         [HttpGet]
         [Route("GetAssetDetailsByUserId/{userId}")]
         public async Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetDetailsByUserId(string userId)
@@ -244,7 +194,6 @@ namespace Asset.API.Controllers
             var AssetDetail = _AssetDetailService.GetAssetDetailsByUserId(userId).Result.ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, AssetDetail);
         }
-
         [HttpGet]
         [Route("GetAllPMAssetTaskSchedules/{hospitalId}")]
         public IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId)
@@ -258,20 +207,15 @@ namespace Asset.API.Controllers
         {
             try
             {
-
                 int updatedRow = _AssetDetailService.Update(AssetDetailVM);
-
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 string msg = ex.Message;
                 return BadRequest("Error in update");
             }
-
             return Ok();
         }
-
-
         [HttpPost]
         [Route("AddAssetDetail")]
         public ActionResult<AssetDetail> Add(CreateAssetDetailVM AssetDetailVM)
@@ -280,8 +224,8 @@ namespace Asset.API.Controllers
             _qrController.Index(AssetDetailVM.Id);
             CreateAssetDetailAttachmentVM qrAttach = new CreateAssetDetailAttachmentVM();
             qrAttach.AssetDetailId = AssetDetailVM.Id;
-            qrAttach.FileName = "equipment-" + AssetDetailVM.Id+".png";
-           CreateAssetDetailAttachments(qrAttach);
+            qrAttach.FileName = "equipment-" + AssetDetailVM.Id + ".png";
+            CreateAssetDetailAttachments(qrAttach);
             return Ok(new { assetId = savedId });
 
         }
@@ -294,11 +238,11 @@ namespace Asset.API.Controllers
             {
                 var assetObj = _AssetDetailService.GetById(id);
                 var lstMovements = _assetMovementService.GetMovementByAssetDetailId(id).ToList();
-                if(lstMovements.Count > 0)
+                if (lstMovements.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "move", Message = "You cannot delete this asset it has movement", MessageAr = "لا يمكن مسح هذا الأصل لأن له حركات في المستشفى" });
-                }              
-                var lstRequests = _requestService.GetAllRequestsByAssetId(id,int.Parse( assetObj.HospitalId.ToString())).ToList();
+                }
+                var lstRequests = _requestService.GetAllRequestsByAssetId(id, int.Parse(assetObj.HospitalId.ToString())).ToList();
                 if (lstRequests.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "request", Message = "You cannot delete this asset it has requests", MessageAr = "لا يمكن مسح هذا الأصل لأن له بلاغات صيانة " });
@@ -443,20 +387,13 @@ namespace Asset.API.Controllers
             var list = await _AssetDetailService.SortAssets(sortObj);
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list.ToList());
         }
-
-      [HttpGet]
+        [HttpGet]
         [Route("GetAssetsByAgeGroup/{hospitalId}")]
-        public  List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)
+        public List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)
         {
-            var list =  _AssetDetailService.GetAssetsByAgeGroup(hospitalId);
+            var list = _AssetDetailService.GetAssetsByAgeGroup(hospitalId);
             return list;
         }
-
-
-
-
-
-
         [HttpPost]
         [Route("GetGeneralAssetsByAgeGroup")]
         public List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge model)
@@ -464,201 +401,5 @@ namespace Asset.API.Controllers
             var list = _AssetDetailService.GetGeneralAssetsByAgeGroup(model);
             return list;
         }
-
-
-
-
-        //public static int cols = 0;
-
-        //public static int rows = 0;
-        //[HttpGet]
-        //[Route("GenerateQRCode")]
-        //[Obsolete]
-        //public ActionResult GenerateQRCode()
-        //{
-
-        //    //DataTable dt = new DataTable();
-        //    //dt.Columns.AddRange(new DataColumn[5] { new DataColumn("LastName"), new DataColumn("FatherName"), new DataColumn("Adress"), new DataColumn("Name"), new DataColumn("Birthday") });
-        //    //dt.Rows.Add("Pulodov", "Abdulloevich", "city Dushanbe", "Rustam", "22.12.1987");
-        //    //string col1 = "LastName: " + dt.Rows[0]["LastName"].ToString() + '\n' + "Name: " + dt.Rows[0]["Name"].ToString();
-        //    //string col2 = "FatherName: " + dt.Rows[0]["FatherName"].ToString() + '\n' + "Birthday: " + dt.Rows[0]["Birthday"].ToString();
-        //    //string col3 = "Adress: " + dt.Rows[0]["Adress"].ToString();
-        //    //  string[,] data = new string[1, 3] { { col1, col2, col3 } };
-
-
-        //    string strDate = DateTime.Today.Day + DateTime.Today.Month + DateTime.Today.Year + DateTime.Now.Hour + DateTime.Now.Minute.ToString() + DateTime.Now.Millisecond.ToString();
-        //    string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/Qr_" + strDate + ".docx";
-        //    if (!System.IO.File.Exists(path))
-        //    {
-        //        var fs = System.IO.File.Create(path);
-        //        fs.Close();
-        //    }
-        //    using (WordprocessingDocument doc = WordprocessingDocument.Create(path, WordprocessingDocumentType.Document))
-        //    {
-        //        MainDocumentPart mainDocumentPart = doc.AddMainDocumentPart();
-        //        mainDocumentPart.Document = new Document();
-        //        Body body = mainDocumentPart.Document.AppendChild(new Body());
-
-
-        //        List<IndexAssetDetailVM.GetData> lstQRs = _AssetDetailService.GetAll().ToList();
-        //        cols = 3;
-        //        rows = lstQRs.Count / 3;
-        //        //foreach (var item in lstQRs)
-        //        //{
-        //        //AddTable(path, new string[,] { { item.QrFilePath } }, mainDocumentPart.Document);
-        //        //}
-
-        //        //  WordprocessingDocument myDoc = WordprocessingDocument.Open(path, true);
-
-        //        //var docPart = doc.MainDocumentPart;
-        //        //var doc1 = docPart.Document;
-        //        var table = new Table();
-
-        //        var tb = new TopBorder();
-        //        tb.Val = BorderValues.DashDotStroked;
-        //        tb.Size = 12;
-
-        //        var borders = new TableBorders();
-        //        borders.TopBorder = tb;
-
-        //        borders.LeftBorder = new LeftBorder() { Val = BorderValues.Single, Size = 12 };
-        //        borders.RightBorder = new RightBorder() { Val = BorderValues.Single };
-        //        borders.BottomBorder = new BottomBorder() { Val = BorderValues.Single };
-        //        borders.InsideHorizontalBorder = new InsideHorizontalBorder() { Val = BorderValues.Single };
-        //        borders.InsideVerticalBorder = new InsideVerticalBorder() { Val = BorderValues.Single };
-
-        //        //var props = new TableProperties();
-        //        //props.Append(borders);
-
-        //        //table.Append(props);
-
-
-        //        //QRCodeDecoderLibrary.QRDecoder QRCodeDecoder;
-
-        //        //foreach (var c in lstQRs)
-        //        //{
-        //        //    var tr = new TableRow();
-        //        //    var customerName = c.QrFilePath;
-
-        //        //    var tc = new TableCell();
-
-        //        //    var runProp = new RunProperties();
-        //        //    runProp.Append(new Bold());
-        //        //    runProp.Append(new Color() { Val = "FF0000" });
-
-        //        //    var run = new Run();
-        //        //    run.Append(runProp);
-
-        //        //    var t = new Text(customerName);
-        //        //    run.Append(t);
-
-        //        //    //var img = new ImagePart();
-        //        //    //run.Append(img);
-
-        //        //    QRCodeDecoder = new QRCodeDecoderLibrary.QRDecoder();
-        //        //    string decoded = "";
-        //        //    System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(c.QrFilePath);
-        //        //    try
-        //        //    {
-        //        //        byte[][] DataByteArray = QRCodeDecoder.ImageDecoder(bitmap);
-        //        //        decoded = QRCodeResult(DataByteArray);
-        //        //    }
-        //        //    catch (Exception ex)
-        //        //    {
-        //        //        Program.WriteToLogFile(ex.ToString());
-        //        //    }
-        //        //    finally
-        //        //    {
-        //        //        bitmap.Dispose();
-        //        //    }
-
-
-
-        //        //    var justification = new Justification();
-        //        //    justification.Val = JustificationValues.Center;
-        //        //    var paraProps = new ParagraphProperties(justification);
-
-        //        //    var p = new Paragraph();
-        //        //    p.Append(paraProps);
-        //        //    p.Append(run);
-        //        //    tc.Append(p);
-
-        //        //    var tcp = new TableCellProperties();
-        //        //    var tcw = new TableCellWidth();
-        //        //    tcw.Type = TableWidthUnitValues.Dxa;
-        //        //    tcw.Width = "2000";
-        //        //    tcp.Append(tcw);
-        //        //    tc.Append(tcp);
-        //        //    tr.Append(tc);
-        //        //    table.Append(tr);
-        //        //}
-        //        //body.Append(table);
-        //        //doc.Save();
-
-
-
-
-        //    }
-        //    return Ok();
-        //}
-
-
-        //public static void AddTable(string fileName, string[,] data, Document doc)
-        //{
-
-        //    var document = doc.MainDocumentPart.Document;
-        //    DocumentFormat.OpenXml.Wordprocessing.Table table = new DocumentFormat.OpenXml.Wordprocessing.Table();
-        //    TableProperties props = new TableProperties(
-        //        new TableBorders(
-        //            new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-        //            new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-        //            new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-        //            new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-        //            new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
-        //            new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 }
-        //        ));
-        //    table.ClearAllAttributes();
-        //    table.AppendChild<TableProperties>(props);
-        //    for (var i = 0; i <= cols; i++)
-        //    {
-        //        var tr = new DocumentFormat.OpenXml.Wordprocessing.TableRow();
-        //        for (var j = 0; j <= rows; j++)
-        //        {
-        //            var tc = new DocumentFormat.OpenXml.Wordprocessing.TableCell();
-        //            string[] datas = data[i, j].ToString().Split('\n');
-        //            for (int k = 0; k < datas.Length; k++)
-        //            {
-        //                tc.Append(new Paragraph(new Run(new Text(datas[k]))));
-        //                tc.Append(new TableCellProperties(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
-        //            }
-        //            tc.Append(new TableCellProperties(new TableCellWidth { Type = TableWidthUnitValues.Auto }));
-        //            tr.Append(tc);
-        //        }
-        //        table.Append(tr);
-        //    }
-
-
-
-        //    //for (var i = 0; i <= data.GetUpperBound(0); i++)
-        //    //{
-        //    //    var tr = new DocumentFormat.OpenXml.Wordprocessing.TableRow();
-        //    //    for (var j = 0; j <= data.GetUpperBound(1); j++)
-        //    //    {
-        //    //        var tc = new DocumentFormat.OpenXml.Wordprocessing.TableCell();
-        //    //        string[] datas = data[i, j].ToString().Split('\n');
-        //    //        for (int k = 0; k < datas.Length; k++)
-        //    //        {
-        //    //            tc.Append(new Paragraph(new Run(new Text(datas[k]))));
-        //    //            tc.Append(new TableCellProperties(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
-        //    //        }
-        //    //        tc.Append(new TableCellProperties(new TableCellWidth { Type = TableWidthUnitValues.Auto }));
-        //    //        tr.Append(tc);
-        //    //    }
-        //    //    table.Append(tr);
-        //    //}
-        //    document.Body.Append(table);
-        //    document.Save();
-
-        //}
     }
 }
