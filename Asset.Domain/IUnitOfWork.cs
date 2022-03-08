@@ -30,6 +30,8 @@ namespace Asset.Domain
         ISupplierHoldReasonRepository SupplierHoldReasonRepository { get; }
         ISupplierExecludeReasonRepository SupplierExecludeReasonRepository { get; }
         ISupplierExecludeAssetRepository SupplierExecludeAssetRepository { get; }
+
+        ISupplierExecludeRepository SupplierExecludeRepository{ get; }
         IHospitalReasonTransactionRepository HospitalReasonTransactionRepository { get; }
 
         IApplicationTypeRepository ApplicationTypeRepository { get; }

@@ -22,6 +22,7 @@ namespace Asset.Domain.Repositories
         int UpdateExcludedDate(EditSupplierExecludeAssetVM execludeAssetObj);
         int Delete(int id);
 
+        GenerateSupplierExecludeAssetNumberVM GenerateSupplierExecludeAssetNumber();
 
         IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(SortSupplierExecludeAssetVM sortObj);
         int CreateSupplierExecludAttachments(SupplierExecludeAttachment attachObj);

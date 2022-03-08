@@ -31,5 +31,9 @@ namespace Asset.Domain.Services
         int DeleteHospitalApplicationAttachment(int id);
         IEnumerable<IndexHospitalApplicationVM.GetData> SortHospitalApp(SortHospitalApplication sortObj);
 
+
+        IEnumerable<IndexHospitalApplicationVM.GetData> GetHospitalApplicationByDate(SearchHospitalApplicationVM searchObj);
+        GeneratedHospitalApplicationNumberVM GenerateHospitalApplicationNumber();
+
     }
 }

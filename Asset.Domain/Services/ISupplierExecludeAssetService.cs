@@ -23,7 +23,7 @@ namespace Asset.Domain.Services
         int Delete(int id);
 
 
-
+        GenerateSupplierExecludeAssetNumberVM GenerateSupplierExecludeAssetNumber();
         IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(SortSupplierExecludeAssetVM sortObj);
         int CreateSupplierExecludAttachments(SupplierExecludeAttachment attachObj);
         IEnumerable<SupplierExecludeAttachment> GetAttachmentBySupplierExecludeAssetId(int assetId);

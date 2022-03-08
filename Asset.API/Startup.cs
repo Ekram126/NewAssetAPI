@@ -96,6 +96,9 @@ namespace Asset.API
             services.AddScoped<ISupplierHoldReasonService, SupplierHoldReasonService>();
             services.AddScoped<ISupplierExecludeReasonService, SupplierExecludeReasonService>();
             services.AddScoped<ISupplierExecludeAssetService, SupplierExecludeAssetService>();
+            services.AddScoped<ISupplierExecludeService, SupplierExecludeService>();
+
+
             services.AddTransient<IRequestService, RequestService>();
             services.AddTransient<IRequestModeService, RequestModeService>();
             services.AddTransient<IRequestPeriorityService, RequestPeriorityService>();

@@ -81,7 +81,7 @@ namespace Asset.Core
         private HospitalApplicationRepositories _hospitalApplicationRepositories;
 
         private HospitalReasonTransactionRepositories _hospitalReasonTransactionRepositories;
-
+        private ISupplierExecludeRepository _supplierExecludeRepository;
         private ApplicationDbContext _context;
 
         public UnitOfWork(ApplicationDbContext context)
@@ -237,6 +237,8 @@ namespace Asset.Core
         public IGroupingRepository groupingRepository => _groupingRepository = _groupingRepository ?? new GroupingRepository(_context);
 
         public IHospitalReasonTransactionRepository HospitalReasonTransactionRepository => _hospitalReasonTransactionRepositories = _hospitalReasonTransactionRepositories ?? new HospitalReasonTransactionRepositories(_context);
+
+        public ISupplierExecludeRepository SupplierExecludeRepository => _supplierExecludeRepository= _supplierExecludeRepository ?? new SupplierExecludeRepositories(_context);
     }
 }
 

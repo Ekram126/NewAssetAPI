@@ -43,6 +43,11 @@ namespace Asset.Core.Services
             return _unitOfWork.SupplierExecludeAssetRepository.DeleteSupplierExecludeAttachment(id);
         }
 
+        public GenerateSupplierExecludeAssetNumberVM GenerateSupplierExecludeAssetNumber()
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.GenerateSupplierExecludeAssetNumber();
+        }
+
         public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetAll()
         {
             return _unitOfWork.SupplierExecludeAssetRepository.GetAll();

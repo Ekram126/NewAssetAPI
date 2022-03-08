@@ -12,9 +12,9 @@ namespace Asset.Models
 
         public int Id { get; set; }
 
-        public int? SupplierExecludeAssetId { get; set; }
-        [ForeignKey("SupplierExecludeAssetId")]
-        public virtual SupplierExecludeAsset SupplierExecludeAsset { get; set; }
+        public int? SupplierExecludeId { get; set; }
+        [ForeignKey("SupplierExecludeId")]
+        public virtual SupplierExeclude SupplierExeclude { get; set; }
 
 
 

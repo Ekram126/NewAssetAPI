@@ -42,8 +42,8 @@ namespace Asset.API.Controllers
         [Route("ListEmployeesWithPaging")]
         public IEnumerable<IndexEmployeeVM.GetData> ListEmployeesWithPaging(PagingParameter pageInfo)
         {
-            var emps= _EmployeeService.GetAll().ToList();
-            return _pagingService.GetAll<IndexEmployeeVM.GetData>(pageInfo,emps);
+            var emps = _EmployeeService.GetAll().ToList();
+            return _pagingService.GetAll<IndexEmployeeVM.GetData>(pageInfo, emps);
         }
         [HttpGet]
         [Route("getcount")]
@@ -52,6 +52,8 @@ namespace Asset.API.Controllers
             return _pagingService.Count<Employee>();
         }
 
+
+
         [HttpGet]
         [Route("GetEmployeesByHospitalId/{hospitalId}")]
         public IEnumerable<Employee> GetEmployeesByHospitalId(int hospitalId)
@@ -59,7 +61,12 @@ namespace Asset.API.Controllers
             return _EmployeeService.GetEmployeesByHospitalId(hospitalId);
         }
 
-
+        [HttpGet]
+        [Route("GetEmployeesEngineersByHospitalId/{hospitalId}")]
+        public IEnumerable<EmployeeEngVM> GetEmployeesEngineersByHospitalId(int hospitalId)
+        {
+            return _EmployeeService.GetEmployeesEngineersByHospitalId(hospitalId);
+        }
 
         [HttpGet]
         [Route("GetEmployeesAssetOwnerByHospitalId/{hospitalId}")]
@@ -90,9 +97,9 @@ namespace Asset.API.Controllers
 
         [HttpGet]
         [Route("GetEmployeesAssetOwnerByHospitalAndAssetDetailId/{hospitalId}/{assetDetailId}")]
-        public IEnumerable<Employee> GetEmployeesAssetOwnerByHospitalId(int hospitalId,int assetDetailId)
+        public IEnumerable<Employee> GetEmployeesAssetOwnerByHospitalId(int hospitalId, int assetDetailId)
         {
-            return _EmployeeService.GetEmployeesAssetOwnerByHospitalId(hospitalId,assetDetailId);
+            return _EmployeeService.GetEmployeesAssetOwnerByHospitalId(hospitalId, assetDetailId);
         }
 
 

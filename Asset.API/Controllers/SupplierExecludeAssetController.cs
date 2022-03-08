@@ -3,6 +3,7 @@ using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.SupplierExecludeAssetVM;
+using Asset.ViewModels.SupplierExecludeVM;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,14 +22,15 @@ namespace Asset.API.Controllers
     {
 
         private ISupplierExecludeAssetService _supplierExecludeAssetService;
+        private ISupplierExecludeService _supplierExecludeService;
         IWebHostEnvironment _webHostingEnvironment;
         private IPagingService _pagingService;
-        public SupplierExecludeAssetController(ISupplierExecludeAssetService supplierExecludeAssetService, IPagingService pagingService, IWebHostEnvironment webHostingEnvironment)
+        public SupplierExecludeAssetController(ISupplierExecludeAssetService supplierExecludeAssetService, ISupplierExecludeService supplierExecludeService, IPagingService pagingService, IWebHostEnvironment webHostingEnvironment)
         {
             _supplierExecludeAssetService = supplierExecludeAssetService;
+            _supplierExecludeService = supplierExecludeService;
             _webHostingEnvironment = webHostingEnvironment;
             _pagingService = pagingService;
-
         }
 
 
@@ -124,7 +126,12 @@ namespace Asset.API.Controllers
 
 
 
-
+        [HttpGet]
+        [Route("GenerateSupplierExecludeAssetNumber")]
+        public GenerateSupplierExecludeAssetNumberVM GenerateSupplierExecludeAssetNumber()
+        {
+            return _supplierExecludeAssetService.GenerateSupplierExecludeAssetNumber();
+        }
         [HttpGet]
         [Route("GetById/{id}")]
         public ActionResult<EditSupplierExecludeAssetVM> GetById(int id)
@@ -228,9 +235,16 @@ namespace Asset.API.Controllers
         public ActionResult UploadSupplierExecludeAssetFiles(IFormFile file)
         {
             string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SupplierExecludeAssets/" + file.FileName;
-            Stream stream = new FileStream(path, FileMode.Create);
-            file.CopyTo(stream);
-            stream.Close();
+            if (System.IO.File.Exists(path))
+            {
+
+            }
+            else
+            {
+                Stream stream = new FileStream(path, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
             return StatusCode(StatusCodes.Status201Created);
         }
 
@@ -247,6 +261,15 @@ namespace Asset.API.Controllers
         public int DeleteSupplierExecludeAssetAttachment(int id)
         {
             return _supplierExecludeAssetService.DeleteSupplierExecludeAttachment(id);
+        }
+
+
+
+        [HttpGet]
+        [Route("GetAttachmentBySupplierExcludeAssetId/{supplierExecludeAssetId}")]
+        public IEnumerable<IndexSupplierExecludeVM.GetData> GetAttachmentBySupplierExcludeAssetId(int supplierExecludeAssetId)
+        {
+            return _supplierExecludeService.GetAttachmentBySupplierExecludeAssetId(supplierExecludeAssetId);
         }
     }
 }

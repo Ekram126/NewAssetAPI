@@ -58,6 +58,11 @@ namespace Asset.Core.Services
             return _unitOfWork.EmployeeRepository.GetEmployeesByHospitalId(hospitalId);
         }
 
+        public List<EmployeeEngVM> GetEmployeesEngineersByHospitalId(int hospitalId)
+        {
+            return _unitOfWork.EmployeeRepository.GetEmployeesEngineersByHospitalId(hospitalId);
+        }
+
         public List<EmployeeEngVM> GetEmployeesHasEngDepManagerRoleInHospital(int hospitalId)
         {
             return _unitOfWork.EmployeeRepository.GetEmployeesHasEngDepManagerRoleInHospital(hospitalId);

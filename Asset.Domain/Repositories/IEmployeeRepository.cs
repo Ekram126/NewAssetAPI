@@ -13,6 +13,7 @@ namespace Asset.Domain.Repositories
 
         IEnumerable<IndexEmployeeVM.GetData> GetAll();
         List<Employee> GetEmployeesByHospitalId(int hospitalId);
+        List<EmployeeEngVM> GetEmployeesEngineersByHospitalId(int hospitalId);
         List<Employee> GetEmployeesAssetOwnerByHospitalId(int hospitalId);
         List<Employee> GetEmployeesAssetOwnerByHospitalId(int hospitalId,int assetDetailId);
         List<EmployeeEngVM> GetEmployeesHasEngDepManagerRoleInHospital(int hospitalId);

@@ -23,12 +23,17 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         {
             get; set;
         }
-       // [NotMapped]
+     
         public List<int> ReasonIds { get; set; }
         public List<int> HoldReasonIds { get; set; }
         public string assetName { get; set; }
-
         public string assetNameAr { get; set; }
+
+        public string HospitalName { get; set; }
+        public string HospitalNameAr { get; set; }
+
+        public string appTypeName { get; set; }
+        public string appTypeNameAr { get; set; }
 
         public string Comment { get; set; }
 

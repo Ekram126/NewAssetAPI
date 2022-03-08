@@ -194,11 +194,6 @@ namespace Asset.Core.Repositories
         {
 
             List<EmployeeEngVM> list = new List<EmployeeEngVM>();
-            //var lstEngineers = (from emp in _context.Employees
-            //                    join usr in _context.ApplicationUser on emp.Email equals usr.Email
-            //                    join role in _context.UserRoles on usr.RoleId equals role.RoleId
-            //                    where usr.HospitalId == hospitalId select usr).ToList().ToList();
-
             var lstEngineers = (from usr in _context.ApplicationUser
                                 join role in _context.UserRoles on usr.Id equals role.UserId
                                 where usr.HospitalId == hospitalId
@@ -230,13 +225,6 @@ namespace Asset.Core.Repositories
             }
 
             list = list.Where(a => a.roleName == "Eng").ToList();
-            //select new EmployeeEngVM
-            //{
-            //    Name = usr.UserName,
-            //    roleName = _context.ApplicationRole.Where(a => a.Id == role.RoleId).ToList().FirstOrDefault().Name,
-            //    UserId = usr.Id,
-            //    Id = emp.Id
-            //}).ToList().Where(a => a.roleName == "Eng").ToList();
             return list;
         }
 
@@ -384,6 +372,22 @@ namespace Asset.Core.Repositories
                 }
             }
             return list;
+        }
+
+        public List<EmployeeEngVM> GetEmployeesEngineersByHospitalId(int hospitalId)
+        {
+            var lstEngineers = (from emp in _context.Employees
+                                join usr in _context.ApplicationUser on emp.Email equals usr.Email
+                                join role in _context.ApplicationRole on usr.RoleId equals role.Id
+                                where usr.HospitalId == hospitalId
+                                select new EmployeeEngVM
+                                {
+                                    Name = usr.UserName,
+                                    roleName = role.Name,
+                                    UserId = usr.Id,
+                                    Id = emp.Id
+                                }).ToList().Where(a => a.roleName == "EngDepManager" || a.roleName == "Eng").ToList();
+            return lstEngineers;
         }
     }
 }

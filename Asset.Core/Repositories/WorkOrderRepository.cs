@@ -239,6 +239,7 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId, int statusId)
         {
             List<IndexWorkOrderVM> list = new List<IndexWorkOrderVM>();
+            List<IndexWorkOrderVM> listEngineer = new List<IndexWorkOrderVM>();
             ApplicationUser UserObj = new ApplicationUser();
             List<string> userRoleNames = new List<string>();
 
@@ -283,8 +284,9 @@ namespace Asset.Core.Repositories
                        .Where(a => a.WorkOrderId == item.Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList();
                 if (lstStatus.Count > 0)
                 {
+                    work.AssignedTo = lstStatus[0].AssignedTo;
+                    work.CreatedById = lstStatus[0].CreatedById;
                     work.WorkOrderStatusId = lstStatus[0].WorkOrderStatus.Id;
-
                     if (work.WorkOrderStatusId == 3 || work.WorkOrderStatusId == 4 || work.WorkOrderStatusId == 5)
                     {
                         var pendingStatus = _context.WorkOrderStatuses.Where(a => a.Id == 6).ToList().FirstOrDefault();
@@ -320,15 +322,11 @@ namespace Asset.Core.Repositories
 
                 list.Add(work);
             }
-
-
-
-
             if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
             {
                 list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
             }
-            if (userRoleNames.Contains("Eng")&& !userRoleNames.Contains("EngDepManager"))
+            if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
             {
                 List<IndexWorkOrderVM> listAssignedUsers = new List<IndexWorkOrderVM>();
                 var lstAssigned = (from wo in _context.WorkOrders
@@ -434,56 +432,7 @@ namespace Asset.Core.Repositories
 
             if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
             {
-               
-                var lstAssigned = (from wo in _context.WorkOrders
-                                   join trk in _context.WorkOrderTrackings on wo.Id equals trk.WorkOrderId
-                                   where trk.AssignedTo == userId
-                                   &&  trk.CreatedById == userId
-                                   select wo).ToList().GroupBy(a => a.Id).ToList();
-
-                foreach (var item in lstAssigned)
-                {
-                    IndexWorkOrderVM work = new IndexWorkOrderVM();
-                    work.Id = item.FirstOrDefault().Id;
-                    work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
-
-                    work.Subject = item.FirstOrDefault().Subject;
-                    work.RequestSubject = item.FirstOrDefault().Request.Subject;
-                    work.CreationDate = item.FirstOrDefault().CreationDate;
-                    work.Note = item.FirstOrDefault().Note;
-                    work.CreatedById = item.FirstOrDefault().CreatedById;
-                    work.CreatedBy = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().User.UserName;
-                    work.TypeName = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().Name;
-                    work.TypeNameAr = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().NameAr;
-                    work.WorkOrderPeriorityId = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().Id;
-                    work.PeriorityName = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().Name;
-                    work.PeriorityNameAr = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().NameAr;
-                    var lstStatus = _context.WorkOrderTrackings
-                           .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
-                           .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList();
-                    if (lstStatus.Count > 0)
-                    {
-                        work.StatusId = lstStatus[0].WorkOrderStatus.Id;
-                        work.WorkOrderStatusId = lstStatus[0].WorkOrderStatus.Id;
-                        work.StatusName = lstStatus[0].WorkOrderStatus.Name;
-                        work.StatusNameAr = lstStatus[0].WorkOrderStatus.NameAr;
-                        work.statusColor = lstStatus[0].WorkOrderStatus.Color;
-                        work.statusIcon = lstStatus[0].WorkOrderStatus.Icon;
-
-                    }
-
-                    var lstStatusIds = _context.WorkOrderTrackings
-                          .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().Select(a => a.WorkOrderStatusId).ToList();
-                    var exist = lstStatusIds.Contains(9);
-                    work.ExistStatusId = exist;
-                    work.ActualStartDate = item.FirstOrDefault().ActualStartDate;
-                    work.ActualEndDate = item.FirstOrDefault().ActualEndDate;
-                    //work.RequestId = item.FirstOrDefault().RequestId;
-                    work.RequestId = item.FirstOrDefault().RequestId != null ? (int)item.FirstOrDefault().RequestId : 0;
-                    work.HospitalId = item.FirstOrDefault().Request.AssetDetail.HospitalId;
-                    work.AssignedTo = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().AssignedTo;
-                    list.Add(work);
-                }
+                list = list.Where(a => a.CreatedById == userId && a.AssignedTo == userId).ToList();
             }
             if (statusId > 0)
                 list = list.Where(a => a.WorkOrderStatusId == statusId).ToList();
@@ -1469,7 +1418,7 @@ namespace Asset.Core.Repositories
             ApplicationUser UserObj = new ApplicationUser();
             ApplicationRole roleObj = new ApplicationRole();
             List<string> userRoleNames = new List<string>();
-     
+
             var obj = _context.ApplicationUser.Where(a => a.Id == woDateObj.UserId).ToList();
             if (obj.Count > 0)
             {
@@ -1569,11 +1518,15 @@ namespace Asset.Core.Repositories
                     {
                         list = list.ToList();
                     }
-                    if (userRoleNames.Contains("EngDepManager"))
+                    if (userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("Eng"))
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    if (userRoleNames.Contains("Eng"))
+                    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
                     {
                         list = list.Where(a => a.HospitalId == woDateObj.HospitalId && a.AssignedTo == woDateObj.UserId).ToList();
                     }

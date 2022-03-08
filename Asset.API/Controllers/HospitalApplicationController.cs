@@ -44,8 +44,12 @@ namespace Asset.API.Controllers
             var lstHospitalApplications = _hospitalApplicationService.GetAll().ToList();
             return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstHospitalApplications);
         }
-
-
+        [HttpGet]
+        [Route("GenerateHospitalApplicationNumber")]
+        public GeneratedHospitalApplicationNumberVM GenerateHospitalApplicationNumber()
+        {
+            return _hospitalApplicationService.GenerateHospitalApplicationNumber();
+        }
 
         [HttpPut]
         [Route("ListHospitalApplicationsWithPaging/{hospitalId}")]
@@ -62,6 +66,27 @@ namespace Asset.API.Controllers
 
             return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, list);
         }
+
+
+        [HttpPost]
+        [Route("GetHospitalApplicationByDate/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetHospitalApplicationByDate(int pagenumber, int pagesize, SearchHospitalApplicationVM searchObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var lstRequests = _hospitalApplicationService.GetHospitalApplicationByDate(searchObj).ToList();
+            return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstRequests);
+        }
+
+
+        [HttpPost]
+        [Route("CountGetHospitalApplicationByDate")]
+        public int CountGetHospitalApplicationByDate(SearchHospitalApplicationVM searchObj)
+        {
+            return _hospitalApplicationService.GetHospitalApplicationByDate(searchObj).ToList().Count;
+        }
+
 
 
         [HttpGet]

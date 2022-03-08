@@ -50,6 +50,12 @@ namespace Asset.Core.Repositories
                 ReasonIds = reasonIds,
                 HoldReasonIds = holdIds,
                 Comment = item.Comment,
+                appTypeName = item.ApplicationType.Name,
+                appTypeNameAr = item.ApplicationType.NameAr,
+
+                HospitalName = item.AssetDetail.Hospital.Name,
+                HospitalNameAr = item.AssetDetail.Hospital.NameAr,
+
                 assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
                 assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber
 
@@ -156,17 +162,18 @@ namespace Asset.Core.Repositories
                     _context.SupplierExecludeAssets.Add(supplierExecludeAssetObj);
                     _context.SaveChanges();
                     int id = supplierExecludeAssetObj.Id;
-                    if (model.ReasonIds.Count > 0)
-                    {
-                        foreach (var reasonId in model.ReasonIds)
-                        {
-                            SupplierExeclude supplierExecludeObj = new SupplierExeclude();
-                            supplierExecludeObj.SupplierExecludeAssetId = id;
-                            supplierExecludeObj.ReasonId = reasonId;
-                            _context.SupplierExecludes.Add(supplierExecludeObj);
-                            _context.SaveChanges();
-                        }
-                    }
+                    return id;
+                    //if (model.ReasonIds.Count > 0)
+                    //{
+                    //    foreach (var reasonId in model.ReasonIds)
+                    //    {
+                    //        SupplierExeclude supplierExecludeObj = new SupplierExeclude();
+                    //        supplierExecludeObj.SupplierExecludeAssetId = id;
+                    //        supplierExecludeObj.ReasonId = reasonId;
+                    //        _context.SupplierExecludes.Add(supplierExecludeObj);
+                    //        _context.SaveChanges();
+                    //    }
+                    //}
                 }
             }
             catch (Exception ex)
@@ -183,6 +190,24 @@ namespace Asset.Core.Repositories
             {
                 if (SupplierExecludeAssetObj != null)
                 {
+                    var lstTransactions = _context.SupplierExecludes.Where(a => a.SupplierExecludeAssetId == SupplierExecludeAssetObj.Id).ToList();
+                    if (lstTransactions.Count > 0)
+                    {
+                        foreach (var trans in lstTransactions)
+                        {
+                            var lstAttachments = _context.SupplierExecludeAttachments.Where(a => a.SupplierExecludeId == trans.Id).ToList();
+                            foreach (var attach in lstAttachments)
+                            {
+                                _context.SupplierExecludeAttachments.Remove(attach);
+                                _context.SaveChanges();
+                            }
+
+
+                            _context.SupplierExecludes.Remove(trans);
+                            _context.SaveChanges();
+                        }
+
+                    }
                     _context.SupplierExecludeAssets.Remove(SupplierExecludeAssetObj);
                     return _context.SaveChanges();
                 }
@@ -270,7 +295,7 @@ namespace Asset.Core.Repositories
         public int CreateSupplierExecludAttachments(SupplierExecludeAttachment attachObj)
         {
             SupplierExecludeAttachment assetAttachmentObj = new SupplierExecludeAttachment();
-            assetAttachmentObj.SupplierExecludeAssetId = attachObj.SupplierExecludeAssetId;
+            assetAttachmentObj.SupplierExecludeId = attachObj.SupplierExecludeId;
             assetAttachmentObj.Title = attachObj.Title;
             assetAttachmentObj.FileName = attachObj.FileName;
             _context.SupplierExecludeAttachments.Add(assetAttachmentObj);
@@ -281,7 +306,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<SupplierExecludeAttachment> GetAttachmentBySupplierExecludeAssetId(int assetId)
         {
-            return _context.SupplierExecludeAttachments.Where(a => a.SupplierExecludeAssetId == assetId).ToList();
+            return _context.SupplierExecludeAttachments.Where(a => a.SupplierExecludeId == assetId).ToList();
         }
 
         public int DeleteSupplierExecludeAttachment(int id)
@@ -732,6 +757,25 @@ namespace Asset.Core.Repositories
             }
 
             return list;
+        }
+
+        public GenerateSupplierExecludeAssetNumberVM GenerateSupplierExecludeAssetNumber()
+        {
+            GenerateSupplierExecludeAssetNumberVM numberObj = new GenerateSupplierExecludeAssetNumberVM();
+            string pre = "SEXHLD";
+
+            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.ToList();
+            if (lstSupplierExecludeAssets.Count > 0)
+            {
+                var appNumber = lstSupplierExecludeAssets.LastOrDefault().Id;
+                numberObj.ExNumber = pre + (appNumber + 1);
+            }
+            else
+            {
+                numberObj.ExNumber = pre + 1;
+            }
+
+            return numberObj;
         }
     }
 }

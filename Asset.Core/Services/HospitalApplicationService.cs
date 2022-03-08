@@ -44,6 +44,11 @@ namespace Asset.Core.Services
 
         }
 
+        public GeneratedHospitalApplicationNumberVM GenerateHospitalApplicationNumber()
+        {
+            return _unitOfWork.HospitalApplicationRepository.GenerateHospitalApplicationNumber();
+        }
+
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetAll()
         {
             return _unitOfWork.HospitalApplicationRepository.GetAll();
@@ -83,6 +88,11 @@ namespace Asset.Core.Services
         public EditHospitalApplicationVM GetById(int id)
         {
             return _unitOfWork.HospitalApplicationRepository.GetById(id);
+        }
+
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetHospitalApplicationByDate(SearchHospitalApplicationVM searchObj)
+        {
+            return _unitOfWork.HospitalApplicationRepository.GetHospitalApplicationByDate(searchObj);
         }
 
         public ViewHospitalApplicationVM GetHospitalApplicationById(int id)

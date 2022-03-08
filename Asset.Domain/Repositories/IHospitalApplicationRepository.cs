@@ -36,6 +36,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexHospitalApplicationVM.GetData> SortHospitalApp(SortHospitalApplication sortObj);
 
 
+        IEnumerable<IndexHospitalApplicationVM.GetData> GetHospitalApplicationByDate(SearchHospitalApplicationVM searchObj);
+        GeneratedHospitalApplicationNumberVM GenerateHospitalApplicationNumber();
 
     }
 }
