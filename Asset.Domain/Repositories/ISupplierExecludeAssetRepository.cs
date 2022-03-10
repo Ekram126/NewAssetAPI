@@ -27,6 +27,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(SortSupplierExecludeAssetVM sortObj);
         int CreateSupplierExecludAttachments(SupplierExecludeAttachment attachObj);
         IEnumerable<SupplierExecludeAttachment> GetAttachmentBySupplierExecludeAssetId(int assetId);
+
+        IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetSupplierExecludeAssetByDate(SearchSupplierExecludeAssetVM searchObj);
         int DeleteSupplierExecludeAttachment(int id);
     }
 }

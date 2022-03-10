@@ -198,5 +198,10 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetDetailRepository.GetAllAssetsByStatusId(statusId, userId);
           
         }
+
+        public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.AutoCompleteAssetSerial(serial, hospitalId);
+        }
     }
 }

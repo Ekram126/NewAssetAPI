@@ -85,6 +85,18 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.AutoCompleteAssetBarCode(barcode, hospitalId);
         }
+
+        [HttpGet]
+        [Route("AutoCompleteAssetSerial/{serial}/{hospitalId}")]
+        public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId)
+        {
+            return _AssetDetailService.AutoCompleteAssetSerial(serial, hospitalId);
+        }
+
+
+
+
+
         [HttpGet]
         [Route("getcount/{userId}")]
         public int count(string userId)

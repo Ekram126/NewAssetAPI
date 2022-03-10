@@ -22,20 +22,24 @@ namespace Asset.ViewModels.RequestVM
             public string Code { get; set; }
             public DateTime RequestDate { get; set; }
             public int ModeId { get; set; }
-         
+
             public int? AssetDetailId { get; set; }
             public int? MasterAssetId { get; set; }
+
+            public string Barcode { get; set; }
+            public string Serial { get; set; }
+
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
             public string SerialNumber { get; set; }
             public int PeriorityId { get; set; }
-  
+
             public int EmployeeId { get; set; }
             public string EmployeeName { get; set; }
             public string UserName { get; set; }
             public string CreatedById { get; set; }
             public string CreatedBy { get; set; }
-
+            public string Description { get; set; }
             public int StatusId { get; set; }
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }
@@ -48,10 +52,11 @@ namespace Asset.ViewModels.RequestVM
             public string PeriorityIcon { get; set; }
 
 
+            public string ClosedDate { get; set; }
 
             public string ModeName { get; set; }
             public string ModeNameAr { get; set; }
-
+            public string ModelNumber { get; set; }
             public string AssetOwnerCreatedById { get; set; }
             public List<Employee> ListEmployees { get; set; }
             public int? HospitalId { get; set; }
@@ -60,20 +65,11 @@ namespace Asset.ViewModels.RequestVM
             public int? OrganizationId { get; set; }
             public int? SubOrganizationId { get; set; }
             public string RoleId { get; set; }
-
-            public int CountListTracks{ get; set; }
-
-
+            public int CountListTracks { get; set; }
             public int CountWorkOrder { get; set; }
-
-            //public string LatestWorkOrderStatus { get; set; }
             public int LatestWorkOrderStatusId { get; set; }
-
             public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
-
-
             public List<IndexWorkOrderVM> ListWorkOrder { get; set; }
-
             public List<LstWorkOrderFromTracking> ListWorkOrderTracking { get; set; }
         }
     }

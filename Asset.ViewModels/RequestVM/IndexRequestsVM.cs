@@ -28,6 +28,7 @@ namespace Asset.ViewModels.RequestVM
         public string AssetNameAr { get; set; }
         public int AssetDetailId { get; set; }
         public string SerialNumber { get; set; }
+        public string Barcode { get; set; }
         public int RequestPeriorityId { get; set; }
         public string PeriorityNameAr { get; set; }
         public string PeriorityName { get; set; }
@@ -40,6 +41,10 @@ namespace Asset.ViewModels.RequestVM
         public string RequestTypeNameAr { get; set; }
         public int RequestTrackingId { get; set; }
         public int RequestStatusId { get; set; }
+
+        public string ClosedDate { get; set; }
+
+
 
         public string StatusIcon { get; set; }
         public int StatusId { get; set; }

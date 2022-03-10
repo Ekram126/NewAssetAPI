@@ -28,6 +28,8 @@ namespace Asset.ViewModels.RequestVM
         public string StatusIcon { get; set; }
         public string ModeName { get; set; }
         public string ModeNameAr { get; set; }
+        public string ClosedDate { get; set; }
+        public string CreatedBy { get; set; }
         public string SortStatus { get; set; }
         public int CountListTracks { get; set; }
         public int CountWorkOrder { get; set; }

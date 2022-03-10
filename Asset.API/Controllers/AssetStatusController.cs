@@ -73,17 +73,6 @@ namespace Asset.API.Controllers
             return lstAssetStatuses;
         }
 
-        //[HttpPost]
-        //[Route("CountAssetsGroupByStatusId/{statusId}")]
-        //public  int CountAssetsGroupByStatusId(int statusId, string userId)
-        //{
-        //    return _assetStatusService.GetAllAssetsGroupByStatusId(statusId,userId).ToList().Count;
-        //}
-
-
-
-
-
         [HttpGet]
         [Route("GetById/{id}")]
         public ActionResult<EditAssetStatusVM> GetById(int id)

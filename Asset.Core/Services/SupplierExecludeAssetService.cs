@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Asset.Core.Services
 {
-   public class SupplierExecludeAssetService : ISupplierExecludeAssetService
+    public class SupplierExecludeAssetService : ISupplierExecludeAssetService
     {
         private IUnitOfWork _unitOfWork;
 
@@ -22,7 +22,7 @@ namespace Asset.Core.Services
         public int Add(CreateSupplierExecludeAssetVM SupplierExecludeAssetObj)
         {
             return _unitOfWork.SupplierExecludeAssetRepository.Add(SupplierExecludeAssetObj);
-           // return _unitOfWork.CommitAsync();
+            // return _unitOfWork.CommitAsync();
         }
 
         public int CreateSupplierExecludAttachments(SupplierExecludeAttachment attachObj)
@@ -33,9 +33,13 @@ namespace Asset.Core.Services
         public int Delete(int id)
         {
             var SupplierExecludeAssetObj = _unitOfWork.SupplierExecludeAssetRepository.GetById(id);
-            _unitOfWork.SupplierExecludeAssetRepository.Delete(SupplierExecludeAssetObj.Id);
-           // _unitOfWork.CommitAsync();
-            return SupplierExecludeAssetObj.Id;
+            if (SupplierExecludeAssetObj != null)
+            {
+                _unitOfWork.SupplierExecludeAssetRepository.Delete(SupplierExecludeAssetObj.Id);
+                return SupplierExecludeAssetObj.Id;
+            }
+            else
+                return 0;
         }
 
         public int DeleteSupplierExecludeAttachment(int id)
@@ -78,6 +82,11 @@ namespace Asset.Core.Services
             return _unitOfWork.SupplierExecludeAssetRepository.GetById(id);
         }
 
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetSupplierExecludeAssetByDate(SearchSupplierExecludeAssetVM searchObj)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.GetSupplierExecludeAssetByDate(searchObj);
+        }
+
         public ViewSupplierExecludeAssetVM GetSupplierExecludeAssetDetailById(int id)
         {
             return _unitOfWork.SupplierExecludeAssetRepository.GetSupplierExecludeAssetDetailById(id);
@@ -91,8 +100,8 @@ namespace Asset.Core.Services
         public int Update(EditSupplierExecludeAssetVM SupplierExecludeAssetObj)
         {
             return _unitOfWork.SupplierExecludeAssetRepository.Update(SupplierExecludeAssetObj);
-          //  _unitOfWork.CommitAsync();
-          //  return SupplierExecludeAssetObj.Id;
+            //  _unitOfWork.CommitAsync();
+            //  return SupplierExecludeAssetObj.Id;
         }
 
         public int UpdateExcludedDate(EditSupplierExecludeAssetVM execludeAssetObj)

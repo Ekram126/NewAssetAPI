@@ -2474,6 +2474,45 @@ namespace Asset.Core.Repositories
 
             return list;
         }
+
+        public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId)
+        {
+            List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
+            var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Where(a => a.SerialNumber.Contains(serial)).ToList();
+            if(hospitalId == 0)
+            {
+                lst = lst.ToList();
+            }
+            else
+            {
+                lst = lst.Where(a=>a.HospitalId == hospitalId).ToList();
+            }
+            if (lst.Count > 0)
+            {
+                foreach (var item in lst)
+                {
+                    IndexAssetDetailVM.GetData getDataObj = new IndexAssetDetailVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.Code = item.Code;
+                    getDataObj.Price = item.Price;
+                    getDataObj.MasterAssetName = item.MasterAsset.Name;
+                    getDataObj.MasterAssetNameAr = item.MasterAsset.NameAr;
+                    getDataObj.AssetBarCode = item.Barcode;
+                    getDataObj.BarCode = item.Barcode;
+                    getDataObj.Serial = item.SerialNumber;
+                    getDataObj.SerialNumber = item.SerialNumber;
+                    getDataObj.MasterAssetId = item.MasterAssetId;
+                    getDataObj.PurchaseDate = item.PurchaseDate;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.HospitalName = item.Hospital.Name;
+                    getDataObj.HospitalNameAr = item.Hospital.NameAr;
+                    getDataObj.AssetName = item.MasterAsset.Name;
+                    getDataObj.AssetNameAr = item.MasterAsset.NameAr;
+                    list.Add(getDataObj);
+                }
+            }
+            return list;
+        }
     }
 }
 

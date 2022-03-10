@@ -429,7 +429,7 @@ namespace Asset.Core.Repositories
                     getDataObj.Id = req.Id;
                     getDataObj.Code = req.RequestCode;
                     getDataObj.CreatedById = req.CreatedById;
-                    getDataObj.UserName = req.User.UserName;
+                    getDataObj.CreatedBy = req.User.UserName;
                     getDataObj.Subject = req.Subject;
                     getDataObj.RequestDate = req.RequestDate;
 
@@ -447,7 +447,18 @@ namespace Asset.Core.Repositories
                         getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
                         getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
                         getDataObj.StatusIcon = lstStatus[0].RequestStatus.Icon;
+
+                        getDataObj.Description = lstStatus[0].Description;
+                        if (getDataObj.StatusId == 2)
+                        {
+                            getDataObj.ClosedDate = lstStatus[0].DescriptionDate.ToString();
+                        }
+                        else
+                        {
+                            getDataObj.ClosedDate = "";
+                        }
                     }
+                    getDataObj.Barcode = req.AssetDetail.Barcode;
                     getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
                     getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
                     getDataObj.ModeName = req.RequestMode.Name;
@@ -459,7 +470,8 @@ namespace Asset.Core.Repositories
                     getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
 
 
-
+                    getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                    getDataObj.Barcode = req.AssetDetail.Barcode;
 
                     getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;// _context.MasterAssets.Where(a => a.Id == req.AssetDetail.MasterAssetId).ToList().FirstOrDefault().Name;
                     getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
@@ -1156,9 +1168,6 @@ namespace Asset.Core.Repositories
                     userRoleNames.Add(name.Name);
                 }
             }
-
-
-
             var list = _context.Request
                             .Include(a => a.RequestPeriority)
                             .Include(a => a.RequestMode)
@@ -1167,7 +1176,6 @@ namespace Asset.Core.Repositories
                             .Include(a => a.AssetDetail.MasterAsset)
                             .Include(a => a.AssetDetail.Hospital)
                             .ToList();
-
 
             if (list.Count > 0)
             {
@@ -1212,9 +1220,13 @@ namespace Asset.Core.Repositories
                 getDataObj.RequestDate = item.RequestDate;
                 getDataObj.HospitalId = item.AssetDetail.HospitalId;
                 getDataObj.CreatedById = item.CreatedById;
+                getDataObj.CreatedBy = item.User.UserName;
                 getDataObj.AssetDetailId = item.AssetDetailId;
                 getDataObj.MasterAssetId = item.AssetDetail.MasterAssetId;
                 getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                getDataObj.Barcode = item.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
                 var lstStatus = _context.RequestTracking
                             .Include(t => t.Request).Include(t => t.RequestStatus)
                             .Where(a => a.RequestId == item.Id).ToList().OrderByDescending(a => a.Id).ToList();
@@ -1226,13 +1238,20 @@ namespace Asset.Core.Repositories
                     getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
                     getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
                     getDataObj.StatusIcon = lstStatus[0].RequestStatus.Icon;
+                    getDataObj.Description = lstStatus[0].Description;
+                    if (getDataObj.StatusId == 2)
+                    {
+                        getDataObj.ClosedDate = lstStatus[0].DescriptionDate.ToString();
+                    }
+                    else
+                    {
+                        getDataObj.ClosedDate = "";
+                    }
                 }
 
                 if (item.AssetDetailId != null)
                 {
                     getDataObj.AssetDetailId = item.AssetDetailId != null ? (int)item.AssetDetailId : 0;
-                    //getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;
-                    //getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
                 }
                 if (item.AssetDetail.MasterAssetId != null)
                 {
@@ -1273,10 +1292,6 @@ namespace Asset.Core.Repositories
                 }).ToList();
                 getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == item.Id).ToList().Count;
                 getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == item.Id).ToList().Count;
-
-
-
-
                 lstData.Add(getDataObj);
             }
 
@@ -1326,9 +1341,27 @@ namespace Asset.Core.Repositories
             else
                 lstData = lstData.ToList();
 
+            if (searchObj.Barcode != "")
+            {
+                lstData = lstData.Where(a => a.Barcode.Contains(searchObj.Barcode)).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.SerialNumber != "")
+            {
+                lstData = lstData.Where(a => a.SerialNumber.Contains(searchObj.SerialNumber)).ToList();
+            }
+            else
+                lstData = lstData.ToList();
 
 
-
+            if (searchObj.ModelNumber != "")
+            {
+                lstData = lstData.Where(a => a.ModelNumber.Contains(searchObj.ModelNumber)).ToList();
+            }
+            else
+                lstData = lstData.ToList();
 
             if (searchObj.AssetOwnerId != 0)
             {
@@ -1351,7 +1384,7 @@ namespace Asset.Core.Repositories
 
             if (searchObj.Subject != "")
             {
-                lstData = lstData.Where(a => a.Subject == searchObj.Subject).ToList();
+                lstData = lstData.Where(a => a.Subject.Contains( searchObj.Subject)).ToList();
             }
             else
                 lstData = lstData.ToList();
@@ -1375,8 +1408,6 @@ namespace Asset.Core.Repositories
             else
             {
                 searchObj.StartDate = DateTime.Parse(searchObj.Start.ToString());
-
-
                 var startyear = searchObj.StartDate.Value.Year;
                 var startmonth = searchObj.StartDate.Value.Month;
                 var startday = searchObj.StartDate.Value.Day;
@@ -1391,7 +1422,7 @@ namespace Asset.Core.Repositories
                     setstartmonth = searchObj.StartDate.Value.Month.ToString();
 
                 var sDate = startyear + "/" + setstartmonth + "/" + setstartday;
-                startingFrom = DateTime.Parse(sDate).AddDays(1);
+                startingFrom = DateTime.Parse(sDate);//.AddDays(1);
             }
 
             if (searchObj.End == "")
@@ -1401,7 +1432,6 @@ namespace Asset.Core.Repositories
             else
             {
                 searchObj.EndDate = DateTime.Parse(searchObj.End.ToString());
-
                 var endyear = searchObj.EndDate.Value.Year;
                 var endmonth = searchObj.EndDate.Value.Month;
                 var endday = searchObj.EndDate.Value.Day;
@@ -1409,18 +1439,13 @@ namespace Asset.Core.Repositories
                     setendday = searchObj.EndDate.Value.Day.ToString().PadLeft(2, '0');
                 else
                     setendday = searchObj.EndDate.Value.Day.ToString();
-
                 if (endmonth < 10)
                     setendmonth = searchObj.EndDate.Value.Month.ToString().PadLeft(2, '0');
                 else
                     setendmonth = searchObj.EndDate.Value.Month.ToString();
-
                 var eDate = endyear + "/" + setendmonth + "/" + setendday;
-                endingTo = DateTime.Parse(eDate).AddDays(1);
+                endingTo = DateTime.Parse(eDate);//.AddDays(1);
             }
-
-
-
             if (searchObj.Start != "" && searchObj.End != "")
             {
                 lstData = lstData.Where(a => a.RequestDate >= startingFrom && a.RequestDate <= endingTo).ToList();
@@ -1491,6 +1516,7 @@ namespace Asset.Core.Repositories
                     getDataObj.CreatedBy = req.User.UserName;
                     getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
                     getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                    getDataObj.Barcode = req.AssetDetail.Barcode;
                     getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
                     getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
                     getDataObj.UserId = req.User.Id;
@@ -1510,6 +1536,18 @@ namespace Asset.Core.Repositories
                         getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
                         getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
                         getDataObj.StatusIcon = lstStatus[0].RequestStatus.Icon;
+
+                        getDataObj.Description = lstStatus[0].Description;
+
+                        if (getDataObj.StatusId == 2)
+                        {
+                            getDataObj.ClosedDate = lstStatus[0].DescriptionDate.ToString();
+                        }
+                        else
+                        {
+                            getDataObj.ClosedDate = "";
+                        }
+
                     }
 
 
@@ -1659,6 +1697,23 @@ namespace Asset.Core.Repositories
                         request = request.OrderByDescending(d => d.RequestDate).ToList();
                     else
                         request = request.OrderBy(d => d.RequestDate).ToList();
+                }
+
+
+                else if (sortObj.ClosedDate != null)
+                {
+                    if (sortObj.SortStatus == "descending")
+                        request = request.OrderByDescending(d => d.ClosedDate).ToList();
+                    else
+                        request = request.OrderBy(d => d.ClosedDate).ToList();
+                }
+
+                else if (sortObj.CreatedBy != null)
+                {
+                    if (sortObj.SortStatus == "descending")
+                        request = request.OrderByDescending(d => d.CreatedBy).ToList();
+                    else
+                        request = request.OrderBy(d => d.CreatedBy).ToList();
                 }
             }
 

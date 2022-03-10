@@ -92,13 +92,18 @@ namespace Asset.Core.Repositories
 
             var lstStatus = _context.RequestStatus.ToList();
             getDataObj.ListStatus = lstStatus;
-            var requests = _context.Request.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.User).ToList();
+            var requests = _context.Request.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
+                .Include(a => a.AssetDetail.Hospital.Governorate)
+                  .Include(a => a.AssetDetail.Hospital.City)
+                    .Include(a => a.AssetDetail.Hospital.Organization)
+                      .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                .Include(a => a.User).ToList();
 
-            getDataObj.GovernorateId = requests[0].User.GovernorateId;
-            getDataObj.CityId = requests[0].User.CityId;
-            getDataObj.OrganizationId = requests[0].User.OrganizationId;
-            getDataObj.SubOrganizationId = requests[0].User.SubOrganizationId;
-            getDataObj.HospitalId = requests[0].User.HospitalId;
+            //getDataObj.GovernorateId = requests[0].User.GovernorateId;
+            //getDataObj.CityId = requests[0].User.CityId;
+            //getDataObj.OrganizationId = requests[0].User.OrganizationId;
+            //getDataObj.SubOrganizationId = requests[0].User.SubOrganizationId;
+            //getDataObj.HospitalId = requests[0].User.HospitalId;
 
 
             if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)

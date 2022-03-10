@@ -93,6 +93,24 @@ namespace Asset.API.Controllers
 
 
 
+        [HttpPost]
+        [Route("SearchSupplierExecludeAssetByDate/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> GetSupplierExecludeAssetByDate(int pagenumber, int pagesize, SearchSupplierExecludeAssetVM searchObj)
+        {
+            PagingParameter pageInfo = new PagingParameter();
+            pageInfo.PageNumber = pagenumber;
+            pageInfo.PageSize = pagesize;
+            var lstSupplierExcludes = _supplierExecludeAssetService.GetSupplierExecludeAssetByDate(searchObj).ToList();
+            return _pagingService.GetAll<IndexSupplierExecludeAssetVM.GetData>(pageInfo, lstSupplierExcludes);
+        }
+
+
+        [HttpPost]
+        [Route("CountSearchSupplierExecludeAssetByDate")]
+        public int CountGetHospitalApplicationByDate(SearchSupplierExecludeAssetVM searchObj)
+        {
+            return _supplierExecludeAssetService.GetSupplierExecludeAssetByDate(searchObj).ToList().Count;
+        }
 
 
 

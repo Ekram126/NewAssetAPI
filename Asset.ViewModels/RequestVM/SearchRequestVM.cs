@@ -28,6 +28,9 @@ namespace Asset.ViewModels.RequestVM
         public string Code { get; set; }
         public string UserId { get; set; }
 
+        public string Barcode { get; set; }
+        public string SerialNumber { get; set; }
+        public string ModelNumber { get; set; }
 
         public string Start { get; set; }
         public string End { get; set; }
