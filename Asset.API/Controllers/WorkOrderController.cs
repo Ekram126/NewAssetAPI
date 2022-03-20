@@ -145,7 +145,7 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("SearchInWorkOrderssCount")]
-        public int SearchInRequestsCount(SearchWorkOrderVM searchObj)
+        public int SearchInWorkOrderssCount(SearchWorkOrderVM searchObj)
         {
             int count = _workOrderService.SearchWorkOrders(searchObj).ToList().Count();
             return count;

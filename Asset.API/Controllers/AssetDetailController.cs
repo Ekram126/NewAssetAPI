@@ -181,6 +181,16 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.ViewAllAssetDetailByMasterId(MasterAssetId);
         }
+
+        [HttpGet]
+        [Route("GetListOfAssetDetailsByHospitalNotInContract/{hospitalId}")]
+        public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId)
+        {
+            return _AssetDetailService.GetListOfAssetDetailsByHospitalNotInContract(hospitalId);
+        }
+
+       
+
         [HttpGet]
         [Route("GetListOfAssetDetailsByHospitalId/{hospitalId}")]
         public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId)

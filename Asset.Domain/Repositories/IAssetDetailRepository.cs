@@ -33,6 +33,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<AssetDetail> GetAllAssetDetailsByHospitalId(int hospitalId);
 
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId);
+
+        IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId);
         EditAssetDetailVM GetById(int id);
         ViewAssetDetailVM ViewAssetDetailByMasterId(int masterId);
         IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId);

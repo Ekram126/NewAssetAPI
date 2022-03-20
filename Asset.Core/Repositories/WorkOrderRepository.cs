@@ -94,6 +94,7 @@ namespace Asset.Core.Repositories
                 {
                     Id = prob.Id,
                     Subject = prob.Subject,
+                    BarCode = prob.Request.AssetDetail.Barcode,
                     WorkOrderNumber = prob.WorkOrderNumber,
                     CreationDate = prob.CreationDate,
                     PlannedStartDate = prob.PlannedStartDate,
@@ -150,7 +151,7 @@ namespace Asset.Core.Repositories
                     work.Note = item.FirstOrDefault().Note;
                     work.CreatedById = item.FirstOrDefault().CreatedById;
                     work.CreatedBy = item.FirstOrDefault().User.UserName;
-
+                    work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
                     work.TypeName = item.FirstOrDefault().WorkOrderType.Name;
                     work.TypeNameAr = item.FirstOrDefault().WorkOrderType.NameAr;
                     work.PeriorityName = item.FirstOrDefault().WorkOrderPeriority.Name;
@@ -273,6 +274,7 @@ namespace Asset.Core.Repositories
                 work.RequestSubject = item.Request.Subject;
                 work.CreationDate = item.CreationDate;
                 work.Note = item.Note;
+                work.BarCode = item.Request.AssetDetail.Barcode;
                 work.CreatedById = item.CreatedById;
                 work.CreatedBy = item.User.UserName;
                 work.TypeName = item.WorkOrderType.Name;
@@ -339,7 +341,7 @@ namespace Asset.Core.Repositories
                     IndexWorkOrderVM work = new IndexWorkOrderVM();
                     work.Id = item.FirstOrDefault().Id;
                     work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
-
+                    work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
                     work.Subject = item.FirstOrDefault().Subject;
                     work.RequestSubject = item.FirstOrDefault().Request.Subject;
                     work.CreationDate = item.FirstOrDefault().CreationDate;
@@ -396,6 +398,7 @@ namespace Asset.Core.Repositories
                     work.Id = item.FirstOrDefault().Id;
                     work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
                     work.Subject = item.FirstOrDefault().Subject;
+                    work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
                     work.RequestSubject = _context.Request.Where(a => a.Id == item.FirstOrDefault().RequestId).ToList().FirstOrDefault().Subject;
                     work.CreationDate = item.FirstOrDefault().CreationDate;
                     work.Note = item.FirstOrDefault().Note;
@@ -529,6 +532,7 @@ namespace Asset.Core.Repositories
                  {
                      Id = wo.WorkOrder.Id,
                      Subject = wo.WorkOrder.Subject,
+                     BarCode = wo.WorkOrder.Request.AssetDetail.Barcode,
                      SerialNumber = wo.WorkOrder.Request.AssetDetail.SerialNumber,
                      UserName = wo.User.UserName,
                      AssignedTo = wo.AssignedToUser.UserName,
@@ -573,6 +577,7 @@ namespace Asset.Core.Repositories
                 IndexWorkOrderVM getDataObj = new IndexWorkOrderVM();
                 getDataObj.Id = order.Id;
                 getDataObj.Subject = order.Subject;
+                getDataObj.BarCode = order.BarCode;
                 getDataObj.SerialNumber = order.SerialNumber;
                 getDataObj.WorkOrderNumber = order.WorkOrderNumber;
                 getDataObj.WorkOrderTypeName = order.WorkOrderTypeName;
@@ -729,6 +734,7 @@ namespace Asset.Core.Repositories
                    {
                        Id = wo.Id,
                        Subject = wo.Subject,
+                       BarCode = wo.Request.AssetDetail.Barcode,
                        WorkOrderNumber = wo.WorkOrderNumber,
                        CreationDate = wo.CreationDate,
                        PlannedStartDate = wo.PlannedStartDate,
@@ -789,6 +795,7 @@ namespace Asset.Core.Repositories
                      Id = wo.WorkOrder.Id,
                      Subject = wo.WorkOrder.Subject,
                      SerialNumber = wo.WorkOrder.Request.AssetDetail.SerialNumber,
+                     BarCode = wo.WorkOrder.Request.AssetDetail.Barcode,
                      UserName = wo.User.UserName,
                      AssignedTo = wo.AssignedToUser.UserName,
                      StatusName = wo.WorkOrderStatus.Name,
@@ -834,6 +841,7 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = order.Id;
                 getDataObj.Subject = order.Subject;
                 getDataObj.SerialNumber = order.SerialNumber;
+                getDataObj.BarCode = order.BarCode;
                 getDataObj.WorkOrderNumber = order.WorkOrderNumber;
                 getDataObj.WorkOrderTypeName = order.WorkOrderTypeName;
                 getDataObj.StatusName = order.StatusName;
@@ -1144,6 +1152,7 @@ namespace Asset.Core.Repositories
                 IndexWorkOrderVM getDataObj = new IndexWorkOrderVM();
                 getDataObj.Id = item.Id;
                 getDataObj.Subject = item.Subject;
+                getDataObj.BarCode = item.Request.AssetDetail.Barcode;
                 getDataObj.WorkOrderNumber = item.WorkOrderNumber;
                 getDataObj.WorkOrderTypeName = item.WorkOrderType.Name;
                 getDataObj.RequestSubject = item.Request.Subject;
@@ -1443,6 +1452,7 @@ namespace Asset.Core.Repositories
                     IndexWorkOrderVM work = new IndexWorkOrderVM();
                     work.Id = item.FirstOrDefault().Id;
                     work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
+                    work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
                     work.Subject = item.FirstOrDefault().Subject;
                     work.RequestSubject = item.FirstOrDefault().Request.Subject;
                     work.CreationDate = item.FirstOrDefault().CreationDate;

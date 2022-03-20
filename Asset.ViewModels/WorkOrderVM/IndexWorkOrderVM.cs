@@ -46,7 +46,7 @@ namespace Asset.ViewModels.WorkOrderVM
         public int WorkOrderStatusId { get; set; }
 
         public int StatusId { get; set; }
-
+        public string BarCode { get; set; }
         public string StatusName { get; set; }
         public string StatusNameAr { get; set; }
         public string statusColor { get; set; }

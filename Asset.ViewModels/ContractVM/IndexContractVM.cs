@@ -19,6 +19,10 @@ namespace Asset.ViewModels.ContractVM
             public string AssetNameAr { get; set; }
             public string ResponseTime { get; set; }
             public string HasSpareParts { get; set; }
+            public string HospitalName { get; set; }
+            public string HospitalNameAr { get; set; }
+            public string BarCode { get; set; }
+            public string SerialNumber { get; set; }
             public int? MasterContractId { get; set; }
 
             public int? AssetDetailId { get; set; }

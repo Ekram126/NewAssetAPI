@@ -203,5 +203,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.AutoCompleteAssetSerial(serial, hospitalId);
         }
+
+        public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetListOfAssetDetailsByHospitalNotInContract(hospitalId);
+        }
     }
 }

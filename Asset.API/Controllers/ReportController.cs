@@ -1,8 +1,6 @@
-﻿using Asset.API.Reports;
-using Asset.Domain.Services;
+﻿using Asset.Domain.Services;
 using Asset.ViewModels.AssetDetailVM;
 using DevExpress.XtraReports.UI;
-using DevExpress.XtraReports.Web.ReportDesigner;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +17,7 @@ namespace Asset.API.Controllers
     public class ReportController : ControllerBase
     {
 
-        AssetReport assetReport = new AssetReport();
+        //AssetReport assetReport = new AssetReport();
 
         private IAssetDetailService _assetDetailService;
 
@@ -32,22 +30,22 @@ namespace Asset.API.Controllers
         }
 
 
-        [HttpPost]
-        [Route("GetAssetData/{assetId}")]
-        public XtraReport GetAssetData(int assetId)
-        {
+        //[HttpPost]
+        //[Route("GetAssetData/{assetId}")]
+        //public XtraReport GetAssetData(int assetId)
+        //{
           
-            var assetObj = _assetDetailService.ViewAssetDetailByMasterId(assetId);
+        //    var assetObj = _assetDetailService.ViewAssetDetailByMasterId(assetId);
 
-            //assetReport.DataSourceDemanded += (s, e) =>
-            //{
-            //    ((XtraReport)s).DataSource = assetObj;
-            //};continue i am on another anydesk i am seeing ???
+        //    //assetReport.DataSourceDemanded += (s, e) =>
+        //    //{
+        //    //    ((XtraReport)s).DataSource = assetObj;
+        //    //};continue i am on another anydesk i am seeing ???
 
 
-            //D:\Ekram\Projects\Asset System\Asset Project\Assets_3-11-2021\AssetAPI\Asset.API\Reports\
-            assetReport.DataSource = assetObj;
-            return assetReport;
-        }
+        //    //D:\Ekram\Projects\Asset System\Asset Project\Assets_3-11-2021\AssetAPI\Asset.API\Reports\
+        //    assetReport.DataSource = assetObj;
+        //    return assetReport;
+        //}
     }
 }

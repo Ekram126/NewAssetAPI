@@ -67,10 +67,10 @@ namespace Contract.API.Controllers
         }
 
         [HttpGet]
-        [Route("getcount")]
-        public int count()
+        [Route("getcount/{hospitalId}")]
+        public int count(int hospitalId)
         {
-            return _pagingService.Count<MasterContract>();
+            return _masterContractService.GetMasterContractsByHospitalId(hospitalId).Count();
         }
 
         [HttpPut]
@@ -111,7 +111,7 @@ namespace Contract.API.Controllers
 
         [HttpPost]
         [Route("SearchInContract/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexMasterContractVM.GetData> SearchInRequests(int pagenumber, int pagesize, SearchContractVM searchObj)
+        public IEnumerable<IndexMasterContractVM.GetData> SearchInContract(int pagenumber, int pagesize, SearchContractVM searchObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;

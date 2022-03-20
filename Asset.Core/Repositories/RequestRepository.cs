@@ -1384,7 +1384,7 @@ namespace Asset.Core.Repositories
 
             if (searchObj.Subject != "")
             {
-                lstData = lstData.Where(a => a.Subject.Contains( searchObj.Subject)).ToList();
+                lstData = lstData.Where(a => a.Subject.Contains(searchObj.Subject)).ToList();
             }
             else
                 lstData = lstData.ToList();
@@ -2011,6 +2011,7 @@ namespace Asset.Core.Repositories
                 var requestObj = lstRequests[0];
                 printSRObj.RequestId = requestObj.Id;
                 printSRObj.AssetCode = requestObj.AssetDetail.Code;
+                printSRObj.AssetBarCode = requestObj.AssetDetail.Barcode;
                 printSRObj.RequestSubject = requestObj.Subject;
                 printSRObj.RequestDate = requestObj.RequestDate.ToShortDateString();
                 printSRObj.RequestCode = requestObj.RequestCode;

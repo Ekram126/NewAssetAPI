@@ -14,6 +14,7 @@ namespace Asset.ViewModels.RequestVM
         public string Subject { get; set; }
         public string MasterAssetCode { get; set; }
         public string AssetCode { get; set; }
+        public string AssetBarCode { get; set; }
         public string WorkOrderSubject{ get; set; }
         public string WorkOrderNumber { get; set; }
         public DateTime? CreationDate { get; set; }

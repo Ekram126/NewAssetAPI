@@ -103,13 +103,24 @@ namespace Asset.Core.Repositories
                                     .Include(a => a.Request)
                                     .Include(a => a.Request.AssetDetail)
                                     .Include(a => a.Request.AssetDetail.Hospital)
+                                    .Include(a => a.Request.AssetDetail.Hospital.Governorate)
+                                    .Include(a => a.Request.AssetDetail.Hospital.City)
+                                    .Include(a => a.Request.AssetDetail.Hospital.Organization)
+                                    .Include(a => a.Request.AssetDetail.Hospital.SubOrganization)
                                     .Include(a => a.User).ToList();
 
-                getDataObj.GovernorateId = workorders[0].Request.AssetDetail.Hospital.GovernorateId;
-                getDataObj.CityId = workorders[0].Request.AssetDetail.Hospital.CityId;
-                getDataObj.OrganizationId = workorders[0].Request.AssetDetail.Hospital.OrganizationId;
-                getDataObj.SubOrganizationId = workorders[0].Request.AssetDetail.Hospital.SubOrganizationId;
-                getDataObj.HospitalId = workorders[0].Request.AssetDetail.HospitalId;
+                //getDataObj.GovernorateId = workorders[0].Request.AssetDetail.Hospital.GovernorateId;
+                //getDataObj.CityId = workorders[0].Request.AssetDetail.Hospital.CityId;
+                //getDataObj.OrganizationId = workorders[0].Request.AssetDetail.Hospital.OrganizationId;
+                //getDataObj.SubOrganizationId = workorders[0].Request.AssetDetail.Hospital.SubOrganizationId;
+                //getDataObj.HospitalId = workorders[0].Request.AssetDetail.HospitalId;
+
+
+                //getDataObj.GovernorateId = UserObj.GovernorateId != null ? workorders[0].Request.AssetDetail.Hospital.GovernorateId : 0;
+                //getDataObj.CityId = UserObj.CityId != null ? workorders[0].Request.AssetDetail.Hospital.CityId : 0;
+                //getDataObj.OrganizationId = UserObj.OrganizationId != null ? workorders[0].Request.AssetDetail.Hospital.OrganizationId : 0;
+                //getDataObj.SubOrganizationId = UserObj.SubOrganizationId != null ? workorders[0].Request.AssetDetail.Hospital.SubOrganizationId : 0;
+                //getDataObj.HospitalId = UserObj.HospitalId != null ? workorders[0].Request.AssetDetail.HospitalId : 0;
 
 
                 if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)

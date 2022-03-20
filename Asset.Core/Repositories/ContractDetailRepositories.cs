@@ -85,10 +85,14 @@ namespace Asset.Core.Repositories
                     {
                         Id= detail.Id,
                         AssetDetailId = assetDetail.Id,
+                        SerialNumber = assetDetail.SerialNumber,
+                        BarCode= assetDetail.Barcode,
                         ContractDate = detail.ContractDate,
                         MasterContractId = master.Id,
                         AssetName = mainAsset.Name,
                         AssetNameAr = mainAsset.NameAr,
+                        HospitalName = _context.Hospitals.Where(a=>a.Id == assetDetail.HospitalId).FirstOrDefault().Name,
+                        HospitalNameAr = _context.Hospitals.Where(a => a.Id == assetDetail.HospitalId).FirstOrDefault().NameAr,
                         HasSpareParts = detail.HasSpareParts.ToString(),
                         ResponseTime =detail.ResponseTime.ToString()
                     }).ToList();

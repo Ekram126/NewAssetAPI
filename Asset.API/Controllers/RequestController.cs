@@ -207,7 +207,7 @@ namespace Asset.API.Controllers
         [Route("SearchInRequestsCount")]
         public int SearchInRequestsCount(SearchRequestVM searchObj)
         {
-            int count = _requestService.SearchRequests(searchObj).ToList().Count();
+            int count = _requestService.SearchRequests(searchObj).Count();
             return count;
         }
 

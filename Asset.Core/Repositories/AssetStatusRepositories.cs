@@ -195,11 +195,17 @@ namespace Asset.Core.Repositories
             {
                 lstTransactions = lstTransactions.Where(a => a.AssetStatusId == statusId).ToList();
             }
-            getDataObj.HospitalId = lstTransactions[0].AssetDetail.HospitalId;
-            getDataObj.GovernorateId = lstTransactions[0].AssetDetail.Hospital.GovernorateId;
-            getDataObj.CityId = lstTransactions[0].AssetDetail.Hospital.CityId;
-            getDataObj.OrganizationId = lstTransactions[0].AssetDetail.Hospital.OrganizationId;
-            getDataObj.SubOrganizationId = lstTransactions[0].AssetDetail.Hospital.SubOrganizationId;
+            if (lstTransactions.Count > 0)
+            {
+                var transObj = lstTransactions[0];
+                getDataObj.HospitalId = transObj.AssetDetail.HospitalId;
+                getDataObj.GovernorateId = transObj.AssetDetail.Hospital.GovernorateId;
+                getDataObj.CityId = transObj.AssetDetail.Hospital.CityId;
+                getDataObj.OrganizationId = transObj.AssetDetail.Hospital.OrganizationId;
+                getDataObj.SubOrganizationId = transObj.AssetDetail.Hospital.SubOrganizationId;
+
+            }
+
 
             if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
             {

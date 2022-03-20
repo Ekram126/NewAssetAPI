@@ -138,7 +138,7 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("SearchInHospitals/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexHospitalVM.GetData> SearchInRequests(int pagenumber, int pagesize, SearchHospitalVM searchObj)
+        public IEnumerable<IndexHospitalVM.GetData> SearchInHospitals(int pagenumber, int pagesize, SearchHospitalVM searchObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;

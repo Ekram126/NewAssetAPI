@@ -29,6 +29,7 @@ namespace Asset.Domain.Services
         IEnumerable<AssetDetail> GetAllSerialsByMasterAssetIdAndHospitalId(int masterAssetId, int hospitalId);
         IEnumerable<AssetDetail> GetAllAssetDetailsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId);
+        IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId);
         EditAssetDetailVM GetById(int id);
         int Add(CreateAssetDetailVM assetDetailObj);
         int Update(EditAssetDetailVM assetDetailObj);

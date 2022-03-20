@@ -163,19 +163,9 @@ namespace Contract.Core.Repositories
                 getDataObj.ContractDate = item.FirstOrDefault().ContractDate;
                 getDataObj.StartDate = item.FirstOrDefault().StartDate;
                 getDataObj.EndDate = item.FirstOrDefault().EndDate;
-
-                getDataObj.SupplierName = item.FirstOrDefault().SupplierName;
-                getDataObj.SupplierNameAr = item.FirstOrDefault().SupplierNameAr;
-                //if (item.FirstOrDefault().SupplierId != null || item.FirstOrDefault().SupplierId != 0)
-                //{
-                //    var lstSuppliers = _context.Suppliers.Where(a => a.Id == item.FirstOrDefault().SupplierId).ToList();
-                //    if (lstSuppliers.Count > 0)
-                //    {
-                //        var supplierObj = lstSuppliers[0];
-                //        getDataObj.SupplierName = supplierObj.Name;
-                //        getDataObj.SupplierNameAr = supplierObj.NameAr;
-                //    }
-                //}
+                getDataObj.HospitalId = item.FirstOrDefault().HospitalId;
+                getDataObj.SupplierName = item.FirstOrDefault().SupplierId != null ? item.FirstOrDefault().SupplierName:"";
+                getDataObj.SupplierNameAr = item.FirstOrDefault().SupplierId != null ? item.FirstOrDefault().SupplierNameAr:"";
                 list.Add(getDataObj);
             }
 

@@ -175,10 +175,6 @@ namespace Asset.Core.Repositories
             }
             return assetDetailObj.Id;
         }
-
-
-
-
         public int Delete(int id)
         {
             var assetDetailObj = _context.AssetDetails.Find(id);
@@ -212,6 +208,7 @@ namespace Asset.Core.Repositories
                     Model = item.MasterAsset.ModelNumber,
                     Price = item.Price,
                     Serial = item.SerialNumber,
+                    BarCode = item.Barcode,
                     SerialNumber = item.SerialNumber,
                     PurchaseDate = item.PurchaseDate,
                     SupplierId = item.SupplierId,
@@ -238,6 +235,7 @@ namespace Asset.Core.Repositories
                 Code = item.Code,
                 Price = item.Price,
                 Serial = item.SerialNumber,
+                BarCode = item.Barcode,
                 SerialNumber = item.SerialNumber,
                 PurchaseDate = item.PurchaseDate,
                 HospitalName = _context.Hospitals.Where(a => a.Id == item.HospitalId).ToList().First().Name,
@@ -298,6 +296,7 @@ namespace Asset.Core.Repositories
                             Code = detail.AssetDetail.Code,
                             UserId = userObj.Id,
                             Price = detail.AssetDetail.Price,
+                            BarCode = detail.AssetDetail.Barcode,
                             MasterImg = detail.AssetDetail.MasterAsset.AssetImg,
                             Serial = detail.AssetDetail.SerialNumber,
                             BrandName = detail.AssetDetail.MasterAsset.brand.Name,
@@ -344,6 +343,7 @@ namespace Asset.Core.Repositories
                                                Code = detail.Code,
                                                UserId = userObj.Id,
                                                Price = detail.Price,
+                                               BarCode = detail.Barcode,
                                                MasterImg = detail.MasterAsset.AssetImg,
                                                Serial = detail.SerialNumber,
                                                BrandName = detail.MasterAsset.brand.Name,
@@ -376,8 +376,7 @@ namespace Asset.Core.Repositories
                                            }).ToListAsync();
 
 
-                    if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0
-                        && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                    if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
                     {
                         lstAssetDetails = lstAssetDetails.ToList();
                     }
@@ -409,6 +408,7 @@ namespace Asset.Core.Repositories
                                     UserId = userObj.Id,
                                     Price = detail.AssetDetail.Price,
                                     Serial = detail.AssetDetail.SerialNumber,
+                                    BarCode = detail.AssetDetail.Barcode,
                                     MasterImg = detail.AssetDetail.MasterAsset.AssetImg,
                                     BrandName = detail.AssetDetail.MasterAsset.brand.Name,
                                     BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
@@ -485,6 +485,7 @@ namespace Asset.Core.Repositories
                               Price = a.Price,
                               Serial = a.SerialNumber,
                               SerialNumber = a.SerialNumber,
+                              BarCode = a.Barcode,
                               MasterAssetId = a.MasterAssetId,
                               PurchaseDate = a.PurchaseDate,
                               HospitalId = a.HospitalId,
@@ -953,6 +954,7 @@ namespace Asset.Core.Repositories
 
                          Id = detail.AssetDetail.Id,
                          Code = detail.AssetDetail.Code,
+                         BarCode = detail.AssetDetail.Barcode,
                          Model = detail.AssetDetail.MasterAsset.ModelNumber,
                          Serial = detail.AssetDetail.SerialNumber,
                          SerialNumber = detail.AssetDetail.SerialNumber,
@@ -1013,6 +1015,7 @@ namespace Asset.Core.Repositories
 
                         Id = item.Id,
                         Code = item.Code,
+                        BarCode = item.Barcode,
                         Model = item.MasterAsset.ModelNumber,
                         BrandName = item.MasterAsset.brand.Name,
                         BrandNameAr = item.MasterAsset.brand.NameAr,
@@ -1179,15 +1182,15 @@ namespace Asset.Core.Repositories
         {
             List<IndexAssetDetailVM.GetData> lstData = new List<IndexAssetDetailVM.GetData>();
 
-            var list = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Where(a => a.HospitalId == searchObj.HospitalId && a.Hospital.Id == searchObj.HospitalId).Select(item => new IndexAssetDetailVM.GetData
+            var list = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital)
+              //  .Where(a => a.HospitalId == searchObj.HospitalId && a.Hospital.Id == searchObj.HospitalId)
+                .Select(item => new IndexAssetDetailVM.GetData
             {
                 Id = item.Id,
                 Code = item.Code,
                 SerialNumber = item.SerialNumber,
                 HospitalId = item.HospitalId,
                 SupplierId = item.SupplierId,
-
-
                 MasterAssetId = item.MasterAsset.Id,
                 AssetName = item.MasterAsset.Name,
                 OriginId = item.MasterAsset.OriginId,
@@ -1199,6 +1202,28 @@ namespace Asset.Core.Repositories
                 CityId = item.Hospital.CityId,
                 OrganizationId = item.Hospital.OrganizationId,
                 SubOrganizationId = item.Hospital.SubOrganizationId,
+                Serial = item.SerialNumber,
+
+                //UserId = userObj.Id,
+                Price = item.Price,
+                BarCode = item.Barcode,
+                MasterImg = item.MasterAsset.AssetImg,
+                BrandName = item.MasterAsset.brand.Name,
+                BrandNameAr = item.MasterAsset.brand.NameAr,
+                Model = item.MasterAsset.ModelNumber,
+                PurchaseDate = item.PurchaseDate,
+                AssetNameAr = item.MasterAsset.NameAr,
+                GovernorateName = item.Hospital.Governorate.Name,
+                GovernorateNameAr = item.Hospital.Governorate.NameAr,
+                CityName = item.Hospital.City.Name,
+                CityNameAr = item.Hospital.City.NameAr,
+                OrgName = item.Hospital.Organization.Name,
+                OrgNameAr = item.Hospital.Organization.NameAr,
+                SubOrgName = item.Hospital.SubOrganization.Name,
+                SubOrgNameAr = item.Hospital.SubOrganization.NameAr,
+                SupplierName = item.Supplier.Name,
+                SupplierNameAr = item.Supplier.NameAr,
+                QrFilePath = item.QrFilePath
 
             }).ToList();
 
@@ -1241,8 +1266,14 @@ namespace Asset.Core.Repositories
             {
                 list = list.Where(b => b.SerialNumber.Contains(searchObj.Serial)).ToList();
             }
-
-
+            if(searchObj.HospitalId > 0)
+            {
+                list = list.Where(b => b.HospitalId == searchObj.HospitalId).ToList();
+            }
+            else
+            {
+                list = list.ToList();
+            }
 
             return list;
         }
@@ -1384,10 +1415,14 @@ namespace Asset.Core.Repositories
                                      {
 
                                          Id = item.Id,
-                                         AssetName = item.MasterAsset.Name + " - " + item.SerialNumber,
-                                         AssetNameAr = item.MasterAsset.NameAr + " - " + item.SerialNumber,
+                                         AssetName = item.MasterAsset.Name,
+                                         AssetNameAr = item.MasterAsset.NameAr ,
+                                         SerialNumber = item.SerialNumber,
                                          SupplierName = item.Supplier.Name,
-                                         SupplierNameAr = item.Supplier.NameAr
+                                         SupplierNameAr = item.Supplier.NameAr,
+                                         HospitalName = item.Hospital.Name,
+                                         HospitalNameAr = item.Hospital.NameAr,
+                                         Barcode = item.Barcode
 
                                      }).ToList();
             return lstAssetDetails;
@@ -2364,17 +2399,6 @@ namespace Asset.Core.Repositories
                     userRoleNames.Add(name.Name);
                 }
             }
-            //var lstAssets = _context.AssetStatusTransactions
-            //                   .Include(t => t.AssetDetail)
-            //                   .Include(t => t.AssetDetail.Hospital)
-            //                   .Include(t => t.AssetDetail.Hospital.Governorate)
-            //                   .Include(t => t.AssetDetail.Hospital.City)
-            //                   .Include(t => t.AssetDetail.Hospital.Organization)
-            //                   .Include(t => t.AssetDetail.Hospital.SubOrganization)
-            //                   .Include(t => t.AssetDetail.Supplier)
-            //                   .Include(t => t.AssetDetail.MasterAsset)
-            //                   .Include(t => t.AssetDetail.MasterAsset.brand).ToList();
-
             var lstAssets = _context.AssetDetails
                              .Include(t => t.Hospital)
                              .Include(t => t.Hospital.Governorate)
@@ -2401,10 +2425,11 @@ namespace Asset.Core.Repositories
                     detail.Code = asset.Code;
                     detail.UserId = UserObj.Id;
                     detail.Price = asset.Price;
+                    detail.BarCode = asset.Barcode;
                     detail.MasterImg = asset.MasterAsset.AssetImg;
                     detail.Serial = asset.SerialNumber;
-                    detail.BrandName = asset.MasterAsset.brand.Name;
-                    detail.BrandNameAr = asset.MasterAsset.brand.NameAr;
+                    detail.BrandName = asset.MasterAsset.brand != null ? asset.MasterAsset.brand.Name : "";
+                    detail.BrandNameAr = asset.MasterAsset.brand != null ? asset.MasterAsset.brand.NameAr : "";
                     detail.Model = asset.MasterAsset.ModelNumber;
                     detail.SerialNumber = asset.SerialNumber;
                     detail.MasterAssetId = asset.MasterAssetId;
@@ -2479,13 +2504,13 @@ namespace Asset.Core.Repositories
         {
             List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
             var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Where(a => a.SerialNumber.Contains(serial)).ToList();
-            if(hospitalId == 0)
+            if (hospitalId == 0)
             {
                 lst = lst.ToList();
             }
             else
             {
-                lst = lst.Where(a=>a.HospitalId == hospitalId).ToList();
+                lst = lst.Where(a => a.HospitalId == hospitalId).ToList();
             }
             if (lst.Count > 0)
             {
@@ -2494,6 +2519,7 @@ namespace Asset.Core.Repositories
                     IndexAssetDetailVM.GetData getDataObj = new IndexAssetDetailVM.GetData();
                     getDataObj.Id = item.Id;
                     getDataObj.Code = item.Code;
+                    getDataObj.BarCode = item.Barcode;
                     getDataObj.Price = item.Price;
                     getDataObj.MasterAssetName = item.MasterAsset.Name;
                     getDataObj.MasterAssetNameAr = item.MasterAsset.NameAr;
@@ -2513,6 +2539,55 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
-    }
+
+        public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId)
+        {
+
+            List<ViewAssetDetailVM> lstAssetDetails = new List<ViewAssetDetailVM>();
+            lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Supplier)
+                               .Where(a => a.HospitalId == hospitalId)
+                               .Select(item => new ViewAssetDetailVM
+                               {
+
+                                   Id = item.Id,
+                                   AssetName = item.MasterAsset.Name,
+                                   AssetNameAr = item.MasterAsset.NameAr,
+                                   SerialNumber = item.SerialNumber,
+                                   SupplierName = item.Supplier.Name,
+                                   SupplierNameAr = item.Supplier.NameAr,
+                                   HospitalName = item.Hospital.Name,
+                                   HospitalNameAr = item.Hospital.NameAr,
+                                   Barcode = item.Barcode
+
+                               }).ToList();
+
+            var contractAssetDetailIds = _context.ContractDetails.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Where(a => a.AssetDetail.HospitalId == hospitalId).Select(a => a.AssetDetailId).ToList();
+            var assetDetailIds = _context.AssetDetails.ToList().Where(a => a.HospitalId == hospitalId).Select(a => a.Id).ToList();
+            List<int> lstContractAssetDetailIds = new List<int>();
+            if (contractAssetDetailIds.Count > 0)
+            {
+                foreach (var item in contractAssetDetailIds)
+                {
+                    lstContractAssetDetailIds.Add(int.Parse(item.ToString()));
+                }
+
+                var remainIds = assetDetailIds.Except(lstContractAssetDetailIds);
+
+             
+                lstAssetDetails = lstAssetDetails.Where(a => remainIds.Contains(a.Id)).ToList();
+            }
+            else
+            {
+                var remainIds = assetDetailIds;
+
+
+                lstAssetDetails = lstAssetDetails.Where(a => remainIds.Contains(a.Id)).ToList();
+            }
+
+
+          
+            return lstAssetDetails;
+        }
+        }
 }
 
