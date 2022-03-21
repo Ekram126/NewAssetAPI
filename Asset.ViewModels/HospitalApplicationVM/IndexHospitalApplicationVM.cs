@@ -16,7 +16,11 @@ namespace Asset.ViewModels.HospitalApplicationVM
             public int Id { get; set; }
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
+            public string BarCode { get; set; }
 
+            public string SerialNumber { get; set; }
+
+            public string ModelNumber { get; set; }
             public int? StatusId { get; set; }
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }

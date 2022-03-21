@@ -1,6 +1,7 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.AssetDetailVM;
 using Asset.ViewModels.ContractVM;
 using System;
 using System.Collections.Generic;
@@ -41,9 +42,19 @@ namespace Asset.Core.Services
             return _unitOfWork.ContractDetailRepository.GetById(id);
         }
 
+        public List<IndexContractVM.GetData> GetContractAssetsByHospitalId(int hospitalId, int masterContractId)
+        {
+            return _unitOfWork.ContractDetailRepository.GetContractAssetsByHospitalId(hospitalId,masterContractId);
+        }
+
         public IEnumerable<IndexContractVM.GetData> GetContractsByMasterContractId(int masterContractId)
         {
             return _unitOfWork.ContractDetailRepository.GetContractsByMasterContractId(masterContractId);
+        }
+
+        public List<Hospital> GetListofHospitalsFromAssetContractDetailByMasterContractId(int masterContractId)
+        {
+            return _unitOfWork.ContractDetailRepository.GetListofHospitalsFromAssetContractDetailByMasterContractId(masterContractId);
         }
 
         public int Update(ContractDetail contractDetailObj)

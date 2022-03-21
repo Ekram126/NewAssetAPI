@@ -1,5 +1,6 @@
 ﻿using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.AssetDetailVM;
 using Asset.ViewModels.ContractVM;
 using Asset.ViewModels.PagingParameter;
 using Microsoft.AspNetCore.Mvc;
@@ -50,6 +51,27 @@ namespace Contract.API.Controllers
         {
             return _contractDetailService.GetContractsByMasterContractId(masterId).ToList();
         }
+
+
+
+
+        [HttpGet]
+        [Route("GetListofHospitalsFromAssetContractDetailByMasterContractId/{masterId}")]
+        public ActionResult<IEnumerable<Hospital>> GetListofHospitalsFromAssetContractDetailByMasterContractId(int masterId)
+        {
+            return _contractDetailService.GetListofHospitalsFromAssetContractDetailByMasterContractId(masterId).ToList();
+        }
+
+
+        [HttpGet]
+        [Route("GetContractAssetsByHospitalId/{hospitalId}/{masterContractId}")]
+        public ActionResult<IEnumerable<IndexContractVM.GetData>> GetContractAssetsByHospitalId(int hospitalId, int masterContractId)
+        {
+            return _contractDetailService.GetContractAssetsByHospitalId(hospitalId, masterContractId).ToList();
+        }
+
+
+
 
         [HttpGet]
         [Route("GetMasterContractsByHospitalId/{hospitalId}")]
