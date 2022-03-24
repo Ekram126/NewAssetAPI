@@ -132,6 +132,12 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpGet("GetAllRequestsByHospitalAssetId/{assetId}")]
+        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalAssetId(int assetId)
+        {
+            return _requestService.GetAllRequestsByHospitalAssetId(assetId);
+        }
+
 
         [HttpGet]
         [Route("GetTotalOpenRequest/{userId}")]

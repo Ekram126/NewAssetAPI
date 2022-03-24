@@ -14,6 +14,7 @@ namespace Asset.ViewModels.HospitalApplicationVM
         public class GetData
         {
             public int Id { get; set; }
+            public int? AssetId { get; set; }
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
             public string BarCode { get; set; }

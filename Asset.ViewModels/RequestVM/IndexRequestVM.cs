@@ -68,6 +68,32 @@ namespace Asset.ViewModels.RequestVM
             public int CountListTracks { get; set; }
             public int CountWorkOrder { get; set; }
             public int LatestWorkOrderStatusId { get; set; }
+
+
+
+
+
+            public string WorkOrderSubject { get; set; }
+            public string WorkOrderNumber { get; set; }
+            public DateTime? CreationDate { get; set; }
+            public DateTime? PlannedStartDate { get; set; }
+            public DateTime? PlannedEndDate { get; set; }
+            public DateTime? ActualStartDate { get; set; }
+            public DateTime? ActualEndDate { get; set; }
+            public string WorkOrderNote { get; set; }
+            public string AssignedTo { get; set; }
+            public string WOCreatedBy { get; set; }
+            public string WOPeriorityName { get; set; }
+            public string WOPeriorityNameAr { get; set; }
+            public string WorkOrderTypeName { get; set; }
+            public string WorkOrderTypeNameAr { get; set; }
+            public string WorkOrderStatusName { get; set; }
+            public string WorkOrderStatusNameAr { get; set; }
+            public string WorkOrderStatusIcon { get; set; }
+            public string WorkOrderStatusColor { get; set; }
+
+
+
             public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
             public List<IndexWorkOrderVM> ListWorkOrder { get; set; }
             public List<LstWorkOrderFromTracking> ListWorkOrderTracking { get; set; }

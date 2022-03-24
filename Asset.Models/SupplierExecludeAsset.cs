@@ -30,6 +30,7 @@ namespace Asset.Models
 
         public DateTime? Date { get; set; }
         public DateTime? ExecludeDate { get; set; }
+        public DateTime? ActionDate { get; set; }
 
         [StringLength(50)]
         public string ExNumber { get; set; }

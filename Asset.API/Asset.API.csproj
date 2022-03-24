@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+	  <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Reports\AssetReport.repx" />
-    <None Remove="Reports\AssetReport.vsrepx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DevExpress.Reporting.Core" Version="21.1.5-pre-21203" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.14.0" />
     <PackageReference Include="MailKit" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
@@ -113,13 +111,5 @@
     <None Include="bin\Debug\net5.0\System.Security.Cryptography.ProtectedData.dll" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Reports\AssetReport.cs">
-      <DependentUpon>AssetReport.vsrepx</DependentUpon>
-    </Compile>
-    <Compile Update="Reports\AssetReport.Designer.cs">
-      <DependentUpon>AssetReport.vsrepx</DependentUpon>
-    </Compile>
-  </ItemGroup>
 
 </Project>

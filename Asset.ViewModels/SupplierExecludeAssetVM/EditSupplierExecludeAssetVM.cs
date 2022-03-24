@@ -17,6 +17,7 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public string UserId { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? ExecludeDate { get; set; }
+        public DateTime? ActionDate { get; set; }
         public string ExNumber { get; set; }
 
         public int? AppTypeId

@@ -67,6 +67,8 @@ namespace Asset.ViewModels.RequestTrackingVM
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }
             public bool isExpanded { get; set; }
+            public string CreatedById { get; set; }
+            public string UserName { get; set; }
             public List<RequestDocument> ListDocuments { get; set; }
         }
     }

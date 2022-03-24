@@ -92,6 +92,8 @@ namespace Asset.Core.Repositories
 
             var lstStatus = _context.RequestStatus.ToList();
             getDataObj.ListStatus = lstStatus;
+
+
             var requests = _context.Request.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
                 .Include(a => a.AssetDetail.Hospital.Governorate)
                   .Include(a => a.AssetDetail.Hospital.City)
@@ -186,12 +188,8 @@ namespace Asset.Core.Repositories
 
             }
 
-
-
-
             if (requests.Count > 0)
             {
-
                 foreach (var req in requests)
                 {
                     var trackObj = _context.RequestTracking.OrderByDescending(a => a.Id).FirstOrDefault(a => a.RequestId == req.Id);

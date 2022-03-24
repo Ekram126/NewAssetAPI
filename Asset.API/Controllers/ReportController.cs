@@ -1,6 +1,5 @@
 ﻿using Asset.Domain.Services;
 using Asset.ViewModels.AssetDetailVM;
-using DevExpress.XtraReports.UI;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -29,5 +29,9 @@ namespace Asset.ViewModels.HospitalApplicationVM
         public int CityId { get; set; }
         public int OrganizationId { get; set; }
         public int SubOrganizationId { get; set; }
+
+        public string SerialNumber { get; set; }
+        public string BarCode { get; set; }
+        public string ModelNumber { get; set; }
     }
 }

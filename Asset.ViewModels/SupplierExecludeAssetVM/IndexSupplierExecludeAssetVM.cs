@@ -16,6 +16,7 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
             public int Id { get; set; }
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
+            public int? AssetId { get; set; }
             public int? StatusId { get; set; }
             public string UserName { get; set; }
             public string Date { get; set; }
@@ -35,9 +36,12 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }
 
+            public string BarCode { get; set; }
+            public string SerialNumber { get; set; }
+            public string ModelNumber { get; set; }
 
 
-      
+
             public int? OpenStatus { get; set; }
             public int? ApproveStatus { get; set; }
             public int? RejectStatus { get; set; }

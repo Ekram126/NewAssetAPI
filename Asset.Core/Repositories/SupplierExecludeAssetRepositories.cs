@@ -80,11 +80,19 @@ namespace Asset.Core.Repositories
                 getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
                 getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
                 getDataObj.UserName = item.User.UserName;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetId = item.AssetDetail.Id;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
+
+                getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                getDataObj.BarCode = item.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
+
                 getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
                 getDataObj.StatusId = item.StatusId;
+
 
                 var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
                 if (lstStatuses.Count > 0)
@@ -448,8 +456,15 @@ namespace Asset.Core.Repositories
                 getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
                 getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
                 getDataObj.UserName = item.User.UserName;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetId = item.AssetDetail.Id;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
+
+                getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                getDataObj.BarCode = item.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
+
                 getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
                 getDataObj.StatusId = item.StatusId;
@@ -584,6 +599,34 @@ namespace Asset.Core.Repositories
                 else
                     list = list.OrderBy(d => d.ExNumber).ToList();
             }
+
+
+
+
+
+            else if (sortObj.BarCode != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.BarCode).ToList();
+                else
+                    list = list.OrderBy(d => d.BarCode).ToList();
+            }
+
+            else if (sortObj.SerialNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.SerialNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.SerialNumber).ToList();
+            }
+
+            else if (sortObj.ModelNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ModelNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.ModelNumber).ToList();
+            }
             return list;
         }
 
@@ -611,8 +654,14 @@ namespace Asset.Core.Repositories
                 getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
                 getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
                 getDataObj.UserName = item.User.UserName;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber : "";
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber : "";
+                getDataObj.AssetId = item.AssetDetail.Id;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.Name:"" ;// + " - " + item.AssetDetail.SerialNumber : "";
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.NameAr:"" ;// + " - " + item.AssetDetail.SerialNumber : "";
+
+                getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                getDataObj.BarCode = item.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
 
                 getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
 
@@ -702,8 +751,15 @@ namespace Asset.Core.Repositories
                 getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
                 getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
                 getDataObj.UserName = item.User.UserName;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetId = item.AssetDetail.Id;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
+
+                getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                getDataObj.BarCode = item.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
+
                 getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
                 getDataObj.StatusId = item.StatusId;
@@ -813,8 +869,14 @@ namespace Asset.Core.Repositories
                 getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
                 getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
                 getDataObj.UserName = item.User.UserName;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetId = item.AssetDetail.Id;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
+
+                getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                getDataObj.BarCode = item.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
                 getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
                 getDataObj.StatusId = item.StatusId;

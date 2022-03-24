@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
-using DevExpress.XtraReports.UI;
 
 namespace Asset.API.Helpers
 {

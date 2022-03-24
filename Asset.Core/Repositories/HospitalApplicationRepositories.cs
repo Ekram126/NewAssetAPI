@@ -71,14 +71,21 @@ namespace Asset.Core.Repositories
                 IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
                 getDataObj.Id = item.Id;
                 getDataObj.AppNumber = item.AppNumber;
-                getDataObj.Date = item.AppDate.Value.ToShortDateString();
+                       getDataObj.Date = item.AppDate.Value.ToShortDateString();
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetId = item.AssetDetail.Id;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.TypeName = item.ApplicationType.Name;
                 getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+
+                getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                getDataObj.BarCode = item.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
 
                 getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
@@ -90,6 +97,7 @@ namespace Asset.Core.Repositories
                 {
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
+                    
                 }
 
                 var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
@@ -505,21 +513,18 @@ namespace Asset.Core.Repositories
                 IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
                 getDataObj.Id = item.Id;
                 getDataObj.AppNumber = item.AppNumber;
+                getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.Date = item.AppDate.Value.ToShortDateString();
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
+                getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.TypeName = item.ApplicationType.Name;
                 getDataObj.TypeNameAr = item.ApplicationType.NameAr;
-
                 getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
-
-
-
-
                 getDataObj.StatusId = item.StatusId;
 
                 foreach (var itm in lstHospitalApplications)
@@ -697,6 +702,28 @@ namespace Asset.Core.Repositories
                 else
                     list = list.OrderBy(d => d.AppNumber).ToList();
             }
+
+            else if (sortObj.SerialNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.SerialNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.SerialNumber).ToList();
+            }
+            else if (sortObj.ModelNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ModelNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.ModelNumber).ToList();
+            }
+            else if (sortObj.BarCode != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.BarCode).ToList();
+                else
+                    list = list.OrderBy(d => d.BarCode).ToList();
+            }
             return list;
         }
 
@@ -715,6 +742,7 @@ namespace Asset.Core.Repositories
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
+                getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.TypeName = item.ApplicationType.Name;
@@ -835,6 +863,7 @@ namespace Asset.Core.Repositories
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
+                getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.TypeName = item.ApplicationType.Name;
@@ -939,10 +968,17 @@ namespace Asset.Core.Repositories
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetId = item.AssetDetail.Id;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.TypeName = item.ApplicationType.Name;
                 getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+
+                getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                getDataObj.BarCode = item.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
 
                 getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
@@ -1064,8 +1100,13 @@ namespace Asset.Core.Repositories
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetId = item.AssetDetail.Id;
+                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
+                getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                getDataObj.BarCode = item.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
                 getDataObj.TypeName = item.ApplicationType.Name;
                 getDataObj.TypeNameAr = item.ApplicationType.NameAr;
 

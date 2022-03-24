@@ -126,5 +126,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.GetByRequestCode(code);
         }
+
+        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalAssetId(int assetId)
+        {
+            return _unitOfWork.Request.GetAllRequestsByHospitalAssetId(assetId);
+        }
     }
 }
