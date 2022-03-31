@@ -19,6 +19,6 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public string Comment { get; set; }
         public int? AppTypeId { get; set; }
         public List<int> ReasonIds { get; set; }
-        public DateTime? ActionDate { get; set; }
+        public string ActionDate { get; set; }
     }
 }

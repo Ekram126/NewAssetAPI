@@ -20,7 +20,7 @@ namespace Asset.ViewModels.HospitalApplicationVM
         public string Comment { get; set; }
         public List<int> ReasonIds { get; set; }
 
-        public DateTime? ActionDate { get; set; }
+        public string ActionDate { get; set; }
 
     }
 }

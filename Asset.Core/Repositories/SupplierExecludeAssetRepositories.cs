@@ -56,8 +56,11 @@ namespace Asset.Core.Repositories
                 HospitalName = item.AssetDetail.Hospital.Name,
                 HospitalNameAr = item.AssetDetail.Hospital.NameAr,
 
-                assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
-                assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber
+                assetName = item.AssetDetail.MasterAsset.Name,// + " - " + item.AssetDetail.SerialNumber,
+                assetNameAr = item.AssetDetail.MasterAsset.NameAr,// + " - " + item.AssetDetail.SerialNumber,
+
+                SerialNumber = item.AssetDetail.SerialNumber,
+                BarCode =item.AssetDetail.Barcode
 
             }).FirstOrDefault();
 
@@ -99,6 +102,8 @@ namespace Asset.Core.Repositories
                 {
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
+                    getDataObj.StatusColor = lstStatuses[0].Color;
+                    getDataObj.StatusIcon = lstStatuses[0].Icon;
                 }
 
                 if (item.AppTypeId == 1)
@@ -165,6 +170,11 @@ namespace Asset.Core.Repositories
                     supplierExecludeAssetObj.Date = DateTime.Today.Date;
                     if (model.ExecludeDate != "")
                         supplierExecludeAssetObj.ExecludeDate = DateTime.Parse(model.ExecludeDate.ToString());
+
+                    if (model.ActionDate != null)
+                        supplierExecludeAssetObj.ActionDate = DateTime.Parse(model.ActionDate.ToString());
+
+
                     supplierExecludeAssetObj.ExNumber = model.ExNumber;
                     supplierExecludeAssetObj.UserId = model.UserId;
                     _context.SupplierExecludeAssets.Add(supplierExecludeAssetObj);
@@ -209,8 +219,6 @@ namespace Asset.Core.Repositories
                                 _context.SupplierExecludeAttachments.Remove(attach);
                                 _context.SaveChanges();
                             }
-
-
                             _context.SupplierExecludes.Remove(trans);
                             _context.SaveChanges();
                         }
@@ -238,6 +246,10 @@ namespace Asset.Core.Repositories
                 supplierExecludeAssetObj.StatusId = model.StatusId;
                 supplierExecludeAssetObj.Date = model.Date;
                 supplierExecludeAssetObj.ExecludeDate = model.ExecludeDate;
+
+                if (model.ActionDate != "")
+                    supplierExecludeAssetObj.ActionDate = DateTime.Parse(model.ActionDate.ToString());
+
                 supplierExecludeAssetObj.ExNumber = model.ExNumber;
                 supplierExecludeAssetObj.UserId = model.UserId;
                 supplierExecludeAssetObj.Comment = model.Comment;
@@ -246,8 +258,6 @@ namespace Asset.Core.Repositories
 
                 if (model.ReasonIds.Count > 0)
                 {
-
-
                     List<int> reasonIds = new List<int>();
                     var savedReasonIds = (from execlude in _context.SupplierExecludeReasons
                                           join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
@@ -345,6 +355,10 @@ namespace Asset.Core.Repositories
                     supplierExecludeAssetObj.ExecludeDate = model.ExecludeDate;
                 if (model.StatusId == 3)
                     supplierExecludeAssetObj.ExecludeDate = DateTime.Today.Date;
+
+
+                if (model.ActionDate != "")
+                    supplierExecludeAssetObj.ActionDate = DateTime.Today.Date;// DateTime.Parse(model.ActionDate.ToString());
 
                 supplierExecludeAssetObj.UserId = model.UserId;
                 supplierExecludeAssetObj.Comment = model.Comment;
@@ -474,6 +488,8 @@ namespace Asset.Core.Repositories
                 {
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
+                    getDataObj.StatusColor = lstStatuses[0].Color;
+                    getDataObj.StatusIcon = lstStatuses[0].Icon;
                 }
                 if (item.AppTypeId == 1)
                 {
@@ -655,8 +671,8 @@ namespace Asset.Core.Repositories
                 getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.Name:"" ;// + " - " + item.AssetDetail.SerialNumber : "";
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.NameAr:"" ;// + " - " + item.AssetDetail.SerialNumber : "";
+                getDataObj.AssetName = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.Name : "";// + " - " + item.AssetDetail.SerialNumber : "";
+                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.NameAr : "";// + " - " + item.AssetDetail.SerialNumber : "";
 
                 getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
                 getDataObj.BarCode = item.AssetDetail.Barcode;
@@ -675,6 +691,8 @@ namespace Asset.Core.Repositories
                 {
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
+                    getDataObj.StatusColor = lstStatuses[0].Color;
+                    getDataObj.StatusIcon = lstStatuses[0].Icon;
                 }
                 if (appTypeId == 1)
                 {
@@ -765,7 +783,8 @@ namespace Asset.Core.Repositories
                 getDataObj.StatusId = item.StatusId;
                 getDataObj.StatusName = item.HospitalSupplierStatus.Name;
                 getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
-
+                getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
 
                 if (item.AppTypeId == 1)
                 {
@@ -882,6 +901,9 @@ namespace Asset.Core.Repositories
                 getDataObj.StatusId = item.StatusId;
                 getDataObj.StatusName = item.HospitalSupplierStatus.Name;
                 getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
+
 
 
                 if (item.AppTypeId == 1)

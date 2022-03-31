@@ -39,10 +39,10 @@ namespace Asset.Core.Repositories
                  Longtitude = item.Longtitude,
                  ManagerName = item.ManagerName,
                  ManagerNameAr = item.ManagerNameAr,
-                 GovernorateId = item.GovernorateId,
-                 CityId = item.CityId,
-                 OrganizationId = item.OrganizationId,
-                 SubOrganizationId = item.SubOrganizationId,
+                 GovernorateId = item.GovernorateId != null? item.GovernorateId:0,
+                 CityId = item.CityId != null ? item.CityId:0,
+                 OrganizationId = item.OrganizationId != null ? item.OrganizationId:0,
+                 SubOrganizationId = item.SubOrganizationId != null ? item.SubOrganizationId:0,
                  Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList(),
                  EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).ToList().Count> 0 ? 
                  _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment

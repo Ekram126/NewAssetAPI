@@ -15,6 +15,7 @@ namespace Asset.Core.Repositories
     public class HospitalApplicationRepositories : IHospitalApplicationRepository
     {
         private ApplicationDbContext _context;
+
         string msg;
 
         public HospitalApplicationRepositories(ApplicationDbContext context)
@@ -71,7 +72,7 @@ namespace Asset.Core.Repositories
                 IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
                 getDataObj.Id = item.Id;
                 getDataObj.AppNumber = item.AppNumber;
-                       getDataObj.Date = item.AppDate.Value.ToShortDateString();
+                getDataObj.Date = item.AppDate.Value.ToShortDateString();
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
@@ -97,7 +98,9 @@ namespace Asset.Core.Repositories
                 {
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
-                    
+                    getDataObj.StatusColor = lstStatuses[0].Color;
+                    getDataObj.StatusIcon = lstStatuses[0].Icon;
+
                 }
 
                 var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
@@ -162,6 +165,11 @@ namespace Asset.Core.Repositories
                     hospitalApplicationObj.AppDate = DateTime.Today.Date;
                     if (model.DueDate != "")
                         hospitalApplicationObj.DueDate = DateTime.Parse(model.DueDate.ToString());
+                    if (model.ActionDate != null)
+                        hospitalApplicationObj.ActionDate = DateTime.Parse(model.ActionDate.ToString());
+                    else
+                        hospitalApplicationObj.ActionDate = DateTime.Today.Date;
+
                     hospitalApplicationObj.AppNumber = model.AppNumber;
                     hospitalApplicationObj.UserId = model.UserId;
                     hospitalApplicationObj.Comment = model.Comment;
@@ -179,6 +187,7 @@ namespace Asset.Core.Repositories
                     //        _context.SaveChanges();
                     //    }
                     //}
+
                 }
             }
             catch (Exception ex)
@@ -195,12 +204,12 @@ namespace Asset.Core.Repositories
             {
                 if (hospitalApplicationObj != null)
                 {
-                   var lstTransactions=  _context.HospitalReasonTransactions.Where(a => a.HospitalApplicationId == hospitalApplicationObj.Id).ToList();
-                    if(lstTransactions.Count>0)
+                    var lstTransactions = _context.HospitalReasonTransactions.Where(a => a.HospitalApplicationId == hospitalApplicationObj.Id).ToList();
+                    if (lstTransactions.Count > 0)
                     {
                         foreach (var trans in lstTransactions)
                         {
-                           var lstAttachments = _context.HospitalApplicationAttachments.Where(a => a.HospitalReasonTransactionId == trans.Id).ToList();
+                            var lstAttachments = _context.HospitalApplicationAttachments.Where(a => a.HospitalReasonTransactionId == trans.Id).ToList();
                             foreach (var attach in lstAttachments)
                             {
                                 _context.HospitalApplicationAttachments.Remove(attach);
@@ -211,7 +220,7 @@ namespace Asset.Core.Repositories
                             _context.HospitalReasonTransactions.Remove(trans);
                             _context.SaveChanges();
                         }
-                     
+
                     }
                     _context.HospitalApplications.Remove(hospitalApplicationObj);
                     return _context.SaveChanges();
@@ -237,6 +246,9 @@ namespace Asset.Core.Repositories
                 hospitalApplicationObj.AppDate = DateTime.Today.Date;
                 if (model.DueDate != "")
                     hospitalApplicationObj.DueDate = DateTime.Parse(model.DueDate.ToString());
+                if (model.ActionDate != "")
+                    hospitalApplicationObj.ActionDate = DateTime.Parse(model.ActionDate.ToString());
+
                 hospitalApplicationObj.AppNumber = model.AppNumber;
                 hospitalApplicationObj.UserId = model.UserId;
                 _context.Entry(hospitalApplicationObj).State = EntityState.Modified;
@@ -357,7 +369,7 @@ namespace Asset.Core.Repositories
         {
             HospitalApplicationAttachment assetAttachmentObj = new HospitalApplicationAttachment();
             assetAttachmentObj.HospitalReasonTransactionId = attachObj.HospitalReasonTransactionId;
-            assetAttachmentObj.Title = attachObj.Title;
+            assetAttachmentObj.Title = "";
             assetAttachmentObj.FileName = attachObj.FileName;
             _context.HospitalApplicationAttachments.Add(assetAttachmentObj);
             _context.SaveChanges();
@@ -399,6 +411,10 @@ namespace Asset.Core.Repositories
 
 
             hospitalApplicationObj.DueDate = DateTime.Parse(model.DueDate.ToString());
+
+            if (model.ActionDate != "")
+                hospitalApplicationObj.ActionDate = DateTime.Today.Date;
+
             hospitalApplicationObj.UserId = model.UserId;
             hospitalApplicationObj.Comment = model.Comment;
             _context.Entry(hospitalApplicationObj).State = EntityState.Modified;
@@ -757,29 +773,10 @@ namespace Asset.Core.Repositories
                 {
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
+                    getDataObj.StatusColor = lstStatuses[0].Color;
+                    getDataObj.StatusIcon = lstStatuses[0].Icon;
                 }
 
-                //getDataObj.StatusId = item.StatusId;
-                //if (item.StatusId == 1)
-                //{
-                //    getDataObj.StatusName = "Open";
-                //    getDataObj.StatusNameAr = "فتح";
-                //}
-                //if (item.StatusId == 2)
-                //{
-                //    getDataObj.StatusName = "Approved";
-                //    getDataObj.StatusNameAr = "موافقة";
-                //}
-                //if (item.StatusId == 3)
-                //{
-                //    getDataObj.StatusName = "Rejected";
-                //    getDataObj.StatusNameAr = "رفض الطلب";
-                //}
-                //if (item.StatusId == 4)
-                //{
-                //    getDataObj.StatusName = "System Rejected";
-                //    getDataObj.StatusNameAr = "استبعاد من النظام";
-                //}
 
                 var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
                                       join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
@@ -879,6 +876,8 @@ namespace Asset.Core.Repositories
                 {
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
+                    getDataObj.StatusColor = lstStatuses[0].Color;
+                    getDataObj.StatusIcon = lstStatuses[0].Icon;
                 }
 
 
@@ -986,6 +985,9 @@ namespace Asset.Core.Repositories
                 getDataObj.StatusId = item.StatusId;
                 getDataObj.StatusName = item.HospitalSupplierStatus.Name;
                 getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                getDataObj.StatusColor =  item.HospitalSupplierStatus.Color;
+                getDataObj.StatusIcon =item.HospitalSupplierStatus.Icon;
+
 
                 if (appTypeId == 1)
                 {
@@ -1067,7 +1069,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetHospitalApplicationByDate(SearchHospitalApplicationVM searchObj)
         {
-           
+
             if (searchObj.strStartDate != "")
                 searchObj.StartDate = DateTime.Parse(searchObj.strStartDate);
             else
@@ -1081,14 +1083,14 @@ namespace Asset.Core.Repositories
 
 
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
-       
+
             var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
                  .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
                  .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).ToList()
                  .Where(a => a.AppDate >= searchObj.StartDate.Value.Date && a.AppDate <= searchObj.EndDate.Value.Date)
                  .OrderByDescending(a => a.AppDate.Value.Date).ToList();
 
-    
+
 
             foreach (var item in lstHospitalApplications)
             {
@@ -1116,7 +1118,8 @@ namespace Asset.Core.Repositories
                 getDataObj.StatusId = item.StatusId;
                 getDataObj.StatusName = item.HospitalSupplierStatus.Name;
                 getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
-
+                getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
                 switch (item.AppTypeId)
                 {
                     case 1:

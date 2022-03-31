@@ -2037,6 +2037,7 @@ namespace Asset.Core.Repositories
                 {
                     var note = lstRequestNote[0].Description;
                     printSRObj.RequestNote = note;
+                    printSRObj.DescriptionDate = lstRequestNote[0].DescriptionDate.ToString();
                 }
 
 

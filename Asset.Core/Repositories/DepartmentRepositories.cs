@@ -23,18 +23,26 @@ namespace Asset.Core.Repositories
 
         public EditDepartmentVM GetById(int id)
         {
-            var DepartmentObj = _context.Departments.Where(a => a.Id == id).Select(item => new EditDepartmentVM
+            //var DepartmentObj = _context.Departments.Where(a => a.Id == id).Select(item => new EditDepartmentVM
+            //{
+            //    Id = item.Id,
+            //    Code = item.Code,
+            //    Name = item.Name,
+            //    NameAr = item.NameAr,
+
+            //}).First();
+
+            EditDepartmentVM departmentObj = new EditDepartmentVM();
+            var lstDepartments = _context.Departments.Where(a => a.Id == id).ToList();
+            if (lstDepartments.Count > 0)
             {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                NameAr = item.NameAr,
-               
-            }).First();
-
-
-
-            return DepartmentObj;
+                var departObj = _context.Departments.Find(id);
+                departmentObj.Id = departObj.Id;
+                departmentObj.Code = departObj.Code;
+                departmentObj.Name = departObj.Name;
+                departmentObj.NameAr = departObj.NameAr;
+            }
+            return departmentObj;
         }
 
 

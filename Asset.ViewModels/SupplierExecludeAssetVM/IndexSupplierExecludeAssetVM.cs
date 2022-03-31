@@ -32,7 +32,8 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
             public string ReasonHoldTitles { get; set; }
             public string ReasonHoldTitlesAr { get; set; }
 
-
+            public string StatusIcon { get; set; }
+            public string StatusColor{ get; set; }
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }
 

@@ -29,6 +29,6 @@ namespace Asset.ViewModels.HospitalApplicationVM
 
         public string assetNameAr { get; set; }
 
-        public DateTime? ActionDate { get; set; }
+        public string ActionDate { get; set; }
     }
 }

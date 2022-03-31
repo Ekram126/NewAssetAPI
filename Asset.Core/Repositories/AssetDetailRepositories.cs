@@ -1422,7 +1422,8 @@ namespace Asset.Core.Repositories
                                          SupplierNameAr = item.Supplier.NameAr,
                                          HospitalName = item.Hospital.Name,
                                          HospitalNameAr = item.Hospital.NameAr,
-                                         Barcode = item.Barcode
+                                         Barcode = item.Barcode,
+                                        
 
                                      }).ToList();
             return lstAssetDetails;

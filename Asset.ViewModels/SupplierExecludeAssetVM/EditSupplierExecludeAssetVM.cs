@@ -17,7 +17,7 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public string UserId { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? ExecludeDate { get; set; }
-        public DateTime? ActionDate { get; set; }
+        public string ActionDate { get; set; }
         public string ExNumber { get; set; }
 
         public int? AppTypeId
@@ -27,6 +27,8 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
      
         public List<int> ReasonIds { get; set; }
         public List<int> HoldReasonIds { get; set; }
+        public string SerialNumber { get; set; }
+        public string BarCode { get; set; }
         public string assetName { get; set; }
         public string assetNameAr { get; set; }
 

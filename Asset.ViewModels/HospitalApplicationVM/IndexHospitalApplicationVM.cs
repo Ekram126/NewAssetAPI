@@ -25,6 +25,8 @@ namespace Asset.ViewModels.HospitalApplicationVM
             public int? StatusId { get; set; }
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }
+            public string StatusColor { get; set; }
+            public string StatusIcon { get; set; }
 
 
             public int? AppTypeId { get; set; }

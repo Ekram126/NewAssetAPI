@@ -33,6 +33,7 @@ namespace Asset.ViewModels.RequestVM
         public int RequestId { get; set; }
         public string RequestSubject { get; set; }
         public string RequestDate { get; set; }
+        public string DescriptionDate { get; set; }
         public string RequestCode { get; set; }
         public string RequestNote { get; set; }
         public string ProblemName { get; set; }

@@ -1,15 +1,22 @@
-﻿using Asset.Domain.Services;
+﻿using Asset.Domain;
+using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.HospitalApplicationVM;
+using Asset.ViewModels.HospitalExecludeReasonVM;
+using Asset.ViewModels.HospitalHoldReasonVM;
 using Asset.ViewModels.PagingParameter;
+using Asset.ViewModels.UserVM;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Asset.API.Controllers
 {
@@ -17,17 +24,37 @@ namespace Asset.API.Controllers
     [ApiController]
     public class HospitalApplicationController : ControllerBase
     {
-
+        private readonly UserManager<ApplicationUser> _userManager;
         private IHospitalApplicationService _hospitalApplicationService;
+        private IHospitalReasonTransactionService _hospitalReasonTransactionService;
+
+        private IHospitalExecludeReasonService _hospitalExecludeReasonService;
+        private IHospitalHoldReasonService _hospitalHoldReasonService;
+        private IMasterAssetService _masterAssetService;
+        private IAssetDetailService _assetDetailService;
+
+
+        private readonly IEmailSender _emailSender;
+
         private IPagingService _pagingService;
-        //  [Obsolete]
         IWebHostEnvironment _webHostingEnvironment;
-        public HospitalApplicationController(IHospitalApplicationService hospitalApplicationService, IWebHostEnvironment webHostingEnvironment, IPagingService pagingService)
+
+
+        public HospitalApplicationController(UserManager<ApplicationUser> userManager, IHospitalApplicationService hospitalApplicationService, IWebHostEnvironment webHostingEnvironment,
+            IPagingService pagingService, IEmailSender emailSender, IAssetDetailService assetDetailService,
+            IHospitalExecludeReasonService hospitalExecludeReasonService, IHospitalHoldReasonService hospitalHoldReasonService,
+            IMasterAssetService masterAssetService, IHospitalReasonTransactionService hospitalReasonTransactionService)
         {
+            _userManager = userManager;
             _hospitalApplicationService = hospitalApplicationService;
             _webHostingEnvironment = webHostingEnvironment;
-
+            _emailSender = emailSender;
+            _assetDetailService = assetDetailService;
             _pagingService = pagingService;
+            _masterAssetService = masterAssetService;
+            _hospitalReasonTransactionService = hospitalReasonTransactionService;
+            _hospitalExecludeReasonService = hospitalExecludeReasonService;
+            _hospitalHoldReasonService = hospitalHoldReasonService;
         }
 
         [HttpGet]
@@ -53,7 +80,7 @@ namespace Asset.API.Controllers
 
         [HttpPut]
         [Route("ListHospitalApplicationsWithPaging/{hospitalId}")]
-        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllWithPaging(int? hospitalId,PagingParameter pageInfo)
+        public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllWithPaging(int? hospitalId, PagingParameter pageInfo)
         {
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
 
@@ -93,7 +120,7 @@ namespace Asset.API.Controllers
         [Route("getcount/{hospitalId}")]
         public int count(int? hospitalId)
         {
-                   int listCount = 0;
+            int listCount = 0;
             if (hospitalId != 0)
 
                 listCount = _hospitalApplicationService.GetAllByHospitalId(int.Parse(hospitalId.ToString())).ToList().Count;
@@ -108,38 +135,16 @@ namespace Asset.API.Controllers
         [Route("GetAllHospitalsByStatusId/{statusId}/{hospitalId}")]
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(PagingParameter pageInfo, int statusId, int hospitalId)
         {
-            var lstHospitalApplications = _hospitalApplicationService.GetAllByStatusId(statusId,hospitalId).ToList();
+            var lstHospitalApplications = _hospitalApplicationService.GetAllByStatusId(statusId, hospitalId).ToList();
             return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstHospitalApplications);
         }
 
         [HttpGet]
         [Route("GetHospitalCountAfterFilterStatusId/{statusId}/{hospitalId}")]
-        public int GetCountAfterFilterStatusId(int statusId,int hospitalId)
+        public int GetCountAfterFilterStatusId(int statusId, int hospitalId)
         {
-            return _hospitalApplicationService.GetAllByStatusId(statusId,hospitalId).ToList().Count;
+            return _hospitalApplicationService.GetAllByStatusId(statusId, hospitalId).ToList().Count;
         }
-
-
-
-
-        //[HttpPut]
-        //[Route("ListHospitalApplicationsWithPagingWithStatusIdAndTypeId/{statusId}/{appTypeId}")]
-        //public IEnumerable<IndexHospitalApplicationVM.GetData> ListHospitalApplicationsWithPagingWithStatusIdAndTypeId(int statusId, int appTypeId, PagingParameter pageInfo)
-        //{
-        //    var lstSupplierExecludeAssets = _hospitalApplicationService.GetAllByStatusIdAndAppTypeId(statusId, appTypeId).ToList();
-        //    return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstSupplierExecludeAssets);
-        //}
-        //[HttpGet]
-        //[Route("CountListHospitalApplicationsWithPagingWithStatusIdAndTypeId/{statusId}/{appTypeId}")]
-        //public int CountListHospitalApplicationsWithPagingWithStatusIdAndTypeId(int statusId, int appTypeId)
-        //{
-        //    return _hospitalApplicationService.GetAllByStatusIdAndAppTypeId(statusId, appTypeId).ToList().Count;
-        //}
-
-
-
-
-
         [HttpGet]
         [Route("GetById/{id}")]
         public ActionResult<EditHospitalApplicationVM> GetById(int id)
@@ -181,9 +186,9 @@ namespace Asset.API.Controllers
 
         [HttpPut]
         [Route("ListHospitalApplicationsByTypeIdAndStatusId/{statusId}/{appTypeId}/{hospitalId}")]
-        public IEnumerable<IndexHospitalApplicationVM.GetData> ListHospitalApplicationsByTypeIdAndStatusId(int statusId, int appTypeId,int hospitalId, PagingParameter pageInfo)
+        public IEnumerable<IndexHospitalApplicationVM.GetData> ListHospitalApplicationsByTypeIdAndStatusId(int statusId, int appTypeId, int hospitalId, PagingParameter pageInfo)
         {
-            var lstSupplierExecludeAssets = _hospitalApplicationService.GetAllByAppTypeIdAndStatusId(statusId,  appTypeId, hospitalId).ToList();
+            var lstSupplierExecludeAssets = _hospitalApplicationService.GetAllByAppTypeIdAndStatusId(statusId, appTypeId, hospitalId).ToList();
             return _pagingService.GetAll<IndexHospitalApplicationVM.GetData>(pageInfo, lstSupplierExecludeAssets);
         }
         [HttpGet]
@@ -236,13 +241,105 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddHospitalApplication")]
-        public int Add(CreateHospitalApplicationVM hospitalApplicationVM)
+        public  int AddAsync(CreateHospitalApplicationVM hospitalApplicationVM)
         {
+            //string strExcludes, strHolds = "";
+            //List<string> execludeNames = new List<string>();
+
+            //List<IndexHospitalExecludeReasonVM.GetData> lstExcludes = new List<IndexHospitalExecludeReasonVM.GetData>();
+            //List<IndexHospitalHoldReasonVM.GetData> lstHolds = new List<IndexHospitalHoldReasonVM.GetData>();
+
 
             var savedId = _hospitalApplicationService.Add(hospitalApplicationVM);
-            return savedId;
+            //var applicationObj = _hospitalApplicationService.GetById(savedId);
+            //var userObj = await _userManager.FindByNameAsync("MemberUser");
+            //var assetObj = _assetDetailService.GetById(int.Parse(applicationObj.AssetId.ToString()));
+            //var masterObj = _masterAssetService.GetById(int.Parse(assetObj.MasterAssetId.ToString()));
 
-            //CreatedAtAction("GetById", new { id = savedId }, hospitalApplicationVM);
+            //var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.HospitalApplicationId == savedId).ToList();
+            //if (lstReasons.Count > 0)
+            //{
+            //    if (applicationObj.AppTypeId == 1)
+            //    {
+            //        foreach (var item in lstReasons)
+            //        {
+            //            lstExcludes.Add(_hospitalExecludeReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
+
+
+            //        }
+            //        foreach (var reason in lstExcludes)
+            //        {
+            //            execludeNames.Add(reason.NameAr);
+            //        }
+            //        strExcludes = string.Join(",", execludeNames);
+            //    }
+
+
+
+            //    if (applicationObj.AppTypeId == 2)
+            //    {
+            //        foreach (var item in lstReasons)
+            //        {
+            //            lstHolds.Add(_hospitalHoldReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
+            //        }
+
+            //        foreach (var reason in lstHolds)
+            //        {
+            //            execludeNames.Add(reason.NameAr);
+            //        }
+            //        strHolds = string.Join(",", execludeNames);
+            //    }
+            //}
+
+            //StringBuilder strBuild = new StringBuilder();
+
+            //strBuild.Append($"Dear {userObj.UserName}\r\n");
+
+
+            //strBuild.Append("<table>");
+
+            //strBuild.Append("<tr>");
+            //strBuild.Append("<td> Asset Name");
+            //strBuild.Append("</td>");
+            //strBuild.Append("<td>" + masterObj.NameAr);
+            //strBuild.Append("</td>");
+            //strBuild.Append("</tr>");
+
+            //strBuild.Append("<tr>");
+            //strBuild.Append("<td> Serial");
+            //strBuild.Append("</td>");
+            //strBuild.Append("<td>" + assetObj.SerialNumber);
+            //strBuild.Append("</td>");
+            //strBuild.Append("</tr>");
+
+
+            //strBuild.Append("<tr>");
+            //strBuild.Append("<td> BarCode");
+            //strBuild.Append("</td>");
+            //strBuild.Append("<td>" + assetObj.Barcode);
+            //strBuild.Append("</td>");
+            //strBuild.Append("</tr>");
+
+            //strBuild.Append("<tr>");
+            //strBuild.Append("<td> Reasons");
+            //strBuild.Append("</td>");
+            //strBuild.Append("<td>" + strHolds);
+            //strBuild.Append("</td>");
+            //strBuild.Append("</tr>");
+
+            //strBuild.Append("</table>");
+
+
+            //var message = new MessageVM(new string[] { userObj.Email }, "Exclude-Hold Asset", strBuild.ToString());
+
+            //var message2 = new MessageVM(new string[] { "pineapple_126@hotmail.com" }, "Exclude-Hold Asset", strBuild.ToString());
+            ////   var message = new MessageVM(new string[] { userObj.Email }, "Exclude-Hold Asset", $"Dear {userObj.UserName}\r\n This asset:{assetObj.SerialNumber} want to be excluded");
+
+            //_emailSender.SendEmail(message);
+            //_emailSender.SendEmail(message2);
+
+
+            return savedId;
 
         }
 

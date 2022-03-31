@@ -1,15 +1,22 @@
-﻿using Asset.Domain.Services;
+﻿using Asset.Domain;
+using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.HospitalExecludeReasonVM;
+using Asset.ViewModels.HospitalHoldReasonVM;
 using Asset.ViewModels.HospitalReasonTransactionVM;
 using Asset.ViewModels.PagingParameter;
+using Asset.ViewModels.UserVM;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Asset.API.Controllers
 {
@@ -17,18 +24,43 @@ namespace Asset.API.Controllers
     [ApiController]
     public class HospitalApplicationTransactionController : ControllerBase
     {
-
-        private IHospitalReasonTransactionService _hospitalReasonTransactionService;
+        private readonly UserManager<ApplicationUser> _userManager;
         private IHospitalApplicationService _hospitalApplicationService;
+
+        private IHospitalExecludeReasonService _hospitalExecludeReasonService;
+        private IHospitalHoldReasonService _hospitalHoldReasonService;
+        private IMasterAssetService _masterAssetService;
+        private IAssetDetailService _assetDetailService;
+
+
+        private readonly IEmailSender _emailSender;
+        private IHospitalReasonTransactionService _hospitalReasonTransactionService;
+
+
         private IPagingService _pagingService;
         //  [Obsolete]
         IWebHostEnvironment _webHostingEnvironment;
-        public HospitalApplicationTransactionController(IHospitalReasonTransactionService hospitalReasonTransactionService, IHospitalApplicationService hospitalApplicationService, IWebHostEnvironment webHostingEnvironment, IPagingService pagingService)
+        public HospitalApplicationTransactionController(UserManager<ApplicationUser> userManager, IHospitalReasonTransactionService hospitalReasonTransactionService,
+            IHospitalApplicationService hospitalApplicationService, IWebHostEnvironment webHostingEnvironment, IPagingService pagingService,
+            IEmailSender emailSender, IAssetDetailService assetDetailService,
+            IHospitalExecludeReasonService hospitalExecludeReasonService, IHospitalHoldReasonService hospitalHoldReasonService,
+            IMasterAssetService masterAssetService)
         {
             _hospitalReasonTransactionService = hospitalReasonTransactionService;
             _hospitalApplicationService = hospitalApplicationService;
             _webHostingEnvironment = webHostingEnvironment;
             _pagingService = pagingService;
+
+
+            _userManager = userManager;
+            _hospitalApplicationService = hospitalApplicationService;
+            _webHostingEnvironment = webHostingEnvironment;
+            _emailSender = emailSender;
+            _assetDetailService = assetDetailService;
+            _pagingService = pagingService;
+            _masterAssetService = masterAssetService;
+            _hospitalExecludeReasonService = hospitalExecludeReasonService;
+            _hospitalHoldReasonService = hospitalHoldReasonService;
         }
 
         [HttpGet]
@@ -66,9 +98,109 @@ namespace Asset.API.Controllers
   
         [HttpPost]
         [Route("AddHospitalReasonTransaction")]
-        public int Add(CreateHospitalReasonTransactionVM transObj)
+        public async Task<int> Add(CreateHospitalReasonTransactionVM transObj)
         {
+            string strExcludes = "";
+            string  strHolds = "";
+            List<string> execludeNames = new List<string>();
+            List<IndexHospitalExecludeReasonVM.GetData> lstExcludes = new List<IndexHospitalExecludeReasonVM.GetData>();
+            List<IndexHospitalHoldReasonVM.GetData> lstHolds = new List<IndexHospitalHoldReasonVM.GetData>();
+
+
             var savedId = _hospitalReasonTransactionService.Add(transObj);
+            var applicationObj = _hospitalApplicationService.GetById(int.Parse(transObj.HospitalApplicationId.ToString()));
+            var userObj = await _userManager.FindByNameAsync("MemberUser");
+            var assetObj = _assetDetailService.GetById(int.Parse(applicationObj.AssetId.ToString()));
+            var masterObj = _masterAssetService.GetById(int.Parse(assetObj.MasterAssetId.ToString()));
+
+
+            var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.HospitalApplicationId == transObj.HospitalApplicationId).ToList();
+
+           // var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.Id == savedId).ToList();
+            if (lstReasons.Count > 0)
+            {
+                if (applicationObj.AppTypeId == 1)
+                {
+                    foreach (var item in lstReasons)
+                    {
+                        lstExcludes.Add(_hospitalExecludeReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
+
+
+                    }
+                    foreach (var reason in lstExcludes)
+                    {
+                        execludeNames.Add(reason.NameAr);
+                    }
+                    strExcludes = string.Join(",", execludeNames);
+                }
+
+
+
+                if (applicationObj.AppTypeId == 2)
+                {
+                    foreach (var item in lstReasons)
+                    {
+                        lstHolds.Add(_hospitalHoldReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
+                    }
+
+                    foreach (var reason in lstHolds)
+                    {
+                        execludeNames.Add(reason.NameAr);
+                    }
+                    strHolds = string.Join(",", execludeNames);
+                }
+            }
+
+            StringBuilder strBuild = new StringBuilder();
+            strBuild.Append($"Dear {userObj.UserName}\r\n");
+            strBuild.Append("<table>");
+            strBuild.Append("<tr>");
+            strBuild.Append("<td> Asset Name");
+            strBuild.Append("</td>");
+            strBuild.Append("<td>" + masterObj.NameAr);
+            strBuild.Append("</td>");
+            strBuild.Append("</tr>");
+            strBuild.Append("<tr>");
+            strBuild.Append("<td> Serial");
+            strBuild.Append("</td>");
+            strBuild.Append("<td>" + assetObj.SerialNumber);
+            strBuild.Append("</td>");
+            strBuild.Append("</tr>");
+            strBuild.Append("<tr>");
+            strBuild.Append("<td> BarCode");
+            strBuild.Append("</td>");
+            strBuild.Append("<td>" + assetObj.Barcode);
+            strBuild.Append("</td>");
+            strBuild.Append("</tr>");
+            if (applicationObj.AppTypeId == 1)
+            {
+                strBuild.Append("<tr>");
+                strBuild.Append("<td> Reasons");
+                strBuild.Append("</td>");
+                strBuild.Append("<td>" + strExcludes);
+                strBuild.Append("</td>");
+                strBuild.Append("</tr>");
+            }
+            if (applicationObj.AppTypeId == 2)
+            {
+                strBuild.Append("<tr>");
+                strBuild.Append("<td> Reasons");
+                strBuild.Append("</td>");
+                strBuild.Append("<td>" + strHolds);
+                strBuild.Append("</td>");
+                strBuild.Append("</tr>");
+            }
+            strBuild.Append("</table>");
+
+
+            var message = new MessageVM(new string[] { userObj.Email }, "Exclude-Hold Asset", strBuild.ToString());
+            var message2 = new MessageVM(new string[] { "pineapple_126@hotmail.com" }, "Exclude-Hold Asset", strBuild.ToString());
+            //   var message = new MessageVM(new string[] { userObj.Email }, "Exclude-Hold Asset", $"Dear {userObj.UserName}\r\n This asset:{assetObj.SerialNumber} want to be excluded");
+
+            _emailSender.SendEmail(message);
+            _emailSender.SendEmail(message2);
+
+
             return savedId;
         }
 

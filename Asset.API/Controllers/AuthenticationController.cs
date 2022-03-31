@@ -109,7 +109,7 @@ namespace Asset.API.Controllers
                 var hospitalName = user.HospitalId > 0 ? _context.Hospitals.Where(a => a.Id == user.HospitalId).First().Name : "";
 
                 var hospitalNameAr = user.HospitalId > 0 ? _context.Hospitals.Where(a => a.Id == user.HospitalId).First().NameAr : "";
-
+                var hospitalCode = user.HospitalId > 0 ? _context.Hospitals.Where(a => a.Id == user.HospitalId).First().Code : "";
                 var roleNames = (from userRole in _context.UserRoles
                                  join role in _roleManager.Roles on userRole.RoleId equals role.Id
                                  where user.Id == userRole.UserId
@@ -144,6 +144,7 @@ namespace Asset.API.Controllers
                     orgNameAr = orgNameAr,
                     subOrgNameAr = subOrgNameAr,
                     hospitalNameAr = hospitalNameAr,
+                    hospitalCode= hospitalCode
 
 
                 });

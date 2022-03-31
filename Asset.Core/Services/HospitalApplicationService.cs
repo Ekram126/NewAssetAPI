@@ -33,9 +33,13 @@ namespace Asset.Core.Services
         public int Delete(int id)
         {
             var HospitalApplicationObj = _unitOfWork.HospitalApplicationRepository.GetById(id);
-            _unitOfWork.HospitalApplicationRepository.Delete(HospitalApplicationObj.Id);
-            _unitOfWork.CommitAsync();
-            return HospitalApplicationObj.Id;
+            if (HospitalApplicationObj != null)
+            {
+                _unitOfWork.HospitalApplicationRepository.Delete(HospitalApplicationObj.Id);
+                _unitOfWork.CommitAsync();
+                return HospitalApplicationObj.Id;
+            }
+            return 0;
         }
 
         public int DeleteHospitalApplicationAttachment(int id)
