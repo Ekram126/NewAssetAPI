@@ -252,14 +252,21 @@ namespace Asset.API.Controllers
         //  [Obsolete]
         public ActionResult UploadSupplierExecludeAssetFiles(IFormFile file)
         {
-            string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SupplierExecludeAssets/" + file.FileName;
-            if (System.IO.File.Exists(path))
+
+            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SupplierExecludeAssets";
+            bool exists = System.IO.Directory.Exists(folderPath);
+            if (!exists)
+                System.IO.Directory.CreateDirectory(folderPath);
+
+            string filePath = folderPath + "/" + file.FileName;
+          //  string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SupplierExecludeAssets/" + file.FileName;
+            if (System.IO.File.Exists(filePath))
             {
 
             }
             else
             {
-                Stream stream = new FileStream(path, FileMode.Create);
+                Stream stream = new FileStream(filePath, FileMode.Create);
                 file.CopyTo(stream);
                 stream.Close();
             }

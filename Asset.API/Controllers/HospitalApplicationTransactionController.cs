@@ -116,7 +116,7 @@ namespace Asset.API.Controllers
 
             var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.HospitalApplicationId == transObj.HospitalApplicationId).ToList();
 
-           // var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.Id == savedId).ToList();
+
             if (lstReasons.Count > 0)
             {
                 if (applicationObj.AppTypeId == 1)
@@ -195,8 +195,7 @@ namespace Asset.API.Controllers
 
             var message = new MessageVM(new string[] { userObj.Email }, "Exclude-Hold Asset", strBuild.ToString());
             var message2 = new MessageVM(new string[] { "pineapple_126@hotmail.com" }, "Exclude-Hold Asset", strBuild.ToString());
-            //   var message = new MessageVM(new string[] { userObj.Email }, "Exclude-Hold Asset", $"Dear {userObj.UserName}\r\n This asset:{assetObj.SerialNumber} want to be excluded");
-
+   
             _emailSender.SendEmail(message);
             _emailSender.SendEmail(message2);
 

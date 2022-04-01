@@ -122,18 +122,18 @@ namespace Asset.Core.Repositories
             List<IndexSupplierExecludeVM.GetData> list = new List<IndexSupplierExecludeVM.GetData>();
             var supplierExecludeAssetObj = _context.SupplierExecludeAssets.Find(supplierExecludeAssetId);
            
-            var lstTransactions = _context.SupplierExecludes.Where(a => a.SupplierExecludeAssetId == supplierExecludeAssetObj.Id).ToList();
+            var lstTransactions = _context.SupplierExecludes.Where(a => a.SupplierExecludeAssetId == supplierExecludeAssetObj.Id).OrderBy(a=>a.ReasonId).ToList();
             if (lstTransactions.Count > 0)
             {
 
                 foreach (var item in lstTransactions)
                 {
                     IndexSupplierExecludeVM.GetData getDataObj = new IndexSupplierExecludeVM.GetData();
-                    var lstAttachments = _context.SupplierExecludeAttachments.Where(a => a.SupplierExecludeId == item.Id).ToList();
+                    var lstAttachments = _context.SupplierExecludeAttachments.Where(a => a.SupplierExecludeId == item.Id).OrderBy(a => a.FileName).ToList();
 
                     if (supplierExecludeAssetObj.AppTypeId == 1)
                     {
-                        if (_context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).ToList().Count > 0)
+                        if (_context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).OrderBy(a => a.Id).ToList().Count > 0)
                         {
                             getDataObj.ReasonId = _context.SupplierExecludeReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Id;
                             getDataObj.ReasonName = _context.SupplierExecludeReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Name;
@@ -143,7 +143,7 @@ namespace Asset.Core.Repositories
                     }
                     else
                     {
-                        if (_context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).ToList().Count > 0)
+                        if (_context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).OrderBy(a => a.Id).ToList().Count > 0)
                         {
                             getDataObj.ReasonId = _context.SupplierHoldReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Id;
                             getDataObj.ReasonName = _context.SupplierHoldReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Name;

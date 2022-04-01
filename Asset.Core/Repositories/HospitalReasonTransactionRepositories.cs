@@ -84,28 +84,27 @@ namespace Asset.Core.Repositories
             List<IndexHospitalReasonTransactionVM.GetData> list = new List<IndexHospitalReasonTransactionVM.GetData>();
             var hospitalApplicationObj = _context.HospitalApplications.Find(appId);
 
-            var lstTransactions = _context.HospitalReasonTransactions.Where(a => a.HospitalApplicationId == hospitalApplicationObj.Id).ToList();
+            var lstTransactions = _context.HospitalReasonTransactions.Where(a => a.HospitalApplicationId == hospitalApplicationObj.Id).OrderBy(a=>a.ReasonId).ToList();
             if (lstTransactions.Count > 0)
             {
                 foreach (var item in lstTransactions)
                 {
                     IndexHospitalReasonTransactionVM.GetData getDataObj = new IndexHospitalReasonTransactionVM.GetData();
-                    var lstAttachments = _context.HospitalApplicationAttachments.Where(a => a.HospitalReasonTransactionId == item.Id).ToList();
+                    var lstAttachments = _context.HospitalApplicationAttachments.Where(a => a.HospitalReasonTransactionId == item.Id).OrderBy(a => a.FileName).ToList();
 
                     if (hospitalApplicationObj.AppTypeId == 1)
                     {
-                        if (_context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).ToList().Count > 0)
+                        if (_context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).OrderBy(a => a.Id).ToList().Count > 0)
                         {
                             getDataObj.ReasonId = _context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Id;
                             getDataObj.ReasonName = _context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Name;
                             getDataObj.ReasonNameAr = _context.HospitalExecludeReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().NameAr;
                             getDataObj.Attachments = lstAttachments;
                         }
-
                     }
                     else
                     {
-                        if (_context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).ToList().Count > 0)
+                        if (_context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).OrderBy(a => a.Id).ToList().Count > 0)
                         {
                             getDataObj.ReasonId = _context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Id;
                             getDataObj.ReasonName = _context.HospitalHoldReasons.Where(a => a.Id == item.ReasonId).FirstOrDefault().Name;
@@ -116,10 +115,7 @@ namespace Asset.Core.Repositories
 
                     list.Add(getDataObj);
                 }
-
             }
-
-
             return list;
         }
     }

@@ -189,7 +189,7 @@ namespace Asset.API.Controllers
             return _AssetDetailService.GetListOfAssetDetailsByHospitalNotInContract(hospitalId);
         }
 
-       
+
 
         [HttpGet]
         [Route("GetListOfAssetDetailsByHospitalId/{hospitalId}")]
@@ -197,6 +197,26 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.GetListOfAssetDetailsByHospitalId(hospitalId);
         }
+
+
+        [HttpGet]
+        [Route("GetNoneExcludedAssetsByHospitalId/{hospitalId}")]
+        public IEnumerable<ViewAssetDetailVM> GetNoneExcludedAssetsByHospitalId(int hospitalId)
+        {
+            return _AssetDetailService.GetNoneExcludedAssetsByHospitalId(hospitalId);
+        }
+
+
+        [HttpGet]
+        [Route("GetSupplierNoneExcludedAssetsByHospitalId/{hospitalId}")]
+        public IEnumerable<ViewAssetDetailVM> GetSupplierNoneExcludedAssetsByHospitalId(int hospitalId)
+        {
+            return _AssetDetailService.GetSupplierNoneExcludedAssetsByHospitalId(hospitalId);
+        }
+
+
+
+
         [HttpGet]
         [Route("GetAssetDetailsByUserId/{userId}")]
         public async Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetDetailsByUserId(string userId)

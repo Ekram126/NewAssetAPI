@@ -29,6 +29,7 @@ namespace Asset.Core.Repositories
                              join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
                              where trans.SupplierExecludeAssetId == id
                               && trans.SupplierExecludeAsset.AppTypeId == 1
+                           
                              select execlude.Id).ToList();
 
             var holdIds = (from execlude in _context.SupplierHoldReasons
@@ -112,6 +113,7 @@ namespace Asset.Core.Repositories
                                        join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
                                        where trans.SupplierExecludeAssetId == item.Id
                                          && trans.SupplierExecludeAsset.AppTypeId == 1
+
                                        select execlude).ToList();
                     if (lstExTitles.Count > 0)
                     {
@@ -356,9 +358,10 @@ namespace Asset.Core.Repositories
                 if (model.StatusId == 3)
                     supplierExecludeAssetObj.ExecludeDate = DateTime.Today.Date;
 
+                supplierExecludeAssetObj.ActionDate = DateTime.Today.Date;
 
-                if (model.ActionDate != "")
-                    supplierExecludeAssetObj.ActionDate = DateTime.Today.Date;// DateTime.Parse(model.ActionDate.ToString());
+                //if (model.ActionDate != "")
+                //    supplierExecludeAssetObj.ActionDate = DateTime.Today.Date;// DateTime.Parse(model.ActionDate.ToString());
 
                 supplierExecludeAssetObj.UserId = model.UserId;
                 supplierExecludeAssetObj.Comment = model.Comment;
@@ -366,11 +369,20 @@ namespace Asset.Core.Repositories
                 _context.Entry(supplierExecludeAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
-                if (model.StatusId == 2)
+                if (model.StatusId == 2 && supplierExecludeAssetObj.AppTypeId == 2)
                 {
                     AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
                     assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                     assetStatusTransactionObj.AssetStatusId = 8;
+                    assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                    _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
+                    _context.SaveChanges();
+                }
+                if (model.StatusId == 2 && supplierExecludeAssetObj.AppTypeId == 2)
+                {
+                    AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
+                    assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
+                    assetStatusTransactionObj.AssetStatusId = 9;
                     assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
                     _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                     _context.SaveChanges();

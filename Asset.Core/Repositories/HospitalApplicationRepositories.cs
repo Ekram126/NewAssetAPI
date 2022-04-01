@@ -176,18 +176,6 @@ namespace Asset.Core.Repositories
                     _context.HospitalApplications.Add(hospitalApplicationObj);
                     _context.SaveChanges();
                     int id = hospitalApplicationObj.Id;
-                    //if (model.ReasonIds.Count > 0)
-                    //{
-                    //    foreach (var reasonId in model.ReasonIds)
-                    //    {
-                    //        HospitalReasonTransaction hospitalReasonTransactionObj = new HospitalReasonTransaction();
-                    //        hospitalReasonTransactionObj.HospitalApplicationId = id;
-                    //        hospitalReasonTransactionObj.ReasonId = reasonId;
-                    //        _context.HospitalReasonTransactions.Add(hospitalReasonTransactionObj);
-                    //        _context.SaveChanges();
-                    //    }
-                    //}
-
                 }
             }
             catch (Exception ex)
@@ -421,7 +409,7 @@ namespace Asset.Core.Repositories
             _context.SaveChanges();
 
 
-            if (model.StatusId == 2)
+            if (model.StatusId == 2 && hospitalApplicationObj.AppTypeId == 1)
             {
                 AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
                 assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
@@ -430,15 +418,17 @@ namespace Asset.Core.Repositories
                 _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                 _context.SaveChanges();
             }
-            //if (model.StatusId == 3)
-            //{
-            //    AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
-            //    assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
-            //    assetStatusTransactionObj.AssetStatusId = 9;
-            //    assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
-            //    _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
-            //    _context.SaveChanges();
-            //}
+
+            if (model.StatusId == 2 && hospitalApplicationObj.AppTypeId ==2)
+            {
+                AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
+                assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
+                assetStatusTransactionObj.AssetStatusId = 9;
+                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
+                _context.SaveChanges();
+            }
+     
             return hospitalApplicationObj.Id;
         }
 
@@ -486,8 +476,10 @@ namespace Asset.Core.Repositories
                     hospitalApplicationObj.HoldReasonNames = holdNames;
                 }
                 hospitalApplicationObj.AssetId = item.AssetDetail.Id;
-                hospitalApplicationObj.assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber;
-                hospitalApplicationObj.assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber;
+                hospitalApplicationObj.assetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                hospitalApplicationObj.assetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
+                hospitalApplicationObj.SerialNumber = item.AssetDetail.SerialNumber;
+                hospitalApplicationObj.BarCode = item.AssetDetail.Barcode;
             }
 
 

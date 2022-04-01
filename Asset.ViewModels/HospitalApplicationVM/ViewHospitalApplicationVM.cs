@@ -33,5 +33,8 @@ namespace Asset.ViewModels.HospitalApplicationVM
 
         public string AppTypeName { get; set; }
         public string AppTypeNameAr { get; set; }
+        public string BarCode { get; set; }
+        public string SerialNumber { get; set; }
+
     }
 }

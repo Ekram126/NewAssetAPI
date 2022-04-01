@@ -241,7 +241,7 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddHospitalApplication")]
-        public  int AddAsync(CreateHospitalApplicationVM hospitalApplicationVM)
+        public int AddAsync(CreateHospitalApplicationVM hospitalApplicationVM)
         {
             //string strExcludes, strHolds = "";
             //List<string> execludeNames = new List<string>();
@@ -371,14 +371,19 @@ namespace Asset.API.Controllers
         [Route("UploadHospitalApplicationFiles")]
         public ActionResult UploadHospitalApplicationFiles(IFormFile file)
         {
-            string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/HospitalApplications/" + file.FileName;
-            if (System.IO.File.Exists(path))
+            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/HospitalApplications";
+            bool exists = System.IO.Directory.Exists(folderPath);
+            if (!exists)
+                System.IO.Directory.CreateDirectory(folderPath);
+
+            string filePath = folderPath + "/" + file.FileName;
+            if (System.IO.File.Exists(filePath))
             {
 
             }
             else
             {
-                Stream stream = new FileStream(path, FileMode.Create);
+                Stream stream = new FileStream(filePath, FileMode.Create);
                 file.CopyTo(stream);
                 stream.Close();
             }

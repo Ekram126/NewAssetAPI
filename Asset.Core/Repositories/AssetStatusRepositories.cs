@@ -287,31 +287,31 @@ namespace Asset.Core.Repositories
                 var groupassets = lstTransactions.GroupBy(a => a.AssetDetailId).ToList();
                 foreach (var trans in groupassets)
                 {
-                    switch (trans.Last().AssetStatusId)
+                    switch (trans.FirstOrDefault().AssetStatusId)
                     {
                         case 1:
-                            lstNeedRepair.Add(trans.Last());
+                            lstNeedRepair.Add(trans.FirstOrDefault());
                             break;
                         case 2:
-                            lstInActive.Add(trans.Last());
+                            lstInActive.Add(trans.FirstOrDefault());
                             break;
                         case 3:
-                            lstWorking.Add(trans.Last());
+                            lstWorking.Add(trans.FirstOrDefault());
                             break;
                         case 4:
-                            lstUnderMaintenance.Add(trans.Last());
+                            lstUnderMaintenance.Add(trans.FirstOrDefault());
                             break;
                         case 5:
-                            lstUnderInstallation.Add(trans.Last());
+                            lstUnderInstallation.Add(trans.FirstOrDefault());
                             break;
                         case 6:
-                            lstNotWorking.Add(trans.Last());
+                            lstNotWorking.Add(trans.FirstOrDefault());
                             break;
                         case 7:
-                            lstShutdown.Add(trans.Last());
+                            lstShutdown.Add(trans.FirstOrDefault());
                             break;
                         case 8:
-                            lstExecluded.Add(trans.Last());
+                            lstExecluded.Add(trans.FirstOrDefault());
                             break;
                         case 9:
                             lstHold.Add(trans.Last());

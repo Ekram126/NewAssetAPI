@@ -34,6 +34,12 @@ namespace Asset.Domain.Repositories
 
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId);
 
+        IEnumerable<ViewAssetDetailVM> GetNoneExcludedAssetsByHospitalId(int hospitalId);
+
+        IEnumerable<ViewAssetDetailVM> GetSupplierNoneExcludedAssetsByHospitalId(int hospitalId);
+
+
+
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId);
         EditAssetDetailVM GetById(int id);
         ViewAssetDetailVM ViewAssetDetailByMasterId(int masterId);

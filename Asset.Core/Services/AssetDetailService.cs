@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace Asset.Core.Services
 {
-    public class AssetDetailService: IAssetDetailService
+    public class AssetDetailService : IAssetDetailService
     {
         private IUnitOfWork _unitOfWork;
 
@@ -207,6 +207,16 @@ namespace Asset.Core.Services
         public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId)
         {
             return _unitOfWork.AssetDetailRepository.GetListOfAssetDetailsByHospitalNotInContract(hospitalId);
+        }
+
+        public IEnumerable<ViewAssetDetailVM> GetNoneExcludedAssetsByHospitalId(int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetNoneExcludedAssetsByHospitalId(hospitalId);
+        }
+
+        public IEnumerable<ViewAssetDetailVM> GetSupplierNoneExcludedAssetsByHospitalId(int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetSupplierNoneExcludedAssetsByHospitalId(hospitalId);
         }
     }
 }
