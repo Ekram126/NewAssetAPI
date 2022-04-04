@@ -104,15 +104,28 @@ namespace Asset.Core.Repositories
             });
         }
 
-        public IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers()
+        public IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers(int hospitalId)
         {
-            return _context.Suppliers.Take(10).ToList().Select(item => new IndexSupplierVM.GetData
+            if (hospitalId != 0)
             {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name.Trim(),
-                NameAr = item.NameAr.Trim()
-            });
+                return _context.AssetDetails.Include(a => a.Supplier).Take(10).ToList().Where(a => a.HospitalId == hospitalId).ToList().GroupBy(a=>a.SupplierId).Select(item => new IndexSupplierVM.GetData
+                {
+                    Id = item.FirstOrDefault().Supplier.Id,
+                    Code = item.FirstOrDefault().Supplier.Code,
+                    Name = item.FirstOrDefault().Supplier.Name.Trim(),
+                    NameAr = item.FirstOrDefault().Supplier.NameAr.Trim()
+                });
+            }
+            else
+            {
+                return _context.AssetDetails.Include(a => a.Supplier).Take(10).ToList().Select(item => new IndexSupplierVM.GetData
+                {
+                    Id = item.Supplier.Id,
+                    Code = item.Supplier.Code,
+                    Name = item.Supplier.Name.Trim(),
+                    NameAr = item.Supplier.NameAr.Trim()
+                });
+            }
         }
 
         public int Update(EditSupplierVM model)

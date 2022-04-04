@@ -47,17 +47,17 @@ namespace Asset.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetTop10MasterAsset")]
-        public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset()
+        [Route("GetTop10MasterAsset/{hospitalId}")]
+        public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset(int hospitalId)
         {
-            return _MasterAssetService.GetTop10MasterAsset();
+            return _MasterAssetService.GetTop10MasterAsset(hospitalId);
         }
 
         [HttpGet]
-        [Route("GetTop10MasterAssetCount")]
-        public int GetTop10MasterAssetCount()
+        [Route("GetTop10MasterAssetCount/{hospitalId}")]
+        public int GetTop10MasterAssetCount(int hospitalId)
         {
-            var total = _MasterAssetService.GetTop10MasterAsset().ToList().Count();
+            var total = _MasterAssetService.GetTop10MasterAsset(hospitalId).ToList().Count();
             return total;
         }
 
@@ -292,17 +292,17 @@ namespace Asset.API.Controllers
         }
 
         [HttpGet]
-        [Route("CountMasterAssetsByBrand")]
-        public List<CountMasterAssetBrands> CountMasterAssetsByBrand()
+        [Route("CountMasterAssetsByBrand/{hospitalId}")]
+        public List<CountMasterAssetBrands> CountMasterAssetsByBrand(int hospitalId)
         {
-            return _MasterAssetService.CountMasterAssetsByBrand();
+            return _MasterAssetService.CountMasterAssetsByBrand(hospitalId);
         }
 
         [HttpGet]
-        [Route("CountMasterAssetsBySupplier")]
-        public List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier()
+        [Route("CountMasterAssetsBySupplier/{hospitalId}")]
+        public List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier(int hospitalId)
         {
-            return _MasterAssetService.CountMasterAssetsBySupplier();
+            return _MasterAssetService.CountMasterAssetsBySupplier(hospitalId);
         }
 
     }

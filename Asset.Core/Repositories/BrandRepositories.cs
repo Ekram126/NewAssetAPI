@@ -101,15 +101,29 @@ namespace Asset.Core.Repositories
             }).First();
         }
 
-        public IEnumerable<IndexBrandVM.GetData> GetTop10Brands()
+        public IEnumerable<IndexBrandVM.GetData> GetTop10Brands(int hospitalId)
         {
-            return _context.Brands.Take(10).ToList().Select(item => new IndexBrandVM.GetData
+            if (hospitalId != 0)
             {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                NameAr = item.NameAr
-            });
+                return _context.AssetDetails.Include(a=>a.MasterAsset.brand).Include(a => a.Hospital).Take(10).ToList().Where(a=>a.HospitalId == hospitalId)
+                    .ToList().GroupBy(a => a.MasterAsset.BrandId).Select(item => new IndexBrandVM.GetData
+                {
+                    Id = item.FirstOrDefault().MasterAsset.brand.Id,
+                    Code = item.FirstOrDefault().MasterAsset.brand.Code,
+                    Name = item.FirstOrDefault().MasterAsset.brand.Name,
+                    NameAr = item.FirstOrDefault().MasterAsset.brand.NameAr
+                });
+            }
+            else
+            {
+                return _context.Brands.Take(10).ToList().Select(item => new IndexBrandVM.GetData
+                {
+                    Id = item.Id,
+                    Code = item.Code,
+                    Name = item.Name,
+                    NameAr = item.NameAr
+                });
+            }
         }
 
         public IEnumerable<IndexBrandVM.GetData> SortBrands(SortBrandVM sortObj)

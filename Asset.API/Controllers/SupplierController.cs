@@ -42,16 +42,16 @@ namespace Asset.API.Controllers
 
 
         [HttpGet]
-        [Route("GetTop10Suppliers")]
-        public IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers()
+        [Route("GetTop10Suppliers/{hospitalId}")]
+        public IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers(int hospitalId)
         {
-            return _SupplierService.GetTop10Suppliers();
+            return _SupplierService.GetTop10Suppliers(hospitalId);
         }
         [HttpGet]
-        [Route("GetTop10SuppliersCount")]
-        public int GetTop10SuppliersCount()
+        [Route("GetTop10SuppliersCount/{hospitalId}")]
+        public int GetTop10SuppliersCount(int hospitalId)
         {
-            return _SupplierService.GetTop10Suppliers().ToList().Count;
+            return _SupplierService.GetTop10Suppliers(hospitalId).ToList().Count;
         }
 
 

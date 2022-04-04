@@ -16,7 +16,7 @@ namespace Asset.ViewModels.AssetDetailVM
         {
             public int Id { get; set; }
             public string UserId { get; set; }
-            public int? MasterAssetId { get; set; }
+           public int? MasterAssetId { get; set; }
             public string Code { get; set; }
             public string Serial { get; set; }
             public string Model { get; set; }

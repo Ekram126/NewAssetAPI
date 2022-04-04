@@ -35,14 +35,14 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterAssetRepository.CountMasterAssets();
         }
 
-        public List<CountMasterAssetBrands> CountMasterAssetsByBrand()
+        public List<CountMasterAssetBrands> CountMasterAssetsByBrand(int hospitalId)
         {
-            return _unitOfWork.MasterAssetRepository.CountMasterAssetsByBrand();
+            return _unitOfWork.MasterAssetRepository.CountMasterAssetsByBrand(hospitalId);
         }
 
-        public List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier()
+        public List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier(int hospitalId)
         {
-             return _unitOfWork.MasterAssetRepository.CountMasterAssetsBySupplier();
+             return _unitOfWork.MasterAssetRepository.CountMasterAssetsBySupplier(hospitalId);
         }
 
         public int CreateMasterAssetDocuments(CreateMasterAssetAttachmentVM attachObj)
@@ -95,9 +95,9 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterAssetRepository.GetById(id);
         }
 
-        public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset()
+        public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset(int hospitalId)
         {
-            return _unitOfWork.MasterAssetRepository.GetTop10MasterAsset();
+            return _unitOfWork.MasterAssetRepository.GetTop10MasterAsset(hospitalId);
         }
 
         public IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(SearchMasterAssetVM searchObj)

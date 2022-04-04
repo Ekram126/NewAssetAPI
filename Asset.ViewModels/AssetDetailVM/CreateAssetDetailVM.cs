@@ -39,9 +39,10 @@ namespace Asset.ViewModels.AssetDetailVM
         public string PONumber { get; set; }
         public decimal? DepreciationRate { get; set; }
         public string CostCenter { get; set; }
+        public int? AssetStatusId { get; set; }
+        public int? AssetConditionId { get; set; }
 
-
-     //   public List<AssetOwner> ListOwners{ get; set; }
+        //   public List<AssetOwner> ListOwners{ get; set; }
 
         public List<int> ListOwners { get; set; }
 

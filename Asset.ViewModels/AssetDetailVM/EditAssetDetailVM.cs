@@ -55,8 +55,9 @@ namespace Asset.ViewModels.AssetDetailVM
         public string FloorName { get; set; }
         public string FloorNameAr { get; set; }
         public string RoomNameAr { get; set; }
-        public string RoomName { get; set; } 
-        
+        public string RoomName { get; set; }
+
+        public int AssetStatusId { get; set; }
         public string AssetStatus { get; set; }
         public string AssetStatusAr { get; set; }
     }

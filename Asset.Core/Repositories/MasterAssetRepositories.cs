@@ -71,32 +71,60 @@ namespace Asset.Core.Repositories
             return _context.MasterAssets.Count();
         }
 
-        public List<CountMasterAssetBrands> CountMasterAssetsByBrand()
+        public List<CountMasterAssetBrands> CountMasterAssetsByBrand(int hospitalId)
         {
             List<CountMasterAssetBrands> list = new List<CountMasterAssetBrands>();
             var lstBrands = _context.Brands.ToList().Take(5);
-            foreach (var item in lstBrands)
+            if (hospitalId != 0)
             {
-                CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
-                countHospitalObj.BrandName = item.Name;
-                countHospitalObj.BrandNameAr = item.NameAr;
-                countHospitalObj.CountOfMasterAssets = _context.MasterAssets.Where(a => a.BrandId == item.Id).ToList().Count();
-                list.Add(countHospitalObj);
+                foreach (var item in lstBrands)
+                {
+                    CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
+                    countHospitalObj.BrandName = item.Name;
+                    countHospitalObj.BrandNameAr = item.NameAr;
+                    countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Include(a=>a.MasterAsset).Where(a => a.MasterAsset.BrandId == item.Id && a.HospitalId== hospitalId).ToList().Count();
+                    list.Add(countHospitalObj);
+                }
+            }
+            else
+            {
+                foreach (var item in lstBrands)
+                {
+                    CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
+                    countHospitalObj.BrandName = item.Name;
+                    countHospitalObj.BrandNameAr = item.NameAr;
+                    countHospitalObj.CountOfMasterAssets = _context.MasterAssets.Where(a => a.BrandId == item.Id).ToList().Count();
+                    list.Add(countHospitalObj);
+                }
             }
             return list;
         }
 
-        public List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier()
+        public List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier(int hospitalId)
         {
             List<CountMasterAssetSuppliers> list = new List<CountMasterAssetSuppliers>();
-            var lstBrands = _context.Suppliers.ToList().Take(5);
-            foreach (var item in lstBrands)
+            var lstSuppliers = _context.Suppliers.ToList().Take(5);
+            if (hospitalId != 0)
             {
-                CountMasterAssetSuppliers countHospitalObj = new CountMasterAssetSuppliers();
-                countHospitalObj.SupplierName = item.Name;
-                countHospitalObj.SupplierNameAr = item.NameAr;
-                countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Where(a => a.SupplierId == item.Id).ToList().GroupBy(a => a.SupplierId).Count();
-                list.Add(countHospitalObj);
+                foreach (var item in lstSuppliers)
+                {
+                    CountMasterAssetSuppliers countHospitalObj = new CountMasterAssetSuppliers();
+                    countHospitalObj.SupplierName = item.Name;
+                    countHospitalObj.SupplierNameAr = item.NameAr;
+                    countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Where(a => a.SupplierId == item.Id && a.HospitalId == hospitalId).ToList().GroupBy(a => a.SupplierId).Count();
+                    list.Add(countHospitalObj);
+                }
+            }
+            else
+            {
+                foreach (var item in lstSuppliers)
+                {
+                    CountMasterAssetSuppliers countHospitalObj = new CountMasterAssetSuppliers();
+                    countHospitalObj.SupplierName = item.Name;
+                    countHospitalObj.SupplierNameAr = item.NameAr;
+                    countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Where(a => a.SupplierId == item.Id).ToList().GroupBy(a => a.SupplierId).Count();
+                    list.Add(countHospitalObj);
+                }
             }
             return list;
 
@@ -236,25 +264,6 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
-
-
-        //public IEnumerable<MasterAsset> GetAssetOwnerByHospitalId(int hospitalId, string userId)
-        //{
-        //    List<MasterAsset> list = new List<MasterAsset>();
-        //    var lstMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
-        //                           .Where(a => a.HospitalId == hospitalId).ToList().GroupBy(a => a.MasterAsset.Id).ToList();
-
-
-        //    foreach (var item in lstMasterAssets)
-        //    {
-        //        MasterAsset masterAssetObj = new MasterAsset();
-        //        masterAssetObj.Id = item.FirstOrDefault().MasterAsset.Id;
-        //        masterAssetObj.Name = item.FirstOrDefault().MasterAsset.Name;
-        //        masterAssetObj.NameAr = item.FirstOrDefault().MasterAsset.NameAr;
-        //        list.Add(masterAssetObj);
-        //    }
-        //    return list;
-        //}
 
 
         public IEnumerable<MasterAssetAttachment> GetAttachmentByMasterAssetId(int assetId)
@@ -722,28 +731,57 @@ namespace Asset.Core.Repositories
             return lst;
         }
 
-        public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset()
+        public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset(int hospitalId)
         {
             List<IndexMasterAssetVM.GetData> list = new List<IndexMasterAssetVM.GetData>();
-            var lstMasters = _context.MasterAssets.Take(10).Include(a => a.brand).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
-
-            foreach (var item in lstMasters)
+          
+            if (hospitalId != 0)
             {
-                IndexMasterAssetVM.GetData getDataObj = new IndexMasterAssetVM.GetData();
-                getDataObj.Id = item.Id;
-                getDataObj.Code = item.Code;
-                getDataObj.Model = item.ModelNumber;
-                getDataObj.PMColor = item.PMColor;
-                getDataObj.PMBGColor = item.PMBGColor;
-                getDataObj.ECRIName = item.ECRIId != null ? item.ECRIS.Name : "";
-                getDataObj.ECRINameAr = item.ECRIId != null ? item.ECRIS.NameAr : "";
-                getDataObj.Name = item.Name;
-                getDataObj.NameAr = item.NameAr;
-                getDataObj.OriginName = item.OriginId != null ? item.Origin.Name : "";
-                getDataObj.OriginNameAr = item.OriginId != null ? item.Origin.NameAr : "";
-                getDataObj.BrandName = item.BrandId != null ? item.brand.Name : "";
-                getDataObj.BrandNameAr = item.BrandId != null ? item.brand.NameAr : "";
-                list.Add(getDataObj);
+                var lstAssets = _context.AssetDetails.Include(a => a.MasterAsset).Take(10)
+                    .Include(a => a.MasterAsset.brand)
+                    .Include(a => a.MasterAsset.ECRIS)
+                    .Include(a => a.MasterAsset.Origin).OrderBy(a => a.MasterAsset.Name)
+                    .Where(a=>a.HospitalId == hospitalId).ToList().GroupBy(a=>a.MasterAsset.Id);
+                foreach (var item in lstAssets)
+                {
+                    IndexMasterAssetVM.GetData getDataObj = new IndexMasterAssetVM.GetData();
+                    getDataObj.Id = item.FirstOrDefault().MasterAsset.Id;
+                    getDataObj.Code = item.FirstOrDefault().MasterAsset.Code;
+                    getDataObj.Model = item.FirstOrDefault().MasterAsset.ModelNumber;
+                    getDataObj.PMColor = item.FirstOrDefault().MasterAsset.PMColor;
+                    getDataObj.PMBGColor = item.FirstOrDefault().MasterAsset.PMBGColor;
+                    getDataObj.ECRIName = item.FirstOrDefault().MasterAsset.ECRIId != null ? item.FirstOrDefault().MasterAsset.ECRIS.Name : "";
+                    getDataObj.ECRINameAr = item.FirstOrDefault().MasterAsset.ECRIId != null ? item.FirstOrDefault().MasterAsset.ECRIS.NameAr : "";
+                    getDataObj.Name = item.FirstOrDefault().MasterAsset.Name;
+                    getDataObj.NameAr = item.FirstOrDefault().MasterAsset.NameAr;
+                    getDataObj.OriginName = item.FirstOrDefault().MasterAsset.OriginId != null ? item.FirstOrDefault().MasterAsset.Origin.Name : "";
+                    getDataObj.OriginNameAr = item.FirstOrDefault().MasterAsset.OriginId != null ? item.FirstOrDefault().MasterAsset.Origin.NameAr : "";
+                    getDataObj.BrandName = item.FirstOrDefault().MasterAsset.BrandId != null ? item.FirstOrDefault().MasterAsset.brand.Name : "";
+                    getDataObj.BrandNameAr = item.FirstOrDefault().MasterAsset.BrandId != null ? item.FirstOrDefault().MasterAsset.brand.NameAr : "";
+                    list.Add(getDataObj);
+                }
+            }
+            else
+            {
+                var lstMasters = _context.MasterAssets.Take(10).Include(a => a.brand).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
+                foreach (var item in lstMasters)
+                {
+                    IndexMasterAssetVM.GetData getDataObj = new IndexMasterAssetVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.Code = item.Code;
+                    getDataObj.Model = item.ModelNumber;
+                    getDataObj.PMColor = item.PMColor;
+                    getDataObj.PMBGColor = item.PMBGColor;
+                    getDataObj.ECRIName = item.ECRIId != null ? item.ECRIS.Name : "";
+                    getDataObj.ECRINameAr = item.ECRIId != null ? item.ECRIS.NameAr : "";
+                    getDataObj.Name = item.Name;
+                    getDataObj.NameAr = item.NameAr;
+                    getDataObj.OriginName = item.OriginId != null ? item.Origin.Name : "";
+                    getDataObj.OriginNameAr = item.OriginId != null ? item.Origin.NameAr : "";
+                    getDataObj.BrandName = item.BrandId != null ? item.brand.Name : "";
+                    getDataObj.BrandNameAr = item.BrandId != null ? item.brand.NameAr : "";
+                    list.Add(getDataObj);
+                }
             }
             return list;
         }

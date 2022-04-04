@@ -12,14 +12,10 @@ namespace Asset.Domain.Repositories
     public interface IMasterAssetRepository
     {
         IEnumerable<IndexMasterAssetVM.GetData> GetAll();
-        IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset();
+        IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset(int hospitalId);
         IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(SearchMasterAssetVM searchObj);
         IEnumerable<MasterAsset> GetAllMasterAssets();
-        //IEnumerable<MasterAsset> GetAssetOwnerByHospitalId(int hospitalId, string userId);
-
         IEnumerable<MasterAsset> AutoCompleteMasterAssetName(string name);
-
-
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId, string userId);
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId);
         EditMasterAssetVM GetById(int id);
@@ -27,17 +23,12 @@ namespace Asset.Domain.Repositories
         int Add(CreateMasterAssetVM masterAssetObj);
         int Update(EditMasterAssetVM masterAssetObj);
         int Delete(int id);
-
         int CreateMasterAssetDocuments(CreateMasterAssetAttachmentVM attachObj);
-
         IEnumerable<MasterAssetAttachment> GetAttachmentByMasterAssetId(int assetId);
-
         int DeleteMasterAssetAttachment(int id);
         int CountMasterAssets();
-
-        List<CountMasterAssetBrands> CountMasterAssetsByBrand();
-
-        List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier();
+        List<CountMasterAssetBrands> CountMasterAssetsByBrand(int hospitalId);
+        List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier(int hospitalId);
         IEnumerable<IndexMasterAssetVM.GetData> sortMasterAssets(SortMasterAssetVM searchObj);
     }
 }

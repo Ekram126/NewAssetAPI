@@ -59,9 +59,9 @@ namespace Asset.Core.Services
             return _unitOfWork.BrandRepository.GetById(id);
         }
 
-        public IEnumerable<IndexBrandVM.GetData> GetTop10Brands()
+        public IEnumerable<IndexBrandVM.GetData> GetTop10Brands(int hospitalId)
         {
-            return _unitOfWork.BrandRepository.GetTop10Brands();
+            return _unitOfWork.BrandRepository.GetTop10Brands(hospitalId);
         }
 
         public IEnumerable<IndexBrandVM.GetData> SortBrands(SortBrandVM sortObj)

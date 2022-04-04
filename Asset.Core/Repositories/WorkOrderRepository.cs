@@ -990,10 +990,7 @@ namespace Asset.Core.Repositories
                 printWorkObj.Subject = work.Subject;
                 printWorkObj.MasterAssetCode = work.Request.AssetDetail.MasterAsset.Code;
                 printWorkObj.AssetCode = work.Request.AssetDetail.Code;
-
-
-
-
+                printWorkObj.BarCode = work.Request.AssetDetail.Barcode;
                 printWorkObj.WorkOrderNumber = work.WorkOrderNumber;
                 printWorkObj.CreationDate = work.CreationDate;
                 printWorkObj.PlannedStartDate = work.PlannedStartDate;
@@ -1017,10 +1014,10 @@ namespace Asset.Core.Repositories
                 printWorkObj.RequestTypeNameAr = work.Request.RequestType.NameAr;
                 printWorkObj.ModeName = work.Request.RequestMode.Name;
                 printWorkObj.ModeNameAr = work.Request.RequestMode.NameAr;
-                printWorkObj.SubProblemName = work.Request.SubProblem.Name;
-                printWorkObj.SubProblemNameAr = work.Request.SubProblem.NameAr;
-                printWorkObj.ProblemName = work.Request.SubProblem.Problem.Name;
-                printWorkObj.ProblemNameAr = work.Request.SubProblem.Problem.NameAr;
+                printWorkObj.SubProblemName = work.Request.SubProblem != null ? work.Request.SubProblem.Name : "";
+                printWorkObj.SubProblemNameAr = work.Request.SubProblem != null ? work.Request.SubProblem.NameAr : "";
+                printWorkObj.ProblemName = work.Request.SubProblem != null ? work.Request.SubProblem.Problem.Name:"";
+                printWorkObj.ProblemNameAr = work.Request.SubProblem != null ? work.Request.SubProblem.Problem.NameAr:"";
 
 
 

@@ -40,7 +40,7 @@ namespace Asset.ViewModels.WorkOrderVM
         public string RequestTypeName { get; set; }
         public string RequestTypeNameAr { get; set; }
 
-
+        public string BarCode { get; set; }
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
         public string SerialNumber { get; set; }

@@ -12,7 +12,7 @@ namespace Asset.Domain.Services
     public interface IMasterAssetService
     {
         IEnumerable<IndexMasterAssetVM.GetData> GetAll();
-        IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset();
+        IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset(int hospitalId);
         IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(SearchMasterAssetVM searchObj);
         IEnumerable<MasterAsset> GetAllMasterAssets();
         IEnumerable<MasterAsset> AutoCompleteMasterAssetName(string name);
@@ -27,13 +27,9 @@ namespace Asset.Domain.Services
         int CreateMasterAssetDocuments(CreateMasterAssetAttachmentVM attachObj);
         IEnumerable<MasterAssetAttachment> GetAttachmentByMasterAssetId(int assetId);
         int DeleteMasterAssetAttachment(int id);
-
-
         int CountMasterAssets();
-
-        List<CountMasterAssetBrands> CountMasterAssetsByBrand();
-
-        List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier();
+        List<CountMasterAssetBrands> CountMasterAssetsByBrand(int hospitalId);
+        List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier(int hospitalId);
         IEnumerable<IndexMasterAssetVM.GetData> sortMasterAssets(SortMasterAssetVM sortObj);
     }
 }

@@ -58,9 +58,9 @@ namespace Asset.Core.Services
             return _unitOfWork.SupplierRepository.GetSupplierByName(supplierName);
         }
 
-        public IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers()
+        public IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers(int hospitalId)
         {
-            return _unitOfWork.SupplierRepository.GetTop10Suppliers();
+            return _unitOfWork.SupplierRepository.GetTop10Suppliers(hospitalId);
         }
 
         public int Update(EditSupplierVM supplierObj)

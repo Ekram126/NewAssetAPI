@@ -11,7 +11,7 @@ namespace Asset.Domain.Repositories
     public interface IBrandRepository
     {
         IEnumerable<IndexBrandVM.GetData> GetAll();
-        IEnumerable<IndexBrandVM.GetData> GetTop10Brands();
+        IEnumerable<IndexBrandVM.GetData> GetTop10Brands(int hospitalId);
         IEnumerable<Brand> GetAllBrands();
         IEnumerable<IndexBrandVM.GetData> GetBrandByName(string brandName);
         EditBrandVM GetById(int id);

@@ -11,7 +11,7 @@ namespace Asset.Domain.Services
  public   interface ISupplierService
     {
         IEnumerable<IndexSupplierVM.GetData> GetAll();
-        IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers();
+        IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers(int hospitalId);
         EditSupplierVM GetById(int id);
 
 

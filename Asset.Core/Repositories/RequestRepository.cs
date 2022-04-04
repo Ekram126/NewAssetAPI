@@ -125,6 +125,7 @@ namespace Asset.Core.Repositories
                     Subject = req.Subject,
                     RequestCode = req.RequestCode,
                     AssetCode = req.AssetDetail.Code,
+                    Barcode= req.AssetDetail.Barcode,
                     Description = req.Description,
                     RequestDate = req.RequestDate,
                     RequestModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0,
@@ -220,7 +221,7 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = req.Id;
                 getDataObj.Code = req.RequestCode;
                 getDataObj.CreatedById = req.CreatedById;
-                getDataObj.UserName = req.User.UserName;
+                getDataObj.UserName = req.User != null ? req.User.UserName:"";
                 getDataObj.Subject = req.Subject;
                 getDataObj.RequestDate = req.RequestDate;
                 getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
@@ -242,11 +243,11 @@ namespace Asset.Core.Repositories
                 getDataObj.ModeNameAr = req.RequestMode.NameAr;
 
 
-                getDataObj.PeriorityId = req.RequestPeriority.Id;
-                getDataObj.PeriorityName = req.RequestPeriority.Name;
-                getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
-                getDataObj.PeriorityColor = req.RequestPeriority.Color;
-                getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
+                getDataObj.PeriorityId = req.RequestPeriority != null ? req.RequestPeriority.Id:0;
+                getDataObj.PeriorityName = req.RequestPeriority != null ? req.RequestPeriority.Name:"";
+                getDataObj.PeriorityNameAr = req.RequestPeriority != null ? req.RequestPeriority.NameAr:"";
+                getDataObj.PeriorityColor = req.RequestPeriority != null ? req.RequestPeriority.Color:"";
+                getDataObj.PeriorityIcon = req.RequestPeriority != null ? req.RequestPeriority.Icon:"";
 
 
                 getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
@@ -277,10 +278,10 @@ namespace Asset.Core.Repositories
                 }
                 getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
                 getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count;
-                getDataObj.GovernorateId = req.User.GovernorateId;
-                getDataObj.CityId = req.User.CityId;
-                getDataObj.OrganizationId = req.User.OrganizationId;
-                getDataObj.SubOrganizationId = req.User.SubOrganizationId;
+                getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId:0;
+                getDataObj.CityId = req.User != null ? req.User.CityId:0;
+                getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId:0;
+                getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId:0;
                 list.Add(getDataObj);
             }
 
@@ -430,7 +431,7 @@ namespace Asset.Core.Repositories
                     getDataObj.Id = req.Id;
                     getDataObj.Code = req.RequestCode;
                     getDataObj.CreatedById = req.CreatedById;
-                    getDataObj.CreatedBy = req.User.UserName;
+                    getDataObj.CreatedBy = req.User != null? req.User.UserName:"";
                     getDataObj.Subject = req.Subject;
                     getDataObj.RequestDate = req.RequestDate;
 
@@ -462,13 +463,13 @@ namespace Asset.Core.Repositories
                     getDataObj.Barcode = req.AssetDetail.Barcode;
                     getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
                     getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
-                    getDataObj.ModeName = req.RequestMode.Name;
-                    getDataObj.ModeNameAr = req.RequestMode.NameAr;
+                    getDataObj.ModeName = req.RequestMode != null ? req.RequestMode.Name:"";
+                    getDataObj.ModeNameAr =  req.RequestMode != null ? req.RequestMode.NameAr:"";
                     getDataObj.PeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
-                    getDataObj.PeriorityName = req.RequestPeriority.Name;
-                    getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
-                    getDataObj.PeriorityColor = req.RequestPeriority.Color;
-                    getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
+                    getDataObj.PeriorityName = req.RequestPeriority != null ? req.RequestPeriority.Name:"";
+                    getDataObj.PeriorityNameAr =req.RequestPeriority != null ? req.RequestPeriority.NameAr:"";
+                    getDataObj.PeriorityColor = req.RequestPeriority != null ?req.RequestPeriority.Color:"";
+                    getDataObj.PeriorityIcon =req.RequestPeriority != null ? req.RequestPeriority.Icon:"";
 
 
                     getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
@@ -480,8 +481,8 @@ namespace Asset.Core.Repositories
                             .ToList().Select(item => new IndexRequestTrackingVM.GetData
                             {
                                 Id = item.Id,
-                                StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
-                                StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                                StatusName = item.RequestStatusId != null ?_context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name:"",
+                                StatusNameAr =  item.RequestStatusId != null ?_context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr:"",
                                 Description = item.Description,
                                 Date = item.DescriptionDate,
                                 StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
@@ -501,10 +502,10 @@ namespace Asset.Core.Repositories
 
                     getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
                     getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count;
-                    getDataObj.GovernorateId = req.User.GovernorateId;
-                    getDataObj.CityId = req.User.CityId;
-                    getDataObj.OrganizationId = req.User.OrganizationId;
-                    getDataObj.SubOrganizationId = req.User.SubOrganizationId;
+                    getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId:0;
+                    getDataObj.CityId = req.User != null ? req.User.CityId:0;
+                    getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId:0;
+                    getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId:0;
                     list.Add(getDataObj);
                 }
 
@@ -1063,8 +1064,8 @@ namespace Asset.Core.Repositories
                 getDataObj.ModeName = req.RequestMode.Name;
                 getDataObj.ModeNameAr = req.RequestMode.NameAr;
                 getDataObj.PeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
-                getDataObj.PeriorityName = req.RequestPeriority.Name;
-                getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
+                getDataObj.PeriorityName = req.RequestPeriority != null? req.RequestPeriority.Name:"";
+                getDataObj.PeriorityNameAr = req.RequestPeriority != null ? req.RequestPeriority.NameAr:"";
                 getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
                 getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
                 getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
@@ -2013,6 +2014,7 @@ namespace Asset.Core.Repositories
                 printSRObj.RequestId = requestObj.Id;
                 printSRObj.AssetCode = requestObj.AssetDetail.Code;
                 printSRObj.AssetBarCode = requestObj.AssetDetail.Barcode;
+
                 printSRObj.RequestSubject = requestObj.Subject;
                 printSRObj.RequestDate = requestObj.RequestDate.ToShortDateString();
                 printSRObj.RequestCode = requestObj.RequestCode;

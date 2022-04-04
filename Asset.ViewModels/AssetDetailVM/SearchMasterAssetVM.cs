@@ -26,7 +26,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public string Serial { get; set; }
 
         public string Code { get; set; }
-
+        public string BarCode { get; set; }
         public string Model { get; set; }
     }
 }

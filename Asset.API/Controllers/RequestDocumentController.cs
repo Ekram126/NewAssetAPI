@@ -41,7 +41,8 @@ namespace Asset.API.Controllers
             return _requestDocumentService.GetRequestDocumentsByRequestTrackingId(RequestTrackingId);
         }
         // POST api/<RequestDocumentController>
-        [HttpPost]
+        [HttpPost] 
+      //  [Route("AddRequestDocuments")]
         public void Post(List<CreateRequestDocument> requestDocuments)
         {
             _requestDocumentService.AddRequestDocument(requestDocuments);

@@ -38,16 +38,16 @@ namespace Asset.API.Controllers
 
 
         [HttpGet]
-        [Route("GetTop10Brands")]
-        public IEnumerable<IndexBrandVM.GetData> GetTop10Brands()
+        [Route("GetTop10Brands/{hospitalId}")]
+        public IEnumerable<IndexBrandVM.GetData> GetTop10Brands(int hospitalId)
         {
-            return _BrandService.GetTop10Brands();
+            return _BrandService.GetTop10Brands(hospitalId);
         }
         [HttpGet]
-        [Route("GetTop10BrandsCount")]
-        public int GetTop10BrandsCount()
+        [Route("GetTop10BrandsCount/{hospitalId}")]
+        public int GetTop10BrandsCount(int hospitalId)
         {
-            return _BrandService.GetTop10Brands().ToList().Count;
+            return _BrandService.GetTop10Brands(hospitalId).ToList().Count;
         }
 
         [HttpPost]
