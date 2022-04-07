@@ -22,7 +22,7 @@ namespace Asset.Models
         public string NameAr { get; set; }
 
         [ForeignKey("FloorId")]
-
-        public int FloorId { get; set; }
+        public int? FloorId { get; set; }
+        public Floor Floor { get; set; }
     }
 }

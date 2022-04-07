@@ -82,7 +82,7 @@ namespace Asset.Core.Repositories
                     Id = item.Id,
                     StatusName = _context.AssetStatus.Where(a => a.Id == item.AssetStatusId).FirstOrDefault().Name,
                     StatusNameAr = _context.AssetStatus.Where(a => a.Id == item.AssetStatusId).FirstOrDefault().NameAr,
-                    StatusDate = item.StatusDate.Value.ToShortDateString(),
+                    StatusDate = item.StatusDate.Value.ToString(),
                     AssetDetailId = item.AssetDetailId
                 }).ToList();
             return assetMovementObj;

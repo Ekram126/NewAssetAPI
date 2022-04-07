@@ -26,7 +26,7 @@ namespace Asset.API.Controllers
     public class AuthenticateController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-         RoleManager<ApplicationRole> _roleManager;
+        RoleManager<ApplicationRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;
@@ -43,7 +43,9 @@ namespace Asset.API.Controllers
         [Route("Login")]
         public async Task<IActionResult> Login(LoginVM userObj)
         {
-
+            string Useremail = "";
+            string userName = "";
+            string userNameAr = "";
             var user = await _userManager.FindByNameAsync(userObj.Username);
 
             if (user == null)
@@ -56,7 +58,7 @@ namespace Asset.API.Controllers
 
             if (user != null && await _userManager.CheckPasswordAsync(user, userObj.PasswordHash))
             {
-      
+
 
                 var userRoles = await _userManager.GetRolesAsync(user);
 
@@ -115,36 +117,61 @@ namespace Asset.API.Controllers
                                  where user.Id == userRole.UserId
                                  select role);
 
-
-                var Useremail = user.Email;
-                var userName = user.UserName;
+                if (supplierId > 0)
+                {
+                    var lstSuppliers = _context.Suppliers.Where(a => a.EMail == user.Email).ToList();
+                    if (lstSuppliers.Count > 0)
+                    {
+                        var supplierObj = lstSuppliers[0];
+                        Useremail = user.Email;
+                        userName = supplierObj.Name;
+                        userNameAr = supplierObj.NameAr;
+                    }
+                }
+                if (commetieeMemberId > 0)
+                {
+                    var lstMembers = _context.CommetieeMembers.Where(a => a.EMail == user.Email).ToList();
+                    if (lstMembers.Count > 0)
+                    {
+                        var memberObj = lstMembers[0];
+                        Useremail = user.Email;
+                        userName = memberObj.Name;
+                        userNameAr = memberObj.NameAr;
+                    }
+                }
+                else
+                {
+                    Useremail = user.Email;
+                    userName = user.UserName;
+                }
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
                     email = Useremail,
                     userName = userName,
+                    userNameAr = userNameAr,
                     roles = userRoles,
                     expiration = token.ValidTo,
                     id = id,
-                    roleNames=roleNames,
+                    roleNames = roleNames,
                     governorateId = governorateId,
                     cityId = cityId,
                     organizationId = orgId,
                     subOrganizationId = subOrgId,
                     hospitalId = hospitalId,
-                    supplierId= supplierId,
-                    commetieeMemberId= commetieeMemberId,
+                    supplierId = supplierId,
+                    commetieeMemberId = commetieeMemberId,
                     govName = govName,
                     cityName = cityName,
                     orgName = orgName,
                     subOrgName = subOrgName,
-                    hospitalName= hospitalName,
+                    hospitalName = hospitalName,
                     govNameAr = govNameAr,
                     cityNameAr = cityNameAr,
                     orgNameAr = orgNameAr,
                     subOrgNameAr = subOrgNameAr,
                     hospitalNameAr = hospitalNameAr,
-                    hospitalCode= hospitalCode
+                    hospitalCode = hospitalCode
 
 
                 });
@@ -158,6 +185,7 @@ namespace Asset.API.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgetPasswordVM forgotPasswordModel)
         {
+            string replace = "";
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -173,12 +201,20 @@ namespace Asset.API.Controllers
              };
 
             var callback = QueryHelpers.AddQueryString(forgotPasswordModel.ClientURI, param);
+
             var hash = callback.Split("#");
             var query = hash[0];
-            string replace = query.Replace("/?", "/#/reset?");
-            var message = new MessageVM(new string[] { user.Email }, "Al-Mostakbal Technology.", $"Dear {user.UserName}\r\n Please follow link to reset your password {replace}");
+            replace = query.Replace("/?", "/#/reset?");
 
+            StringBuilder strBuild = new StringBuilder();
+            strBuild.Append("Dear " + user.UserName + ":");
+            strBuild.Append("\n");
+            strBuild.Append("من فضلك اضغط على الرابط التالي لتغيير كلمة المرور");
+            strBuild.Append("\n");
+            strBuild.Append("<a href='" + replace + "'>اضغط هنا</a>");
+            var message = new MessageVM(new string[] { user.Email }, "Al-Mostakbal Technology.", strBuild.ToString());
             _emailSender.SendEmail(message);
+
             return Ok();
         }
         [HttpPost("ResetPassword")]

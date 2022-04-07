@@ -12,11 +12,11 @@ namespace Asset.Models
         public int Id { get; set; }
         public string Subject { get; set; }
         public string WorkOrderNumber { get; set; }
-        public DateTime CreationDate { get; set; }
-        public DateTime PlannedStartDate { get; set; }
-        public DateTime PlannedEndDate { get; set; }
-        public DateTime ActualStartDate { get; set; }
-        public DateTime ActualEndDate { get; set; }
+        public DateTime? CreationDate { get; set; }
+        public DateTime? PlannedStartDate { get; set; }
+        public DateTime? PlannedEndDate { get; set; }
+        public DateTime? ActualStartDate { get; set; }
+        public DateTime? ActualEndDate { get; set; }
         public string Note { get; set; }
         public string CreatedById { get; set; }
         [ForeignKey("CreatedById")]

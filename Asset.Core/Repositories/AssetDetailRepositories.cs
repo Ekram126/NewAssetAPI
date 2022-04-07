@@ -819,7 +819,7 @@ namespace Asset.Core.Repositories
                 model.MasterCode = detailObj.MasterAsset.Code;
                 model.VersionNumber = detailObj.MasterAsset.VersionNumber;
                 model.ModelNumber = detailObj.MasterAsset.ModelNumber;
-                model.ExpectedLifeTime = detailObj.MasterAsset != null ? (int)detailObj.MasterAsset.ExpectedLifeTime : 0;
+                model.ExpectedLifeTime = detailObj.MasterAsset.ExpectedLifeTime != null ? (int)detailObj.MasterAsset.ExpectedLifeTime : 0;
                 model.Description = detailObj.MasterAsset.Description;
                 model.DescriptionAr = detailObj.MasterAsset.DescriptionAr;
                 model.Length = detailObj.MasterAsset.Length.ToString();
@@ -955,72 +955,77 @@ namespace Asset.Core.Repositories
 
             if (userRoleNames.Contains("AssetOwner"))
             {
-
                 list = _context.AssetOwners.Include(a => a.AssetDetail)
                                            .Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.Supplier)
                                            .Include(a => a.AssetDetail.MasterAsset.brand).Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City)
                                            .Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization)
                                            .Where(a => a.AssetDetail.HospitalId == userObj.HospitalId && a.EmployeeId == empObj.Id)
-
                      .Select(detail => new IndexAssetDetailVM.GetData
                      {
-
                          Id = detail.AssetDetail.Id,
                          Code = detail.AssetDetail.Code,
                          BarCode = detail.AssetDetail.Barcode,
                          Model = detail.AssetDetail.MasterAsset.ModelNumber,
                          Serial = detail.AssetDetail.SerialNumber,
                          SerialNumber = detail.AssetDetail.SerialNumber,
+                         
                          HospitalId = detail.AssetDetail.HospitalId,
                          SupplierId = detail.AssetDetail.SupplierId,
                          QrFilePath = detail.AssetDetail.QrFilePath,
                          BrandName = detail.AssetDetail.MasterAsset.brand.Name,
                          BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
-
                          SupplierName = detail.AssetDetail.Supplier.Name,
                          SupplierNameAr = detail.AssetDetail.Supplier.NameAr,
-
-
+                         AssetId = detail.AssetDetail.Id,
                          MasterAssetId = detail.AssetDetail.MasterAsset.Id,
                          AssetName = detail.AssetDetail.MasterAsset.Name,
                          AssetNameAr = detail.AssetDetail.MasterAsset.NameAr,
-
                          BrandId = detail.AssetDetail.MasterAsset.BrandId,
                          OriginId = detail.AssetDetail.MasterAsset.OriginId,
-
                          HospitalName = detail.AssetDetail.Hospital.Name,
                          HospitalNameAr = detail.AssetDetail.Hospital.NameAr,
                          GovernorateId = detail.AssetDetail.Hospital.GovernorateId,
                          GovernorateName = detail.AssetDetail.Hospital.Governorate.Name,
                          GovernorateNameAr = detail.AssetDetail.Hospital.Governorate.NameAr,
-
                          CityName = detail.AssetDetail.Hospital.City.Name,
                          CityNameAr = detail.AssetDetail.Hospital.City.NameAr,
-
-
                          OrgName = detail.AssetDetail.Hospital.Organization.Name,
                          OrgNameAr = detail.AssetDetail.Hospital.Organization.NameAr,
-
-
-
                          SubOrgName = detail.AssetDetail.Hospital.SubOrganization.Name,
                          SubOrgNameAr = detail.AssetDetail.Hospital.SubOrganization.NameAr,
-
                          CityId = detail.AssetDetail.Hospital.CityId,
                          OrganizationId = detail.AssetDetail.Hospital.OrganizationId,
                          SubOrganizationId = detail.AssetDetail.Hospital.SubOrganizationId
 
                      }).ToList();
 
-
-
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    list = list.ToList();
+                }
+                if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    list = list.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
+                }
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    list = list.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    list = list.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
+                {
+                    list = list.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
+                }
+                if (userObj.HospitalId > 0)
+                {
+                   list = list.Where(a => a.HospitalId == userObj.HospitalId).ToList();
+                }
             }
-
-
-
             else
             {
-
                 list = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Include(a => a.MasterAsset.brand)
                     .Include(a => a.Supplier)
                     .Include(a => a.Hospital.Governorate).Include(a => a.Hospital.City).Include(a => a.Hospital.Organization)
@@ -1044,6 +1049,7 @@ namespace Asset.Core.Repositories
 
 
                         MasterAssetId = item.MasterAsset.Id,
+                        AssetId = item.Id,                        
                         AssetName = item.MasterAsset.Name,
                         AssetNameAr = item.MasterAsset.NameAr,
                         BrandId = item.MasterAsset.BrandId,
@@ -1082,7 +1088,6 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
                 }
-
                 if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
                 {
                     list = list.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
@@ -1097,7 +1102,9 @@ namespace Asset.Core.Repositories
                 }
                 if (userObj.HospitalId > 0)
                 {
-                    list = list.Where(a => a.HospitalId == userObj.HospitalId && !userRoleNames.Contains("AssetOwner")).ToList();
+                   // list = list.Where(a => a.HospitalId == userObj.HospitalId && !userRoleNames.Contains("AssetOwner")).ToList();
+
+                    list = list.Where(a => a.HospitalId == userObj.HospitalId).ToList();
                 }
             }
 
@@ -1107,55 +1114,42 @@ namespace Asset.Core.Repositories
             }
             else
                 list = list.ToList();
-
-
             if (searchObj.CityId != 0)
             {
                 list = list.Where(a => a.CityId == searchObj.CityId).ToList();
             }
             else
                 list = list.ToList();
-
             if (searchObj.OrganizationId != 0)
             {
                 list = list.Where(a => a.OrganizationId == searchObj.OrganizationId).ToList();
             }
             else
                 list = list.ToList();
-
             if (searchObj.SubOrganizationId != 0)
             {
                 list = list.Where(a => a.SubOrganizationId == searchObj.SubOrganizationId).ToList();
             }
             else
                 list = list.ToList();
-
-
             if (searchObj.SupplierId != 0)
             {
                 list = list.Where(a => a.SupplierId == searchObj.SupplierId).ToList();
             }
             else
                 list = list.ToList();
-
-
             if (searchObj.OriginId != 0)
             {
                 list = list.Where(a => a.OriginId == searchObj.OriginId).ToList();
             }
             else
                 list = list.ToList();
-
-
-
             if (searchObj.BrandId != 0)
             {
                 list = list.Where(a => a.BrandId == searchObj.BrandId).ToList();
             }
             else
                 list = list.ToList();
-
-
             if (searchObj.HospitalId != 0)
             {
                 list = list.Where(a => a.HospitalId == searchObj.HospitalId).ToList();
@@ -1164,14 +1158,20 @@ namespace Asset.Core.Repositories
                 list = list.ToList();
 
 
-
-            if (searchObj.AssetId != 0)
+            if (searchObj.MasterAssetId != 0)
             {
-                list = list.Where(a => a.Id == searchObj.AssetId).ToList();
+                list = list.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
             }
             else
                 list = list.ToList();
 
+
+            //if (searchObj.AssetId != 0)
+            //{
+            //    list = list.Where(a => a.AssetId == searchObj.AssetId).ToList();
+            //}
+            //else
+            //    list = list.ToList();
 
 
             if (searchObj.Serial != "")
@@ -1439,6 +1439,7 @@ namespace Asset.Core.Repositories
                                      {
 
                                          Id = item.Id,
+                                         MasterAssetId= item.MasterAsset.Id,
                                          AssetName = item.MasterAsset.Name,
                                          AssetNameAr = item.MasterAsset.NameAr,
                                          SerialNumber = item.SerialNumber,

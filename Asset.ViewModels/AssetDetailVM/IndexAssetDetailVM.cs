@@ -78,7 +78,6 @@ namespace Asset.ViewModels.AssetDetailVM
             public string AssetBarCode { get; set; }
             public string MasterAssetName { get; set; }
             public string MasterAssetNameAr { get; set; }
-
             public int? AssetStatusId { get; set; }
         }
     }

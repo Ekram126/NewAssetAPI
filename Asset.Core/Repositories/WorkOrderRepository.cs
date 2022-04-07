@@ -139,12 +139,22 @@ namespace Asset.Core.Repositories
                           .Include(w => w.WorkOrderPeriority)
                           .Include(w => w.Request)
                           .Include(w => w.Request.AssetDetail)
+                             .Include(w => w.Request.AssetDetail.MasterAsset)
                           .Include(w => w.User).OrderByDescending(a => a.CreationDate).ToList().GroupBy(a => a.Id).ToList();
                 foreach (var item in lstWorkOrders)
                 {
                     IndexWorkOrderVM work = new IndexWorkOrderVM();
                     work.Id = item.FirstOrDefault().Id;
+                    work.AssetName = item.FirstOrDefault().Request.AssetDetail.MasterAsset.Name;
+                    work.AssetNameAr = item.FirstOrDefault().Request.AssetDetail.MasterAsset.NameAr;
+                    work.SerialNumber = item.FirstOrDefault().Request.AssetDetail.SerialNumber;
+                    work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
+                    work.ModelNumber = item.FirstOrDefault().Request.AssetDetail.MasterAsset.ModelNumber;
+
+
                     work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
+
+                    work.ModelNumber = item.FirstOrDefault().Request.AssetDetail.MasterAsset.ModelNumber;
                     work.Subject = item.FirstOrDefault().Subject;
                     work.RequestSubject = item.FirstOrDefault().Request.Subject;
                     work.CreationDate = item.FirstOrDefault().CreationDate;
@@ -152,10 +162,10 @@ namespace Asset.Core.Repositories
                     work.CreatedById = item.FirstOrDefault().CreatedById;
                     work.CreatedBy = item.FirstOrDefault().User.UserName;
                     work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
-                    work.TypeName = item.FirstOrDefault().WorkOrderType.Name;
-                    work.TypeNameAr = item.FirstOrDefault().WorkOrderType.NameAr;
-                    work.PeriorityName = item.FirstOrDefault().WorkOrderPeriority.Name;
-                    work.PeriorityNameAr = item.FirstOrDefault().WorkOrderPeriority.NameAr;
+                    work.TypeName = item.FirstOrDefault().WorkOrderType != null ? item.FirstOrDefault().WorkOrderType.Name : "";
+                    work.TypeNameAr = item.FirstOrDefault().WorkOrderType != null ? item.FirstOrDefault().WorkOrderType.NameAr : "";
+                    work.PeriorityName = item.FirstOrDefault().WorkOrderPeriority != null ? item.FirstOrDefault().WorkOrderPeriority.Name : "";
+                    work.PeriorityNameAr = item.FirstOrDefault().WorkOrderPeriority != null ? item.FirstOrDefault().WorkOrderPeriority.NameAr : "";
                     var lstAssignTo = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList().GroupBy(a => item.FirstOrDefault().Id).ToList();
 
                     var lstStatus = _context.WorkOrderTrackings
@@ -207,7 +217,7 @@ namespace Asset.Core.Repositories
                         Id = item.Id,
                         StatusName = item.WorkOrderStatus.Name,
                         StatusNameAr = item.WorkOrderStatus.NameAr,
-                        CreationDate = item.CreationDate
+                        // CreationDate = DateTime.Parse(item.CreationDate.ToString())
                     }).ToList();
 
                     list.Add(work);
@@ -271,6 +281,7 @@ namespace Asset.Core.Repositories
                 work.Id = item.Id;
                 work.WorkOrderNumber = item.WorkOrderNumber;
                 work.Subject = item.Subject;
+                work.ModelNumber = item.Request.AssetDetail.MasterAsset.ModelNumber;
                 work.RequestSubject = item.Request.Subject;
                 work.CreationDate = item.CreationDate;
                 work.Note = item.Note;
@@ -319,7 +330,7 @@ namespace Asset.Core.Repositories
                     Id = item.Id,
                     StatusName = item.WorkOrderStatus.Name,
                     StatusNameAr = item.WorkOrderStatus.NameAr,
-                    CreationDate = item.CreationDate
+                    CreationDate = DateTime.Parse(item.CreationDate.ToString())
                 }).ToList();
 
                 list.Add(work);
@@ -454,6 +465,7 @@ namespace Asset.Core.Repositories
                        Id = work.Id,
                        Subject = work.Subject,
                        WorkOrderNumber = work.WorkOrderNumber,
+                       ModelNumber = work.Request.AssetDetail.MasterAsset.ModelNumber,
                        CreationDate = work.CreationDate,
                        PlannedStartDate = work.PlannedStartDate,
                        PlannedEndDate = work.PlannedEndDate,
@@ -532,8 +544,13 @@ namespace Asset.Core.Repositories
                  {
                      Id = wo.WorkOrder.Id,
                      Subject = wo.WorkOrder.Subject,
+
+                     AssetName = wo.WorkOrder.Request.AssetDetail.MasterAsset.Name,
+                     AssetNameAr = wo.WorkOrder.Request.AssetDetail.MasterAsset.NameAr,
+
                      BarCode = wo.WorkOrder.Request.AssetDetail.Barcode,
                      SerialNumber = wo.WorkOrder.Request.AssetDetail.SerialNumber,
+                     ModelNumber = wo.WorkOrder.Request.AssetDetail.MasterAsset.ModelNumber,
                      UserName = wo.User.UserName,
                      AssignedTo = wo.AssignedToUser.UserName,
                      StatusName = wo.WorkOrderStatus.Name,
@@ -578,6 +595,9 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = order.Id;
                 getDataObj.Subject = order.Subject;
                 getDataObj.BarCode = order.BarCode;
+                getDataObj.ModelNumber = order.ModelNumber;
+                getDataObj.AssetName = order.AssetName;
+                getDataObj.AssetNameAr = order.AssetNameAr;
                 getDataObj.SerialNumber = order.SerialNumber;
                 getDataObj.WorkOrderNumber = order.WorkOrderNumber;
                 getDataObj.WorkOrderTypeName = order.WorkOrderTypeName;
@@ -735,6 +755,10 @@ namespace Asset.Core.Repositories
                        Id = wo.Id,
                        Subject = wo.Subject,
                        BarCode = wo.Request.AssetDetail.Barcode,
+                       ModelNumber = wo.Request.AssetDetail.MasterAsset.ModelNumber,
+                       AssetName = wo.Request.AssetDetail.MasterAsset.Name,
+                       AssetNameAr = wo.Request.AssetDetail.MasterAsset.NameAr,
+                       SerialNumber = wo.Request.AssetDetail.SerialNumber,
                        WorkOrderNumber = wo.WorkOrderNumber,
                        CreationDate = wo.CreationDate,
                        PlannedStartDate = wo.PlannedStartDate,
@@ -796,6 +820,9 @@ namespace Asset.Core.Repositories
                      Subject = wo.WorkOrder.Subject,
                      SerialNumber = wo.WorkOrder.Request.AssetDetail.SerialNumber,
                      BarCode = wo.WorkOrder.Request.AssetDetail.Barcode,
+                     ModelNumber = wo.WorkOrder.Request.AssetDetail.MasterAsset.ModelNumber,
+                     AssetName = wo.WorkOrder.Request.AssetDetail.MasterAsset.Name,
+                     AssetNameAr = wo.WorkOrder.Request.AssetDetail.MasterAsset.NameAr,
                      UserName = wo.User.UserName,
                      AssignedTo = wo.AssignedToUser.UserName,
                      StatusName = wo.WorkOrderStatus.Name,
@@ -841,7 +868,10 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = order.Id;
                 getDataObj.Subject = order.Subject;
                 getDataObj.SerialNumber = order.SerialNumber;
+                getDataObj.ModelNumber = order.ModelNumber;
                 getDataObj.BarCode = order.BarCode;
+                getDataObj.AssetName = order.AssetName;
+                getDataObj.AssetNameAr = order.AssetNameAr;
                 getDataObj.WorkOrderNumber = order.WorkOrderNumber;
                 getDataObj.WorkOrderTypeName = order.WorkOrderTypeName;
                 getDataObj.StatusName = order.StatusName;
@@ -1016,8 +1046,8 @@ namespace Asset.Core.Repositories
                 printWorkObj.ModeNameAr = work.Request.RequestMode.NameAr;
                 printWorkObj.SubProblemName = work.Request.SubProblem != null ? work.Request.SubProblem.Name : "";
                 printWorkObj.SubProblemNameAr = work.Request.SubProblem != null ? work.Request.SubProblem.NameAr : "";
-                printWorkObj.ProblemName = work.Request.SubProblem != null ? work.Request.SubProblem.Problem.Name:"";
-                printWorkObj.ProblemNameAr = work.Request.SubProblem != null ? work.Request.SubProblem.Problem.NameAr:"";
+                printWorkObj.ProblemName = work.Request.SubProblem != null ? work.Request.SubProblem.Problem.Name : "";
+                printWorkObj.ProblemNameAr = work.Request.SubProblem != null ? work.Request.SubProblem.Problem.NameAr : "";
 
 
 
@@ -1150,6 +1180,11 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = item.Id;
                 getDataObj.Subject = item.Subject;
                 getDataObj.BarCode = item.Request.AssetDetail.Barcode;
+                getDataObj.ModelNumber = item.Request.AssetDetail.MasterAsset.ModelNumber;
+                getDataObj.AssetName = item.Request.AssetDetail.MasterAsset.Name;
+                getDataObj.AssetNameAr = item.Request.AssetDetail.MasterAsset.NameAr;
+                getDataObj.SerialNumber = item.Request.AssetDetail.SerialNumber;
+        
                 getDataObj.WorkOrderNumber = item.WorkOrderNumber;
                 getDataObj.WorkOrderTypeName = item.WorkOrderType.Name;
                 getDataObj.RequestSubject = item.Request.Subject;
@@ -1162,7 +1197,7 @@ namespace Asset.Core.Repositories
                 getDataObj.PlannedStartDate = item.PlannedStartDate;
                 getDataObj.PlannedEndDate = item.PlannedEndDate;
                 getDataObj.WorkOrderPeriorityId = item.WorkOrderPeriorityId != null ? (int)item.WorkOrderPeriorityId : 0;
-                getDataObj.WorkOrderPeriorityName = item.WorkOrderPeriority.Name;
+                getDataObj.WorkOrderPeriorityName = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.Name : "";
                 getDataObj.HospitalId = item.Request.AssetDetail.HospitalId;
                 getDataObj.GovernorateId = item.Request.AssetDetail.Hospital.GovernorateId;
                 getDataObj.CityId = item.Request.AssetDetail.Hospital.CityId;
@@ -1228,19 +1263,19 @@ namespace Asset.Core.Repositories
                 lstData = lstData.ToList();
 
 
-            if (searchObj.AssetDetailId != 0)
-            {
-                lstData = lstData.Where(a => a.AssetId == searchObj.AssetDetailId).ToList();
-            }
-            else
-                lstData = lstData.ToList();
+            //if (searchObj.AssetDetailId != 0)
+            //{
+            //    lstData = lstData.Where(a => a.AssetId == searchObj.AssetDetailId).ToList();
+            //}
+            //else
+            //    lstData = lstData.ToList();
 
-            if (searchObj.MasterAssetId != 0)
-            {
-                lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
-            }
-            else
-                lstData = lstData.ToList();
+            //if (searchObj.MasterAssetId != 0)
+            //{
+            //    lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
+            //}
+            //else
+            //    lstData = lstData.ToList();
 
             if (searchObj.Subject != "")
             {
@@ -1250,14 +1285,37 @@ namespace Asset.Core.Repositories
                 lstData = lstData.ToList();
 
 
+            if (searchObj.ModelNumber != "")
+            {
+                lstData = lstData.Where(a => a.ModelNumber.Contains(searchObj.ModelNumber)).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.BarCode != "")
+            {
+                lstData = lstData.Where(b => b.BarCode.Contains(searchObj.BarCode)).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
 
 
             if (searchObj.WONumber != "")
             {
-                lstData = lstData.Where(b => b.WorkOrderNumber == searchObj.WONumber).ToList();
+                lstData = lstData.Where(b => b.WorkOrderNumber.Contains(searchObj.WONumber)).ToList();
             }
             else
                 lstData = lstData.ToList();
+
+
+            if (searchObj.SerialNumber != "")
+            {
+                lstData = lstData.Where(b => b.SerialNumber.Contains(searchObj.SerialNumber)).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
 
 
 
@@ -1334,6 +1392,45 @@ namespace Asset.Core.Repositories
             else
                 list = list.Where(a => a.StatusId == statusId).ToList();
 
+            if (sortObj.AssetName != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetName).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetName).ToList();
+            }
+
+            if (sortObj.AssetNameAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.AssetNameAr).ToList();
+                else
+                    list = list.OrderBy(d => d.AssetNameAr).ToList();
+            }
+
+            if (sortObj.Barcode != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.BarCode).ToList();
+                else
+                    list = list.OrderBy(d => d.BarCode).ToList();
+            }
+
+            if (sortObj.SerialNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.SerialNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.SerialNumber).ToList();
+            }
+
+            if (sortObj.ModelNumber != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.ModelNumber).ToList();
+                else
+                    list = list.OrderBy(d => d.ModelNumber).ToList();
+            }
 
 
 
@@ -1398,8 +1495,7 @@ namespace Asset.Core.Repositories
 
         public List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId)
         {
-            //throw new NotImplementedException();
-
+       
             return _context.WorkOrders.Include(a => a.Request)
                                     .Include(a => a.Request.AssetDetail)
                                     .Include(a => a.Request.AssetDetail.Hospital)
@@ -1450,6 +1546,11 @@ namespace Asset.Core.Repositories
                     work.Id = item.FirstOrDefault().Id;
                     work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
                     work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
+                    work.ModelNumber = item.FirstOrDefault().Request.AssetDetail.MasterAsset.ModelNumber;
+                    work.AssetName = item.FirstOrDefault().Request.AssetDetail.MasterAsset.Name;
+                    work.AssetNameAr = item.FirstOrDefault().Request.AssetDetail.MasterAsset.NameAr;
+                    work.SerialNumber = item.FirstOrDefault().Request.AssetDetail.SerialNumber;
+                   
                     work.Subject = item.FirstOrDefault().Subject;
                     work.RequestSubject = item.FirstOrDefault().Request.Subject;
                     work.CreationDate = item.FirstOrDefault().CreationDate;
@@ -1512,7 +1613,7 @@ namespace Asset.Core.Repositories
                         Id = item.Id,
                         StatusName = item.WorkOrderStatus.Name,
                         StatusNameAr = item.WorkOrderStatus.NameAr,
-                        CreationDate = item.CreationDate
+                        CreationDate = DateTime.Parse(item.CreationDate.ToString())
                     }).ToList();
 
                     list.Add(work);

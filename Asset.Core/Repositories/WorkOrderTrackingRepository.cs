@@ -104,8 +104,8 @@ namespace Asset.Core.Repositories
                 .Select(work => new IndexWorkOrderTrackingVM
                 {
                     TrackId = work.Id,
-                    WorkOrderDate = work.WorkOrderDate,
-                    CreationDate = work.CreationDate,
+                    WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
+                    CreationDate = DateTime.Parse(work.CreationDate.ToString()),
                     AssignedTo = work.AssignedTo,
                     Notes = work.Notes,
                     CreatedById = work.CreatedById,
@@ -136,13 +136,13 @@ namespace Asset.Core.Repositories
                     Id = work.WorkOrderId,
                     CreatedById = work.CreatedById,
                     CreatedBy = work.User.UserName,
-                    CreationDate = work.CreationDate,
+                    CreationDate = DateTime.Parse(work.CreationDate.ToString()),
                     WorkOrderTrackingId = work.WorkOrder.Id, //trackingId
                     WorkOrderNumber = work.WorkOrder.WorkOrderNumber,
-                    PlannedStartDate = work.WorkOrder.PlannedStartDate,
-                    PlannedEndDate = work.WorkOrder.PlannedEndDate,
-                    ActualStartDate = work.WorkOrder.ActualStartDate,
-                    ActualEndDate = work.WorkOrder.ActualEndDate,
+                    PlannedStartDate =DateTime.Parse( work.WorkOrder.PlannedStartDate.ToString()),
+                    PlannedEndDate = DateTime.Parse(work.WorkOrder.PlannedEndDate.ToString()),
+                    ActualStartDate = DateTime.Parse(work.WorkOrder.ActualStartDate.ToString()),
+                    ActualEndDate = DateTime.Parse(work.WorkOrder.ActualEndDate.ToString()),
                     Note = work.WorkOrder.Note,
                     WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId : 0,
                     WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
@@ -188,8 +188,8 @@ namespace Asset.Core.Repositories
                 .Select(work => new LstWorkOrderFromTracking
                 {
                     Id = work.Id,  //trackingId
-                    WorkOrderDate = work.WorkOrderDate,
-                    CreationDate = work.CreationDate,
+                    WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
+                    CreationDate = DateTime.Parse(work.CreationDate.ToString()),
                     Notes = work.Notes,
                     CreatedById = work.CreatedById,
                     CreatedBy = _context.ApplicationUser.Where(a => a.Id == work.CreatedById).ToList().FirstOrDefault().UserName,
@@ -201,10 +201,10 @@ namespace Asset.Core.Repositories
                     Subject = work.WorkOrder.Subject,
                     WorkOrderId = work.WorkOrderId,
                     WorkOrderNumber = work.WorkOrder.WorkOrderNumber,
-                    PlannedStartDate = work.WorkOrder.PlannedStartDate,
-                    PlannedEndDate = work.WorkOrder.PlannedEndDate,
-                    ActualStartDate = work.WorkOrder.ActualStartDate,
-                    ActualEndDate = work.WorkOrder.ActualEndDate,
+                    PlannedStartDate = DateTime.Parse(work.WorkOrder.PlannedStartDate.ToString()),
+                    PlannedEndDate = DateTime.Parse(work.WorkOrder.PlannedEndDate.ToString()),
+                    ActualStartDate = DateTime.Parse(work.WorkOrder.ActualStartDate.ToString()),
+                    ActualEndDate = DateTime.Parse(work.WorkOrder.ActualEndDate.ToString()),
                     Note = work.WorkOrder.Note,
                     WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId : 0,
                     WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
@@ -349,8 +349,8 @@ namespace Asset.Core.Repositories
                 LstWorkOrderFromTracking getDataObj = new LstWorkOrderFromTracking();
 
                 getDataObj.Id = item.Id;  //trackingId
-                getDataObj.WorkOrderDate = item.WorkOrderDate;
-                getDataObj.CreationDate = item.CreationDate;
+                getDataObj.WorkOrderDate = DateTime.Parse(item.WorkOrderDate.ToString());
+                getDataObj.CreationDate = DateTime.Parse(item.CreationDate.ToString());
                 getDataObj.Notes = item.Notes;
                 getDataObj.CreatedById = item.CreatedById;
                 var lstCreatedByUsers = _context.ApplicationUser.Where(a => a.Id == item.CreatedById).ToList();
@@ -374,10 +374,10 @@ namespace Asset.Core.Repositories
                 getDataObj.WorkOrderNumber = item.WorkOrder.WorkOrderNumber;
 
 
-                getDataObj.PlannedStartDate = item.WorkOrder.PlannedStartDate;
-                getDataObj.PlannedEndDate = item.WorkOrder.PlannedEndDate;
-                getDataObj.ActualStartDate = item.WorkOrder.ActualStartDate;
-                getDataObj.ActualEndDate = item.WorkOrder.ActualEndDate;
+                getDataObj.PlannedStartDate = DateTime.Parse(item.WorkOrder.PlannedStartDate.ToString());
+                getDataObj.PlannedEndDate = DateTime.Parse(item.WorkOrder.PlannedEndDate.ToString());
+                getDataObj.ActualStartDate = DateTime.Parse(item.WorkOrder.ActualStartDate.ToString());
+                getDataObj.ActualEndDate = DateTime.Parse(item.WorkOrder.ActualEndDate.ToString());
                 getDataObj.Note = item.WorkOrder.Note;
                 getDataObj.WorkOrderPeriorityId = item.WorkOrder.WorkOrderPeriorityId != null ? (int)item.WorkOrder.WorkOrderPeriorityId : 0;
                 getDataObj.WorkOrderPeriorityName = item.WorkOrder.WorkOrderPeriority.Name;
@@ -505,8 +505,8 @@ namespace Asset.Core.Repositories
                 .Select(work => new LstWorkOrderFromTracking
                 {
                     Id = work.Id,  //trackingId
-                    WorkOrderDate = work.WorkOrderDate,
-                    CreationDate = work.CreationDate,
+                    WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
+                    CreationDate = DateTime.Parse(work.CreationDate.ToString()),
                     Notes = work.Notes,
                     CreatedById = work.CreatedById,
                     CreatedBy = _context.ApplicationUser.Where(a => a.Id == work.CreatedById).ToList().FirstOrDefault().UserName,
@@ -518,10 +518,10 @@ namespace Asset.Core.Repositories
                     Subject = work.WorkOrder.Subject,
                     WorkOrderId = work.WorkOrderId,
                     WorkOrderNumber = work.WorkOrder.WorkOrderNumber,
-                    PlannedStartDate = work.WorkOrder.PlannedStartDate,
-                    PlannedEndDate = work.WorkOrder.PlannedEndDate,
-                    ActualStartDate = work.WorkOrder.ActualStartDate,
-                    ActualEndDate = work.WorkOrder.ActualEndDate,
+                    PlannedStartDate = DateTime.Parse(work.WorkOrder.PlannedStartDate.ToString()),
+                    PlannedEndDate = DateTime.Parse(work.WorkOrder.PlannedEndDate.ToString()),
+                    ActualStartDate = DateTime.Parse(work.WorkOrder.ActualStartDate.ToString()),
+                    ActualEndDate = DateTime.Parse(work.WorkOrder.ActualEndDate.ToString()),
                     Note = work.WorkOrder.Note,
                     WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId : 0,
                     WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
@@ -624,8 +624,8 @@ namespace Asset.Core.Repositories
                 .Select(work => new IndexWorkOrderTrackingVM
                 {
                     TrackId = work.Id,
-                    WorkOrderDate = work.WorkOrderDate,
-                    CreationDate = work.CreationDate,
+                    WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
+                    CreationDate = DateTime.Parse(work.CreationDate.ToString()),
                     AssignedTo = work.AssignedTo,
                     Notes = work.Notes,
                     CreatedById = work.CreatedById,
@@ -654,8 +654,8 @@ namespace Asset.Core.Repositories
                .Select(work => new IndexWorkOrderTrackingVM
                {
                    Id = work.Id,  //trackingId
-                   WorkOrderDate = work.WorkOrderDate,
-                   CreationDate = work.CreationDate,
+                   WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
+                   CreationDate = DateTime.Parse(work.CreationDate.ToString()),
                    Notes = work.Notes,
                    CreatedById = work.CreatedById,
                    CreatedBy = work.User.UserName,
@@ -673,7 +673,7 @@ namespace Asset.Core.Repositories
                             .Where(a => a.WorkOrderId == woId).ToList().OrderBy(a => a.WorkOrderDate).ToList().Select(wo => new LstWorkOrderFromTracking
                             {
                                 Id = wo.Id,
-                                CreationDate = wo.CreationDate,
+                                CreationDate = DateTime.Parse(wo.CreationDate.ToString()),
                                 CreatedById = wo.CreatedById,
                                 WorkOrderId = wo.WorkOrderId
 
@@ -707,8 +707,8 @@ namespace Asset.Core.Repositories
                       {
                           Id = work.Id,
                           TrackId = work.Id,
-                          WorkOrderDate = work.WorkOrderDate,
-                          CreationDate = work.CreationDate,
+                          WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
+                          CreationDate = DateTime.Parse(work.CreationDate.ToString()),
                           AssignedTo = _context.ApplicationUser.Where(a => a.Id == work.AssignedTo).FirstOrDefault().UserName,
                           Notes = work.Notes,
                           CreatedById = work.CreatedById,

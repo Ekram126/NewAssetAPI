@@ -54,6 +54,9 @@ namespace Asset.ViewModels.WorkOrderVM
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
         public string SerialNumber { get; set; }
+        public string ModelNumber { get; set; }
+
+
 
         public string UserName { get; set; }
 

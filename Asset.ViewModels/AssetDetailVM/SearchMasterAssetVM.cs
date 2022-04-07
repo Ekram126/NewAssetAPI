@@ -21,6 +21,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public int? OrganizationId { get; set; }
         public int? SubOrganizationId { get; set; }
         public int? AssetId { get; set; }
+        public int? MasterAssetId { get; set; }
         public string UserId { get; set; }
         public string AssetName { get; set; }
         public string Serial { get; set; }
@@ -28,5 +29,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public string Code { get; set; }
         public string BarCode { get; set; }
         public string Model { get; set; }
+
+
     }
 }

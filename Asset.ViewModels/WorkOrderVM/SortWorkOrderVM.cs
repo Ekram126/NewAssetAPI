@@ -17,6 +17,12 @@ namespace Asset.ViewModels.WorkOrderVM
         public string CreationDate { get; set; }
         public string RequestSubject { get; set; }
         public string SortStatus { get; set; }
-        
+
+        public string AssetName { get; set; }
+        public string AssetNameAr { get; set; }
+        public string Barcode { get; set; }
+        public string SerialNumber { get; set; }
+        public string ModelNumber { get; set; }
+
     }
 }

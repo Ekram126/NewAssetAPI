@@ -272,12 +272,12 @@ namespace Asset.Core.Repositories
                 if (lstWOStatus.Count > 0)
                 {
                     getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
-                    getDataObj.StatusName = lstStatus[0].RequestStatus.Name;
-                    getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
-                    getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
+                    getDataObj.StatusName = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Name:"";
+                    getDataObj.StatusNameAr = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.NameAr:"";
+                    getDataObj.StatusColor = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Color:"";
                 }
                 getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
-                getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count;
+                getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count >  0 ? _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count:0;
                 getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId:0;
                 getDataObj.CityId = req.User != null ? req.User.CityId:0;
                 getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId:0;
@@ -501,7 +501,7 @@ namespace Asset.Core.Repositories
 
 
                     getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
-                    getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count;
+                    getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count > 0?  _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count:0;
                     getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId:0;
                     getDataObj.CityId = req.User != null ? req.User.CityId:0;
                     getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId:0;
@@ -1185,7 +1185,6 @@ namespace Asset.Core.Repositories
                 {
                     list = list.ToList();
                 }
-
                 if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
@@ -1196,7 +1195,7 @@ namespace Asset.Core.Repositories
                 }
                 if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
                 {
-                    list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId && t.AssetDetail.Hospital.CityId == UserObj.CityId && t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
                 {
@@ -1206,10 +1205,9 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId && t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
                 }
-
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
                 {
-                    list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
             }
 
@@ -1297,6 +1295,7 @@ namespace Asset.Core.Repositories
                 lstData.Add(getDataObj);
             }
 
+     
             if (searchObj.StatusId != 0)
             {
                 lstData = lstData.Where(a => a.StatusId == searchObj.StatusId).ToList();
@@ -1329,19 +1328,19 @@ namespace Asset.Core.Repositories
                 lstData = lstData.ToList();
 
 
-            if (searchObj.AssetDetailId != 0)
-            {
-                lstData = lstData.Where(a => a.AssetDetailId == searchObj.AssetDetailId).ToList();
-            }
-            else
-                lstData = lstData.ToList();
+            //if (searchObj.AssetDetailId != 0)
+            //{
+            //    lstData = lstData.Where(a => a.AssetDetailId == searchObj.AssetDetailId).ToList();
+            //}
+            //else
+            //    lstData = lstData.ToList();
 
-            if (searchObj.MasterAssetId != 0)
-            {
-                lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
-            }
-            else
-                lstData = lstData.ToList();
+            //if (searchObj.MasterAssetId != 0)
+            //{
+            //    lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
+            //}
+            //else
+            //    lstData = lstData.ToList();
 
             if (searchObj.Barcode != "")
             {
@@ -1508,12 +1507,12 @@ namespace Asset.Core.Repositories
                     getDataObj.SubProblemId = req.SubProblem != null ? (int)req.SubProblemId : 0;
                     getDataObj.SubProblemName = req.SubProblem != null ? req.SubProblem.Name : "";
                     getDataObj.RequestTypeId = req.RequestTypeId != null ? (int)req.RequestTypeId : 0;
-                    getDataObj.RequestTypeName = req.RequestType.Name;
+                    getDataObj.RequestTypeName = req.RequestType != null ? req.RequestType.Name:"";
                     getDataObj.RequestPeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
-                    getDataObj.PeriorityName = req.RequestPeriority.Name;
-                    getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
-                    getDataObj.PeriorityColor = req.RequestPeriority.Color;
-                    getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
+                    getDataObj.PeriorityName = req.RequestPeriority != null ? req.RequestPeriority.Name:"";
+                    getDataObj.PeriorityNameAr = req.RequestPeriority != null ? req.RequestPeriority.NameAr:"";
+                    getDataObj.PeriorityColor = req.RequestPeriority != null ? req.RequestPeriority.Color:"";
+                    getDataObj.PeriorityIcon = req.RequestPeriority != null ? req.RequestPeriority.Icon:"";
                     getDataObj.CreatedById = req.CreatedById;
                     getDataObj.CreatedBy = req.User.UserName;
                     getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
@@ -1984,7 +1983,7 @@ namespace Asset.Core.Repositories
 
                 foreach (var item in list)
                 {
-                    var listWO = _context.WorkOrders.Where(a => a.RequestId == item.Id).ToList();
+                     var listWO = _context.WorkOrders.Where(a => a.RequestId == item.Id).ToList();
                     if (listWO.Count == 0)
                     {
                         listCountRequests.Add(item);
@@ -2229,9 +2228,11 @@ namespace Asset.Core.Repositories
                 if (lstWOStatus.Count > 0)
                 {
                     getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
-                    getDataObj.StatusName = lstStatus[0].RequestStatus.Name;
-                    getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
-                    getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
+
+
+                    getDataObj.StatusName = lstWOStatus[0].WorkOrderStatus.Name;
+                    getDataObj.StatusNameAr = lstWOStatus[0].WorkOrderStatus.NameAr;
+                    getDataObj.StatusColor = lstWOStatus[0].WorkOrderStatus.Color;
                 }
                 getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
                 getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count;

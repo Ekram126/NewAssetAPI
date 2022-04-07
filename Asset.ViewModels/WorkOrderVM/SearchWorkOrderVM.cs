@@ -22,7 +22,9 @@ namespace Asset.ViewModels.WorkOrderVM
         public string Subject { get; set; }
         public string WONumber { get; set; }
         public string UserId { get; set; }
-
+        public string BarCode { get; set; }
+        public string ModelNumber { get; set; }
+        public string SerialNumber { get; set; }
 
         public string Start { get; set; }
         public string End { get; set; }
