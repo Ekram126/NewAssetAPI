@@ -69,7 +69,6 @@ namespace Asset.Core.Services
         public int Update(EditAssetDetailVM assetDetailObj)
         {
             _unitOfWork.AssetDetailRepository.Update(assetDetailObj);
-            //_unitOfWork.CommitAsync();
             return assetDetailObj.Id;
         }
 
@@ -218,5 +217,12 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.GetSupplierNoneExcludedAssetsByHospitalId(hospitalId);
         }
+
+        public IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId, int page, int pageSize, Sort sortObj)
+        {
+            return _unitOfWork.AssetDetailRepository.GetHospitalAssets(hospitalId, statusId, userId,  page,  pageSize, sortObj);
+        }
+
+     
     }
 }

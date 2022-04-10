@@ -763,5 +763,10 @@ namespace Asset.Core.Repositories
             }
             return hosWithAsset;
         }
+
+        public int CountDepartmentsByHospitalId(int hospitalId)
+        {
+          return  _context.HospitalDepartments.Include(a => a.Hospital).Where(a => a.HospitalId == hospitalId).ToList().Count;
+        }
     }
 }

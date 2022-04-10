@@ -13,7 +13,9 @@ namespace Asset.ViewModels.RequestVM
         public int HospitalId { get; set; }
         public int AssetId { get; set; }
         public string UserId { get; set; }
-        public string Code { get; set; }
+        public string RequestCode { get; set; }
+        public string BarCode { get; set; }
+        public string Serial { get; set; }
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
         public string Subject { get; set; }

@@ -22,10 +22,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByAssetId(int assetId);
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetDetailsByUserId(string userId);
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetsByUserId(string userId);
-
         IEnumerable<IndexAssetDetailVM.GetData> GetAllAssetsByStatusId(int statusId, string userId);
-
-
         IEnumerable<AssetDetail> GetAllSerialsByMasterAssetIdAndHospitalId(int masterAssetId, int hospitalId);
         IEnumerable<AssetDetail> GetAllAssetDetailsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId);
@@ -36,16 +33,14 @@ namespace Asset.Domain.Services
         int Add(CreateAssetDetailVM assetDetailObj);
         int Update(EditAssetDetailVM assetDetailObj);
         int Delete(int id);
-
         ViewAssetDetailVM ViewAssetDetailByMasterId(int masterId);
         IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId);
         int CreateAssetDetailDocuments(CreateAssetDetailAttachmentVM attachObj);
         IEnumerable<AssetDetailAttachment> GetAttachmentByAssetDetailId(int assetId);
         int DeleteAssetDetailAttachment(int id);
-         IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM searchObj);
+        IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM searchObj);
         IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj);
         IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId);
-
         List<CountAssetVM> CountAssetsByHospital();
         List<PmDateGroupVM> GetAllwithgrouping(int? masterId);
         List<IndexAssetDetailVM.GetData> FilterAsset(filterDto data);
@@ -55,15 +50,12 @@ namespace Asset.Domain.Services
         List<GroupCityVM> GetAssetByCity(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupSupplierVM> GetAssetBySupplier(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupOrganizationVM> GetAssetByOrganization(List<IndexAssetDetailVM.GetData> AssetModel);
-       Task< IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj);
+        Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj);
         List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId);
-
         List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge model);
-
         IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId);
-
-
-
         IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId);
+
+        IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId, int page, int pageSize, Sort sortObj);
     }
 }

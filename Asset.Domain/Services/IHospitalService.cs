@@ -28,5 +28,7 @@ namespace Asset.Domain.Services
         int Delete(int id);
         IEnumerable<IndexHospitalVM.GetData> SortHospitals(SortVM sortObj);
         public IEnumerable<HospitalWithAssetVM> GetHospitalsWithAssets();
+        int CountDepartmentsByHospitalId(int hospitalId);
+
     }
 }

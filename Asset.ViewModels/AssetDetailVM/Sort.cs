@@ -9,6 +9,8 @@ namespace Asset.ViewModels.AssetDetailVM
     public class Sort
     {
         public int Id { get; set; }
+
+  public int StatusId { get; set; }
         public string UserId { get; set; }
         public string Code { get; set; }
         public string BarCode { get; set; }

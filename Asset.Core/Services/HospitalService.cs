@@ -128,6 +128,9 @@ namespace Asset.Core.Services
             return _unitOfWork.HospitalRepository.GetHospitalsWithAssets();
         }
 
-
+        public int CountDepartmentsByHospitalId(int hospitalId)
+        {
+            return _unitOfWork.HospitalRepository.CountDepartmentsByHospitalId(hospitalId);
+        }
     }
 }

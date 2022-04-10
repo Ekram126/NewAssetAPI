@@ -9,8 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.EntityFrameworkCore;
 
 namespace Asset.API.Controllers
 {
@@ -34,29 +33,32 @@ namespace Asset.API.Controllers
         {
             return _requestService.GetAllRequests();
         }
-
         [HttpGet]
         [Route("GetAllRequestsWithTrackingByUserId/{userId}")]
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserId(string userId)
         {
             return _requestService.GetAllRequestsWithTrackingByUserId(userId);
         }
-
-
-        // GET api/<RequestController>/5
         [HttpGet("GetById/{id}")]
         public ActionResult<IndexRequestsVM> GetById(int id)
         {
             var requestDTO = _requestService.GetRequestById(id);
             return requestDTO;
         }
-
         [HttpGet]
         [Route("GenerateRequestNumber")]
         public GeneratedRequestNumberVM GenerateRequestNumber()
         {
             return _requestService.GenerateRequestNumber();
         }
+
+        [HttpGet]
+        [Route("CountRequestsByHospitalId/{hospitalId}/{userId}")]
+        public int CountRequestsByHospitalId(int hospitalId, string userId)
+        {
+            return _requestService.CountRequestsByHospitalId(hospitalId, userId);
+        }
+
 
 
         [HttpGet("GetRequestByWorkOrderId/{workOrderId}")]
@@ -65,8 +67,6 @@ namespace Asset.API.Controllers
             var requestObj = _requestService.GetRequestByWorkOrderId(workOrderId);
             return requestObj;
         }
-
-
         [HttpPost]
         [Route("GetAllRequestsByAssetId/{assetId}/{hospitalId}")]
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId, PagingParameter pageInfo)
@@ -74,10 +74,6 @@ namespace Asset.API.Controllers
             var lstRequests = _requestService.GetAllRequestsByAssetId(assetId, hospitalId).ToList();
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, lstRequests);
         }
-
-
-
-
         [HttpPost]
         [Route("GetRequestsByDate/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(int pagenumber, int pagesize, SearchRequestDateVM requestDateObj)
@@ -89,8 +85,6 @@ namespace Asset.API.Controllers
             var lstRequests = _requestService.GetRequestsByDate(requestDateObj).ToList();
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, lstRequests);
         }
-
-
         [HttpPost]
         [Route("CountGetRequestsByDate")]
         public int CountGetRequestsByDate(SearchRequestDateVM requestDateObj)
@@ -98,40 +92,28 @@ namespace Asset.API.Controllers
             return _requestService.GetRequestsByDate(requestDateObj).ToList().Count;
 
         }
-
         [HttpGet("CountAllRequestsByAssetId/{assetId}/{hospitalId}")]
         public int CountAllRequestsByAssetId(int assetId, int hospitalId)
         {
             return _requestService.GetAllRequestsByAssetId(assetId, hospitalId).ToList().Count;
 
         }
-
-
         [HttpGet("GetTotalRequestForAssetInHospital/{assetDetailId}")]
         public int GetTotalRequestForAssetInHospital(int assetDetailId)
         {
             return _requestService.GetTotalRequestForAssetInHospital(assetDetailId);
 
         }
-
-
-
         [HttpGet("PrintServiceRequestById/{id}")]
         public ActionResult<PrintServiceRequestVM> PrintWorkOrderById(int id)
         {
             return _requestService.PrintServiceRequestById(id);
         }
-
-
-
-
         [HttpGet("GetByRequestCode/{code}")]
         public IndexRequestsVM GetByRequestCode(string code)
         {
             return _requestService.GetByRequestCode(code);
         }
-
-
         [HttpGet("GetAllRequestsByHospitalAssetId/{assetId}")]
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalAssetId(int assetId)
         {
@@ -196,8 +178,6 @@ namespace Asset.API.Controllers
             return count;
         }
 
-
-
         [HttpPost]
         [Route("SearchInRequests/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexRequestVM.GetData> SearchInRequests(int pagenumber, int pagesize, SearchRequestVM searchObj)
@@ -216,9 +196,6 @@ namespace Asset.API.Controllers
             int count = _requestService.SearchRequests(searchObj).Count();
             return count;
         }
-
-
-
 
         [HttpPut]
         [Route("GetAllRequestsWithTrackingByUserIdWithPagingAndStatusId/{userId}/{statusId}")]
@@ -253,7 +230,7 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("SortRequests/{pagenumber}/{pagesize}/{statusId}")]
-        public async Task<IEnumerable<IndexRequestsVM>> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj,int statusId)
+        public async Task<IEnumerable<IndexRequestsVM>> SortRequests(int pagenumber, int pagesize, SortRequestVM sortObj, int statusId)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
@@ -273,5 +250,21 @@ namespace Asset.API.Controllers
             var list = _requestService.SortRequestsByAssetId(sortObj);
             return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list.ToList());
         }
+
+        //[HttpPost]
+        //[Route("SortRequestsCount")]
+        //public async Task<int> SortRequestsCount(SortRequestVM sortObj, int statusId)
+        //{
+        //    var count = await Task.FromResult( _requestService.SortRequests(sortObj, statusId));
+
+        //    return Task.Run(() => {
+        //        long total = 0;
+        //        _requestService.SortRequests(sortObj, statusId);
+        //        });
+        //        return total;
+        //    });
+
+        //    return count;
+        //}
     }
 }

@@ -21,10 +21,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Asset.API.Helpers;
+using System.Data.Entity;
 
 
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Asset.API.Controllers
 {
@@ -32,6 +31,8 @@ namespace Asset.API.Controllers
     [ApiController]
     public class AssetDetailController : ControllerBase
     {
+
+        private const int PageSize = 10;
         private IAssetDetailService _AssetDetailService;
 
         private IAssetOwnerService _assetOwnerService;
@@ -66,6 +67,30 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.GetAll();
         }
+
+
+
+
+
+        [HttpPost]
+        [Route("GetHospitalAssets/{hospitalId}/{statusId}/{userId}/{pagenumber}/{pagesize}")]
+        public IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId,  int page, int pageSize, Sort sortObj)
+        {
+            return _AssetDetailService.GetHospitalAssets(hospitalId, statusId, userId,  page, pageSize, sortObj);
+        }
+
+        [HttpPost]
+        [Route("CountHospitalAssets/{hospitalId}/{statusId}/{userId}/{pagenumber}/{pagesize}")]
+        public int CountHospitalAssets(int hospitalId, int statusId, string userId, int page, int pageSize, Sort sortObj)
+        {
+            return _AssetDetailService.GetHospitalAssets(hospitalId, statusId, userId, page, pageSize, sortObj).Count();
+        }
+
+
+
+
+
+
         [HttpPut]
         [Route("ListAssetDetailsWithPaging")]
         public IEnumerable<IndexAssetDetailVM.GetData> GetAllWithPaging(PagingParameter pageInfo)
@@ -85,18 +110,12 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.AutoCompleteAssetBarCode(barcode, hospitalId);
         }
-
         [HttpGet]
         [Route("AutoCompleteAssetSerial/{serial}/{hospitalId}")]
         public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId)
         {
             return _AssetDetailService.AutoCompleteAssetSerial(serial, hospitalId);
         }
-
-
-
-
-
         [HttpGet]
         [Route("getcount/{userId}")]
         public int count(string userId)
@@ -181,42 +200,30 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.ViewAllAssetDetailByMasterId(MasterAssetId);
         }
-
         [HttpGet]
         [Route("GetListOfAssetDetailsByHospitalNotInContract/{hospitalId}")]
         public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId)
         {
             return _AssetDetailService.GetListOfAssetDetailsByHospitalNotInContract(hospitalId);
         }
-
-
-
         [HttpGet]
         [Route("GetListOfAssetDetailsByHospitalId/{hospitalId}")]
         public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId)
         {
             return _AssetDetailService.GetListOfAssetDetailsByHospitalId(hospitalId);
         }
-
-
         [HttpGet]
         [Route("GetNoneExcludedAssetsByHospitalId/{hospitalId}")]
         public IEnumerable<ViewAssetDetailVM> GetNoneExcludedAssetsByHospitalId(int hospitalId)
         {
             return _AssetDetailService.GetNoneExcludedAssetsByHospitalId(hospitalId);
         }
-
-
         [HttpGet]
         [Route("GetSupplierNoneExcludedAssetsByHospitalId/{hospitalId}")]
         public IEnumerable<ViewAssetDetailVM> GetSupplierNoneExcludedAssetsByHospitalId(int hospitalId)
         {
             return _AssetDetailService.GetSupplierNoneExcludedAssetsByHospitalId(hospitalId);
         }
-
-
-
-
         [HttpGet]
         [Route("GetAssetDetailsByUserId/{userId}")]
         public async Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetDetailsByUserId(string userId)
@@ -242,7 +249,6 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.GetAllPMAssetTaskSchedules(hospitalId);
         }
-
         [HttpPut]
         [Route("UpdateAssetDetail")]
         public IActionResult Update(EditAssetDetailVM AssetDetailVM)
@@ -429,6 +435,21 @@ namespace Asset.API.Controllers
             var list = await _AssetDetailService.SortAssets(sortObj);
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list.ToList());
         }
+
+
+        [HttpPost]
+        [Route("SortAssetsCount")]
+        public async Task<int> SortAssets(Sort sortObj)
+        {
+            var list = await Task.Run(() => _AssetDetailService.SortAssets(sortObj));
+            var count = list.Count();
+            return count;
+        }
+
+
+
+
+
         [HttpGet]
         [Route("GetAssetsByAgeGroup/{hospitalId}")]
         public List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)

@@ -103,5 +103,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WorkOrder.GetWorkOrdersByDate(woDateObj);
         }
+
+        public int CountWorkOrdersByHospitalId(int hospitalId, string userId)
+        {
+            return _unitOfWork.WorkOrder.CountWorkOrdersByHospitalId(hospitalId, userId);
+        }
     }
 }

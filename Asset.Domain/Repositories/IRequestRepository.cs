@@ -36,5 +36,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj);
 
         IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
+
+        int CountRequestsByHospitalId(int hospitalId, string userId);
     }
 }

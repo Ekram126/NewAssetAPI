@@ -57,6 +57,12 @@ namespace Asset.API.Controllers
             return _HospitalService.GetTop10Hospitals().ToList().Count;
         }
 
+        [HttpGet]
+        [Route("CountDepartments/{hospitalId}")]
+        public int CountDepartments(int hospitalId)
+        {
+            return _HospitalService.CountDepartmentsByHospitalId(hospitalId);
+        }
 
 
 

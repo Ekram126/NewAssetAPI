@@ -44,6 +44,15 @@ namespace Asset.API.Controllers
             return _workOrderService.GetworkOrderByUserId(requestId, userId);
         }
 
+        [HttpGet]
+        [Route("CountWorkOrdersByHospitalId/{hospitalId}/{userId}")]
+        public int CountWorkOrdersByHospitalId(int hospitalId, string userId)
+        {
+            return _workOrderService.CountWorkOrdersByHospitalId(hospitalId, userId);
+        }
+
+
+
 
         [HttpGet]
         [Route("GenerateWorOrderNumber")]

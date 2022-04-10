@@ -737,27 +737,28 @@ namespace Asset.Core.Repositories
           
             if (hospitalId != 0)
             {
-                var lstAssets = _context.AssetDetails.Include(a => a.MasterAsset).Take(10)
+                var lstAssets = _context.AssetDetails
+                    .Include(a => a.MasterAsset)
                     .Include(a => a.MasterAsset.brand)
                     .Include(a => a.MasterAsset.ECRIS)
                     .Include(a => a.MasterAsset.Origin).OrderBy(a => a.MasterAsset.Name)
-                    .Where(a=>a.HospitalId == hospitalId).ToList().GroupBy(a=>a.MasterAsset.Id);
+                    .Where(a => a.HospitalId == hospitalId).ToList();//.GroupBy(a=>a.MasterAsset.Id);
                 foreach (var item in lstAssets)
                 {
                     IndexMasterAssetVM.GetData getDataObj = new IndexMasterAssetVM.GetData();
-                    getDataObj.Id = item.FirstOrDefault().MasterAsset.Id;
-                    getDataObj.Code = item.FirstOrDefault().MasterAsset.Code;
-                    getDataObj.Model = item.FirstOrDefault().MasterAsset.ModelNumber;
-                    getDataObj.PMColor = item.FirstOrDefault().MasterAsset.PMColor;
-                    getDataObj.PMBGColor = item.FirstOrDefault().MasterAsset.PMBGColor;
-                    getDataObj.ECRIName = item.FirstOrDefault().MasterAsset.ECRIId != null ? item.FirstOrDefault().MasterAsset.ECRIS.Name : "";
-                    getDataObj.ECRINameAr = item.FirstOrDefault().MasterAsset.ECRIId != null ? item.FirstOrDefault().MasterAsset.ECRIS.NameAr : "";
-                    getDataObj.Name = item.FirstOrDefault().MasterAsset.Name;
-                    getDataObj.NameAr = item.FirstOrDefault().MasterAsset.NameAr;
-                    getDataObj.OriginName = item.FirstOrDefault().MasterAsset.OriginId != null ? item.FirstOrDefault().MasterAsset.Origin.Name : "";
-                    getDataObj.OriginNameAr = item.FirstOrDefault().MasterAsset.OriginId != null ? item.FirstOrDefault().MasterAsset.Origin.NameAr : "";
-                    getDataObj.BrandName = item.FirstOrDefault().MasterAsset.BrandId != null ? item.FirstOrDefault().MasterAsset.brand.Name : "";
-                    getDataObj.BrandNameAr = item.FirstOrDefault().MasterAsset.BrandId != null ? item.FirstOrDefault().MasterAsset.brand.NameAr : "";
+                    getDataObj.Id = item.MasterAsset.Id;
+                    getDataObj.Code = item.MasterAsset.Code;
+                    getDataObj.Model = item.MasterAsset.ModelNumber;
+                    getDataObj.PMColor = item.MasterAsset.PMColor;
+                    getDataObj.PMBGColor = item.MasterAsset.PMBGColor;
+                    getDataObj.ECRIName = item.MasterAsset.ECRIId != null ? item.MasterAsset.ECRIS.Name : "";
+                    getDataObj.ECRINameAr = item.MasterAsset.ECRIId != null ? item.MasterAsset.ECRIS.NameAr : "";
+                    getDataObj.Name = item.MasterAsset.Name;
+                    getDataObj.NameAr = item.MasterAsset.NameAr;
+                    getDataObj.OriginName = item.MasterAsset.OriginId != null ? item.MasterAsset.Origin.Name : "";
+                    getDataObj.OriginNameAr = item.MasterAsset.OriginId != null ? item.MasterAsset.Origin.NameAr : "";
+                    getDataObj.BrandName = item.MasterAsset.BrandId != null ? item.MasterAsset.brand.Name : "";
+                    getDataObj.BrandNameAr = item.MasterAsset.BrandId != null ? item.MasterAsset.brand.NameAr : "";
                     list.Add(getDataObj);
                 }
             }

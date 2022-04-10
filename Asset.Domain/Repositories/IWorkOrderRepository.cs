@@ -32,5 +32,7 @@ namespace Asset.Domain.Repositories
 
 
         IEnumerable<IndexWorkOrderVM> GetWorkOrdersByDate(SearchWorkOrderByDateVM woDateObj);
+
+        int CountWorkOrdersByHospitalId(int hospitalId, string userId);
     }
 }

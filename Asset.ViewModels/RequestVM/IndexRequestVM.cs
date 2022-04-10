@@ -19,7 +19,7 @@ namespace Asset.ViewModels.RequestVM
             public int Id { get; set; }
             public int RequestId { get; set; }
             public string Subject { get; set; }
-            public string Code { get; set; }
+            public string RequestCode { get; set; }
             public DateTime RequestDate { get; set; }
             public int ModeId { get; set; }
 

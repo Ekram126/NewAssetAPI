@@ -89,7 +89,7 @@ namespace Asset.Core.Services
             return _unitOfWork.Request.SearchRequests(searchObj);
         }
 
-        public async Task< IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj, int statusId)
+        public async Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj, int statusId)
         {
             return await _unitOfWork.Request.SortRequests(sortObj,statusId);
         }
@@ -130,6 +130,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalAssetId(int assetId)
         {
             return _unitOfWork.Request.GetAllRequestsByHospitalAssetId(assetId);
+        }
+
+        public int CountRequestsByHospitalId(int hospitalId, string userId)
+        {
+            return _unitOfWork.Request.CountRequestsByHospitalId(hospitalId,userId);
         }
     }
 }

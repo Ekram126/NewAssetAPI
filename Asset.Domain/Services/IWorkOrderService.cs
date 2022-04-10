@@ -33,5 +33,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj, int statusId);
 
         IEnumerable<IndexWorkOrderVM> GetWorkOrdersByDate(SearchWorkOrderByDateVM woDateObj);
+
+        int CountWorkOrdersByHospitalId(int hospitalId, string userId);
     }
 }
