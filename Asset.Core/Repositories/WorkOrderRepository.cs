@@ -1739,5 +1739,16 @@ namespace Asset.Core.Repositories
             return lstWorkOrders.Count();
 
         }
+
+        public int CreateWorkOrderAttachments(WorkOrderAttachment attachObj)
+        {
+            WorkOrderAttachment documentObj = new WorkOrderAttachment();
+            documentObj.DocumentName = attachObj.DocumentName;
+            documentObj.FileName = attachObj.FileName;
+            documentObj.WorkOrderTrackingId = attachObj.WorkOrderTrackingId;
+            _context.WorkOrderAttachments.Add(documentObj);
+            _context.SaveChanges();
+            return attachObj.Id;
+        }
     }
 }

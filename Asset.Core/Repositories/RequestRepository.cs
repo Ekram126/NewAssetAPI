@@ -1113,15 +1113,15 @@ namespace Asset.Core.Repositories
                                         SerialNumber = item.Request.AssetDetail.SerialNumber,
                                         ModeName = item.Request.RequestMode.Name,
                                         ModeNameAr = item.Request.RequestMode.NameAr,
-                                        PeriorityName = item.Request.RequestPeriority.Name,
-                                        RequestTypeName = _context.RequestTypes.Where(a => a.Id == item.Request.RequestTypeId).ToList().FirstOrDefault().Name,
-                                        RequestTypeNameAr = _context.RequestTypes.Where(a => a.Id == item.Request.RequestTypeId).ToList().FirstOrDefault().NameAr,
+                                      
+                                        RequestTypeName = item.Request.RequestTypeId != null ? _context.RequestTypes.Where(a => a.Id == item.Request.RequestTypeId).ToList().FirstOrDefault().Name : "",
+                                        RequestTypeNameAr = item.Request.RequestTypeId != null ? _context.RequestTypes.Where(a => a.Id == item.Request.RequestTypeId).ToList().FirstOrDefault().NameAr : "",
 
-                                        SubProblemName = _context.SubProblems.Where(a => a.Id == item.Request.SubProblemId).ToList().FirstOrDefault().Name,
-                                        SubProblemNameAr = _context.SubProblems.Where(a => a.Id == item.Request.SubProblemId).ToList().FirstOrDefault().NameAr,
+                                        SubProblemName = item.Request.SubProblemId != null ? _context.SubProblems.Where(a => a.Id == item.Request.SubProblemId).ToList().FirstOrDefault().Name : "",
+                                        SubProblemNameAr = item.Request.SubProblemId != null ? _context.SubProblems.Where(a => a.Id == item.Request.SubProblemId).ToList().FirstOrDefault().NameAr : "",
                                         Description = item.Request.Description,
-
-                                        PeriorityNameAr = item.Request.RequestPeriority.NameAr,
+                                        PeriorityName = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.Name:"",
+                                        PeriorityNameAr = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.NameAr:"",
                                         AssetName = _context.MasterAssets.Where(a => a.Id == item.Request.AssetDetail.MasterAssetId).ToList().FirstOrDefault().Name,
                                         AssetNameAr = _context.MasterAssets.Where(a => a.Id == item.Request.AssetDetail.MasterAssetId).ToList().FirstOrDefault().NameAr,
                                         GovernorateId = (int)item.User.GovernorateId,
@@ -1600,11 +1600,11 @@ namespace Asset.Core.Repositories
                 {
                     if (userRoleNames.Contains("AssetOwner"))
                     {
-                        request = request.Where(a =>  a.HospitalId == userObj.HospitalId && a.CreatedById == userObj.Id).ToList();
+                        request = request.Where(a => a.HospitalId == userObj.HospitalId && a.CreatedById == userObj.Id).ToList();
                     }
                     else
                     {
-                        request = request.Where(a =>  a.HospitalId == userObj.HospitalId).ToList();
+                        request = request.Where(a => a.HospitalId == userObj.HospitalId).ToList();
                     }
                 }
                 if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
@@ -1619,7 +1619,7 @@ namespace Asset.Core.Repositories
                 {
                     if (userRoleNames.Contains("AssetOwner"))
                     {
-                        request = request.Where(a =>  a.HospitalId == userObj.HospitalId && a.CreatedById == userObj.Id).ToList();
+                        request = request.Where(a => a.HospitalId == userObj.HospitalId && a.CreatedById == userObj.Id).ToList();
                     }
                     else
                     {
@@ -2636,6 +2636,17 @@ namespace Asset.Core.Repositories
 
             return lstRequests.Count();
 
+        }
+
+        public int CreateRequestAttachments(RequestDocument attachObj)
+        {
+            RequestDocument documentObj = new RequestDocument();
+            documentObj.DocumentName = attachObj.DocumentName;
+            documentObj.FileName = attachObj.FileName;
+            documentObj.RequestTrackingId = attachObj.RequestTrackingId;
+            _context.RequestDocument.Add(documentObj);
+            _context.SaveChanges();
+            return attachObj.Id;
         }
     }
 }

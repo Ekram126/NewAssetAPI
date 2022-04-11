@@ -1,4 +1,5 @@
-﻿using Asset.ViewModels.WorkOrderAttachmentVM;
+﻿using Asset.Models;
+using Asset.ViewModels.WorkOrderAttachmentVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexWorkOrderAttachmentVM> GetWorkOrderAttachmentsByWorkOrderTrackingId(int WorkOrderTrackingId);
         void Add(List<CreateWorkOrderAttachmentVM> WorkOrderAttachments);
         void DeleteWorkOrderAttachment(int id);
+
+        WorkOrderAttachment GetLastDocumentForWorkOrderTrackingId(int workOrderTrackingId);
     }
 }

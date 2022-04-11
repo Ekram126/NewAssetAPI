@@ -1,5 +1,6 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
+using Asset.Models;
 using Asset.ViewModels.WorkOrderAttachmentVM;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexWorkOrderAttachmentVM> GetAllWorkOrderAttachment()
         {
            return _unitOfWork.WorkOrderAttachment.GetAll();
+        }
+
+        public WorkOrderAttachment GetLastDocumentForWorkOrderTrackingId(int workOrderTrackingId)
+        {
+            return _unitOfWork.WorkOrderAttachment.GetLastDocumentForWorkOrderTrackingId(workOrderTrackingId);
         }
 
         public IndexWorkOrderAttachmentVM GetWorkOrderAttachmentById(int id)

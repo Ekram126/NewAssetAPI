@@ -38,5 +38,8 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
 
         int CountRequestsByHospitalId(int hospitalId, string userId);
+        int CreateRequestAttachments(RequestDocument attachObj);
+
+      //  int CreateRequestAttachments(RequestDocument attachObj);
     }
 }

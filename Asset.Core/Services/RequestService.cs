@@ -1,5 +1,6 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
+using Asset.Models;
 using Asset.ViewModels.RequestVM;
 using System;
 using System.Collections.Generic;
@@ -135,6 +136,11 @@ namespace Asset.Core.Services
         public int CountRequestsByHospitalId(int hospitalId, string userId)
         {
             return _unitOfWork.Request.CountRequestsByHospitalId(hospitalId,userId);
+        }
+
+        public int CreateRequestAttachments(RequestDocument attachObj)
+        {
+            return _unitOfWork.Request.CreateRequestAttachments(attachObj);
         }
     }
 }

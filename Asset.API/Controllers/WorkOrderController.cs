@@ -3,10 +3,12 @@ using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.WorkOrderVM;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,15 +21,17 @@ namespace Asset.API.Controllers
     public class WorkOrderController : ControllerBase
     {
         private IWorkOrderService _workOrderService;
-        private IPagingService _pagingService;
 
+        private IPagingService _pagingService;
+        IWebHostEnvironment _webHostingEnvironment;
         private IWorkOrderTrackingService _workOrderTackingService;
 
-        public WorkOrderController(IWorkOrderService workOrderService, IWorkOrderTrackingService workOrderTackingService, IPagingService pagingService)
+        public WorkOrderController(IWorkOrderService workOrderService, IWorkOrderTrackingService workOrderTackingService, IPagingService pagingService, IWebHostEnvironment webHostingEnvironment)
         {
             _workOrderService = workOrderService;
             _workOrderTackingService = workOrderTackingService;
             _pagingService = pagingService;
+            _webHostingEnvironment = webHostingEnvironment;
         }
         // GET: api/<WorkOrderController>
         [HttpGet]
@@ -188,6 +192,38 @@ namespace Asset.API.Controllers
 
 
 
+
+
+        [HttpPost]
+        [Route("CreateWorkOrderAttachments")]
+        public int CreateWorkOrderAttachments(WorkOrderAttachment attachObj)
+        {
+            return _workOrderService.CreateWorkOrderAttachments(attachObj);
+        }
+
+        [HttpPost]
+        [Route("UploadWorkOrerFiles")]
+        public ActionResult UploadWorkOrerFiles(IFormFile file)
+        {
+            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/WorkOrderFiles";
+            bool exists = System.IO.Directory.Exists(folderPath);
+            if (!exists)
+                System.IO.Directory.CreateDirectory(folderPath);
+
+            string filePath = folderPath + "/" + file.FileName;
+            if (System.IO.File.Exists(filePath))
+            {
+
+            }
+            else
+            {
+                Stream stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
+            return StatusCode(StatusCodes.Status201Created);
+        }
+       
 
 
 

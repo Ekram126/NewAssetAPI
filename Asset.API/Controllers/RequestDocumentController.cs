@@ -1,4 +1,5 @@
 ﻿using Asset.Domain.Services;
+using Asset.Models;
 using Asset.ViewModels.RequestDocumentVM;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -40,6 +41,15 @@ namespace Asset.API.Controllers
         {
             return _requestDocumentService.GetRequestDocumentsByRequestTrackingId(RequestTrackingId);
         }
+
+     [Route("GetLastDocumentForRequestTrackingId/{RequestTrackingId}")]
+        public RequestDocument GetLastDocumentForRequestTrackingId(int RequestTrackingId)
+        {
+            return _requestDocumentService.GetLastDocumentForRequestTrackingId(RequestTrackingId);
+        }
+
+
+
         // POST api/<RequestDocumentController>
         [HttpPost] 
       //  [Route("AddRequestDocuments")]

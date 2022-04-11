@@ -1,4 +1,5 @@
 ﻿using Asset.Domain.Services;
+using Asset.Models;
 using Asset.ViewModels.WorkOrderAttachmentVM;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -92,6 +93,13 @@ namespace Asset.API.Controllers
             {
                 return StatusCode(500, $"the error is {ex.Message}");
             }
+        }
+
+
+        [Route("GetLastDocumentForWorkOrderTrackingId/{RequestTrackingId}")]
+        public WorkOrderAttachment GetLastDocumentForWorkOrderTrackingId(int workOrderTrackingId)
+        {
+            return _workOrderAttachmentService.GetLastDocumentForWorkOrderTrackingId(workOrderTrackingId);
         }
     }
 }

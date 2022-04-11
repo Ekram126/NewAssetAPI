@@ -1,4 +1,5 @@
-﻿using Asset.ViewModels.RequestDocumentVM;
+﻿using Asset.Models;
+using Asset.ViewModels.RequestDocumentVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,7 @@ namespace Asset.Domain.Repositories
         void Add(List<CreateRequestDocument> requestDocuments);
         void DeleteRequestDocument(int id);
 
+
+        RequestDocument GetLastDocumentForRequestTrackingId(int RequestTrackingId);
     }
 }

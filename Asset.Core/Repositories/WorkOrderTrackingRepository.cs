@@ -57,10 +57,10 @@ namespace Asset.Core.Repositories
 
 
                     workOrderTracking.ActualStartDate = createWorkOrderTrackingVM.ActualStartDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.ActualStartDate) : null;
-                    workOrderTracking.ActualEndDate = createWorkOrderTrackingVM.ActualEndDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.ActualEndDate):null;
+                    workOrderTracking.ActualEndDate = createWorkOrderTrackingVM.ActualEndDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.ActualEndDate) : null;
 
-                    workOrderTracking.PlannedStartDate = createWorkOrderTrackingVM.PlannedStartDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.PlannedStartDate):null;
-                    workOrderTracking.PlannedEndDate = createWorkOrderTrackingVM.PlannedEndDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.PlannedEndDate):null;
+                    workOrderTracking.PlannedStartDate = createWorkOrderTrackingVM.PlannedStartDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.PlannedStartDate) : null;
+                    workOrderTracking.PlannedEndDate = createWorkOrderTrackingVM.PlannedEndDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.PlannedEndDate) : null;
 
                     _context.WorkOrderTrackings.Add(workOrderTracking);
                     _context.SaveChanges();
@@ -139,7 +139,7 @@ namespace Asset.Core.Repositories
                     CreationDate = DateTime.Parse(work.CreationDate.ToString()),
                     WorkOrderTrackingId = work.WorkOrder.Id, //trackingId
                     WorkOrderNumber = work.WorkOrder.WorkOrderNumber,
-                    PlannedStartDate =DateTime.Parse( work.WorkOrder.PlannedStartDate.ToString()),
+                    PlannedStartDate = DateTime.Parse(work.WorkOrder.PlannedStartDate.ToString()),
                     PlannedEndDate = DateTime.Parse(work.WorkOrder.PlannedEndDate.ToString()),
                     ActualStartDate = DateTime.Parse(work.WorkOrder.ActualStartDate.ToString()),
                     ActualEndDate = DateTime.Parse(work.WorkOrder.ActualEndDate.ToString()),
@@ -618,27 +618,35 @@ namespace Asset.Core.Repositories
 
         public List<IndexWorkOrderTrackingVM> GetAllWorkOrderTrackingByWorkOrderId(int WorkOrderId)
         {
-            return _context.WorkOrderTrackings.Where(r => r.WorkOrderId == WorkOrderId)
-                .Include(w => w.WorkOrderStatus)
-
-                .Select(work => new IndexWorkOrderTrackingVM
+            List<IndexWorkOrderTrackingVM> list = new List<IndexWorkOrderTrackingVM>();
+            var lstTracks = _context.WorkOrderTrackings.Where(r => r.WorkOrderId == WorkOrderId)
+               .Include(w => w.WorkOrder).Include(w => w.WorkOrderStatus).Include(w => w.User).OrderByDescending(a => a.CreationDate).ToList();
+            if (lstTracks.Count > 0)
+            {
+                foreach (var work in lstTracks)
                 {
-                    TrackId = work.Id,
-                    WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
-                    CreationDate = DateTime.Parse(work.CreationDate.ToString()),
-                    AssignedTo = work.AssignedTo,
-                    Notes = work.Notes,
-                    CreatedById = work.CreatedById,
-                    CreatedBy = work.User.UserName,
-                    WorkOrderStatusId = work.WorkOrderStatusId,
-                    WorkOrderStatusName = work.WorkOrderStatus.Name,
-                    WorkOrderStatusNameAr = work.WorkOrderStatus.NameAr,
-                    WorkOrderSubject = work.WorkOrder.Subject,
-
-                    CreatedToId = _context.WorkOrderAssigns.Where(a => a.WOTId == work.Id).FirstOrDefault().UserId,
-                    CreatedTo = _context.WorkOrderAssigns.Where(a => a.WOTId == work.Id).FirstOrDefault().User.UserName,
-
-                }).OrderByDescending(a => a.CreationDate).ToList();
+                    IndexWorkOrderTrackingVM workOrderTrackingObj = new IndexWorkOrderTrackingVM();
+                    workOrderTrackingObj.TrackId = work.Id;
+                    workOrderTrackingObj.WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString());
+                    workOrderTrackingObj.CreationDate = DateTime.Parse(work.CreationDate.ToString());
+                    workOrderTrackingObj.AssignedTo = work.AssignedTo;
+                    workOrderTrackingObj.Notes = work.Notes;
+                    workOrderTrackingObj.CreatedById = work.CreatedById;
+                    workOrderTrackingObj.CreatedBy = work.User.UserName;
+                    workOrderTrackingObj.WorkOrderStatusId = work.WorkOrderStatusId;
+                    workOrderTrackingObj.WorkOrderStatusName = work.WorkOrderStatus.Name;
+                    workOrderTrackingObj.WorkOrderStatusNameAr = work.WorkOrderStatus.NameAr;
+                    workOrderTrackingObj.WorkOrderSubject = work.WorkOrder.Subject;
+                    var lstAssigndUsers = _context.WorkOrderAssigns.Where(a => a.WOTId == work.Id).ToList();
+                    if (lstAssigndUsers.Count > 0)
+                    {
+                        workOrderTrackingObj.CreatedToId = lstAssigndUsers[0].UserId;
+                        workOrderTrackingObj.CreatedTo = lstAssigndUsers[0].User.UserName;
+                    }
+                    list.Add(workOrderTrackingObj);
+                }
+            }
+            return list;
         }
 
         public List<WorkOrderAttachment> GetAttachmentsByWorkOrderId(int id)
@@ -691,7 +699,7 @@ namespace Asset.Core.Repositories
         {
             WorkOrderTracking trackingObj = new WorkOrderTracking();
             var lstTracks = _context.WorkOrderTrackings.Where(r => r.WorkOrderId == woId).ToList();
-            if(lstTracks.Count>0)
+            if (lstTracks.Count > 0)
             {
                 trackingObj = lstTracks[0];
             }

@@ -81,6 +81,17 @@ namespace Asset.Core.Repositories
             }).FirstOrDefault();
         }
 
+        public WorkOrderAttachment GetLastDocumentForWorkOrderTrackingId(int workOrderTrackingId)
+        {
+            WorkOrderAttachment documentObj = new WorkOrderAttachment();
+            var lstDocuments = _context.WorkOrderAttachments.Where(a => a.WorkOrderTrackingId == workOrderTrackingId).ToList();
+            if (lstDocuments.Count > 0)
+            {
+                documentObj = lstDocuments.Last();
+            }
+            return documentObj;
+        }
+
         public IEnumerable<IndexWorkOrderAttachmentVM> GetWorkOrderAttachmentsByWorkOrderTrackingId(int WorkOrderTrackingId)
         {
             return _context.WorkOrderAttachments.Where(w => w.WorkOrderTrackingId == WorkOrderTrackingId).Include(r => r.WorkOrderTracking.WorkOrder).Select(doc => new IndexWorkOrderAttachmentVM

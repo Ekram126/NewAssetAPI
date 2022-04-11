@@ -1,5 +1,6 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
+using Asset.Models;
 using Asset.ViewModels.RequestDocumentVM;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexRequestDocument> GetAllRequestDocument()
         {
             return _unitOfWork.RequestDocument.GetAll();
+        }
+
+        public RequestDocument GetLastDocumentForRequestTrackingId(int RequestTrackingId)
+        {
+            return _unitOfWork.RequestDocument.GetLastDocumentForRequestTrackingId(RequestTrackingId);
         }
 
         public IndexRequestDocument GetRequestDocumentById(int id)

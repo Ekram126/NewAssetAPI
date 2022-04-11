@@ -1,5 +1,6 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
+using Asset.Models;
 using Asset.ViewModels.WorkOrderVM;
 using System;
 using System.Collections.Generic;
@@ -107,6 +108,12 @@ namespace Asset.Core.Services
         public int CountWorkOrdersByHospitalId(int hospitalId, string userId)
         {
             return _unitOfWork.WorkOrder.CountWorkOrdersByHospitalId(hospitalId, userId);
+        }
+
+        public int CreateWorkOrderAttachments(WorkOrderAttachment attachObj)
+        {
+            return _unitOfWork.WorkOrder.CreateWorkOrderAttachments(attachObj);
+           
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Asset.ViewModels.WorkOrderVM;
+﻿using Asset.Models;
+using Asset.ViewModels.WorkOrderVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,5 +36,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexWorkOrderVM> GetWorkOrdersByDate(SearchWorkOrderByDateVM woDateObj);
 
         int CountWorkOrdersByHospitalId(int hospitalId, string userId);
+
+        int CreateWorkOrderAttachments(WorkOrderAttachment attachObj);
     }
 }

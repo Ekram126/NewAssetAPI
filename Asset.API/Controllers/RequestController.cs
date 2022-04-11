@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace Asset.API.Controllers
 {
@@ -20,11 +22,14 @@ namespace Asset.API.Controllers
         private readonly IRequestService _requestService;
         private readonly IWorkOrderService _workOrderService;
         private IPagingService _pagingService;
-        public RequestController(IRequestService requestService, IWorkOrderService workOrderService, IPagingService pagingService)
+        IWebHostEnvironment _webHostingEnvironment;
+
+        public RequestController(IRequestService requestService, IWorkOrderService workOrderService, IPagingService pagingService, IWebHostEnvironment webHostingEnvironment)
         {
             _requestService = requestService;
             _workOrderService = workOrderService;
             _pagingService = pagingService;
+            _webHostingEnvironment = webHostingEnvironment;
         }
 
         // GET: api/<RequestController>
@@ -251,6 +256,45 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestsVM>(pageInfo, list.ToList());
         }
 
+
+        [HttpPost]
+        [Route("CreateRequestAttachments")]
+        public int CreateRequestAttachments(RequestDocument attachObj)
+        {
+            return _requestService.CreateRequestAttachments(attachObj);
+        }
+
+        [HttpPost]
+        [Route("UploadRequestFiles")]
+        public ActionResult UploadRequestFiles(IFormFile file)
+        {
+            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/RequestDocuments";
+            bool exists = System.IO.Directory.Exists(folderPath);
+            if (!exists)
+                System.IO.Directory.CreateDirectory(folderPath);
+
+            string filePath = folderPath + "/" + file.FileName;
+            if (System.IO.File.Exists(filePath))
+            {
+
+            }
+            else
+            {
+                Stream stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
+            return StatusCode(StatusCodes.Status201Created);
+        }
+
+
+
+        [HttpPost]
+        [Route("GetLastRequestAttachment")]
+        public int GetLastRequestAttachment(RequestDocument attachObj)
+        {
+            return _requestService.CreateRequestAttachments(attachObj);
+        }
         //[HttpPost]
         //[Route("SortRequestsCount")]
         //public async Task<int> SortRequestsCount(SortRequestVM sortObj, int statusId)

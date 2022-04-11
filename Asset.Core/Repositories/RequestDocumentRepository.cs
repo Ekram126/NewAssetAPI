@@ -84,9 +84,20 @@ namespace Asset.Core.Repositories
             }).FirstOrDefault();
         }
 
+        public RequestDocument GetLastDocumentForRequestTrackingId(int RequestTrackingId)
+        {
+            RequestDocument documentObj = new RequestDocument();
+            var lstDocuments = _context.RequestDocument.Where(a => a.RequestTrackingId == RequestTrackingId).ToList();
+            if(lstDocuments.Count >0)
+            {
+                documentObj = lstDocuments.Last();
+            }
+            return documentObj;
+        }
+
         public IEnumerable<IndexRequestDocument> GetRequestDocumentsByRequestTrackingId(int RequestTrackingId)
         {
-            return _context.RequestDocument.Include(r => r.RequestTracking.Request).Where(req=>req.RequestTrackingId== RequestTrackingId).Select(req => new IndexRequestDocument
+            return _context.RequestDocument.Include(r => r.RequestTracking.Request).Where(req=>req.RequestTrackingId== RequestTrackingId).OrderBy(a=>a.FileName).Select(req => new IndexRequestDocument
             {
                 Id = req.Id,
                 FileName = req.FileName,
