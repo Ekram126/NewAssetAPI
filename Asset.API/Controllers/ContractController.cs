@@ -3,10 +3,13 @@ using Asset.Models;
 using Asset.ViewModels.AssetDetailVM;
 using Asset.ViewModels.ContractVM;
 using Asset.ViewModels.PagingParameter;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,17 +21,18 @@ namespace Contract.API.Controllers
     [ApiController]
     public class ContractController : ControllerBase
     {
-
+        IWebHostEnvironment _webHostingEnvironment;
         private IMasterContractService _masterContractService;
         private IPagingService _pagingService;
 
         private IContractDetailService _contractDetailService;
         public ContractController(IMasterContractService masterContractService, IContractDetailService contractDetailService,
-            IPagingService pagingService)
+            IPagingService pagingService, IWebHostEnvironment webHostingEnvironment)
         {
             _masterContractService = masterContractService;
             _contractDetailService = contractDetailService;
             _pagingService = pagingService;
+            _webHostingEnvironment = webHostingEnvironment;
         }
 
         [HttpGet]
@@ -206,6 +210,46 @@ namespace Contract.API.Controllers
             pageInfo.PageSize = pagesize;
             var list = _masterContractService.SortContracts(hosId, sortObj).ToList();
             return _pagingService.GetAll(pageInfo, list);
+        }
+
+
+
+        [HttpPost]
+        [Route("CreateContractAttachments")]
+        public int CreateContractAttachments(ContractAttachment attachObj)
+        {
+            return _masterContractService.CreateContractAttachments(attachObj);
+        }
+
+        [HttpPost]
+        [Route("UploadContractFiles")]
+        public ActionResult UploadContractFiles(IFormFile file)
+        {
+            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterContractFiles";
+            bool exists = System.IO.Directory.Exists(folderPath);
+            if (!exists)
+                System.IO.Directory.CreateDirectory(folderPath);
+
+            string filePath = folderPath + "/" + file.FileName;
+            if (System.IO.File.Exists(filePath))
+            {
+
+            }
+            else
+            {
+                Stream stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
+            return StatusCode(StatusCodes.Status201Created);
+        }
+
+
+        [HttpGet]
+        [Route("GenerateMasterContractSerial")]
+        public GeneratedMasterContractNumberVM GenerateMasterContractSerial()
+        {
+            return _masterContractService.GenerateMasterContractSerial();
         }
 
     }

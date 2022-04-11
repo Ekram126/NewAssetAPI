@@ -365,5 +365,36 @@ namespace Contract.Core.Repositories
             }
             return list;
         }
+
+        public int CreateContractAttachments(ContractAttachment attachObj)
+        {
+            ContractAttachment documentObj = new ContractAttachment();
+            documentObj.DocumentName = attachObj.DocumentName;
+            documentObj.FileName = attachObj.FileName;
+            documentObj.MasterContractId = attachObj.MasterContractId;
+            documentObj.MasterContractId = attachObj.MasterContractId;
+            _context.ContractAttachments.Add(documentObj);
+            _context.SaveChanges();
+            return attachObj.Id;
+        }
+
+        public GeneratedMasterContractNumberVM GenerateMasterContractSerial()
+        {
+            GeneratedMasterContractNumberVM numberObj = new GeneratedMasterContractNumberVM();
+            string strContract = "Cntrct";
+
+            var lstContracts = _context.MasterContracts.ToList();
+            if (lstContracts.Count > 0)
+            {
+                var code = lstContracts.LastOrDefault().Id;
+                numberObj.ContractSerial = strContract + (code + 1);
+            }
+            else
+            {
+                numberObj.ContractSerial = strContract + 1;
+            }
+
+            return numberObj;
+        }
     }
 }

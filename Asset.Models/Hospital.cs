@@ -47,7 +47,6 @@ namespace Asset.Models
 
 
         public int? GovernorateId { get; set; }
-
         [ForeignKey("GovernorateId")]
         public virtual Governorate Governorate { get; set; }
 
@@ -62,7 +61,6 @@ namespace Asset.Models
 
 
         public int? SubOrganizationId { get; set; }
-
         [ForeignKey("SubOrganizationId")]
         public virtual SubOrganization SubOrganization { get; set; }
     }

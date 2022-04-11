@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,10 @@ namespace Asset.Models
         public string NameAr { get; set; }
 
         public int? GovernorateId { get; set; }
+        [ForeignKey("GovernorateId")]
+        public virtual Governorate Governorate { get; set; }
+
+
         public decimal? Latitude { get; set; }
         public decimal? Longtitude { get; set; }
     }

@@ -48,6 +48,7 @@ namespace Asset.Models
         public DbSet<AssetStatusTransaction> AssetStatusTransactions { get; set; }
         public DbSet<MasterContract> MasterContracts { get; set; }
         public DbSet<ContractDetail> ContractDetails { get; set; }
+        public DbSet<ContractAttachment> ContractAttachments { get; set; }
         public DbSet<RequestTracking> RequestTracking { get; set; }
         public DbSet<Request> Request { get; set; }
         public DbSet<RequestPhase> RequestPhase { get; set; }

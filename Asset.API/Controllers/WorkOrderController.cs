@@ -202,7 +202,7 @@ namespace Asset.API.Controllers
         }
 
         [HttpPost]
-        [Route("UploadWorkOrerFiles")]
+        [Route("UploadWorkOrderFiles")]
         public ActionResult UploadWorkOrerFiles(IFormFile file)
         {
             var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/WorkOrderFiles";

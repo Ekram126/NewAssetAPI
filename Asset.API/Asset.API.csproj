@@ -46,6 +46,7 @@
   <ItemGroup>
     <Folder Include="Reports\" />
     <Folder Include="UploadedAttachments\HospitalApplications\" />
+    <Folder Include="UploadedAttachments\MasterContractFiles\" />
     <Folder Include="UploadedAttachments\qrFiles\" />
     <Folder Include="UploadedAttachments\SupplierExecludeAssets\" />
     <Folder Include="wwwroot\" />

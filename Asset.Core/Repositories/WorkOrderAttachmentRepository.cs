@@ -66,18 +66,18 @@ namespace Asset.Core.Repositories
                 Id = req.Id,
                 FileName = req.FileName,
                 DocumentName = req.DocumentName,
-                WorkOrderTrackingId = req.WorkOrderTrackingId,
+                WorkOrderTrackingId = int.Parse(req.WorkOrderTrackingId.ToString())
             }).ToList();
         }
 
         public IndexWorkOrderAttachmentVM GetById(int id)
         {
-            return _context.WorkOrderAttachments.Where(w=>w.Id==id).Include(r => r.WorkOrderTracking.WorkOrder).Select(req => new IndexWorkOrderAttachmentVM
+            return _context.WorkOrderAttachments.Where(w => w.Id == id).Include(r => r.WorkOrderTracking.WorkOrder).Select(req => new IndexWorkOrderAttachmentVM
             {
                 Id = req.Id,
                 FileName = req.FileName,
                 DocumentName = req.DocumentName,
-                WorkOrderTrackingId = req.WorkOrderTrackingId,
+                WorkOrderTrackingId = int.Parse(req.WorkOrderTrackingId.ToString())
             }).FirstOrDefault();
         }
 
@@ -99,7 +99,7 @@ namespace Asset.Core.Repositories
                 Id = doc.Id,
                 FileName = doc.FileName,
                 DocumentName = doc.DocumentName,
-                WorkOrderTrackingId = doc.WorkOrderTrackingId,
+                WorkOrderTrackingId = int.Parse(doc.WorkOrderTrackingId.ToString())
             }).ToList();
         }
     }

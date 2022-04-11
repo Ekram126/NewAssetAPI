@@ -8,22 +8,15 @@ using System.Threading.Tasks;
 
 namespace Asset.Models
 {
-   public class SupplierExecludeAttachment
+   public class ContractAttachment
     {
-
         public int Id { get; set; }
-
-        public int? SupplierExecludeId { get; set; }
-        [ForeignKey("SupplierExecludeId")]
-        public virtual SupplierExeclude SupplierExeclude { get; set; }
-
-
-
-
-
+        public int? MasterContractId { get; set; }
+        [ForeignKey("MasterContractId")]
+        public virtual MasterContract MasterContract { get; set; }
         [StringLength(25)]
         public string FileName { get; set; }
         [StringLength(100)]
-        public string Title { get; set; }
+        public string DocumentName { get; set; }
     }
 }

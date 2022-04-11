@@ -25,9 +25,19 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterContractRepository.Add(masterContractObj);
         }
 
+        public int CreateContractAttachments(ContractAttachment attachObj)
+        {
+            return _unitOfWork.MasterContractRepository.CreateContractAttachments(attachObj);
+        }
+
         public int Delete(int id)
         {
             return _unitOfWork.MasterContractRepository.Delete(id);
+        }
+
+        public GeneratedMasterContractNumberVM GenerateMasterContractSerial()
+        {
+            return _unitOfWork.MasterContractRepository.GenerateMasterContractSerial();
         }
 
         public IEnumerable<MasterContract> GetAll()
