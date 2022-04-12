@@ -60,5 +60,14 @@ namespace Asset.ViewModels.AssetDetailVM
         public int AssetStatusId { get; set; }
         public string AssetStatus { get; set; }
         public string AssetStatusAr { get; set; }
+
+
+
+
+
+        public int? GovernorateId { get; set; }
+        public int? CityId { get; set; }
+        public int? OrganizationId { get; set; }
+        public int? SubOrganizationId { get; set; }
     }
 }

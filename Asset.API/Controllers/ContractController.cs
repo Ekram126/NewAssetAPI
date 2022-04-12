@@ -251,6 +251,13 @@ namespace Contract.API.Controllers
         {
             return _masterContractService.GenerateMasterContractSerial();
         }
+     
+        [HttpGet]
+        [Route("GetContractAttachmentByMasterContractId/{masterContractId}")]
+        public IEnumerable<ContractAttachment> GetContractAttachmentByMasterContractId(int masterContractId)
+        {
+            return _masterContractService.GetContractAttachmentByMasterContractId(masterContractId);
+        }
 
     }
 }

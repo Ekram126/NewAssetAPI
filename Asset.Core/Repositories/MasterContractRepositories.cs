@@ -396,5 +396,10 @@ namespace Contract.Core.Repositories
 
             return numberObj;
         }
+
+        public IEnumerable<ContractAttachment> GetContractAttachmentByMasterContractId(int masterContractId)
+        {
+         return   _context.ContractAttachments.Where(a => a.MasterContractId == masterContractId).ToList();
+        }
     }
 }

@@ -21,5 +21,8 @@ namespace Asset.Domain.Repositories
         GeneratedMasterContractNumberVM GenerateMasterContractSerial();
 
 
+        IEnumerable<ContractAttachment> GetContractAttachmentByMasterContractId(int masterContractId);
+
+
     }
 }

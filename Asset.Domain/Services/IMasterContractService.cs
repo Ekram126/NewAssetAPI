@@ -19,5 +19,7 @@ namespace Asset.Domain.Services
         int CreateContractAttachments(ContractAttachment attachObj);
 
         GeneratedMasterContractNumberVM GenerateMasterContractSerial();
+
+        IEnumerable<ContractAttachment> GetContractAttachmentByMasterContractId(int masterContractId);
     }
 }

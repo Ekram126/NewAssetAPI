@@ -1726,7 +1726,7 @@ namespace Asset.Core.Repositories
                 }
 
 
-                if (sortObj.RequestDate != null)
+                if (sortObj.RequestDate != "")
                 {
                     if (sortObj.SortStatus == "descending")
                         request = request.OrderByDescending(d => d.RequestDate).ToList();
@@ -1735,7 +1735,7 @@ namespace Asset.Core.Repositories
                 }
 
 
-                if (sortObj.ClosedDate != null)
+                if (sortObj.ClosedDate != "")
                 {
                     if (sortObj.SortStatus == "descending")
                         request = request.OrderByDescending(d => d.ClosedDate).ToList();
@@ -1743,7 +1743,7 @@ namespace Asset.Core.Repositories
                         request = request.OrderBy(d => d.ClosedDate).ToList();
                 }
 
-                if (sortObj.CreatedBy != null)
+                if (sortObj.CreatedBy != "")
                 {
                     if (sortObj.SortStatus == "descending")
                         request = request.OrderByDescending(d => d.CreatedBy).ToList();

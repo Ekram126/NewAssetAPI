@@ -184,7 +184,7 @@ namespace Asset.API.Controllers
         }
         [HttpGet]
         [Route("GetById/{id}")]
-        public ActionResult<EditAssetDetailVM> GetById(int id)
+        public EditAssetDetailVM GetById(int id)
         {
             return _AssetDetailService.GetById(id);
         }
@@ -446,10 +446,6 @@ namespace Asset.API.Controllers
             return count;
         }
 
-
-
-
-
         [HttpGet]
         [Route("GetAssetsByAgeGroup/{hospitalId}")]
         public List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)
@@ -463,6 +459,15 @@ namespace Asset.API.Controllers
         {
             var list = _AssetDetailService.GetGeneralAssetsByAgeGroup(model);
             return list;
+        }
+
+
+
+
+        [Route("GetLastDocumentForAssetDetailId/{assetDetailId}")]
+        public AssetDetailAttachment GetLastDocumentForWorkOrderTrackingId(int assetDetailId)
+        {
+            return _AssetDetailService.GetLastDocumentForAssetDetailId(assetDetailId);
         }
     }
 }

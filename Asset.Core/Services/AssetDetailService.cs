@@ -223,6 +223,9 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetDetailRepository.GetHospitalAssets(hospitalId, statusId, userId,  page,  pageSize, sortObj);
         }
 
-     
+        public AssetDetailAttachment GetLastDocumentForAssetDetailId(int assetDetailId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetLastDocumentForAssetDetailId(assetDetailId);
+        }
     }
 }

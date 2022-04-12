@@ -50,6 +50,11 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterContractRepository.GetById(id);
         }
 
+        public IEnumerable<ContractAttachment> GetContractAttachmentByMasterContractId(int masterContractId)
+        {
+            return _unitOfWork.MasterContractRepository.GetContractAttachmentByMasterContractId(masterContractId).ToList();
+        }
+
         public IEnumerable<IndexMasterContractVM.GetData> GetMasterContractsByHospitalId(int hospitalId)
         {
             return _unitOfWork.MasterContractRepository.GetMasterContractsByHospitalId(hospitalId);

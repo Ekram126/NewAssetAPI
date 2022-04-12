@@ -44,7 +44,6 @@ namespace Asset.Core.Repositories
             return createRequestTracking.Id;
 
         }
-
         public void Delete(int id)
         {
             RequestTracking requestTracking = _context.RequestTracking.Find(id);
@@ -61,7 +60,6 @@ namespace Asset.Core.Repositories
                 msg = ex.Message;
             }
         }
-
         public IEnumerable<IndexRequestTracking> GetAll(string userId, int? assetDetailId)
         {
             ApplicationUser UserObj = new ApplicationUser();
@@ -197,9 +195,6 @@ namespace Asset.Core.Repositories
             return lstRequestTrackings;
 
         }
-
-
-
         public List<RequestTrackingView> GetRequestTracksByRequestId(int requestId)
         {
             var trackings = _context.RequestTracking.Where(r => r.RequestId == requestId).OrderByDescending(a => a.DescriptionDate).Select(req => new RequestTrackingView
@@ -219,12 +214,6 @@ namespace Asset.Core.Repositories
 
             return trackings;
         }
-
-
-
-
-
-
         public RequestDetails GetAllTrackingsByRequestId(int RequestId)
         {
             var trackings = _context.RequestTracking.Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
