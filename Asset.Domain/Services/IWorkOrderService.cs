@@ -17,10 +17,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexWorkOrderVM> GetworkOrder(string userId);
 
         List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId);
-
-
-
-
+        List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId, int requestId);
         IEnumerable<IndexWorkOrderVM> SearchWorkOrders(SearchWorkOrderVM searchObj);
         IndexWorkOrderVM GetWorkOrderById(int id);
         IndexWorkOrderVM GetWorkOrderByRequestId(int requestId);

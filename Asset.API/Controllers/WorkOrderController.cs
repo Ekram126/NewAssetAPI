@@ -72,7 +72,12 @@ namespace Asset.API.Controllers
             return _workOrderService.GetLastRequestAndWorkOrderByAssetId(assetId);
         }
 
-
+        [HttpGet]
+        [Route("GetLastRequestAndWorkOrderByAssetIdAndRequestId/{assetId}/{requestId}")]
+        public IEnumerable<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetIdAndRequestId(int assetId, int requestId)
+        {
+            return _workOrderService.GetLastRequestAndWorkOrderByAssetId(assetId, requestId);
+        }
 
         [HttpGet]
         [Route("GetworkOrder/{userId}")]

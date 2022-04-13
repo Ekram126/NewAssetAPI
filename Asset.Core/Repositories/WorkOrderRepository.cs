@@ -1482,13 +1482,13 @@ namespace Asset.Core.Repositories
                     list = list.OrderBy(d => d.CreationDate).ToList();
             }
 
-    //if (sortObj.ElapsedTime != "")
-    //        {
-    //            if (sortObj.SortStatus == "descending")
-    //                list = list.OrderByDescending(d => d.ElapsedTime).ToList();
-    //            else
-    //                list = list.OrderBy(d => d.ElapsedTime).ToList();
-    //        }
+            //if (sortObj.ElapsedTime != "")
+            //        {
+            //            if (sortObj.SortStatus == "descending")
+            //                list = list.OrderByDescending(d => d.ElapsedTime).ToList();
+            //            else
+            //                list = list.OrderBy(d => d.ElapsedTime).ToList();
+            //        }
 
             if (sortObj.Note != "")
             {
@@ -1507,11 +1507,12 @@ namespace Asset.Core.Repositories
                                     .Include(a => a.Request.AssetDetail)
                                     .Include(a => a.Request.AssetDetail.Hospital)
                                 .Where(a => a.Request.AssetDetailId == assetId)
-                                .OrderByDescending(a => a.CreationDate)
+                                .OrderByDescending(a => a.Request.RequestDate)
                                 .ToList()
                                 .Select(item => new IndexWorkOrderVM
                                 {
                                     Id = item.Id,
+                                    RequestId = item.Request.Id,
                                     WorkOrderNumber = item.WorkOrderNumber,
                                     Subject = item.Subject,
                                     RequestSubject = item.Request.Subject,
@@ -1756,6 +1757,27 @@ namespace Asset.Core.Repositories
             _context.WorkOrderAttachments.Add(documentObj);
             _context.SaveChanges();
             return attachObj.Id;
+        }
+
+        public List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId, int requestId)
+        {
+            return _context.WorkOrders.Include(a => a.Request)
+                                     .Include(a => a.Request.AssetDetail)
+                                     .Include(a => a.Request.AssetDetail.Hospital)
+                                 .Where(a => a.Request.AssetDetailId == assetId && a.Request.Id == requestId)
+                                 .OrderByDescending(a => a.Request.RequestDate)
+                                 .ToList()
+                                 .Select(item => new IndexWorkOrderVM
+                                 {
+                                     Id = item.Id,
+                                     RequestId = item.Request.Id,
+                                     WorkOrderNumber = item.WorkOrderNumber,
+                                     Subject = item.Subject,
+                                     RequestSubject = item.Request.Subject,
+                                     RequestNumber = item.Request.RequestCode,
+                                     CreationDate = item.CreationDate,
+                                     HospitalId = item.Request.AssetDetail.HospitalId
+                                 }).ToList();
         }
     }
 }

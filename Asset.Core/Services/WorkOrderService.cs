@@ -115,5 +115,10 @@ namespace Asset.Core.Services
             return _unitOfWork.WorkOrder.CreateWorkOrderAttachments(attachObj);
            
         }
+
+        public List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId, int requestId)
+        {
+            return _unitOfWork.WorkOrder.GetLastRequestAndWorkOrderByAssetId(assetId, requestId);
+        }
     }
 }
