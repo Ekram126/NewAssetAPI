@@ -23,6 +23,11 @@ namespace Asset.Domain.Repositories
         IndexRequestsVM GetRequestByWorkOrderId(int workOrderId);
         int GetTotalRequestForAssetInHospital(int assetDetailId);
         int GetTotalOpenRequest(string userId);
+
+        List<Request> ListOpenRequests(int hospitalId);
+
+        int UpdateOpenedRequest(int requestId);
+
         IndexRequestsVM GetById(int id);
         IndexRequestsVM GetByRequestCode(string code);
 

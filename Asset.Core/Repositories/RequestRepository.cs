@@ -38,6 +38,7 @@ namespace Asset.Core.Repositories
                     request.RequestPeriorityId = createRequestVM.RequestPeriorityId;
                     request.AssetDetailId = createRequestVM.AssetDetailId;
                     request.CreatedById = createRequestVM.CreatedById;
+                    request.IsOpened = false;
                     if (createRequestVM.SubProblemId > 0)
                         request.SubProblemId = createRequestVM.SubProblemId;
 
@@ -1117,15 +1118,15 @@ namespace Asset.Core.Repositories
                                         SerialNumber = item.Request.AssetDetail.SerialNumber,
                                         ModeName = item.Request.RequestMode.Name,
                                         ModeNameAr = item.Request.RequestMode.NameAr,
-                                      
+
                                         RequestTypeName = item.Request.RequestTypeId != null ? _context.RequestTypes.Where(a => a.Id == item.Request.RequestTypeId).ToList().FirstOrDefault().Name : "",
                                         RequestTypeNameAr = item.Request.RequestTypeId != null ? _context.RequestTypes.Where(a => a.Id == item.Request.RequestTypeId).ToList().FirstOrDefault().NameAr : "",
 
                                         SubProblemName = item.Request.SubProblemId != null ? _context.SubProblems.Where(a => a.Id == item.Request.SubProblemId).ToList().FirstOrDefault().Name : "",
                                         SubProblemNameAr = item.Request.SubProblemId != null ? _context.SubProblems.Where(a => a.Id == item.Request.SubProblemId).ToList().FirstOrDefault().NameAr : "",
                                         Description = item.Request.Description,
-                                        PeriorityName = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.Name:"",
-                                        PeriorityNameAr = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.NameAr:"",
+                                        PeriorityName = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.Name : "",
+                                        PeriorityNameAr = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.NameAr : "",
                                         AssetName = _context.MasterAssets.Where(a => a.Id == item.Request.AssetDetail.MasterAssetId).ToList().FirstOrDefault().Name,
                                         AssetNameAr = _context.MasterAssets.Where(a => a.Id == item.Request.AssetDetail.MasterAssetId).ToList().FirstOrDefault().NameAr,
                                         GovernorateId = (int)item.User.GovernorateId,
@@ -1667,7 +1668,7 @@ namespace Asset.Core.Repositories
                         request = request.OrderBy(d => d.AssetName).ToList();
                 }
 
-                 if (sortObj.AssetNameAr != "")
+                if (sortObj.AssetNameAr != "")
                 {
                     if (sortObj.SortStatus == "descending")
                         request = request.OrderByDescending(d => d.AssetNameAr).ToList();
@@ -1960,7 +1961,7 @@ namespace Asset.Core.Repositories
                                   .Include(t => t.AssetDetail.Hospital.SubOrganization)
                                   .Include(t => t.User)
                                   .Include(t => t.RequestMode)
-                                  .Include(t => t.RequestPeriority).ToList();
+                                  .Include(t => t.RequestPeriority).Where(a => a.IsOpened == false).ToList();
 
                 if (list.Count > 0)
                 {
@@ -1975,7 +1976,6 @@ namespace Asset.Core.Repositories
                             list = list.ToList();
                         }
                     }
-
                     if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
                     {
                         list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
@@ -1986,7 +1986,7 @@ namespace Asset.Core.Repositories
                     }
                     if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
                     {
-                        list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId && t.AssetDetail.Hospital.CityId == UserObj.CityId && t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                        list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
                     if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
                     {
@@ -2005,23 +2005,22 @@ namespace Asset.Core.Repositories
                         }
                         if (roleNames.Contains("TLHospitalManager"))
                         {
-                            list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                         }
                         if (roleNames.Contains("EngDepManager"))
                         {
-                            list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                         }
                         if (roleNames.Contains("EngManager"))
                         {
-                            list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                         }
                         if (roleNames.Contains("AssetOwner"))
                         {
-                            list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                         }
                         if (roleNames.Contains("Eng"))
                         {
-
                             var lstAssigned = (from order in _context.WorkOrders
                                                join track in _context.WorkOrderTrackings on order.Id equals track.WorkOrderId
                                                join usr in _context.ApplicationUser on track.AssignedTo equals usr.Id
@@ -2029,10 +2028,7 @@ namespace Asset.Core.Repositories
                                                where usr.HospitalId == UserObj.HospitalId
                                                && track.AssignedTo == userId
                                                select order).ToList();
-
                         }
-
-                        //   list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId && t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
                 }
 
@@ -2652,6 +2648,20 @@ namespace Asset.Core.Repositories
             _context.RequestDocument.Add(documentObj);
             _context.SaveChanges();
             return attachObj.Id;
+        }
+
+        public int UpdateOpenedRequest(int requestId)
+        {
+            Request request = _context.Request.Find(requestId);
+            request.IsOpened = true;
+            _context.Entry(request).State = EntityState.Modified;
+            _context.SaveChanges();
+            return requestId;
+        }
+
+        public List<Request> ListOpenRequests(int hospitalId)
+        {
+            return _context.Request.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Where(a => a.IsOpened == false && a.AssetDetail.HospitalId == hospitalId).ToList();
         }
     }
 }

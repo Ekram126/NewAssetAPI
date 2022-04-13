@@ -142,5 +142,15 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.CreateRequestAttachments(attachObj);
         }
+
+        public List<Request> ListOpenRequests(int hospitalId)
+        {
+            return _unitOfWork.Request.ListOpenRequests(hospitalId);
+        }
+
+        public int UpdateOpenedRequest(int requestId)
+        {
+            return _unitOfWork.Request.UpdateOpenedRequest(requestId);
+        }
     }
 }

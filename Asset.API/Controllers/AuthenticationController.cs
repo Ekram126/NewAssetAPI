@@ -204,13 +204,13 @@ namespace Asset.API.Controllers
 
             var hash = callback.Split("#");
             var query = hash[0];
-            replace = query.Replace("/?", "/#/reset?");
+            replace = query.Replace("/?", "/#/ResetPassword?");
 
             StringBuilder strBuild = new StringBuilder();
             strBuild.Append("Dear " + user.UserName + ":");
-            strBuild.Append("\n");
+            strBuild.Append("<br />");
             strBuild.Append("من فضلك اضغط على الرابط التالي لتغيير كلمة المرور");
-            strBuild.Append("\n");
+            strBuild.Append("<br />");
             strBuild.Append("<a href='" + replace + "'>اضغط هنا</a>");
             var message = new MessageVM(new string[] { user.Email }, "Al-Mostakbal Technology.", strBuild.ToString());
             _emailSender.SendEmail(message);
@@ -237,19 +237,6 @@ namespace Asset.API.Controllers
 
             return Ok();
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 }

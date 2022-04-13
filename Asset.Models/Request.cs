@@ -37,5 +37,8 @@ namespace Asset.Models
         public int? RequestTypeId { get; set; }
         [ForeignKey("RequestTypeId")]
         public virtual RequestType RequestType { get; set; }
+
+
+        public bool? IsOpened { get; set; }
     }
 }

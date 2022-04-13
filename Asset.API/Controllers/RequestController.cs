@@ -133,6 +133,22 @@ namespace Asset.API.Controllers
             return _requestService.GetTotalOpenRequest(userId);
         }
 
+        [HttpGet]
+        [Route("ListOpenRequests/{hospitalId}")]
+        public List<Request> ListOpenRequests(int hospitalId)
+        {
+            return _requestService.ListOpenRequests(hospitalId);
+        }
+
+
+        [HttpGet]
+        [Route("UpdateOpenedRequest/{requestId}")]
+        public int UpdateOpenedRequest(int requestId)
+        {
+            return _requestService.UpdateOpenedRequest(requestId);
+        }
+
+
         // POST api/<RequestController>
         [HttpPost]
         public int PostRequestDTO(CreateRequestVM createRequestVM)
