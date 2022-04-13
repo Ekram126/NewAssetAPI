@@ -31,8 +31,11 @@ namespace Asset.Core.Repositories
                 {
                     AssetStatusTransactionsTransactionObj.AssetDetailId = model.AssetDetailId;
                     AssetStatusTransactionsTransactionObj.AssetStatusId = model.AssetStatusId;
-                    if (model.StatusDate != "")
+                    if (model.StatusDate != null)
                         AssetStatusTransactionsTransactionObj.StatusDate = DateTime.Parse(model.StatusDate);
+                    else
+                        AssetStatusTransactionsTransactionObj.StatusDate = DateTime.Now;
+
                     _context.AssetStatusTransactions.Add(AssetStatusTransactionsTransactionObj);
                     _context.SaveChanges();
                 }
@@ -105,7 +108,9 @@ namespace Asset.Core.Repositories
                                              AssetStatusId = item.AssetStatusId,
                                              StatusDate = item.StatusDate
                                          }).ToList();
-      
+        
+
+
             return lstLastTransaction;
         }
 

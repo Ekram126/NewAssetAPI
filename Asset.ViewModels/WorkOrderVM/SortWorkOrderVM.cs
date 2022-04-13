@@ -15,9 +15,9 @@ namespace Asset.ViewModels.WorkOrderVM
         public string CreatedBy { get; set; }
         public string Note { get; set; }
         public string CreationDate { get; set; }
+        public string ElapsedTime { get; set; }
         public string RequestSubject { get; set; }
         public string SortStatus { get; set; }
-
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
         public string Barcode { get; set; }

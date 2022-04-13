@@ -1432,8 +1432,6 @@ namespace Asset.Core.Repositories
                     list = list.OrderBy(d => d.ModelNumber).ToList();
             }
 
-
-
             if (sortObj.WorkOrderNumber != "")
             {
                 if (sortObj.SortStatus == "descending")
@@ -1441,49 +1439,58 @@ namespace Asset.Core.Repositories
                 else
                     list = list.OrderBy(d => d.WorkOrderNumber).ToList();
             }
-            else if (sortObj.StatusName != "")
+            if (sortObj.StatusName != "")
             {
                 if (sortObj.SortStatus == "descending")
                     list = list.OrderByDescending(d => d.StatusName).ToList();
                 else
                     list = list.OrderBy(d => d.StatusName).ToList();
             }
-            else if (sortObj.StatusNameAr != "")
+            if (sortObj.StatusNameAr != "")
             {
                 if (sortObj.SortStatus == "descending")
                     list = list.OrderByDescending(d => d.StatusNameAr).ToList();
                 else
                     list = list.OrderBy(d => d.StatusNameAr).ToList();
             }
-            else if (sortObj.Subject != "")
+            if (sortObj.Subject != "")
             {
                 if (sortObj.SortStatus == "descending")
                     list = list.OrderByDescending(d => d.Subject).ToList();
                 else
                     list = list.OrderBy(d => d.Subject).ToList();
             }
-            else if (sortObj.RequestSubject != "")
+            if (sortObj.RequestSubject != "")
             {
                 if (sortObj.SortStatus == "descending")
                     list = list.OrderByDescending(d => d.RequestSubject).ToList();
                 else
                     list = list.OrderBy(d => d.RequestSubject).ToList();
             }
-            else if (sortObj.CreatedBy != "")
+            if (sortObj.CreatedBy != "")
             {
                 if (sortObj.SortStatus == "descending")
                     list = list.OrderByDescending(d => d.CreatedBy).ToList();
                 else
                     list = list.OrderBy(d => d.CreatedBy).ToList();
             }
-            else if (sortObj.CreationDate != "")
+            if (sortObj.CreationDate != "")
             {
                 if (sortObj.SortStatus == "descending")
                     list = list.OrderByDescending(d => d.CreationDate).ToList();
                 else
                     list = list.OrderBy(d => d.CreationDate).ToList();
             }
-            else if (sortObj.Note != "")
+
+    //if (sortObj.ElapsedTime != "")
+    //        {
+    //            if (sortObj.SortStatus == "descending")
+    //                list = list.OrderByDescending(d => d.ElapsedTime).ToList();
+    //            else
+    //                list = list.OrderBy(d => d.ElapsedTime).ToList();
+    //        }
+
+            if (sortObj.Note != "")
             {
                 if (sortObj.SortStatus == "descending")
                     list = list.OrderByDescending(d => d.Note).ToList();
@@ -1668,7 +1675,7 @@ namespace Asset.Core.Repositories
                                   .Include(w => w.Request)
                                   .Include(w => w.Request.AssetDetail)
                                   .Include(w => w.Request.AssetDetail.Hospital)
-                                  .Include(w => w.User).ToList().GroupBy(a=>a.RequestId).ToList();
+                                  .Include(w => w.User).ToList().GroupBy(a => a.RequestId).ToList();
             if (lstWorkOrders.Count > 0)
             {
                 if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)

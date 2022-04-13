@@ -63,7 +63,7 @@ namespace Asset.API
             services.AddScoped<ISubCategoryService, SubCategoryService>();
             services.AddScoped<IECRIService, ECRIService>();
             services.AddScoped<IAssetStatusService, AssetStatusService>();
-
+            services.AddScoped<IAssetStatusTransactionService, AssetStatusTransactionService>();
 
             services.AddScoped<IHospitalApplicationService, HospitalApplicationService>();
             services.AddScoped<IHospitalExecludeReasonService, HospitalExecludeReasonService>();
@@ -72,7 +72,7 @@ namespace Asset.API
             services.AddScoped<IApplicationTypeService, ApplicationTypeService>();
 
 
-            services.AddScoped<IAssetStatusTransactionService, AssetStatusTransactionService>();
+            
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IMasterAssetService, MasterAssetService>();
             services.AddScoped<IMasterAssetComponentService, MasterAssetComponentService>();
@@ -88,6 +88,7 @@ namespace Asset.API
             services.AddScoped<IFloorService, FloorService>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IPMAssetTaskService, PMAssetTaskService>();
+          
             services.AddScoped<IPMTimeService, PMTimeService>();
             services.AddScoped<IPMAssetTimeService, PMAssetTimeService>();
             services.AddScoped<IPMAssetTaskScheduleService, PMAssetTaskScheduleService>();

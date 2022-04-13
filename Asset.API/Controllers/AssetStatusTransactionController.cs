@@ -83,11 +83,11 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddAssetStatusTransaction")]
-        public ActionResult<AssetStatusTransaction> Add(CreateAssetStatusTransactionVM AssetStatusTransactionVM)
+        public int Add(CreateAssetStatusTransactionVM AssetStatusTransactionVM)
         {
 
             var savedId = _assetStatusTransactionService.Add(AssetStatusTransactionVM);
-            return Ok(savedId);
+            return savedId;
 
         }
 

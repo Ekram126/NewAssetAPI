@@ -44,6 +44,10 @@ namespace Asset.Core.Repositories
                     request.RequestTypeId = createRequestVM.RequestTypeId;
                     _context.Request.Add(request);
                     _context.SaveChanges();
+
+
+
+
                     createRequestVM.Id = request.Id;
                 }
             }
@@ -1662,7 +1666,8 @@ namespace Asset.Core.Repositories
                     else
                         request = request.OrderBy(d => d.AssetName).ToList();
                 }
-                else if (sortObj.AssetNameAr != "")
+
+                 if (sortObj.AssetNameAr != "")
                 {
                     if (sortObj.SortStatus == "descending")
                         request = request.OrderByDescending(d => d.AssetNameAr).ToList();
