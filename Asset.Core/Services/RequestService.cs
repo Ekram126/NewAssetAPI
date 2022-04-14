@@ -1,6 +1,7 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.RequestTrackingVM;
 using Asset.ViewModels.RequestVM;
 using System;
 using System.Collections.Generic;
@@ -151,6 +152,16 @@ namespace Asset.Core.Services
         public int UpdateOpenedRequest(int requestId)
         {
             return _unitOfWork.Request.UpdateOpenedRequest(requestId);
+        }
+
+        public List<IndexRequestTracking> ListOpenRequestTracks(int hospitalId)
+        {
+            return _unitOfWork.Request.ListOpenRequestTracks(hospitalId);           
+        }
+
+        public int UpdateOpenedRequestTrack(int trackId)
+        {
+            return _unitOfWork.Request.UpdateOpenedRequestTrack(trackId);
         }
     }
 }

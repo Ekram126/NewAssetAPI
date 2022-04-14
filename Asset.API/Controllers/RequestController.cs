@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Asset.ViewModels.RequestTrackingVM;
 
 namespace Asset.API.Controllers
 {
@@ -147,6 +148,35 @@ namespace Asset.API.Controllers
         {
             return _requestService.UpdateOpenedRequest(requestId);
         }
+
+
+
+        [HttpGet]
+        [Route("ListOpenRequestTracks/{hospitalId}")]
+        public List<IndexRequestTracking> ListClosedRequestTracks(int hospitalId)
+        {
+            return _requestService.ListOpenRequestTracks(hospitalId);
+        }
+
+
+        [HttpGet]
+        [Route("UpdateOpenedRequestTrack/{trackId}")]
+        public int UpdateOpenedRequestTrack(int trackId)
+        {
+            return _requestService.UpdateOpenedRequestTrack(trackId);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         // POST api/<RequestController>

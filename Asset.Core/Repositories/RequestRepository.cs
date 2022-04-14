@@ -1934,7 +1934,7 @@ namespace Asset.Core.Repositories
             //var startDate = dates[0];
             //var endDate = dates.Last();
             // var countOpenRequest = _context.RequestTracking.Include(a=>a.Request).Where(a => a.DescriptionDate >= startDate && a.DescriptionDate <= endDate && a.RequestStatusId == 1).Count();
-
+            int totalRequests = 0;
             ApplicationUser UserObj = new ApplicationUser();
             List<Request> listCountRequests = new List<Request>();
             // string userRoleName = "";
@@ -1942,10 +1942,6 @@ namespace Asset.Core.Repositories
             if (obj.Count > 0)
             {
                 UserObj = obj[0];
-
-
-
-
                 var roleNames = (from userRole in _context.UserRoles
                                  join role in _context.Roles on userRole.RoleId equals role.Id
                                  where userRole.UserId == userId
@@ -1960,8 +1956,7 @@ namespace Asset.Core.Repositories
                                   .Include(t => t.AssetDetail.Hospital.Organization)
                                   .Include(t => t.AssetDetail.Hospital.SubOrganization)
                                   .Include(t => t.User)
-                                  .Include(t => t.RequestMode)
-                                  .Include(t => t.RequestPeriority).Where(a => a.IsOpened == false).ToList();
+                                  .Where(a => a.IsOpened == false).ToList();
 
                 if (list.Count > 0)
                 {
@@ -1976,6 +1971,7 @@ namespace Asset.Core.Repositories
                             list = list.ToList();
                         }
                     }
+            
                     if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
                     {
                         list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
@@ -1986,7 +1982,7 @@ namespace Asset.Core.Repositories
                     }
                     if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
                     {
-                        list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                        list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.IsOpened == false).ToList();
                     }
                     if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
                     {
@@ -2005,29 +2001,29 @@ namespace Asset.Core.Repositories
                         }
                         if (roleNames.Contains("TLHospitalManager"))
                         {
-                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.IsOpened == false).ToList();
                         }
                         if (roleNames.Contains("EngDepManager"))
                         {
-                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.IsOpened == false).ToList();
                         }
                         if (roleNames.Contains("EngManager"))
                         {
-                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.IsOpened == false).ToList();
                         }
                         if (roleNames.Contains("AssetOwner"))
                         {
-                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                            list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId && t.IsOpened == false).ToList();
                         }
                         if (roleNames.Contains("Eng"))
                         {
-                            var lstAssigned = (from order in _context.WorkOrders
-                                               join track in _context.WorkOrderTrackings on order.Id equals track.WorkOrderId
-                                               join usr in _context.ApplicationUser on track.AssignedTo equals usr.Id
-                                               join req in _context.Request on order.RequestId equals req.Id
-                                               where usr.HospitalId == UserObj.HospitalId
-                                               && track.AssignedTo == userId
-                                               select order).ToList();
+                            //var lstAssigned = (from order in _context.WorkOrders
+                            //                   join track in _context.WorkOrderTrackings on order.Id equals track.WorkOrderId
+                            //                   join usr in _context.ApplicationUser on track.AssignedTo equals usr.Id
+                            //                   join req in _context.Request on order.RequestId equals req.Id
+                            //                   where usr.HospitalId == UserObj.HospitalId
+                            //                   && track.AssignedTo == userId
+                            //                   select order).ToList();
                         }
                     }
                 }
@@ -2042,8 +2038,17 @@ namespace Asset.Core.Repositories
                         listCountRequests.Add(item);
                     }
                 }
+
+                var lstTracks = _context.RequestTracking
+                            .Include(a => a.Request).Include(a => a.Request.AssetDetail)
+                            .Include(a => a.Request.AssetDetail.Hospital)
+                            .Include(a => a.Request.AssetDetail.MasterAsset)
+                            .Where(a => a.IsOpened == false && a.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList()
+                            .OrderByDescending(a => a.Id).ToList().GroupBy(a => a.RequestId).ToList();
+
+                 totalRequests = (lstTracks.Count) + (listCountRequests.Count);
             }
-            return listCountRequests.Count;
+            return totalRequests;
         }
         public PrintServiceRequestVM PrintServiceRequestById(int id)
         {
@@ -2661,7 +2666,98 @@ namespace Asset.Core.Repositories
 
         public List<Request> ListOpenRequests(int hospitalId)
         {
-            return _context.Request.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Where(a => a.IsOpened == false && a.AssetDetail.HospitalId == hospitalId).ToList();
+            List<Request> listCountRequests = new List<Request>();
+            var list = _context.Request
+                               .Include(t => t.AssetDetail)
+                               .Include(t => t.AssetDetail.Hospital)
+                               .Include(t => t.AssetDetail.Hospital.Governorate)
+                               .Include(t => t.AssetDetail.Hospital.City)
+                               .Include(t => t.AssetDetail.Hospital.Organization)
+                               .Include(t => t.AssetDetail.Hospital.SubOrganization)
+                               .Include(t => t.User)
+                               .Where(a => a.IsOpened == false && a.AssetDetail.HospitalId == hospitalId).ToList();
+
+            foreach (var item in list)
+            {
+                var listWO = _context.WorkOrders.Where(a => a.RequestId == item.Id).ToList();
+                if (listWO.Count == 0)
+                {
+                    listCountRequests.Add(item);
+                }
+            }
+            return listCountRequests;
+        }
+
+        public List<IndexRequestTracking> ListOpenRequestTracks(int hospitalId)
+        {
+            List<IndexRequestTracking> list = new List<IndexRequestTracking>();
+            var lstRequests = _context.Request
+                             .Include(t => t.AssetDetail)
+                             .Include(t => t.AssetDetail.Hospital)
+                             .Include(t => t.AssetDetail.Hospital.Governorate)
+                             .Include(t => t.AssetDetail.Hospital.City)
+                             .Include(t => t.AssetDetail.Hospital.Organization)
+                             .Include(t => t.AssetDetail.Hospital.SubOrganization)
+                             .Include(t => t.User)
+                             .Where(a => a.IsOpened == false && a.AssetDetail.HospitalId == hospitalId).ToList();
+
+            foreach (var item in lstRequests)
+            {
+       
+                var lstTracks = _context.RequestTracking
+                              .Include(a => a.Request).Include(a => a.Request.AssetDetail)
+                              .Include(a => a.Request.AssetDetail.Hospital)
+                              .Include(a => a.Request.AssetDetail.MasterAsset)
+                              .Where(a => a.IsOpened == false && a.Request.AssetDetail.HospitalId == hospitalId && a.RequestId == item.Id).ToList()
+                              .OrderByDescending(a => a.Id).ToList().GroupBy(a => a.RequestId).ToList();
+
+
+
+
+                foreach (var track in lstTracks)
+                {
+                    IndexRequestTracking itm = new IndexRequestTracking();
+                    itm.Id = track.FirstOrDefault().Id;
+                    itm.Subject = track.FirstOrDefault().Description;
+                    itm.AssetName = track.FirstOrDefault().Request.AssetDetail.MasterAsset.Name;
+                    itm.AssetNameAr = track.FirstOrDefault().Request.AssetDetail.MasterAsset.NameAr;
+                    list.Add(itm);
+                }
+            }
+
+
+
+
+
+
+
+           
+            //var lstTracks = _context.RequestTracking
+            //                   .Include(a => a.Request).Include(a => a.Request.AssetDetail)
+            //                   .Include(a => a.Request.AssetDetail.Hospital)
+            //                   .Include(a => a.Request.AssetDetail.MasterAsset)
+            //                   .Where(a => a.IsOpened == false && a.Request.AssetDetail.HospitalId == hospitalId).ToList()
+            //                   .OrderByDescending(a => a.Id).ToList().GroupBy(a => a.RequestId).ToList();
+
+            //foreach (var track in lstTracks)
+            //{
+            //    IndexRequestTracking item = new IndexRequestTracking();
+            //    item.Id = track.FirstOrDefault().Id;
+            //    item.Subject = track.FirstOrDefault().Description;
+            //    item.AssetName = track.FirstOrDefault().Request.AssetDetail.MasterAsset.Name;
+            //    item.AssetNameAr = track.FirstOrDefault().Request.AssetDetail.MasterAsset.NameAr;
+            //    list.Add(item);
+            //}
+            return list;
+        }
+
+        public int UpdateOpenedRequestTrack(int trackId)
+        {
+            RequestTracking requestTrackingObj = _context.RequestTracking.Find(trackId);
+            requestTrackingObj.IsOpened = true;
+            _context.Entry(requestTrackingObj).State = EntityState.Modified;
+            _context.SaveChanges();
+            return trackId;
         }
     }
 }

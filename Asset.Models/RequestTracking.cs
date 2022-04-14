@@ -21,5 +21,7 @@ namespace Asset.Models
         public string CreatedById { get; set; }
         [ForeignKey("CreatedById")]
         public virtual ApplicationUser User { get; set; }
+
+        public bool? IsOpened { get; set; }
     }
 }

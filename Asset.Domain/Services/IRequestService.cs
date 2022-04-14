@@ -1,4 +1,5 @@
 ﻿using Asset.Models;
+using Asset.ViewModels.RequestTrackingVM;
 using Asset.ViewModels.RequestVM;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,10 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalAssetId(int assetId);
         int GetTotalOpenRequest(string userId);
         List<Request> ListOpenRequests(int hospitalId);
+        List<IndexRequestTracking> ListOpenRequestTracks(int hospitalId);
         int UpdateOpenedRequest(int requestId);
+        int UpdateOpenedRequestTrack(int trackId);
         IndexRequestsVM GetRequestByWorkOrderId(int workOrderId);
-
         int GetTotalRequestForAssetInHospital(int assetDetailId);
         IndexRequestsVM GetRequestById(int id);
         int AddRequest(CreateRequestVM createRequestVM);
@@ -31,17 +33,11 @@ namespace Asset.Domain.Services
         IndexRequestsVM GetByRequestCode(string code);
         GeneratedRequestNumberVM GenerateRequestNumber();
         PrintServiceRequestVM PrintServiceRequestById(int id);
-
-
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
         Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj,int statusId);
         IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj);
-
         IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
-
         int CountRequestsByHospitalId(int hospitalId, string userId);
         int CreateRequestAttachments(RequestDocument attachObj);
-
-      //  int CreateRequestAttachments(RequestDocument attachObj);
     }
 }
