@@ -115,6 +115,11 @@ namespace Asset.Core.Services
             return masterAssetObj.Id;
         }
 
+        public int UpdateMasterAssetImageAfterInsert(CreateMasterAssetVM masterAssetObj)
+        {
+            return _unitOfWork.MasterAssetRepository.UpdateMasterAssetImageAfterInsert(masterAssetObj);
+        }
+
         public ViewMasterAssetVM ViewMasterAsset(int id)
         {
             return _unitOfWork.MasterAssetRepository.ViewMasterAsset(id);

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Asset.Models
 {
-   public class Floor
+    public class Floor
     {
 
         public int Id { get; set; }
@@ -25,5 +25,10 @@ namespace Asset.Models
 
         [ForeignKey("BuildingId")]
         public int BuildingId { get; set; }
+        public virtual Building Building { get; set; }
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

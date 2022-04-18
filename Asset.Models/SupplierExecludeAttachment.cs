@@ -25,5 +25,9 @@ namespace Asset.Models
         public string FileName { get; set; }
         [StringLength(100)]
         public string Title { get; set; }
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

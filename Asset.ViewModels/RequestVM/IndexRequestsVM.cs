@@ -43,7 +43,7 @@ namespace Asset.ViewModels.RequestVM
         public int RequestStatusId { get; set; }
 
         public string ClosedDate { get; set; }
-
+        public string ModelNumber { get; set; }
 
 
         public string StatusIcon { get; set; }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Asset.Models
 {
-   public class HospitalApplication
+    public class HospitalApplication
     {
 
         public int Id { get; set; }
@@ -33,12 +33,17 @@ namespace Asset.Models
 
         public DateTime? AppDate { get; set; }
         public DateTime? DueDate { get; set; }
- public DateTime? ActionDate { get; set; }
+        public DateTime? ActionDate { get; set; }
         [StringLength(50)]
         public string AppNumber { get; set; }
 
 
         [StringLength(500)]
         public string Comment { get; set; }
+
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

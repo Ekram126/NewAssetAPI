@@ -14,6 +14,7 @@ namespace Asset.ViewModels.WorkOrderVM
 
         public string WorkOrderNumber { get; set; }
         public DateTime? CreationDate { get; set; }
+        public DateTime? ClosedDate { get; set; }
         public DateTime? PlannedStartDate { get; set; }
         public DateTime? PlannedEndDate { get; set; }
         public DateTime? ActualStartDate { get; set; }

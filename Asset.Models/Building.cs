@@ -12,7 +12,7 @@ namespace Asset.Models
     {
         public int Id { get; set; }
 
-        [StringLength(5)]
+        [StringLength(15)]
         public string Code { get; set; }
 
         [StringLength(50)]

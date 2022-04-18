@@ -23,6 +23,7 @@ namespace Asset.Domain.Services
         ViewMasterAssetVM ViewMasterAsset(int id);
         int Add(CreateMasterAssetVM masterAssetObj);
         int Update(EditMasterAssetVM masterAssetObj);
+        int UpdateMasterAssetImageAfterInsert(CreateMasterAssetVM masterAssetObj);
         int Delete(int id);
         int CreateMasterAssetDocuments(CreateMasterAssetAttachmentVM attachObj);
         IEnumerable<MasterAssetAttachment> GetAttachmentByMasterAssetId(int assetId);

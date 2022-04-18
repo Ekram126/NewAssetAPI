@@ -22,5 +22,9 @@ namespace Asset.Models
         public int? ReasonId { get; set; }
         [ForeignKey("ReasonId")]
         public virtual SupplierExecludeReason SupplierExecludeReason { get; set; }
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

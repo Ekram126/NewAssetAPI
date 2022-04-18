@@ -180,7 +180,10 @@ namespace Asset.Core.Repositories
                         if (work.WorkOrderStatusId == 3 || work.WorkOrderStatusId == 4 || work.WorkOrderStatusId == 5)
                         {
                             var pendingStatus = _context.WorkOrderStatuses.Where(a => a.Id == 6).ToList().FirstOrDefault();
-                            work.StatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
+                            work.WorkOrderStatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
+                           // work.StatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
+
+
                             work.StatusName = lstStatus[0].FirstOrDefault().WorkOrderStatus.Name + " - " + pendingStatus.Name;
                             work.StatusNameAr = lstStatus[0].FirstOrDefault().WorkOrderStatus.NameAr + " - " + pendingStatus.NameAr;
                             work.statusColor = lstStatus[0].FirstOrDefault().WorkOrderStatus.Color;
@@ -189,13 +192,22 @@ namespace Asset.Core.Repositories
 
                         else
                         {
-                            work.StatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
+                            work.WorkOrderStatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
+                        //    work.StatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
                             work.StatusName = lstStatus[0].FirstOrDefault().WorkOrderStatus.Name;
                             work.StatusNameAr = lstStatus[0].FirstOrDefault().WorkOrderStatus.NameAr;
                             work.statusColor = lstStatus[0].FirstOrDefault().WorkOrderStatus.Color;
                             work.statusIcon = lstStatus[0].FirstOrDefault().WorkOrderStatus.Icon;
                         }
 
+                    }
+
+                    var lstClosedDate = _context.WorkOrderTrackings
+                        .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
+                        .Where(a => a.WorkOrderId == item.FirstOrDefault().Id && a.WorkOrderStatusId == 12).ToList().OrderByDescending(a => a.WorkOrderDate).ToList().GroupBy(a => item.FirstOrDefault().Id).ToList();
+                    if (lstClosedDate.Count > 0)
+                    {
+                        work.ClosedDate = lstClosedDate[0].FirstOrDefault().CreationDate;
                     }
                     work.ActualStartDate = item.FirstOrDefault().ActualStartDate;
                     work.ActualEndDate = item.FirstOrDefault().ActualEndDate;
@@ -209,8 +221,6 @@ namespace Asset.Core.Repositories
                             work.AssignedTo = lstAssigned[0].AssignedTo;
                         }
                     }
-
-
                     work.ListTracks = _context.WorkOrderTrackings.Include(a => a.WorkOrderStatus).Where(a => a.WorkOrderId == work.Id)
                     .ToList().Select(item => new LstWorkOrderFromTracking
                     {
@@ -323,7 +333,13 @@ namespace Asset.Core.Repositories
                 work.RequestId = item.RequestId != null ? (int)item.RequestId : 0;
                 work.HospitalId = item.Request.AssetDetail.HospitalId;
 
-
+                var lstClosedDate = _context.WorkOrderTrackings
+                      .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
+                      .Where(a => a.WorkOrderId == item.Id && a.WorkOrderStatusId == 12).ToList().OrderByDescending(a => a.WorkOrderDate).ToList().GroupBy(a => item.Id).ToList();
+                if (lstClosedDate.Count > 0)
+                {
+                    work.ClosedDate = lstClosedDate[0].FirstOrDefault().CreationDate;
+                }
                 work.ListTracks = _context.WorkOrderTrackings.Include(a => a.WorkOrderStatus).Where(a => a.WorkOrderId == work.Id)
                 .ToList().Select(item => new LstWorkOrderFromTracking
                 {
@@ -459,43 +475,51 @@ namespace Asset.Core.Repositories
 
         public IndexWorkOrderVM GetById(int id)
         {
-            var requestObj = _context.WorkOrders.Where(a => a.Id == id).Include(w => w.Request).Include(w => w.WorkOrderType).Include(w => w.WorkOrderPeriority).Include(w => w.User)
-                   .Select(work => new IndexWorkOrderVM
-                   {
-                       Id = work.Id,
-                       Subject = work.Subject,
-                       WorkOrderNumber = work.WorkOrderNumber,
-                       ModelNumber = work.Request.AssetDetail.MasterAsset.ModelNumber,
-                       CreationDate = work.CreationDate,
-                       PlannedStartDate = work.PlannedStartDate,
-                       PlannedEndDate = work.PlannedEndDate,
-                       ActualStartDate = work.ActualStartDate,
-                       ActualEndDate = work.ActualEndDate,
-                       Note = work.Note,
-                       MasterAssetId = work.Request.AssetDetail.MasterAssetId,
-                       CreatedById = work.CreatedById,
-                       CreatedBy = work.User.UserName,
-                       WorkOrderPeriorityId = work.WorkOrderPeriorityId != null ? (int)work.WorkOrderPeriorityId : 0,
-                       WorkOrderPeriorityName = work.WorkOrderPeriority.Name,
-                       PeriorityName = work.WorkOrderPeriority.Name,
-                       PeriorityNameAr = work.WorkOrderPeriority.NameAr,
+            IndexWorkOrderVM work = new IndexWorkOrderVM();
+            var woObj = _context.WorkOrders.Where(a => a.Id == id).Include(w => w.Request).Include(w => w.Request.AssetDetail)
+                .Include(w => w.Request.AssetDetail.MasterAsset).Include(w => w.WorkOrderType).Include(w => w.WorkOrderPeriority).Include(w => w.User).ToList();
+            if (woObj.Count > 0)
+            {
+                work.Id = woObj[0].Id;
+                work.Subject = woObj[0].Subject;
+                work.BarCode = woObj[0].Request.AssetDetail.Barcode;
+                work.WorkOrderNumber = woObj[0].WorkOrderNumber;
+                work.ModelNumber = woObj[0].Request.AssetDetail.MasterAsset.ModelNumber;
+                work.CreationDate = woObj[0].CreationDate;
+                work.PlannedStartDate = woObj[0].PlannedStartDate;
+                work.PlannedEndDate = woObj[0].PlannedEndDate;
+                work.ActualStartDate = woObj[0].ActualStartDate;
+                work.ActualEndDate = woObj[0].ActualEndDate;
+                work.Note = woObj[0].Note;
+                work.MasterAssetId = woObj[0].Request.AssetDetail.MasterAssetId;
+                work.CreatedById = woObj[0].CreatedById;
+                work.CreatedBy = woObj[0].User.UserName;
+                work.WorkOrderPeriorityId = woObj[0].WorkOrderPeriorityId != null ? (int)woObj[0].WorkOrderPeriorityId : 0;
+                work.WorkOrderPeriorityId = woObj[0].WorkOrderPeriority.Id;
+                work.PeriorityName = woObj[0].WorkOrderPeriority.Name;
+                work.PeriorityNameAr = woObj[0].WorkOrderPeriority.NameAr;
+                work.AssetName = woObj[0].Request.AssetDetail.MasterAsset.Name;
+                work.AssetNameAr = woObj[0].Request.AssetDetail.MasterAsset.NameAr;
+                work.WorkOrderTypeId = woObj[0].WorkOrderTypeId != null ? (int)woObj[0].WorkOrderTypeId : 0;
+                work.WorkOrderTypeName = woObj[0].WorkOrderType.Name;
+                work.TypeName = woObj[0].WorkOrderType.Name;
+                work.TypeNameAr = woObj[0].WorkOrderType.NameAr;
+                work.RequestId = woObj[0].RequestId != null ? (int)woObj[0].RequestId : 0;
+                work.RequestSubject = woObj[0].Request.Subject;
+                work.HospitalId = woObj[0].Request.AssetDetail.HospitalId;
+                work.WorkOrderTrackingId = _context.WorkOrderTrackings.Where(t => t.WorkOrderId == id).FirstOrDefault().Id;
+                work.WorkOrderStatusId = _context.WorkOrderTrackings.Where(t => t.WorkOrderId == id).FirstOrDefault().WorkOrderStatusId;
+                work.StatusName = _context.WorkOrderTrackings
+                    .Include(a => a.WorkOrderStatus).Where(t => t.WorkOrderId == id).FirstOrDefault().WorkOrderStatus.Name;
+                work.StatusNameAr = _context.WorkOrderTrackings
+                  .Include(a => a.WorkOrderStatus).Where(t => t.WorkOrderId == id).FirstOrDefault().WorkOrderStatus.NameAr;
+
+            }
 
 
-                       //   WorkOrderTypeId = work.WorkOrderTypeId,
-                       WorkOrderTypeId = work.WorkOrderTypeId != null ? (int)work.WorkOrderTypeId : 0,
-                       WorkOrderTypeName = work.WorkOrderType.Name,
-                       TypeName = work.WorkOrderType.Name,
-                       TypeNameAr = work.WorkOrderType.NameAr,
-                       //  RequestId = work.RequestId,
-                       RequestId = work.RequestId != null ? (int)work.RequestId : 0,
-                       RequestSubject = work.Request.Subject,
-                       HospitalId = work.Request.AssetDetail.HospitalId,
-                       WorkOrderTrackingId = _context.WorkOrderTrackings.Where(t => t.WorkOrderId == id).FirstOrDefault().Id,
-                       WorkOrderStatusId = _context.WorkOrderTrackings.Where(t => t.WorkOrderId == id).FirstOrDefault().WorkOrderStatusId
-                   }).FirstOrDefault();
 
 
-            return requestObj;
+            return work;
         }
 
 
@@ -1253,33 +1277,9 @@ namespace Asset.Core.Repositories
             else
                 lstData = lstData.ToList();
 
-
-
-            if (searchObj.HospitalId != 0)
-            {
-                lstData = lstData.Where(a => a.HospitalId == searchObj.HospitalId).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-
-            //if (searchObj.AssetDetailId != 0)
-            //{
-            //    lstData = lstData.Where(a => a.AssetId == searchObj.AssetDetailId).ToList();
-            //}
-            //else
-            //    lstData = lstData.ToList();
-
-            //if (searchObj.MasterAssetId != 0)
-            //{
-            //    lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
-            //}
-            //else
-            //    lstData = lstData.ToList();
-
             if (searchObj.Subject != "")
             {
-                lstData = lstData.Where(a => a.Subject == searchObj.Subject).ToList();
+                lstData = lstData.Where(a => a.Subject.Contains(searchObj.Subject)).ToList();
             }
             else
                 lstData = lstData.ToList();
@@ -1317,6 +1317,13 @@ namespace Asset.Core.Repositories
                 lstData = lstData.ToList();
 
 
+
+            if (searchObj.RequestSubject != "")
+            {
+                lstData = lstData.Where(b => b.RequestSubject.Contains(searchObj.RequestSubject)).ToList();
+            }
+            else
+                lstData = lstData.ToList();
 
 
             string setstartday, setstartmonth, setendday, setendmonth = "";
@@ -1387,116 +1394,924 @@ namespace Asset.Core.Repositories
         {
             var list = GetAllWorkOrdersByHospitalId(hosId, userId);
 
-            if (statusId == 0)
+            if (sortObj.StatusId == 0)
+            {
                 list = list.ToList();
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+            }
             else
-                list = list.Where(a => a.StatusId == statusId).ToList();
+            {
+                list = list.Where(a => a.StatusId == sortObj.StatusId).ToList();
+
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+            }
 
             if (sortObj.AssetName != "")
             {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.AssetName).ToList();
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
                 else
-                    list = list.OrderBy(d => d.AssetName).ToList();
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.AssetName).ToList();
+                    else
+                        list = list.OrderBy(d => d.AssetName).ToList();
+                }
             }
 
             if (sortObj.AssetNameAr != "")
             {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.AssetNameAr).ToList();
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
                 else
-                    list = list.OrderBy(d => d.AssetNameAr).ToList();
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.AssetNameAr).ToList();
+                    else
+                        list = list.OrderBy(d => d.AssetNameAr).ToList();
+                }
             }
 
-            if (sortObj.Barcode != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.BarCode).ToList();
-                else
-                    list = list.OrderBy(d => d.BarCode).ToList();
-            }
-
-            if (sortObj.SerialNumber != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.SerialNumber).ToList();
-                else
-                    list = list.OrderBy(d => d.SerialNumber).ToList();
-            }
-
-            if (sortObj.ModelNumber != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.ModelNumber).ToList();
-                else
-                    list = list.OrderBy(d => d.ModelNumber).ToList();
-            }
-
-            if (sortObj.WorkOrderNumber != "")
-            {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.WorkOrderNumber).ToList();
-                else
-                    list = list.OrderBy(d => d.WorkOrderNumber).ToList();
-            }
             if (sortObj.StatusName != "")
             {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.StatusName).ToList();
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusName == sortObj.StatusName).OrderByDescending(d => d.StatusName).ToList();
+                    }
+                    else
+                    {
+                        list = list.OrderBy(d => d.StatusName).ToList();
+                    }
+                }
                 else
-                    list = list.OrderBy(d => d.StatusName).ToList();
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.StatusName).ToList();
+                    else
+                        list = list.OrderBy(d => d.StatusName).ToList();
+                }
             }
             if (sortObj.StatusNameAr != "")
             {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.StatusNameAr).ToList();
+
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
                 else
-                    list = list.OrderBy(d => d.StatusNameAr).ToList();
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.StatusNameAr).ToList();
+                    else
+                        list = list.OrderBy(d => d.StatusNameAr).ToList();
+                }
+            }
+            if (sortObj.Barcode != "")
+            {
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+                else
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.BarCode).ToList();
+                    else
+                        list = list.OrderBy(d => d.BarCode).ToList();
+                }
+            }
+            if (sortObj.SerialNumber != "")
+            {
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+                else
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                        list = list.OrderBy(d => d.SerialNumber).ToList();
+                }
+            }
+            if (sortObj.ModelNumber != "")
+            {
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+                else
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.OrderBy(d => d.ModelNumber).ToList();
+                }
+            }
+            if (sortObj.WorkOrderNumber != "")
+            {
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+                else
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.OrderBy(d => d.WorkOrderNumber).ToList();
+                }
             }
             if (sortObj.Subject != "")
             {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.Subject).ToList();
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+
                 else
-                    list = list.OrderBy(d => d.Subject).ToList();
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.Subject).ToList();
+                    else
+                        list = list.OrderBy(d => d.Subject).ToList();
+                }
             }
             if (sortObj.RequestSubject != "")
             {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.RequestSubject).ToList();
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+
                 else
-                    list = list.OrderBy(d => d.RequestSubject).ToList();
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.RequestSubject).ToList();
+                    else
+                        list = list.OrderBy(d => d.RequestSubject).ToList();
+                }
             }
             if (sortObj.CreatedBy != "")
             {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.CreatedBy).ToList();
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
                 else
-                    list = list.OrderBy(d => d.CreatedBy).ToList();
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.CreatedBy).ToList();
+                    else
+                        list = list.OrderBy(d => d.CreatedBy).ToList();
+                }
             }
             if (sortObj.CreationDate != "")
             {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.CreationDate).ToList();
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
                 else
-                    list = list.OrderBy(d => d.CreationDate).ToList();
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.CreationDate).ToList();
+                    else
+                        list = list.OrderBy(d => d.CreationDate).ToList();
+                }
             }
+            if (sortObj.ClosedDate != "")
+            {
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
 
-            //if (sortObj.ElapsedTime != "")
-            //        {
-            //            if (sortObj.SortStatus == "descending")
-            //                list = list.OrderByDescending(d => d.ElapsedTime).ToList();
-            //            else
-            //                list = list.OrderBy(d => d.ElapsedTime).ToList();
-            //        }
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
 
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+                else
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.ClosedDate).ToList();
+                    else
+                        list = list.OrderBy(d => d.ClosedDate).ToList();
+                }
+            }
             if (sortObj.Note != "")
             {
-                if (sortObj.SortStatus == "descending")
-                    list = list.OrderByDescending(d => d.Note).ToList();
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
                 else
-                    list = list.OrderBy(d => d.Note).ToList();
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.Note).ToList();
+                    else
+                        list = list.OrderBy(d => d.Note).ToList();
+                }
             }
+
+
+
+
+
+
             return list;
         }
 

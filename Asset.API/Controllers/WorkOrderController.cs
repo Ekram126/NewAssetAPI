@@ -102,6 +102,17 @@ namespace Asset.API.Controllers
         }
 
 
+
+
+        [HttpGet]
+        [Route("GetWorkOrdersByHospitalId/{hospitalId}/{userId}")]
+        public IEnumerable<IndexWorkOrderVM> GetAWorkOrdersByHospitalId(int? hospitalId, string userId)
+        {
+            return _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId);
+           
+        }
+
+
         [HttpPost]
         [Route("GetWorkOrdersByDate/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexWorkOrderVM> GetRequestsByDate(int pagenumber, int pagesize, SearchWorkOrderByDateVM woDateObj)
@@ -271,6 +282,16 @@ namespace Asset.API.Controllers
             pageInfo.PageSize = pagesize;
             var list = _workOrderService.SortWorkOrders(hosId, userId, sortObj, statusId).ToList();
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, list);
+        }
+
+
+        [HttpPost]
+        [Route("CountSortWorkOrders/{hosId}/{userId}/{statusId}")]
+        public int CountSortWorkOrders(int hosId, string userId,  SortWorkOrderVM sortObj, int statusId)
+        {
+     
+           return _workOrderService.SortWorkOrders(hosId, userId, sortObj, statusId).ToList().Count;
+        
         }
     }
 }

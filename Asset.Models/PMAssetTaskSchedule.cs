@@ -7,22 +7,23 @@ using System.Threading.Tasks;
 
 namespace Asset.Models
 {
-  public  class PMAssetTaskSchedule
+    public class PMAssetTaskSchedule
     {
         public int Id { get; set; }
 
         public int? PMAssetTimeId { get; set; }
-        public int? PMAssetTaskId { get; set; }
-
-
-
         [ForeignKey("PMAssetTimeId")]
         public virtual PMAssetTime PMAssetTime { get; set; }
 
 
-
+        public int? PMAssetTaskId { get; set; }
         [ForeignKey("PMAssetTaskId")]
         public virtual PMAssetTask PMAssetTask { get; set; }
+
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
 
     }
 }

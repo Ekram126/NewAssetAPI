@@ -33,5 +33,9 @@ namespace Asset.Models
 
 
         public decimal? Cost { get; set; }
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

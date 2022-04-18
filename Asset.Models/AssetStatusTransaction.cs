@@ -11,9 +11,6 @@ namespace Asset.Models
     {
         public int Id { get; set; }
 
-
-
-
         public int AssetDetailId { get; set; }
 
         [ForeignKey("AssetDetailId")]
@@ -26,6 +23,10 @@ namespace Asset.Models
 
         public DateTime? StatusDate { get; set; }
 
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
 
     }
 }

@@ -19,5 +19,10 @@ namespace Asset.Models
         public int RequestTrackingId { get; set; }
         [ForeignKey("RequestTrackingId")]
         public virtual RequestTracking RequestTracking { get; set; }
+
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

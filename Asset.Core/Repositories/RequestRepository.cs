@@ -1344,19 +1344,6 @@ namespace Asset.Core.Repositories
                 lstData = lstData.ToList();
 
 
-            //if (searchObj.AssetDetailId != 0)
-            //{
-            //    lstData = lstData.Where(a => a.AssetDetailId == searchObj.AssetDetailId).ToList();
-            //}
-            //else
-            //    lstData = lstData.ToList();
-
-            //if (searchObj.MasterAssetId != 0)
-            //{
-            //    lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
-            //}
-            //else
-            //    lstData = lstData.ToList();
 
             if (searchObj.Barcode != "")
             {
@@ -1376,24 +1363,6 @@ namespace Asset.Core.Repositories
             if (searchObj.ModelNumber != "")
             {
                 lstData = lstData.Where(a => a.ModelNumber.Contains(searchObj.ModelNumber)).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.AssetOwnerId != 0)
-            {
-
-                //MyList.Any(c => c.Id == MyObject.Id)
-
-                var lstEmpEmails = _context.Employees.Where(e => e.Id == searchObj.AssetOwnerId).ToList();
-                if (lstEmpEmails.Count > 0)
-                {
-                    var emailObj = _context.ApplicationUser.Where(a => a.Email == lstEmpEmails[0].Email).ToList();
-                    if (emailObj.Count > 0)
-                    {
-                        lstData = lstData.Where(a => a.CreatedById == emailObj[0].Id).ToList();
-                    }
-                }
             }
             else
                 lstData = lstData.ToList();
@@ -1517,6 +1486,7 @@ namespace Asset.Core.Repositories
                     getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
                     getDataObj.Barcode = req.AssetDetail.Barcode;
                     getDataObj.RequestCode = req.RequestCode;
+                    getDataObj.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
                     getDataObj.Description = req.Description;
                     getDataObj.RequestDate = req.RequestDate;
                     getDataObj.RequestModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
@@ -1632,115 +1602,714 @@ namespace Asset.Core.Repositories
                     }
                 }
 
+
+
                 if (sortObj.Serial != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.SerialNumber).ToList();
-                    else
-                        request = request.OrderBy(d => d.SerialNumber).ToList();
-                }
 
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
+                    else
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.SerialNumber).ToList();
+                        else
+                            request = request.OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
                 if (sortObj.RequestCode != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.RequestCode).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.RequestCode).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.OrderBy(d => d.RequestCode).ToList();
+                    }
                 }
-
-
-
                 if (sortObj.BarCode != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.Barcode).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.Barcode).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.Barcode).ToList();
+                        else
+                            request = request.OrderBy(d => d.Barcode).ToList();
+                    }
                 }
-
-
-
                 if (sortObj.AssetName != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.AssetName).ToList();
-                    else
-                        request = request.OrderBy(d => d.AssetName).ToList();
-                }
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
 
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
+                    else
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.AssetName).ToList();
+                        else
+                            request = request.OrderBy(d => d.AssetName).ToList();
+                    }
+                }
                 if (sortObj.AssetNameAr != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.AssetNameAr).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.AssetNameAr).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.AssetNameAr).ToList();
+                        else
+                            request = request.OrderBy(d => d.AssetNameAr).ToList();
+                    }
                 }
                 if (sortObj.Subject != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.Subject).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.Subject).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.Subject).ToList();
+                        else
+                            request = request.OrderBy(d => d.Subject).ToList();
+                    }
                 }
 
 
 
                 if (sortObj.PeriorityName != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.PeriorityName).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.PeriorityName).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.PeriorityName).ToList();
+                        else
+                            request = request.OrderBy(d => d.PeriorityName).ToList();
+                    }
                 }
-                else if (sortObj.PeriorityNameAr != "")
+                 if (sortObj.PeriorityNameAr != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.PeriorityNameAr).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.PeriorityNameAr).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.PeriorityNameAr).ToList();
+                        else
+                            request = request.OrderBy(d => d.PeriorityNameAr).ToList();
+                    }
                 }
-
-
-
                 if (sortObj.StatusName != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.StatusName).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.StatusName).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.StatusName).ToList();
+                        else
+                            request = request.OrderBy(d => d.StatusName).ToList();
+                    }
                 }
-                else if (sortObj.StatusNameAr != "")
+                if (sortObj.StatusNameAr != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.StatusNameAr).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.StatusNameAr).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.StatusNameAr).ToList();
+                        else
+                            request = request.OrderBy(d => d.StatusNameAr).ToList();
+                    }
                 }
                 if (sortObj.ModeName != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.ModeName).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.ModeName).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.ModeName).ToList();
+                        else
+                            request = request.OrderBy(d => d.ModeName).ToList();
+                    }
                 }
-                else if (sortObj.ModeNameAr != "")
+                if (sortObj.ModeNameAr != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.ModeNameAr).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.ModeNameAr).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.ModeNameAr).ToList();
+                        else
+                            request = request.OrderBy(d => d.ModeNameAr).ToList();
+                    }
                 }
-
-
                 if (sortObj.RequestDate != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.RequestDate).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.RequestDate).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.RequestDate).ToList();
+                        else
+                            request = request.OrderBy(d => d.RequestDate).ToList();
+                    }
                 }
-
-
                 if (sortObj.ClosedDate != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1748,13 +2317,113 @@ namespace Asset.Core.Repositories
                     else
                         request = request.OrderBy(d => d.ClosedDate).ToList();
                 }
-
                 if (sortObj.CreatedBy != "")
                 {
-                    if (sortObj.SortStatus == "descending")
-                        request = request.OrderByDescending(d => d.CreatedBy).ToList();
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
                     else
-                        request = request.OrderBy(d => d.CreatedBy).ToList();
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.CreatedBy).ToList();
+                        else
+                            request = request.OrderBy(d => d.CreatedBy).ToList();
+                    }
+                }
+                if (sortObj.Description != "")
+                {
+                    if (sortObj.StrBarCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.Barcode).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.Barcode.Contains(sortObj.StrBarCode)).OrderBy(d => d.Barcode).ToList();
+                        }
+                    }
+                    if (sortObj.StrSerial != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                        }
+                        else
+                        {
+                            request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                        }
+                    }
+                    if (sortObj.StrModel != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                        else
+                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    }
+                    if (sortObj.StrRequestCode != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderByDescending(d => d.RequestCode).ToList();
+                        else
+                            request = request.Where(b => b.RequestCode.Contains(sortObj.StrRequestCode)).OrderBy(d => d.RequestCode).ToList();
+                    }
+                    if (sortObj.StrSubject != "")
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                        else
+                            request = request.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                    }
+                    else
+                    {
+                        if (sortObj.SortStatus == "descending")
+                            request = request.OrderByDescending(d => d.Description).ToList();
+                        else
+                            request = request.OrderBy(d => d.Description).ToList();
+                    }
                 }
             }
 
@@ -1971,7 +2640,7 @@ namespace Asset.Core.Repositories
                             list = list.ToList();
                         }
                     }
-            
+
                     if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
                     {
                         list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
@@ -2043,10 +2712,10 @@ namespace Asset.Core.Repositories
                             .Include(a => a.Request).Include(a => a.Request.AssetDetail)
                             .Include(a => a.Request.AssetDetail.Hospital)
                             .Include(a => a.Request.AssetDetail.MasterAsset)
-                            .Where(a => a.IsOpened == false && a.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList()
+                            .Where(a => a.IsOpened == false && a.Request.AssetDetail.HospitalId == UserObj.HospitalId && a.RequestStatusId == 2).ToList()
                             .OrderByDescending(a => a.Id).ToList().GroupBy(a => a.RequestId).ToList();
 
-                 totalRequests = (lstTracks.Count) + (listCountRequests.Count);
+                totalRequests = (lstTracks.Count) + (listCountRequests.Count);
             }
             return totalRequests;
         }
@@ -2690,7 +3359,38 @@ namespace Asset.Core.Repositories
 
         public List<IndexRequestTracking> ListOpenRequestTracks(int hospitalId)
         {
+
+
+
             List<IndexRequestTracking> list = new List<IndexRequestTracking>();
+
+
+          //  List<Request> listCountRequests = new List<Request>();
+            //var listOpenRequests = _context.Request
+            //                   .Include(t => t.AssetDetail)
+            //                   .Include(t => t.AssetDetail.Hospital)
+            //                   .Include(t => t.AssetDetail.Hospital.Governorate)
+            //                   .Include(t => t.AssetDetail.Hospital.City)
+            //                   .Include(t => t.AssetDetail.Hospital.Organization)
+            //                   .Include(t => t.AssetDetail.Hospital.SubOrganization)
+            //                   .Include(t => t.User)
+            //                   .Where(a => a.IsOpened == false && a.AssetDetail.HospitalId == hospitalId).ToList();
+
+            //foreach (var open in listOpenRequests)
+            //{
+            //    var listWO = _context.WorkOrders.Where(a => a.RequestId == open.Id).ToList();
+            //    if (listWO.Count == 0)
+            //    {
+            //        IndexRequestTracking itm = new IndexRequestTracking();
+            //        itm.RequestId = open.Id;
+            //        itm.Subject = open.Subject;
+            //        itm.AssetName = open.AssetDetail.MasterAsset.Name;
+            //        itm.AssetNameAr = open.AssetDetail.MasterAsset.NameAr;
+            //        list.Add(itm);
+            //    }
+            //}
+
+     
             var lstRequests = _context.Request
                              .Include(t => t.AssetDetail)
                              .Include(t => t.AssetDetail.Hospital)
@@ -2703,12 +3403,12 @@ namespace Asset.Core.Repositories
 
             foreach (var item in lstRequests)
             {
-       
+
                 var lstTracks = _context.RequestTracking
                               .Include(a => a.Request).Include(a => a.Request.AssetDetail)
                               .Include(a => a.Request.AssetDetail.Hospital)
                               .Include(a => a.Request.AssetDetail.MasterAsset)
-                              .Where(a => a.IsOpened == false && a.Request.AssetDetail.HospitalId == hospitalId && a.RequestId == item.Id).ToList()
+                              .Where(a => a.IsOpened == false && a.Request.AssetDetail.HospitalId == hospitalId && a.RequestId == item.Id && a.RequestStatusId == 2).ToList()
                               .OrderByDescending(a => a.Id).ToList().GroupBy(a => a.RequestId).ToList();
 
 
@@ -2724,14 +3424,6 @@ namespace Asset.Core.Repositories
                     list.Add(itm);
                 }
             }
-
-
-
-
-
-
-
-           
             //var lstTracks = _context.RequestTracking
             //                   .Include(a => a.Request).Include(a => a.Request.AssetDetail)
             //                   .Include(a => a.Request.AssetDetail.Hospital)

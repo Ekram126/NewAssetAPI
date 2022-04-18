@@ -12,7 +12,7 @@ namespace Asset.Models
     {
         public int Id { get; set; }
 
-        [StringLength(5)]
+        [StringLength(15)]
         public string Code { get; set; }
 
         [StringLength(50)]
@@ -24,5 +24,9 @@ namespace Asset.Models
         [ForeignKey("FloorId")]
         public int? FloorId { get; set; }
         public Floor Floor { get; set; }
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

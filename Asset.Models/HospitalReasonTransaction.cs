@@ -17,11 +17,11 @@ namespace Asset.Models
         [ForeignKey("HospitalApplicationId")]
         public virtual HospitalApplication HospitalApplication { get; set; }
 
-
-
         public int? ReasonId { get; set; }
 
 
-
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

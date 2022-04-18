@@ -19,7 +19,8 @@ namespace Asset.ViewModels.WorkOrderVM
         public int? AssetDetailId { get; set; }
         public int? MasterAssetId { get; set; }
 
-        public string Subject { get; set; }
+        public string Subject { get; set; } 
+        public string RequestSubject { get; set; }
         public string WONumber { get; set; }
         public string UserId { get; set; }
         public string BarCode { get; set; }

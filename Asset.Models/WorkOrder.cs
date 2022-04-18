@@ -32,5 +32,9 @@ namespace Asset.Models
         public int? RequestId { get; set; }
         [ForeignKey("RequestId")]
         public virtual Request Request { get; set; }
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

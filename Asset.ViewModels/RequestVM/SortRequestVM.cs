@@ -33,11 +33,20 @@ namespace Asset.ViewModels.RequestVM
         public string ClosedDate { get; set; }
         public string CreatedBy { get; set; }
         public string SortStatus { get; set; }
+        public string Description { get; set; }
         public int CountListTracks { get; set; }
         public int CountWorkOrder { get; set; }
+
+        public string StrSerial { get; set; }
+        public string StrSubject { get; set; }
+        public string StrRequestCode { get; set; }
+        public string StrBarCode { get; set; }
+        public string StrModel { get; set; }
+
+
         public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
 
-       
+
 
     }
 }

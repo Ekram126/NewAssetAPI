@@ -177,6 +177,7 @@ namespace Asset.API.Controllers
                 else
                 {
                     int updatedRow = _MasterAssetService.Update(MasterAssetVM);
+
                 }
             }
             catch (DbUpdateConcurrencyException ex)
@@ -185,7 +186,25 @@ namespace Asset.API.Controllers
                 return BadRequest("Error in update");
             }
 
-            return Ok();
+            return Ok(MasterAssetVM.Id);
+        }
+
+
+        [HttpPut]
+        [Route("UpdateMasterAssetImageAfterInsert")]
+        public IActionResult Update(CreateMasterAssetVM masterAssetObj)
+        {
+            try
+            {
+                int updatedRow = _MasterAssetService.UpdateMasterAssetImageAfterInsert(masterAssetObj);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                string msg = ex.Message;
+                return BadRequest("Error in update");
+            }
+
+            return Ok(masterAssetObj.Id);
         }
 
 
@@ -258,13 +277,43 @@ namespace Asset.API.Controllers
         [Obsolete]
         public ActionResult UploadMasterAssetImage(IFormFile file)
         {
-            string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets/UploadMasterAssetImage/" + file.FileName;
-            Stream stream = new FileStream(path, FileMode.Create);
-            file.CopyTo(stream);
-            stream.Close();
+
+            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets/UploadMasterAssetImage";
+            bool exists = System.IO.Directory.Exists(folderPath);
+            if (!exists)
+                System.IO.Directory.CreateDirectory(folderPath);
+
+            string existFile = folderPath + "/" + file.FileName;
+            string filePath = folderPath + "/" + file.FileName;
+            if (System.IO.File.Exists(filePath))
+            {
+                if (System.IO.File.Exists(existFile) && (System.IO.File.Exists(filePath)))
+                {
+                    //Console.WriteLine("Move the contents of " + originalFile + " into " + fileToReplace + ", delete "
+                    //    + originalFile + ", and create a backup of " + fileToReplace + ".");
+
+                    // Replace the file.    
+                    ReplaceFile(existFile, filePath, filePath + ".bak");
+
+                }
+            }
+            else
+            {
+                //   string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets/UploadMasterAssetImage/" + file.FileName;
+                Stream stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
             return StatusCode(StatusCodes.Status201Created);
         }
+        public void ReplaceFile(string fileToMoveAndDelete, string fileToReplace, string backupOfFileToReplace)
+        {
+            // Create a new FileInfo object.    
+            FileInfo fInfo = new FileInfo(fileToMoveAndDelete);
 
+            // replace the file.    
+            fInfo.Replace(fileToReplace, backupOfFileToReplace, false);
+        }
 
         [HttpGet]
         [Route("GetAttachmentByMasterAssetId/{assetId}")]

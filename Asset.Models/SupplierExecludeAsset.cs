@@ -37,5 +37,9 @@ namespace Asset.Models
 
         [StringLength(500)]
         public string Comment { get; set; }
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

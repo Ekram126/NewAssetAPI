@@ -40,5 +40,9 @@ namespace Asset.Models
 
 
         public bool? IsOpened { get; set; }
+
+        public int? HospitalId { get; set; }
+        [ForeignKey("HospitalId")]
+        public virtual Hospital Hospital { get; set; }
     }
 }

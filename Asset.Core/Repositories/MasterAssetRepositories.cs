@@ -786,5 +786,15 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
+
+        public int UpdateMasterAssetImageAfterInsert(CreateMasterAssetVM masterAssetObj)
+        {
+            var masterObj = _context.MasterAssets.Find(masterAssetObj.Id);
+
+            masterObj.AssetImg = masterAssetObj.AssetImg;
+            _context.Entry(masterObj).State = EntityState.Modified;
+            _context.SaveChanges();
+            return masterAssetObj.Id;
+        }
     }
 }
