@@ -25,7 +25,6 @@ namespace Asset.Core.Repositories
     {
         private ApplicationDbContext _context;
 
-
         public AssetDetailRepositories(ApplicationDbContext context)
         {
             _context = context;
@@ -82,6 +81,7 @@ namespace Asset.Core.Repositories
                             AssetOwner ownerObj = new AssetOwner();
                             ownerObj.AssetDetailId = assetDetailId;
                             ownerObj.EmployeeId = int.Parse(item.ToString());
+                            ownerObj.HospitalId = int.Parse(model.HospitalId.ToString());
                             _context.AssetOwners.Add(ownerObj);
                             _context.SaveChanges();
                         }
@@ -146,6 +146,7 @@ namespace Asset.Core.Repositories
                                 PMAssetTime assetTimeObj = new PMAssetTime();
                                 assetTimeObj.PMDate = item;
                                 assetTimeObj.AssetDetailId = assetDetailId;
+                                assetTimeObj.HospitalId = model.HospitalId;
                                 _context.PMAssetTimes.Add(assetTimeObj);
                                 _context.SaveChanges();
                             }
@@ -159,6 +160,7 @@ namespace Asset.Core.Repositories
                         movementObj.RoomId = model.RoomId;
                         movementObj.FloorId = model.FloorId;
                         movementObj.BuildingId = model.BuildingId;
+                        movementObj.HospitalId = model.HospitalId;
                         _context.AssetMovements.Add(movementObj);
                         _context.SaveChanges();
                     }
@@ -167,6 +169,7 @@ namespace Asset.Core.Repositories
                     transObj.AssetDetailId = assetDetailId;
                     transObj.AssetStatusId = int.Parse(model.AssetStatusId.ToString());
                     transObj.StatusDate = DateTime.Today.Date;
+                    transObj.HospitalId = model.HospitalId;
                     _context.AssetStatusTransactions.Add(transObj);
                     _context.SaveChanges();
 
@@ -184,6 +187,7 @@ namespace Asset.Core.Repositories
             }
             return assetDetailObj.Id;
         }
+        
         public int Delete(int id)
         {
             var assetDetailObj = _context.AssetDetails.Find(id);
@@ -241,6 +245,7 @@ namespace Asset.Core.Repositories
             var lstAssetDetails = _context.AssetDetails.ToList().Where(a => a.MasterAssetId == assetId).Select(item => new IndexAssetDetailVM.GetData
             {
                 Id = item.Id,
+                HospitalId = item.HospitalId,
                 Code = item.Code,
                 Price = item.Price,
                 Serial = item.SerialNumber,
@@ -479,10 +484,6 @@ namespace Asset.Core.Repositories
             if (userId != null)
             {
                 var userObj = await _context.Users.FindAsync(userId);
-
-
-
-
                 List<IndexAssetDetailVM.GetData> lstAssetDetails = await _context.AssetDetails.Include(a => a.MasterAsset)
                           .Include(a => a.Hospital).ThenInclude(h => h.Organization)
                           .Include(a => a.Hospital).ThenInclude(h => h.Governorate)
@@ -580,8 +581,6 @@ namespace Asset.Core.Repositories
                 item.AssetName = assetDetailObj.MasterAsset.Name;
                 item.AssetNameAr = assetDetailObj.MasterAsset.NameAr;
                 item.Code = assetDetailObj.Code;
-                // item.PurchaseDateString = assetDetailObj.PurchaseDate != 0 ? assetDetailObj.PurchaseDate.Value.ToShortDateString() : "";
-
                 item.PurchaseDate = assetDetailObj.PurchaseDate != null ? assetDetailObj.PurchaseDate.Value.ToShortDateString() : "";
                 item.Price = assetDetailObj.Price;
                 item.SerialNumber = assetDetailObj.SerialNumber;
@@ -592,8 +591,6 @@ namespace Asset.Core.Repositories
                 item.ReceivingDate = assetDetailObj.ReceivingDate != null ? assetDetailObj.ReceivingDate.Value.ToShortDateString() : "";
                 item.PONumber = assetDetailObj.PONumber;
                 item.WarrantyExpires = assetDetailObj.WarrantyExpires;
-
-
 
                 item.BuildingId = assetDetailObj.BuildingId;
                 if (assetDetailObj.BuildingId != null)
@@ -627,6 +624,11 @@ namespace Asset.Core.Repositories
                 item.DepartmentId = assetDetailObj.DepartmentId;
                 item.SupplierId = assetDetailObj.SupplierId;
                 item.HospitalId = assetDetailObj.HospitalId;
+                if (assetDetailObj.HospitalId != null)
+                {
+                    item.HospitalName = assetDetailObj.Hospital.Name;
+                    item.HospitalNameAr = assetDetailObj.Hospital.NameAr;
+                }
                 item.MasterAssetId = assetDetailObj.MasterAssetId;
                 item.WarrantyStart = assetDetailObj.WarrantyStart != null ? assetDetailObj.WarrantyStart.Value.ToShortDateString() : "";
                 item.WarrantyEnd = assetDetailObj.WarrantyEnd != null ? assetDetailObj.WarrantyEnd.Value.ToShortDateString() : "";
@@ -659,11 +661,7 @@ namespace Asset.Core.Repositories
                 assetDetailObj.Remarks = model.Remarks;
                 assetDetailObj.Barcode = model.Barcode;
                 assetDetailObj.InstallationDate = model.InstallationDate != null ? DateTime.Parse(model.InstallationDate) : null;
-                //assetDetailObj.RoomId = model.RoomId;
-                //assetDetailObj.FloorId = model.FloorId;
-                //assetDetailObj.BuildingId = model.BuildingId;
-
-
+           
                 var lstAssetMovements = _context.AssetMovements.Where(a => a.AssetDetailId == model.Id).ToList();
                 if (lstAssetMovements.Count == 0)
                 {
@@ -736,6 +734,7 @@ namespace Asset.Core.Repositories
                     AssetOwner ownerObj = new AssetOwner();
                     ownerObj.AssetDetailId = assetDetailObj.Id;
                     ownerObj.EmployeeId = int.Parse(itm.ToString());
+                    ownerObj.HospitalId = int.Parse(model.HospitalId.ToString());
                     _context.AssetOwners.Add(ownerObj);
                     _context.SaveChanges();
                 }
@@ -756,6 +755,7 @@ namespace Asset.Core.Repositories
             assetAttachmentObj.AssetDetailId = attachObj.AssetDetailId;
             assetAttachmentObj.Title = attachObj.Title;
             assetAttachmentObj.FileName = attachObj.FileName;
+            assetAttachmentObj.HospitalId = attachObj.HospitalId;
             _context.AssetDetailAttachments.Add(assetAttachmentObj);
             _context.SaveChanges();
             int Id = assetAttachmentObj.Id;
@@ -872,6 +872,7 @@ namespace Asset.Core.Repositories
                 }
                 if (detailObj.Hospital != null)
                 {
+                    model.HospitalId = detailObj.Hospital.Id;
                     model.HospitalName = detailObj.Hospital.Name;
                     model.HospitalNameAr = detailObj.Hospital.NameAr;
                 }
@@ -933,14 +934,10 @@ namespace Asset.Core.Repositories
             ApplicationRole roleObj = new ApplicationRole();
             List<string> userRoleNames = new List<string>();
             var lstUsers = _context.ApplicationUser.Where(a => a.Id == searchObj.UserId).ToList();
-
-
-
             if (lstUsers.Count > 0)
             {
                 userObj = lstUsers[0];
             }
-            //var userObj2 = await _context.Users.FindAsync(userObj[0].Id);
             var roles = (from userRole in _context.UserRoles
                          join role in _context.ApplicationRole on userRole.RoleId equals role.Id
                          where userRole.UserId == searchObj.UserId
@@ -1204,7 +1201,6 @@ namespace Asset.Core.Repositories
             return list;
         }
 
-
         public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj)
         {
             List<IndexAssetDetailVM.GetData> lstData = new List<IndexAssetDetailVM.GetData>();
@@ -1419,7 +1415,6 @@ namespace Asset.Core.Repositories
             return list;
         }
 
-
         public IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId)
         {
             return _context.AssetDetails.Where(a => a.MasterAssetId == MasterAssetId).ToList();
@@ -1437,7 +1432,6 @@ namespace Asset.Core.Repositories
             return lstAssetDetails;
         }
 
-
         public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId)
         {
             var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Supplier)
@@ -1446,6 +1440,7 @@ namespace Asset.Core.Repositories
                                      {
 
                                          Id = item.Id,
+                                         HospitalId = int.Parse( item.HospitalId.ToString()),
                                          MasterAssetId = item.MasterAsset.Id,
                                          AssetName = item.MasterAsset.Name,
                                          AssetNameAr = item.MasterAsset.NameAr,
@@ -1698,6 +1693,7 @@ namespace Asset.Core.Repositories
                         GovernorateNameAr = Ass.GovernorateNameAr,
                         CityName = Ass.CityName,
                         CityNameAr = Ass.CityNameAr,
+                        HospitalId =Ass.HospitalId,
                         HospitalName = Ass.HospitalName,
                         HospitalNameAr = Ass.HospitalNameAr,
                         SupplierName = Ass.SupplierName,
@@ -1714,6 +1710,7 @@ namespace Asset.Core.Repositories
             }
             return lstAssetBrand;
         }
+      
         public List<GroupHospitalVM> GetAssetByHospital(List<IndexAssetDetailVM.GetData> AssetModel)
         {
             List<GroupHospitalVM> lstAssetHospital = new List<GroupHospitalVM>();
@@ -1742,6 +1739,7 @@ namespace Asset.Core.Repositories
                         GovernorateNameAr = Ass.GovernorateNameAr,
                         CityName = Ass.CityName,
                         CityNameAr = Ass.CityNameAr,
+                        HospitalId = Ass.HospitalId,
                         HospitalName = Ass.HospitalName,
                         HospitalNameAr = Ass.HospitalNameAr,
                         SupplierName = Ass.SupplierName,
@@ -1758,6 +1756,7 @@ namespace Asset.Core.Repositories
             }
             return lstAssetHospital;
         }
+       
         public List<GroupGovernorateVM> GetAssetByGovernorate(List<IndexAssetDetailVM.GetData> AssetModel)
         {
             List<GroupGovernorateVM> lstAssetGovernorate = new List<GroupGovernorateVM>();
@@ -1786,6 +1785,7 @@ namespace Asset.Core.Repositories
                         GovernorateNameAr = Ass.GovernorateNameAr,
                         CityName = Ass.CityName,
                         CityNameAr = Ass.CityNameAr,
+                        HospitalId = Ass.HospitalId,
                         HospitalName = Ass.HospitalName,
                         HospitalNameAr = Ass.HospitalNameAr,
                         SupplierName = Ass.SupplierName,
@@ -1831,6 +1831,7 @@ namespace Asset.Core.Repositories
                         GovernorateNameAr = Ass.GovernorateNameAr,
                         CityName = Ass.CityName,
                         CityNameAr = Ass.CityNameAr,
+                        HospitalId = Ass.HospitalId,
                         HospitalName = Ass.HospitalName,
                         HospitalNameAr = Ass.HospitalNameAr,
                         SupplierName = Ass.SupplierName,
@@ -1876,6 +1877,7 @@ namespace Asset.Core.Repositories
                         GovernorateNameAr = Ass.GovernorateNameAr,
                         CityName = Ass.CityName,
                         CityNameAr = Ass.CityNameAr,
+                        HospitalId = Ass.HospitalId,
                         HospitalName = Ass.HospitalName,
                         HospitalNameAr = Ass.HospitalNameAr,
                         SupplierName = Ass.SupplierName,
@@ -1921,6 +1923,7 @@ namespace Asset.Core.Repositories
                         GovernorateNameAr = Ass.GovernorateNameAr,
                         CityName = Ass.CityName,
                         CityNameAr = Ass.CityNameAr,
+                        HospitalId = Ass.HospitalId,
                         HospitalName = Ass.HospitalName,
                         HospitalNameAr = Ass.HospitalNameAr,
                         SupplierName = Ass.SupplierName,
@@ -2061,14 +2064,14 @@ namespace Asset.Core.Repositories
                             Assetobj2.AssetNameAr = item.AssetDetail.MasterAssetId > 0 ? item.AssetDetail.MasterAsset.NameAr : "";
                             Assetobj2.GovernorateName = item.AssetDetail.HospitalId > 0 ? item.AssetDetail.Hospital.Governorate.Name : "";
                             Assetobj2.GovernorateNameAr = item.AssetDetail.HospitalId > 0 ? item.AssetDetail.Hospital.Governorate.NameAr : "";
-                                    
-                                   
+
+
                             Assetobj2.GovernorateId = item.AssetDetail.Hospital.GovernorateId;
                             Assetobj2.CityId = item.AssetDetail.Hospital.CityId;
                             Assetobj2.OrganizationId = item.AssetDetail.Hospital.OrganizationId;
                             Assetobj2.SubOrganizationId = item.AssetDetail.Hospital.SubOrganizationId;
-                                    
-                                    
+
+
                             Assetobj2.GovernorateName = item.AssetDetail.Hospital.Governorate.Name;
                             Assetobj2.GovernorateNameAr = item.AssetDetail.Hospital.Governorate.NameAr;
                             Assetobj2.CityName = item.AssetDetail.Hospital.City.Name;
@@ -2263,9 +2266,6 @@ namespace Asset.Core.Repositories
             return lstAssetData;
 
         }
-
-
-
 
         public List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)
         {
@@ -2611,6 +2611,7 @@ namespace Asset.Core.Repositories
                                    SerialNumber = item.SerialNumber,
                                    SupplierName = item.Supplier.Name,
                                    SupplierNameAr = item.Supplier.NameAr,
+                                   HospitalId = int.Parse( item.HospitalId.ToString()),
                                    HospitalName = item.Hospital.Name,
                                    HospitalNameAr = item.Hospital.NameAr,
                                    Barcode = item.Barcode
@@ -2684,6 +2685,7 @@ namespace Asset.Core.Repositories
                                                       SerialNumber = item.SerialNumber,
                                                       SupplierName = item.Supplier.Name,
                                                       SupplierNameAr = item.Supplier.NameAr,
+                                                      HospitalId = item.Hospital.Id,
                                                       HospitalName = item.Hospital.Name,
                                                       HospitalNameAr = item.Hospital.NameAr,
                                                       Barcode = item.Barcode,
@@ -2736,6 +2738,7 @@ namespace Asset.Core.Repositories
                                                        SerialNumber = item.SerialNumber,
                                                        SupplierName = item.Supplier.Name,
                                                        SupplierNameAr = item.Supplier.NameAr,
+                                                       HospitalId = item.Hospital.Id,
                                                        HospitalName = item.Hospital.Name,
                                                        HospitalNameAr = item.Hospital.NameAr,
                                                        Barcode = item.Barcode,
@@ -2746,9 +2749,7 @@ namespace Asset.Core.Repositories
             return viewAssetDetailList;
         }
 
-
-        
-        public IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId, int page,int pageSize ,Sort sortObj )
+        public IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId, int page, int pageSize, Sort sortObj)
         {
             ApplicationUser UserObj = new ApplicationUser();
             Employee empObj = new Employee();
@@ -2940,8 +2941,8 @@ namespace Asset.Core.Repositories
             {
                 list = list.OrderBy(d => d.AssetName).ToList();
             }
-            
-            
+
+
             //if (sortObj.AssetNameAr != "")
             //{
             //    if (sortObj.SortStatus == "descending")

@@ -14,6 +14,6 @@ namespace Asset.ViewModels.RequestTrackingVM
         public int RequestStatusId { get; set; }
         public int RequestId { get; set; }
         public string CreatedById { get; set; }
-
+    public int HospitalId { get; set; }
     }
 }

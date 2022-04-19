@@ -27,7 +27,7 @@ namespace Asset.ViewModels.ContractVM
 
             public int? AssetDetailId { get; set; }
 
-
+            public int? HospitalId { get; set; }
             public DateTime? ContractDate { get; set; }
 
        

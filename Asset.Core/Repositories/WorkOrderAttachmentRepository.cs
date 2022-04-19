@@ -31,6 +31,7 @@ namespace Asset.Core.Repositories
                         workOrderAttachment.FileName = item.FileName;
                         workOrderAttachment.DocumentName = item.DocumentName;
                         workOrderAttachment.WorkOrderTrackingId = item.WorkOrderTrackingId;
+                        workOrderAttachment.HospitalId = item.HospitalId;
                         _context.Add(workOrderAttachment);
                         _context.SaveChanges();
                     }
@@ -66,6 +67,7 @@ namespace Asset.Core.Repositories
                 Id = req.Id,
                 FileName = req.FileName,
                 DocumentName = req.DocumentName,
+                HospitalId = req.HospitalId,
                 WorkOrderTrackingId = int.Parse(req.WorkOrderTrackingId.ToString())
             }).ToList();
         }
@@ -77,6 +79,7 @@ namespace Asset.Core.Repositories
                 Id = req.Id,
                 FileName = req.FileName,
                 DocumentName = req.DocumentName,
+                HospitalId = req.HospitalId,
                 WorkOrderTrackingId = int.Parse(req.WorkOrderTrackingId.ToString())
             }).FirstOrDefault();
         }
@@ -99,6 +102,7 @@ namespace Asset.Core.Repositories
                 Id = doc.Id,
                 FileName = doc.FileName,
                 DocumentName = doc.DocumentName,
+                HospitalId= doc.HospitalId,
                 WorkOrderTrackingId = int.Parse(doc.WorkOrderTrackingId.ToString())
             }).ToList();
         }

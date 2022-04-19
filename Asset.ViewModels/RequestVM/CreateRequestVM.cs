@@ -21,6 +21,6 @@ namespace Asset.ViewModels.RequestVM
         public int RequestPeriorityId { get; set; }
         public string CreatedById { get; set; }
         public int RequestTypeId { get; set; }
-
+        public int HospitalId { get; set; }
     }
 }

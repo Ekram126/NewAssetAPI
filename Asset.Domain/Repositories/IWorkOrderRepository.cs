@@ -12,7 +12,7 @@ namespace Asset.Domain.Repositories
     {
         IEnumerable<IndexWorkOrderVM> GetAll();
         IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId);
-        IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId,int statusId);
+       IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId,int statusId);
         IEnumerable<IndexWorkOrderVM> GetworkOrderByUserId(int requestId, string userId);
         IEnumerable<IndexWorkOrderVM> GetworkOrder(string userId);
 
@@ -37,8 +37,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexWorkOrderVM> GetWorkOrdersByDate(SearchWorkOrderByDateVM woDateObj);
 
         int CountWorkOrdersByHospitalId(int hospitalId, string userId);
-
-
+    
         int CreateWorkOrderAttachments(WorkOrderAttachment attachObj);
     }
 }

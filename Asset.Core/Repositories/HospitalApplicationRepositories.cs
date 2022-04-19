@@ -45,6 +45,7 @@ namespace Asset.Core.Repositories
                 .Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Where(a => a.Id == id).Select(item => new EditHospitalApplicationVM
                 {
                     Id = item.Id,
+
                     AssetId = item.AssetId,
                     StatusId = item.StatusId,
                     AppDate = item.AppDate,
@@ -71,6 +72,7 @@ namespace Asset.Core.Repositories
 
                 IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
                 getDataObj.Id = item.Id;
+                getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppNumber = item.AppNumber;
                 getDataObj.Date = item.AppDate.Value.ToShortDateString();
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
@@ -160,6 +162,7 @@ namespace Asset.Core.Repositories
                 if (model != null)
                 {
                     hospitalApplicationObj.AssetId = model.AssetId;
+                    hospitalApplicationObj.HospitalId = model.HospitalId;
                     hospitalApplicationObj.AppTypeId = model.AppTypeId;
                     hospitalApplicationObj.StatusId = 1;
                     hospitalApplicationObj.AppDate = DateTime.Today.Date;
@@ -229,6 +232,7 @@ namespace Asset.Core.Repositories
 
                 var hospitalApplicationObj = _context.HospitalApplications.Find(model.Id);
                 hospitalApplicationObj.AssetId = model.AssetId;
+                hospitalApplicationObj.HospitalId = model.HospitalId;
                 hospitalApplicationObj.AppTypeId = model.AppTypeId;
                 hospitalApplicationObj.StatusId = 1;
                 hospitalApplicationObj.AppDate = DateTime.Today.Date;
@@ -359,6 +363,7 @@ namespace Asset.Core.Repositories
             assetAttachmentObj.HospitalReasonTransactionId = attachObj.HospitalReasonTransactionId;
             assetAttachmentObj.Title = "";
             assetAttachmentObj.FileName = attachObj.FileName;
+            assetAttachmentObj.HospitalId = attachObj.HospitalId;
             _context.HospitalApplicationAttachments.Add(assetAttachmentObj);
             _context.SaveChanges();
             int Id = assetAttachmentObj.Id;
@@ -414,21 +419,23 @@ namespace Asset.Core.Repositories
                 AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
                 assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                 assetStatusTransactionObj.AssetStatusId = 8;
+                assetStatusTransactionObj.HospitalId = model.HospitalId;
                 assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
                 _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                 _context.SaveChanges();
             }
 
-            if (model.StatusId == 2 && hospitalApplicationObj.AppTypeId ==2)
+            if (model.StatusId == 2 && hospitalApplicationObj.AppTypeId == 2)
             {
                 AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
                 assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                 assetStatusTransactionObj.AssetStatusId = 9;
+                assetStatusTransactionObj.HospitalId = model.HospitalId;
                 assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
                 _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                 _context.SaveChanges();
             }
-     
+
             return hospitalApplicationObj.Id;
         }
 
@@ -847,6 +854,7 @@ namespace Asset.Core.Repositories
 
                 IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
                 getDataObj.Id = item.Id;
+                getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppNumber = item.AppNumber;
                 getDataObj.Date = item.AppDate.Value.ToShortDateString();
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
@@ -954,6 +962,7 @@ namespace Asset.Core.Repositories
 
                 IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
                 getDataObj.Id = item.Id;
+                getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppNumber = item.AppNumber;
                 getDataObj.Date = item.AppDate.Value.ToShortDateString();
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
@@ -977,8 +986,8 @@ namespace Asset.Core.Repositories
                 getDataObj.StatusId = item.StatusId;
                 getDataObj.StatusName = item.HospitalSupplierStatus.Name;
                 getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
-                getDataObj.StatusColor =  item.HospitalSupplierStatus.Color;
-                getDataObj.StatusIcon =item.HospitalSupplierStatus.Icon;
+                getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
 
 
                 if (appTypeId == 1)
@@ -1089,6 +1098,7 @@ namespace Asset.Core.Repositories
 
                 IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
                 getDataObj.Id = item.Id;
+                getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppNumber = item.AppNumber;
                 getDataObj.Date = item.AppDate.Value.ToShortDateString();
                 getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";

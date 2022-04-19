@@ -41,9 +41,10 @@ namespace Asset.Core.Repositories
                     roomObj.Name = roomVM.Name;
                     roomObj.NameAr = roomVM.NameAr;
                     roomObj.FloorId = roomVM.FloorId;
+                    roomObj.HospitalId = roomVM.HospitalId;
                     _context.Rooms.Add(roomObj);
                     _context.SaveChanges();
-                 
+
 
                 }
             }
@@ -77,12 +78,13 @@ namespace Asset.Core.Repositories
         {
             try
             {
-  
+
                 var roomObj = _context.Rooms.Find(roomVM.Id);
                 roomObj.Code = roomVM.Code;
                 roomObj.Name = roomVM.Name;
                 roomObj.NameAr = roomVM.NameAr;
-                roomObj.FloorId = roomVM.FloorId;
+                roomObj.FloorId = roomVM.FloorId; 
+                roomObj.HospitalId = roomVM.HospitalId;
                 _context.Entry(roomObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return roomObj.Id;
@@ -100,7 +102,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<Room> GetAllFloors()
         {
-           return _context.Rooms.ToList();
+            return _context.Rooms.ToList();
         }
 
         public IEnumerable<Room> GetAllRoomsByFloorId(int floorId)

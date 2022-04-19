@@ -9,7 +9,7 @@ namespace Asset.ViewModels.RequestTrackingVM
     public class RequestTrackingView
     {
         public int Id { get; set; }
-
+        public int? HospitalId { get; set; }
         public int RequestId { get; set; }
         public string Description { get; set; }
         public DateTime DescriptionDate { get; set; }

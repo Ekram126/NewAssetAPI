@@ -60,6 +60,7 @@ namespace Asset.ViewModels.RequestVM
             public string AssetOwnerCreatedById { get; set; }
             public List<Employee> ListEmployees { get; set; }
             public int? HospitalId { get; set; }
+            public int? AssetHospitalId { get; set; }
             public int? GovernorateId { get; set; }
             public int? CityId { get; set; }
             public int? OrganizationId { get; set; }

@@ -38,6 +38,7 @@ namespace Asset.Core.Repositories
                     request.RequestPeriorityId = createRequestVM.RequestPeriorityId;
                     request.AssetDetailId = createRequestVM.AssetDetailId;
                     request.CreatedById = createRequestVM.CreatedById;
+                    request.HospitalId = createRequestVM.HospitalId;
                     request.IsOpened = false;
                     if (createRequestVM.SubProblemId > 0)
                         request.SubProblemId = createRequestVM.SubProblemId;
@@ -128,6 +129,7 @@ namespace Asset.Core.Repositories
                 var requestDTO = new IndexRequestsVM
                 {
                     Id = req.Id,
+                    HospitalId = int.Parse(req.HospitalId.ToString()),
                     Subject = req.Subject,
                     RequestCode = req.RequestCode,
                     AssetCode = req.AssetDetail.Code,
@@ -155,9 +157,7 @@ namespace Asset.Core.Repositories
                     RequestTypeName = req.RequestType.Name,
                     RequestTypeNameAr = req.RequestType.NameAr,
                     RequestTrackingId = _context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().Id,
-                    RequestStatusId = _context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().RequestStatusId != null ? (int)_context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().RequestStatusId : 0,
-                    //  StatusName = _context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().RequestStatus.StatusName
-
+                    RequestStatusId = _context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().RequestStatusId != null ? (int)_context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().RequestStatusId : 0
                 };
                 return requestDTO;
             }
@@ -177,6 +177,7 @@ namespace Asset.Core.Repositories
                 request.RequestPeriorityId = editRequestVM.RequestPeriorityId;
                 request.AssetDetailId = editRequestVM.AssetDetailId;
                 request.CreatedById = editRequestVM.CreatedById;
+                request.HospitalId = editRequestVM.HospitalId;
                 if (editRequestVM.SubProblemId > 0)
                     request.SubProblemId = editRequestVM.SubProblemId;
 
@@ -233,6 +234,7 @@ namespace Asset.Core.Repositories
                 getDataObj.RequestDate = req.RequestDate;
                 getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
                 getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                getDataObj.AssetHospitalId = req.HospitalId;
                 var lstStatus = _context.RequestTracking
                                  .Include(t => t.Request).Include(t => t.RequestStatus)
                                  .Where(a => a.RequestId == req.Id).ToList().OrderByDescending(a => a.Id).ToList();
@@ -479,6 +481,7 @@ namespace Asset.Core.Repositories
                     getDataObj.PeriorityColor = req.RequestPeriority != null ? req.RequestPeriority.Color : "";
                     getDataObj.PeriorityIcon = req.RequestPeriority != null ? req.RequestPeriority.Icon : "";
 
+                    getDataObj.AssetHospitalId = req.HospitalId;
 
                     getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
                     getDataObj.Barcode = req.AssetDetail.Barcode;
@@ -668,6 +671,7 @@ namespace Asset.Core.Repositories
                 getDataObj.RequestDate = req.RequestDate;
                 getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
                 getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                getDataObj.AssetHospitalId = req.HospitalId;
                 var lstStatus = _context.RequestTracking
                                  .Include(t => t.Request).Include(t => t.RequestStatus)
                                  .Where(a => a.RequestId == req.Id).ToList().OrderByDescending(a => a.Id).ToList();
@@ -1087,20 +1091,18 @@ namespace Asset.Core.Repositories
                 getDataObj.CityId = req.User.CityId;
                 getDataObj.OrganizationId = req.User.OrganizationId;
                 getDataObj.SubOrganizationId = req.User.SubOrganizationId;
+                getDataObj.AssetHospitalId = req.HospitalId;
                 list.Add(getDataObj);
             }
             return list;
         }
         public IndexRequestsVM GetRequestByWorkOrderId(int workOrderId)
         {
-
-
             var requestObj = _context.WorkOrders
                                     .Include(a => a.Request)
                                     .Include(t => t.Request.AssetDetail)
                                     .Include(t => t.User)
                                     .Include(t => t.Request.RequestMode)
-
                                     .Include(t => t.Request.RequestPeriority).ToList().Select(item => new IndexRequestsVM
                                     {
                                         Id = item.Id,
@@ -1111,9 +1113,8 @@ namespace Asset.Core.Repositories
                                         Subject = item.Request.Subject,
                                         AssetCode = item.Request.AssetDetail.Code,
                                         RequestDate = item.Request.RequestDate,
-                                        //  AssetDetailId = item.Request.AssetDetailId,
+                                        AssetHospitalId = int.Parse(item.HospitalId.ToString()),
                                         AssetDetailId = item.Request.AssetDetailId != null ? (int)item.Request.AssetDetailId : 0,
-
                                         HospitalId = (int)item.Request.AssetDetail.HospitalId,
                                         SerialNumber = item.Request.AssetDetail.SerialNumber,
                                         ModeName = item.Request.RequestMode.Name,
@@ -1233,6 +1234,7 @@ namespace Asset.Core.Repositories
                 getDataObj.RequestCode = item.RequestCode;
                 getDataObj.Barcode = item.AssetDetail.Barcode;
                 getDataObj.Subject = item.Subject;
+                getDataObj.AssetHospitalId = item.HospitalId;
                 getDataObj.RequestDate = item.RequestDate;
                 getDataObj.HospitalId = item.AssetDetail.HospitalId;
                 getDataObj.CreatedById = item.CreatedById;
@@ -1486,6 +1488,7 @@ namespace Asset.Core.Repositories
                     getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
                     getDataObj.Barcode = req.AssetDetail.Barcode;
                     getDataObj.RequestCode = req.RequestCode;
+                    getDataObj.AssetHospitalId = int.Parse(req.HospitalId.ToString());
                     getDataObj.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
                     getDataObj.Description = req.Description;
                     getDataObj.RequestDate = req.RequestDate;
@@ -1986,7 +1989,7 @@ namespace Asset.Core.Repositories
                             request = request.OrderBy(d => d.PeriorityName).ToList();
                     }
                 }
-                 if (sortObj.PeriorityNameAr != "")
+                if (sortObj.PeriorityNameAr != "")
                 {
                     if (sortObj.StrBarCode != "")
                     {
@@ -2454,6 +2457,7 @@ namespace Asset.Core.Repositories
                 getDataObj.RequestCode = req.RequestCode;
                 getDataObj.Barcode = req.AssetDetail.Barcode;
                 getDataObj.Description = req.Description;
+                getDataObj.AssetHospitalId = int.Parse(req.HospitalId.ToString());
                 getDataObj.RequestDate = req.RequestDate;
                 getDataObj.RequestModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
                 getDataObj.ModeName = req.RequestMode.Name;
@@ -2740,7 +2744,7 @@ namespace Asset.Core.Repositories
                 printSRObj.RequestId = requestObj.Id;
                 printSRObj.AssetCode = requestObj.AssetDetail.Code;
                 printSRObj.AssetBarCode = requestObj.AssetDetail.Barcode;
-
+                printSRObj.AssetHospitalId = requestObj.HospitalId;
                 printSRObj.RequestSubject = requestObj.Subject;
                 printSRObj.RequestDate = requestObj.RequestDate.ToShortDateString();
                 printSRObj.RequestCode = requestObj.RequestCode;
@@ -2893,10 +2897,6 @@ namespace Asset.Core.Repositories
                                .Include(t => t.RequestPeriority).OrderByDescending(a => a.RequestDate)
                                .Where(a => a.RequestDate >= requestDateObj.StartDate.Value.Date && a.RequestDate <= requestDateObj.EndDate.Value.Date).ToList();
 
-            //    .Where(a =>
-            //    (a.RequestDate.Year >= requestDateObj.StartDate.Value.Year && a.RequestDate.Month >= requestDateObj.StartDate.Value.Month && a.RequestDate.Day >= requestDateObj.StartDate.Value.Day)
-            //|| (a.RequestDate.Year <= requestDateObj.EndDate.Value.Year && a.RequestDate.Month <= requestDateObj.EndDate.Value.Month && a.RequestDate.Day <= requestDateObj.EndDate.Value.Day)).ToList();
-
             foreach (var req in lstRequests)
             {
                 IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
@@ -2907,6 +2907,7 @@ namespace Asset.Core.Repositories
                 getDataObj.CreatedById = req.CreatedById;
                 getDataObj.UserName = req.User.UserName;
                 getDataObj.Subject = req.Subject;
+                getDataObj.AssetHospitalId = req.HospitalId;
                 getDataObj.RequestDate = req.RequestDate;
                 getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
                 getDataObj.HospitalId = req.AssetDetail.HospitalId;
@@ -3106,6 +3107,7 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = req.Id;
                 getDataObj.RequestCode = req.RequestCode;
                 getDataObj.Barcode = req.AssetDetail.Barcode;
+                getDataObj.AssetHospitalId = req.HospitalId;
                 getDataObj.CreatedById = req.CreatedById;
                 getDataObj.UserName = req.User.UserName;
                 getDataObj.Subject = req.Subject;
@@ -3121,9 +3123,6 @@ namespace Asset.Core.Repositories
                 getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr;
                 getDataObj.PeriorityColor = req.RequestPeriority.Color;
                 getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
-
-
-
 
                 var lstSRStatus = _context.RequestTracking
                                 .Include(t => t.Request).Include(t => t.RequestStatus)
@@ -3319,6 +3318,7 @@ namespace Asset.Core.Repositories
             documentObj.DocumentName = attachObj.DocumentName;
             documentObj.FileName = attachObj.FileName;
             documentObj.RequestTrackingId = attachObj.RequestTrackingId;
+            documentObj.HospitalId = attachObj.HospitalId;
             _context.RequestDocument.Add(documentObj);
             _context.SaveChanges();
             return attachObj.Id;
@@ -3359,38 +3359,7 @@ namespace Asset.Core.Repositories
 
         public List<IndexRequestTracking> ListOpenRequestTracks(int hospitalId)
         {
-
-
-
             List<IndexRequestTracking> list = new List<IndexRequestTracking>();
-
-
-          //  List<Request> listCountRequests = new List<Request>();
-            //var listOpenRequests = _context.Request
-            //                   .Include(t => t.AssetDetail)
-            //                   .Include(t => t.AssetDetail.Hospital)
-            //                   .Include(t => t.AssetDetail.Hospital.Governorate)
-            //                   .Include(t => t.AssetDetail.Hospital.City)
-            //                   .Include(t => t.AssetDetail.Hospital.Organization)
-            //                   .Include(t => t.AssetDetail.Hospital.SubOrganization)
-            //                   .Include(t => t.User)
-            //                   .Where(a => a.IsOpened == false && a.AssetDetail.HospitalId == hospitalId).ToList();
-
-            //foreach (var open in listOpenRequests)
-            //{
-            //    var listWO = _context.WorkOrders.Where(a => a.RequestId == open.Id).ToList();
-            //    if (listWO.Count == 0)
-            //    {
-            //        IndexRequestTracking itm = new IndexRequestTracking();
-            //        itm.RequestId = open.Id;
-            //        itm.Subject = open.Subject;
-            //        itm.AssetName = open.AssetDetail.MasterAsset.Name;
-            //        itm.AssetNameAr = open.AssetDetail.MasterAsset.NameAr;
-            //        list.Add(itm);
-            //    }
-            //}
-
-     
             var lstRequests = _context.Request
                              .Include(t => t.AssetDetail)
                              .Include(t => t.AssetDetail.Hospital)

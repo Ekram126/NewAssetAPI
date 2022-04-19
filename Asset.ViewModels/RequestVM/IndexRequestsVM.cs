@@ -57,6 +57,7 @@ namespace Asset.ViewModels.RequestVM
         public int SubOrganizationId { get; set; }
         public int OrganizationId { get; set; }
         public int CityId { get; set; }
+   public int AssetHospitalId { get; set; }
         public int GovernorateId
         {
             get; set;

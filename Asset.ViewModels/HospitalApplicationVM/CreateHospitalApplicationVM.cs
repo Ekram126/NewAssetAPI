@@ -13,6 +13,7 @@ namespace Asset.ViewModels.HospitalApplicationVM
         public int? AssetId { get; set; }
         public int? StatusId { get; set; }
         public int? AppTypeId { get; set; }
+        public int? HospitalId { get; set; }
         public string UserId { get; set; }
         public DateTime? AppDate { get; set; }
         public string DueDate { get; set; }

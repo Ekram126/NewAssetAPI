@@ -181,8 +181,6 @@ namespace Asset.Core.Repositories
                         {
                             var pendingStatus = _context.WorkOrderStatuses.Where(a => a.Id == 6).ToList().FirstOrDefault();
                             work.WorkOrderStatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
-                           // work.StatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
-
 
                             work.StatusName = lstStatus[0].FirstOrDefault().WorkOrderStatus.Name + " - " + pendingStatus.Name;
                             work.StatusNameAr = lstStatus[0].FirstOrDefault().WorkOrderStatus.NameAr + " - " + pendingStatus.NameAr;
@@ -193,7 +191,7 @@ namespace Asset.Core.Repositories
                         else
                         {
                             work.WorkOrderStatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
-                        //    work.StatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
+                            //    work.StatusId = lstStatus[0].FirstOrDefault().WorkOrderStatus.Id;
                             work.StatusName = lstStatus[0].FirstOrDefault().WorkOrderStatus.Name;
                             work.StatusNameAr = lstStatus[0].FirstOrDefault().WorkOrderStatus.NameAr;
                             work.statusColor = lstStatus[0].FirstOrDefault().WorkOrderStatus.Color;
@@ -227,8 +225,8 @@ namespace Asset.Core.Repositories
                         Id = item.Id,
                         StatusName = item.WorkOrderStatus.Name,
                         StatusNameAr = item.WorkOrderStatus.NameAr,
-                        // CreationDate = DateTime.Parse(item.CreationDate.ToString())
-                    }).ToList();
+                            // CreationDate = DateTime.Parse(item.CreationDate.ToString())
+                        }).ToList();
 
                     list.Add(work);
                 }
@@ -495,15 +493,15 @@ namespace Asset.Core.Repositories
                 work.CreatedById = woObj[0].CreatedById;
                 work.CreatedBy = woObj[0].User.UserName;
                 work.WorkOrderPeriorityId = woObj[0].WorkOrderPeriorityId != null ? (int)woObj[0].WorkOrderPeriorityId : 0;
-                work.WorkOrderPeriorityId = woObj[0].WorkOrderPeriority.Id;
-                work.PeriorityName = woObj[0].WorkOrderPeriority.Name;
-                work.PeriorityNameAr = woObj[0].WorkOrderPeriority.NameAr;
+                work.WorkOrderPeriorityId = woObj[0].WorkOrderPeriority != null ? woObj[0].WorkOrderPeriority.Id : 0;
+                work.PeriorityName = woObj[0].WorkOrderPeriority != null ? woObj[0].WorkOrderPeriority.Name : "";
+                work.PeriorityNameAr = woObj[0].WorkOrderPeriority != null ? woObj[0].WorkOrderPeriority.NameAr : "";
                 work.AssetName = woObj[0].Request.AssetDetail.MasterAsset.Name;
                 work.AssetNameAr = woObj[0].Request.AssetDetail.MasterAsset.NameAr;
                 work.WorkOrderTypeId = woObj[0].WorkOrderTypeId != null ? (int)woObj[0].WorkOrderTypeId : 0;
-                work.WorkOrderTypeName = woObj[0].WorkOrderType.Name;
-                work.TypeName = woObj[0].WorkOrderType.Name;
-                work.TypeNameAr = woObj[0].WorkOrderType.NameAr;
+                work.WorkOrderTypeName = woObj[0].WorkOrderTypeId != null ? woObj[0].WorkOrderType.Name : "";
+                work.TypeName = woObj[0].WorkOrderTypeId != null ? woObj[0].WorkOrderType.Name : "";
+                work.TypeNameAr = woObj[0].WorkOrderTypeId != null ? woObj[0].WorkOrderType.NameAr : "";
                 work.RequestId = woObj[0].RequestId != null ? (int)woObj[0].RequestId : 0;
                 work.RequestSubject = woObj[0].Request.Subject;
                 work.HospitalId = woObj[0].Request.AssetDetail.HospitalId;
@@ -1215,7 +1213,6 @@ namespace Asset.Core.Repositories
                 getDataObj.AssetId = item.Request.AssetDetailId;
                 getDataObj.CreatedById = item.CreatedById;
                 getDataObj.CreatedBy = item.User.UserName;
-                //getDataObj.UserName = item.User.UserName;
                 getDataObj.ActualStartDate = item.ActualStartDate;
                 getDataObj.ActualEndDate = item.ActualEndDate;
                 getDataObj.PlannedStartDate = item.PlannedStartDate;
@@ -1640,7 +1637,7 @@ namespace Asset.Core.Repositories
                 {
                     if (sortObj.SortStatus == "descending")
                     {
-                        list = list.Where(b => b.StatusName == sortObj.StatusName).OrderByDescending(d => d.StatusName).ToList();
+                        list = list.Where(b => b.StatusName == sortObj.StatusName && b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusName).ToList();
                     }
                     else
                     {
@@ -2487,11 +2484,21 @@ namespace Asset.Core.Repositories
             }
 
 
-            var lstWorkOrders = _context.WorkOrders
-                                  .Include(w => w.Request)
-                                  .Include(w => w.Request.AssetDetail)
-                                  .Include(w => w.Request.AssetDetail.Hospital)
-                                  .Include(w => w.User).ToList().GroupBy(a => a.RequestId).ToList();
+            //var lstWorkOrders = _context.WorkOrders
+            //                      .Include(w => w.Request)
+            //                      .Include(w => w.Request.AssetDetail)
+            //                      .Include(w => w.Request.AssetDetail.Hospital)
+            //                      .Include(w => w.User).ToList().GroupBy(a => a.RequestId).ToList();
+
+            var lstWorkOrders = _context.WorkOrderTrackings
+                 .Include(w => w.WorkOrder)
+                                  .Include(w => w.WorkOrder.Request)
+                                  .Include(w => w.WorkOrder.Request.AssetDetail)
+                                  .Include(w => w.WorkOrder.Request.AssetDetail.Hospital)
+                                  .Include(w => w.User).ToList().GroupBy(a => a.WorkOrder.RequestId).ToList();
+
+         
+
             if (lstWorkOrders.Count > 0)
             {
                 if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
@@ -2500,63 +2507,62 @@ namespace Asset.Core.Repositories
                 }
                 if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
                 {
-                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
+                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
                 }
                 if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
                 {
-                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId && t.FirstOrDefault().Request.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
+                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId && t.FirstOrDefault().WorkOrder.Request.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
                 }
                 if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
                 {
                     if (userRoleNames.Contains("Admin"))
                     {
-                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
                     if (userRoleNames.Contains("TLHospitalManager"))
                     {
-                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
                     if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
                     {
-                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
                     if (userRoleNames.Contains("AssetOwner"))
                     {
-                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId && t.FirstOrDefault().CreatedById == userId).ToList();
+                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.HospitalId == UserObj.HospitalId && t.FirstOrDefault().CreatedById == userId).ToList();
                     }
                 }
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
                 {
-                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
+                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
                 }
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
                 {
-                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId && t.FirstOrDefault().Request.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
+                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId && t.FirstOrDefault().WorkOrder.Request.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
                 }
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
                 {
-                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
 
 
                     if (userRoleNames.Contains("Admin"))
                     {
-                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
                     if (userRoleNames.Contains("TLHospitalManager"))
                     {
-                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
                     if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
                     {
-                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
                     if (userRoleNames.Contains("AssetOwner"))
                     {
-                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId && t.FirstOrDefault().CreatedById == userId).ToList();
+                        lstWorkOrders = lstWorkOrders.Where(t => t.FirstOrDefault().WorkOrder.Request.AssetDetail.HospitalId == UserObj.HospitalId && t.FirstOrDefault().CreatedById == userId).ToList();
                     }
                 }
             }
-
 
 
             return lstWorkOrders.Count();

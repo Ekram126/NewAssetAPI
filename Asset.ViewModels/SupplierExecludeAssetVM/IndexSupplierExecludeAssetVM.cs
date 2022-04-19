@@ -18,6 +18,7 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
             public string AssetNameAr { get; set; }
             public int? AssetId { get; set; }
             public int? StatusId { get; set; }
+            public int? HospitalId { get; set; }
             public string UserName { get; set; }
             public string Date { get; set; }
             public string ExecludeDate { get; set; }

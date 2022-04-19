@@ -33,6 +33,7 @@ namespace Asset.Core.Repositories
                     contractDetailObj.ResponseTime = model.ResponseTime;
                     contractDetailObj.HasSpareParts = model.HasSpareParts;
                     contractDetailObj.MasterContractId = model.MasterContractId;
+                    contractDetailObj.HospitalId = model.HospitalId;
                     _context.ContractDetails.Add(contractDetailObj);
                     _context.SaveChanges();
                     return contractDetailObj.Id;
@@ -90,10 +91,11 @@ namespace Asset.Core.Repositories
                 IndexContractVM.GetData getDataObj = new IndexContractVM.GetData();
                 getDataObj.Id = item.Id;
                 var lstassets = _context.AssetDetails.Where(a => a.Id == item.AssetDetailId).ToList();
-                if(lstassets.Count>0)
+                if (lstassets.Count > 0)
                 {
                     AssetDetail assetDetailObj = lstassets[0];
                     getDataObj.SerialNumber = assetDetailObj.SerialNumber;
+                    getDataObj.HospitalId = assetDetailObj.HospitalId;
                     getDataObj.BarCode = assetDetailObj.Barcode;
                     var lstmasters = _context.MasterAssets.Where(a => a.Id == lstassets[0].MasterAssetId).ToList();
                     if (lstmasters.Count > 0)
@@ -123,6 +125,7 @@ namespace Asset.Core.Repositories
                     {
                         Id = detail.Id,
                         AssetDetailId = assetDetail.Id,
+                        HospitalId = assetDetail.HospitalId,
                         SerialNumber = assetDetail.SerialNumber,
                         BarCode = assetDetail.Barcode,
                         ContractDate = detail.ContractDate,

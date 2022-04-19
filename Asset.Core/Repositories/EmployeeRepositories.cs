@@ -129,6 +129,7 @@ namespace Asset.Core.Repositories
             return _context.Employees.Where(a => a.Id == id).Select(item => new EditEmployeeVM
             {
                 Id = item.Id,
+                
                 Name = item.Name,
                 NameAr = item.NameAr,
                 Dob = item.Dob.Value.ToShortDateString(),

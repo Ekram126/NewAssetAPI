@@ -32,6 +32,7 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public string assetName { get; set; }
         public string assetNameAr { get; set; }
 
+        public int? HospitalId { get; set; }
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }
 

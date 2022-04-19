@@ -31,6 +31,7 @@ namespace Asset.Core.Repositories
                 {
                     AssetStatusTransactionsTransactionObj.AssetDetailId = model.AssetDetailId;
                     AssetStatusTransactionsTransactionObj.AssetStatusId = model.AssetStatusId;
+                    AssetStatusTransactionsTransactionObj.HospitalId = model.HospitalId;
                     if (model.StatusDate != null)
                         AssetStatusTransactionsTransactionObj.StatusDate = DateTime.Parse(model.StatusDate);
                     else
@@ -70,6 +71,7 @@ namespace Asset.Core.Repositories
             return _context.AssetStatusTransactions.ToList().Select(item => new IndexAssetStatusTransactionVM.GetData
             {
                 Id = item.Id,
+                HospitalId = int.Parse(item.HospitalId.ToString()),
                 //StatusName = _context.AssetStatus.Where(a => a.Id == item.AssetStatusId).ToString(),
                 StatusName = _context.AssetStatus.Where(a => a.Id == item.AssetStatusId).FirstOrDefault().Name,
                 StatusNameAr = _context.AssetStatus.Where(a => a.Id == item.AssetStatusId).FirstOrDefault().NameAr,
@@ -83,6 +85,7 @@ namespace Asset.Core.Repositories
                 .Select(item => new IndexAssetStatusTransactionVM.GetData
                 {
                     Id = item.Id,
+                    HospitalId = int.Parse(item.HospitalId.ToString()),
                     StatusName = _context.AssetStatus.Where(a => a.Id == item.AssetStatusId).FirstOrDefault().Name,
                     StatusNameAr = _context.AssetStatus.Where(a => a.Id == item.AssetStatusId).FirstOrDefault().NameAr,
                     StatusDate = item.StatusDate.Value.ToString(),
@@ -104,11 +107,12 @@ namespace Asset.Core.Repositories
                                          .Select(item => new AssetStatusTransaction
                                          {
                                              Id = item.Id,
+                                             HospitalId = int.Parse(item.HospitalId.ToString()),
                                              AssetDetailId = item.AssetDetailId,
                                              AssetStatusId = item.AssetStatusId,
                                              StatusDate = item.StatusDate
                                          }).ToList();
-        
+
 
 
             return lstLastTransaction;
@@ -122,6 +126,7 @@ namespace Asset.Core.Repositories
                 AssetStatusTransactionsTransactionObj.Id = model.Id;
                 AssetStatusTransactionsTransactionObj.AssetDetailId = model.AssetDetailId;
                 AssetStatusTransactionsTransactionObj.AssetStatusId = model.AssetStatusId;
+                AssetStatusTransactionsTransactionObj.HospitalId = model.HospitalId;
                 AssetStatusTransactionsTransactionObj.StatusDate = model.StatusDate;
                 _context.Entry(AssetStatusTransactionsTransactionObj).State = EntityState.Modified;
                 _context.SaveChanges();

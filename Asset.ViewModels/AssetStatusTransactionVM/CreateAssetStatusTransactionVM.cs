@@ -8,10 +8,12 @@ namespace Asset.ViewModels.AssetStatusTransactionVM
 {
     public class CreateAssetStatusTransactionVM
     {
-          public int AssetDetailId { get; set; }
+        public int AssetDetailId { get; set; }
 
         public int AssetStatusId { get; set; }
 
         public string StatusDate { get; set; }
+
+        public int? HospitalId { get; set; }
     }
 }

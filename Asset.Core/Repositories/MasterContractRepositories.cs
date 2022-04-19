@@ -47,7 +47,7 @@ namespace Contract.Core.Repositories
                     masterContractObj.Serial = model.Serial;
                     masterContractObj.Subject = model.Subject;
                     masterContractObj.Cost = model.Cost;
-
+                    masterContractObj.HospitalId = model.HospitalId;
                     masterContractObj.SupplierId = model.SupplierId;
                     _context.MasterContracts.Add(masterContractObj);
                     _context.SaveChanges();
@@ -63,6 +63,7 @@ namespace Contract.Core.Repositories
                             detailObj.AssetDetailId = item.AssetDetailId;
                             detailObj.ResponseTime = item.ResponseTime;
                             detailObj.HasSpareParts = item.HasSpareParts;
+                            detailObj.HospitalId = item.HospitalId;
                             _context.ContractDetails.Add(detailObj);
                             _context.SaveChanges();
                         }
@@ -117,7 +118,7 @@ namespace Contract.Core.Repositories
                 masterContractObj.Serial = model.Serial;
                 masterContractObj.Cost = model.Cost;
                 masterContractObj.SupplierId = model.SupplierId;
-
+                masterContractObj.HospitalId = model.HospitalId;
                 _context.Entry(masterContractObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return masterContractObj.Id;
@@ -132,25 +133,25 @@ namespace Contract.Core.Repositories
 
         public IEnumerable<IndexMasterContractVM.GetData> GetMasterContractsByHospitalId(int hospitalId)
         {
-             List<IndexMasterContractVM.GetData> list = new List<IndexMasterContractVM.GetData>();
+            List<IndexMasterContractVM.GetData> list = new List<IndexMasterContractVM.GetData>();
 
-               var lstMasters = _context.ContractDetails
-                            .Include(a => a.MasterContract)
-                            .Include(a => a.AssetDetail)
-                            .Include(a => a.MasterContract.Supplier).Select(item => new IndexMasterContractVM.GetData
-                            {
-                                Id = item.MasterContract.Id,
-                                SupplierId = item.MasterContract.SupplierId,
-                                HospitalId =item.AssetDetail.HospitalId ,
-                                Subject = item.MasterContract.Subject,
-                                Cost = item.MasterContract.Cost.ToString(),
-                                ContractNumber = item.MasterContract.Serial,
-                                ContractDate = item.MasterContract.ContractDate.Value,
-                                StartDate = item.MasterContract.From.Value,
-                                EndDate = item.MasterContract.To.Value,
-                                SupplierName = item.MasterContract.Supplier.Name,
-                                SupplierNameAr = item.MasterContract.Supplier.NameAr
-                            }).ToList().GroupBy(a=>a.Id);
+            var lstMasters = _context.ContractDetails
+                         .Include(a => a.MasterContract)
+                         .Include(a => a.AssetDetail)
+                         .Include(a => a.MasterContract.Supplier).Select(item => new IndexMasterContractVM.GetData
+                         {
+                             Id = item.MasterContract.Id,
+                             SupplierId = item.MasterContract.SupplierId,
+                             HospitalId = item.AssetDetail.HospitalId,
+                             Subject = item.MasterContract.Subject,
+                             Cost = item.MasterContract.Cost.ToString(),
+                             ContractNumber = item.MasterContract.Serial,
+                             ContractDate = item.MasterContract.ContractDate.Value,
+                             StartDate = item.MasterContract.From.Value,
+                             EndDate = item.MasterContract.To.Value,
+                             SupplierName = item.MasterContract.Supplier.Name,
+                             SupplierNameAr = item.MasterContract.Supplier.NameAr
+                         }).ToList().GroupBy(a => a.Id);
 
 
             foreach (var item in lstMasters)
@@ -164,8 +165,8 @@ namespace Contract.Core.Repositories
                 getDataObj.StartDate = item.FirstOrDefault().StartDate;
                 getDataObj.EndDate = item.FirstOrDefault().EndDate;
                 getDataObj.HospitalId = item.FirstOrDefault().HospitalId;
-                getDataObj.SupplierName = item.FirstOrDefault().SupplierId != null ? item.FirstOrDefault().SupplierName:"";
-                getDataObj.SupplierNameAr = item.FirstOrDefault().SupplierId != null ? item.FirstOrDefault().SupplierNameAr:"";
+                getDataObj.SupplierName = item.FirstOrDefault().SupplierId != null ? item.FirstOrDefault().SupplierName : "";
+                getDataObj.SupplierNameAr = item.FirstOrDefault().SupplierId != null ? item.FirstOrDefault().SupplierNameAr : "";
                 list.Add(getDataObj);
             }
 
@@ -327,7 +328,7 @@ namespace Contract.Core.Repositories
 
         public IEnumerable<IndexMasterContractVM.GetData> SortContracts(int hospitalId, SortContractsVM sortObj)
         {
-            var list=GetMasterContractsByHospitalId(hospitalId);
+            var list = GetMasterContractsByHospitalId(hospitalId);
             if (sortObj.ContractNumber != "")
             {
                 if (sortObj.SortStatus == "descending")
@@ -373,6 +374,7 @@ namespace Contract.Core.Repositories
             documentObj.FileName = attachObj.FileName;
             documentObj.MasterContractId = attachObj.MasterContractId;
             documentObj.MasterContractId = attachObj.MasterContractId;
+            documentObj.HospitalId = attachObj.HospitalId;
             _context.ContractAttachments.Add(documentObj);
             _context.SaveChanges();
             return attachObj.Id;
@@ -399,7 +401,7 @@ namespace Contract.Core.Repositories
 
         public IEnumerable<ContractAttachment> GetContractAttachmentByMasterContractId(int masterContractId)
         {
-         return   _context.ContractAttachments.Where(a => a.MasterContractId == masterContractId).ToList();
+            return _context.ContractAttachments.Where(a => a.MasterContractId == masterContractId).ToList();
         }
     }
 }

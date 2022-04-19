@@ -9,8 +9,8 @@ namespace Asset.ViewModels.AssetDetailAttachmentVM
     public class CreateAssetDetailAttachmentVM
     {
         public int AssetDetailId { get; set; }
+        public int HospitalId { get; set; }
         public string FileName { get; set; }
-
         public string Title { get; set; }
     }
 }

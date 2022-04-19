@@ -42,6 +42,7 @@ namespace Asset.Core.Repositories
                     supplierExecludeObj.Id = model.Id;
                     supplierExecludeObj.SupplierExecludeAssetId = model.SupplierExecludeAssetId;
                     supplierExecludeObj.ReasonId = model.ReasonId;
+                    supplierExecludeObj.HospitalId = model.HospitalId;
                     _context.SupplierExecludes.Add(supplierExecludeObj);
                     _context.SaveChanges();
                     int id = supplierExecludeObj.Id;
@@ -99,6 +100,7 @@ namespace Asset.Core.Repositories
                 supplierExecludeAssetObj.Id = model.Id;
                 supplierExecludeAssetObj.SupplierExecludeAssetId = model.SupplierExecludeAssetId;
                 supplierExecludeAssetObj.ReasonId = model.ReasonId;
+                supplierExecludeAssetObj.HospitalId = model.HospitalId;
                 _context.Entry(supplierExecludeAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -121,8 +123,8 @@ namespace Asset.Core.Repositories
         {
             List<IndexSupplierExecludeVM.GetData> list = new List<IndexSupplierExecludeVM.GetData>();
             var supplierExecludeAssetObj = _context.SupplierExecludeAssets.Find(supplierExecludeAssetId);
-           
-            var lstTransactions = _context.SupplierExecludes.Where(a => a.SupplierExecludeAssetId == supplierExecludeAssetObj.Id).OrderBy(a=>a.ReasonId).ToList();
+
+            var lstTransactions = _context.SupplierExecludes.Where(a => a.SupplierExecludeAssetId == supplierExecludeAssetObj.Id).OrderBy(a => a.ReasonId).ToList();
             if (lstTransactions.Count > 0)
             {
 

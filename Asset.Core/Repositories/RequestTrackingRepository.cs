@@ -31,6 +31,7 @@ namespace Asset.Core.Repositories
                     requestTracking.RequestId = createRequestTracking.RequestId;
                     requestTracking.RequestStatusId = createRequestTracking.RequestStatusId;
                     requestTracking.CreatedById = createRequestTracking.CreatedById;
+                    requestTracking.HospitalId = createRequestTracking.HospitalId;
                     _context.RequestTracking.Add(requestTracking);
                     _context.SaveChanges();
                     createRequestTracking.Id = requestTracking.Id;
@@ -103,13 +104,7 @@ namespace Asset.Core.Repositories
                     SubOrganizationId = (int)req.User.SubOrganizationId,
                     RoleId = req.User.RoleId,
                     AssetName = assetDetailId > 0 ? _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().Name : _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().Name,
-
                     AssetNameAr = assetDetailId > 0 ? _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().NameAr : _context.MasterAssets.Where(a => a.Id == req.Request.AssetDetail.MasterAssetId).FirstOrDefault().NameAr,
-
-                    // RoleName = _context.Roles.Where(a => a.Id == req.User.RoleId).FirstOrDefault().Name
-
-                    //AssetName=req.Request.AssetDetail.MasterAssetId,
-
                 }).ToList().OrderByDescending(a => a.DescriptionDate).GroupBy(r => r.RequestId);
             foreach (var item in ListRequestTracking)
             {
@@ -200,14 +195,13 @@ namespace Asset.Core.Repositories
             var trackings = _context.RequestTracking.Where(r => r.RequestId == requestId).OrderByDescending(a => a.DescriptionDate).Select(req => new RequestTrackingView
             {
                 Id = req.Id,
-
                 RequestId = req.RequestId != null ? (int)req.RequestId : 0,
                 RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                 Description = req.Description,
                 DescriptionDate = req.DescriptionDate,
                 CreatedById = req.CreatedById,
                 UserName = req.User.UserName,
-
+                HospitalId = req.HospitalId,
                 StatusName = req.RequestStatus.Name,
                 StatusNameAr = req.RequestStatus.NameAr
             }).OrderByDescending(t => t.DescriptionDate).ToList();
@@ -219,16 +213,14 @@ namespace Asset.Core.Repositories
             var trackings = _context.RequestTracking.Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
             {
                 Id = req.Id,
-
                 Description = req.Description,
                 DescriptionDate = req.DescriptionDate,
                 CreatedById = req.CreatedById,
                 UserName = req.User.UserName,
-
+                HospitalId = req.HospitalId,
                 RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
-
-                StatusName = req.RequestStatusId != null ? req.RequestStatus.Name:"",
-                StatusNameAr = req.RequestStatusId != null ? req.RequestStatus.NameAr:""
+                StatusName = req.RequestStatusId != null ? req.RequestStatus.Name : "",
+                StatusNameAr = req.RequestStatusId != null ? req.RequestStatus.NameAr : ""
             }).OrderByDescending(t => t.DescriptionDate).ToList();
 
 
@@ -246,29 +238,30 @@ namespace Asset.Core.Repositories
                     AssetCode = req.Request.AssetDetail.Code,
                     RequestCode = req.Request.RequestCode,
                     RequestDate = req.Request.RequestDate,
-                    AssetDetailId = req.Request.AssetDetailId!=null ? (int)req.Request.AssetDetailId:0,
+                    AssetDetailId = req.Request.AssetDetailId != null ? (int)req.Request.AssetDetailId : 0,
+                    HospitalId = req.HospitalId,
                     MasterAssetId = (int)req.Request.AssetDetail.MasterAssetId,
                     SerialNumber = req.Request.AssetDetail.SerialNumber,
                     RequestModeId = req.Request.RequestModeId != null ? (int)req.Request.RequestModeId : 0,
                     RequestPeriorityId = req.Request.RequestPeriorityId != null ? (int)req.Request.RequestPeriorityId : 0,
                     RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
-             
-                    ModeName = req.Request.RequestModeId != null ?   req.Request.RequestMode.Name:"",
-                    ModeNameAr = req.Request.RequestModeId != null ? req.Request.RequestMode.NameAr:"",
+
+                    ModeName = req.Request.RequestModeId != null ? req.Request.RequestMode.Name : "",
+                    ModeNameAr = req.Request.RequestModeId != null ? req.Request.RequestMode.NameAr : "",
 
                     PeriorityName = req.Request.RequestPeriority.Name,
                     PeriorityNameAr = req.Request.RequestPeriority.NameAr,
 
-                   
-                    ProblemId = req.Request.SubProblemId != null ? (int)req.Request.SubProblem.ProblemId:0,
-                    ProblemName = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.Name:"",
-                    ProblemNameAr = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.NameAr:"",
+
+                    ProblemId = req.Request.SubProblemId != null ? (int)req.Request.SubProblem.ProblemId : 0,
+                    ProblemName = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.Name : "",
+                    ProblemNameAr = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.NameAr : "",
 
 
-                    RequestTypeId =req.Request.RequestTypeId != null ? (int) req.Request.RequestTypeId:0,
-                    RequestTypeName = req.Request.RequestTypeId != null ? req.Request.RequestType.Name:"",
-                    RequestTypeNameAr = req.Request.RequestTypeId != null ? req.Request.RequestType.NameAr:"",
-                 
+                    RequestTypeId = req.Request.RequestTypeId != null ? (int)req.Request.RequestTypeId : 0,
+                    RequestTypeName = req.Request.RequestTypeId != null ? req.Request.RequestType.Name : "",
+                    RequestTypeNameAr = req.Request.RequestTypeId != null ? req.Request.RequestType.NameAr : "",
+
                     StatusName = req.RequestStatus.Name,
                     StatusNameAr = req.RequestStatus.NameAr,
                     AssetName = req.Request.AssetDetail.MasterAsset.Name,
@@ -284,9 +277,10 @@ namespace Asset.Core.Repositories
 
         public IndexRequestTracking GetById(int id)
         {
-            var RequestTrackingObj = _context.RequestTracking.Include(a=>a.Request).Include(a => a.Request.AssetDetail).Select(req => new IndexRequestTracking
+            var RequestTrackingObj = _context.RequestTracking.Include(a => a.Request).Include(a => a.Request.AssetDetail).Select(req => new IndexRequestTracking
             {
                 Id = req.Id,
+                HospitalId = req.HospitalId,
                 RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                 Description = req.Description,
                 DescriptionDate = req.DescriptionDate,
@@ -307,6 +301,7 @@ namespace Asset.Core.Repositories
                 requestTracking.RequestId = editRequestTracking.RequestId;
                 requestTracking.CreatedById = editRequestTracking.CreatedById;
                 requestTracking.RequestStatusId = editRequestTracking.RequestStatusId;
+                requestTracking.HospitalId = editRequestTracking.HospitalId;
                 _context.Entry(requestTracking).State = EntityState.Modified;
                 _context.SaveChanges();
             }
@@ -325,7 +320,7 @@ namespace Asset.Core.Repositories
         public IEnumerable<RequestTracking> GetAll()
         {
             return _context.RequestTracking.ToList();
-           
+
         }
     }
 }

@@ -42,6 +42,7 @@ namespace Asset.Core.Repositories
                     floorObj.Name = floorVM.Name;
                     floorObj.NameAr = floorVM.NameAr;
                     floorObj.BuildingId = floorVM.BuildingId;
+                    floorObj.HospitalId = floorVM.HospitalId;
                     _context.Floors.Add(floorObj);
                     _context.SaveChanges();
 
@@ -93,7 +94,8 @@ namespace Asset.Core.Repositories
                 floorObj.Code = floorVM.Code;
                 floorObj.Name = floorVM.Name;
                 floorObj.NameAr = floorVM.NameAr;
-                floorObj.BuildingId = floorVM.BuildingId;
+                floorObj.BuildingId = floorVM.BuildingId; 
+                floorObj.HospitalId = floorVM.HospitalId;
                 _context.Entry(floorObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return floorObj.Id;

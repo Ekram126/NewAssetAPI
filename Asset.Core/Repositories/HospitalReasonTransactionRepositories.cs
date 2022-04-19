@@ -42,6 +42,7 @@ namespace Asset.Core.Repositories
                 {
                     transactionObj.HospitalApplicationId = model.HospitalApplicationId;
                     transactionObj.ReasonId = model.ReasonId;
+                    transactionObj.HospitalId = model.HospitalId;
                     _context.HospitalReasonTransactions.Add(transactionObj);
                     _context.SaveChanges();
                     int transId = transactionObj.Id;

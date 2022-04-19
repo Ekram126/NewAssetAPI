@@ -53,7 +53,7 @@ namespace Asset.ViewModels.RequestTrackingVM
         public string ProblemName { get; set; }
         public string ProblemNameAr { get; set; }
 
-
+        public int? HospitalId { get; set; }
 
         public List<RequestTrackingView> lstTracking { get; set; }
     }

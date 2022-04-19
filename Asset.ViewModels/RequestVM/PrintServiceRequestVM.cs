@@ -15,7 +15,7 @@ namespace Asset.ViewModels.RequestVM
         public string MasterAssetCode { get; set; }
         public string AssetCode { get; set; }
         public string AssetBarCode { get; set; }
-        public string WorkOrderSubject{ get; set; }
+        public string WorkOrderSubject { get; set; }
         public string WorkOrderNumber { get; set; }
         public DateTime? CreationDate { get; set; }
         public DateTime? PlannedStartDate { get; set; }
@@ -53,6 +53,7 @@ namespace Asset.ViewModels.RequestVM
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }
         public int? MasterAssetId { get; set; }
+        public int? AssetHospitalId { get; set; }
         public int? HospitalId { get; set; }
         public int? GovernorateId { get; set; }
         public int? CityId { get; set; }
@@ -61,7 +62,7 @@ namespace Asset.ViewModels.RequestVM
         public string RoleId { get; set; }
 
 
-        public List<LstWorkOrderFromTracking> LstWorkOrderTracking{ get; set; }
+        public List<LstWorkOrderFromTracking> LstWorkOrderTracking { get; set; }
 
         public List<IndexRequestTracking> RequestTrackingList { get; set; }
     }

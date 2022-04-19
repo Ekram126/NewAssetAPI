@@ -13,7 +13,7 @@ namespace Asset.ViewModels.ContractVM
         public int Id { get; set; }
 
         public int? SupplierId { get; set; }
-
+        public int? HospitalId { get; set; }
         public string Serial { get; set; }
 
         public string Subject { get; set; }

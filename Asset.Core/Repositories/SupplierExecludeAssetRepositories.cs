@@ -29,7 +29,7 @@ namespace Asset.Core.Repositories
                              join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
                              where trans.SupplierExecludeAssetId == id
                               && trans.SupplierExecludeAsset.AppTypeId == 1
-                           
+
                              select execlude.Id).ToList();
 
             var holdIds = (from execlude in _context.SupplierHoldReasons
@@ -41,6 +41,7 @@ namespace Asset.Core.Repositories
             return _context.SupplierExecludeAssets.Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Where(a => a.Id == id).Select(item => new EditSupplierExecludeAssetVM
             {
                 Id = item.Id,
+                HospitalId = item.HospitalId,
                 AssetId = item.AssetId,
                 AppTypeId = item.AppTypeId,
                 StatusId = item.StatusId,
@@ -61,7 +62,7 @@ namespace Asset.Core.Repositories
                 assetNameAr = item.AssetDetail.MasterAsset.NameAr,// + " - " + item.AssetDetail.SerialNumber,
 
                 SerialNumber = item.AssetDetail.SerialNumber,
-                BarCode =item.AssetDetail.Barcode
+                BarCode = item.AssetDetail.Barcode
 
             }).FirstOrDefault();
 
@@ -79,6 +80,7 @@ namespace Asset.Core.Repositories
 
                 IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
                 getDataObj.Id = item.Id;
+                getDataObj.HospitalId = item.HospitalId;
                 getDataObj.ExNumber = item.ExNumber;
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
@@ -168,7 +170,7 @@ namespace Asset.Core.Repositories
                     supplierExecludeAssetObj.StatusId = 1;
                     supplierExecludeAssetObj.AppTypeId = model.AppTypeId;
                     supplierExecludeAssetObj.Comment = model.Comment;
-
+                    supplierExecludeAssetObj.HospitalId = model.HospitalId;
                     supplierExecludeAssetObj.Date = DateTime.Today.Date;
                     if (model.ExecludeDate != "")
                         supplierExecludeAssetObj.ExecludeDate = DateTime.Parse(model.ExecludeDate.ToString());
@@ -183,17 +185,6 @@ namespace Asset.Core.Repositories
                     _context.SaveChanges();
                     int id = supplierExecludeAssetObj.Id;
                     return id;
-                    //if (model.ReasonIds.Count > 0)
-                    //{
-                    //    foreach (var reasonId in model.ReasonIds)
-                    //    {
-                    //        SupplierExeclude supplierExecludeObj = new SupplierExeclude();
-                    //        supplierExecludeObj.SupplierExecludeAssetId = id;
-                    //        supplierExecludeObj.ReasonId = reasonId;
-                    //        _context.SupplierExecludes.Add(supplierExecludeObj);
-                    //        _context.SaveChanges();
-                    //    }
-                    //}
                 }
             }
             catch (Exception ex)
@@ -248,7 +239,7 @@ namespace Asset.Core.Repositories
                 supplierExecludeAssetObj.StatusId = model.StatusId;
                 supplierExecludeAssetObj.Date = model.Date;
                 supplierExecludeAssetObj.ExecludeDate = model.ExecludeDate;
-
+                supplierExecludeAssetObj.HospitalId = model.HospitalId;
                 if (model.ActionDate != "")
                     supplierExecludeAssetObj.ActionDate = DateTime.Parse(model.ActionDate.ToString());
 
@@ -294,6 +285,7 @@ namespace Asset.Core.Repositories
                             SupplierExeclude supplierExecludeObj = new SupplierExeclude();
                             supplierExecludeObj.SupplierExecludeAssetId = model.Id;
                             supplierExecludeObj.ReasonId = itm;
+                            supplierExecludeObj.HospitalId = model.HospitalId;
                             _context.SupplierExecludes.Add(supplierExecludeObj);
                             _context.SaveChanges();
                         }
@@ -318,6 +310,7 @@ namespace Asset.Core.Repositories
             assetAttachmentObj.SupplierExecludeId = attachObj.SupplierExecludeId;
             assetAttachmentObj.Title = attachObj.Title;
             assetAttachmentObj.FileName = attachObj.FileName;
+            assetAttachmentObj.HospitalId = attachObj.HospitalId;
             _context.SupplierExecludeAttachments.Add(assetAttachmentObj);
             _context.SaveChanges();
             int Id = assetAttachmentObj.Id;
@@ -365,7 +358,7 @@ namespace Asset.Core.Repositories
 
                 supplierExecludeAssetObj.UserId = model.UserId;
                 supplierExecludeAssetObj.Comment = model.Comment;
-
+                supplierExecludeAssetObj.HospitalId = model.HospitalId;
                 _context.Entry(supplierExecludeAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -375,6 +368,7 @@ namespace Asset.Core.Repositories
                     assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                     assetStatusTransactionObj.AssetStatusId = 8;
                     assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                    assetStatusTransactionObj.HospitalId = model.HospitalId;
                     _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                     _context.SaveChanges();
                 }
@@ -384,6 +378,7 @@ namespace Asset.Core.Repositories
                     assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                     assetStatusTransactionObj.AssetStatusId = 9;
                     assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                    assetStatusTransactionObj.HospitalId = model.HospitalId;
                     _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                     _context.SaveChanges();
                 }
@@ -436,6 +431,7 @@ namespace Asset.Core.Repositories
                                             assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber,
 
 
+                                            HospitalId = item.AssetDetail.Hospital.Id,
                                             HospitalName = item.AssetDetail.Hospital.Name,
                                             HospitalNameAr = item.AssetDetail.Hospital.NameAr,
 
@@ -476,6 +472,7 @@ namespace Asset.Core.Repositories
 
                 IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
                 getDataObj.Id = item.Id;
+                getDataObj.HospitalId = item.HospitalId;
                 getDataObj.ExNumber = item.ExNumber;
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.Comment = item.Comment;
@@ -676,6 +673,7 @@ namespace Asset.Core.Repositories
 
                 IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
                 getDataObj.Id = item.Id;
+                getDataObj.HospitalId = item.HospitalId;
                 getDataObj.ExNumber = item.ExNumber;
                 getDataObj.Comment = item.Comment;
                 getDataObj.AppTypeId = item.AppTypeId;
@@ -776,6 +774,7 @@ namespace Asset.Core.Repositories
 
                 IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
                 getDataObj.Id = item.Id;
+                getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.ExNumber = item.ExNumber;
                 getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
@@ -895,6 +894,7 @@ namespace Asset.Core.Repositories
 
                 IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
                 getDataObj.Id = item.Id;
+                getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.ExNumber = item.ExNumber;
                 getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";

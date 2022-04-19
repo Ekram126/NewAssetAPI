@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Asset.ViewModels.SupplierExecludeAssetVM
 {
-   public class ViewSupplierExecludeAssetVM
+    public class ViewSupplierExecludeAssetVM
     {
 
 
@@ -45,7 +45,7 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public string SubOrgName { get; set; }
         public string SubOrgNameAr { get; set; }
 
-
+        public int? HospitalId { get; set; }
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }
 

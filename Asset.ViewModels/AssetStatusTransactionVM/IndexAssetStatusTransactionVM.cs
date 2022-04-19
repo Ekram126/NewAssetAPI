@@ -17,7 +17,7 @@ namespace Asset.ViewModels.AssetStatusTransactionVM
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }
             public string StatusDate { get; set; }
-
+            public int HospitalId { get; set; }
         }
     }
 }

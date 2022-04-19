@@ -29,6 +29,7 @@ namespace Asset.Core.Repositories
                 if (model != null)
                 {
                     timeObj.AssetDetailId = model.AssetDetailId;
+                    timeObj.HospitalId = model.HospitalId;
                     timeObj.PMDate = model.PMDate;
                     _context.PMAssetTimes.Add(timeObj);
                     _context.SaveChanges();
@@ -81,6 +82,7 @@ namespace Asset.Core.Repositories
             {
                 var timeObj = _context.PMAssetTimes.Find(model.Id);
                 timeObj.PMDate = model.PMDate;
+                timeObj.HospitalId = model.HospitalId;
                 _context.Entry(timeObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return timeObj.Id;

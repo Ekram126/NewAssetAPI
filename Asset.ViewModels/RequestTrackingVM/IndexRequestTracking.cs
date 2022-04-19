@@ -37,7 +37,7 @@ namespace Asset.ViewModels.RequestTrackingVM
         public string EmployeeName { get; set; }
         public string Subject { get; set; }
 
-        public int HospitalId { get; set; }
+        public int? HospitalId { get; set; }
         public int GovernorateId { get; set; }
         public int CityId { get; set; }
         public int OrganizationId { get; set; }

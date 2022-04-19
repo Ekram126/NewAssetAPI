@@ -35,6 +35,8 @@ namespace Asset.Core.Repositories
                     assetMovementObj.BuildingId = movementObj.BuildingId;
                     assetMovementObj.AssetDetailId = movementObj.AssetDetailId;
                     assetMovementObj.MoveDesc = movementObj.MoveDesc;
+                    assetMovementObj.HospitalId = movementObj.HospitalId;
+
                     _context.AssetMovements.Add(assetMovementObj);
                     _context.SaveChanges();
 
@@ -86,6 +88,7 @@ namespace Asset.Core.Repositories
                 Id = item.Id,
                 MovementDate = item.MovementDate,
                 MoveDesc = item.MoveDesc,
+                HospitalId = item.HospitalId,
                 RoomName = _context.Rooms.ToList().Where(a => a.Id == item.RoomId).ToList().First().Name,
                 RoomNameAr = _context.Rooms.ToList().Where(a => a.Id == item.RoomId).ToList().First().NameAr,
                 FloorName = _context.Floors.ToList().Where(a => a.Id == item.FloorId).ToList().First().Name,
@@ -110,6 +113,7 @@ namespace Asset.Core.Repositories
                     getDataObj.Id = item.Id;
                     getDataObj.AssetDetailId = item.AssetDetailId;
                     getDataObj.MovementDate = item.MovementDate;
+                    getDataObj.HospitalId = item.HospitalId;
                     var lstRooms = _context.Rooms.ToList().Where(a => a.Id == item.RoomId).ToList();
                     if (lstRooms.Count > 0)
                     {
@@ -139,6 +143,7 @@ namespace Asset.Core.Repositories
             var assetMovementObj = _context.AssetMovements.ToList().Where(a => a.Id == id).Select(item => new AssetMovement
             {
                 Id = item.Id,
+                HospitalId = item.HospitalId,
                 MovementDate = item.MovementDate,
                 BuildingId = item.Id,
                 FloorId = item.FloorId,
@@ -156,6 +161,7 @@ namespace Asset.Core.Repositories
 
                 var assetDetailObj = _context.AssetMovements.Find(movementObj.Id);
                 assetDetailObj.Id = movementObj.Id;
+                assetDetailObj.HospitalId = movementObj.HospitalId;
                 assetDetailObj.MovementDate = movementObj.MovementDate;
                 assetDetailObj.AssetDetailId = movementObj.AssetDetailId;
                 assetDetailObj.BuildingId = movementObj.BuildingId;

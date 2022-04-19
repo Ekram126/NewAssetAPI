@@ -55,7 +55,7 @@ namespace Asset.ViewModels.AssetDetailVM
 
 
         public string DepartmentName { get; set; }
-       public string DepartmentNameAr { get; set; }
+        public string DepartmentNameAr { get; set; }
 
 
 
@@ -65,7 +65,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public string BrandName { get; set; }
         public string BrandNameAr { get; set; }
 
-
+        public int HospitalId { get; set; }
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }
 
@@ -105,7 +105,7 @@ namespace Asset.ViewModels.AssetDetailVM
 
 
         public string WarrantyStart { get; set; }
-        public string WarrantyEnd{ get; set; }
+        public string WarrantyEnd { get; set; }
 
         public string AssetImg { get; set; }
         public string QrFilePath { get; set; }

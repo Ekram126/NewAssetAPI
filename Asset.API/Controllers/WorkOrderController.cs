@@ -55,9 +55,7 @@ namespace Asset.API.Controllers
             return _workOrderService.CountWorkOrdersByHospitalId(hospitalId, userId);
         }
 
-
-
-
+  
         [HttpGet]
         [Route("GenerateWorOrderNumber")]
         public GeneratedWorkOrderNumberVM GenerateWorOrderNumber()
@@ -97,10 +95,18 @@ namespace Asset.API.Controllers
         [Route("GetAllWorkOrdersByHospitalId/{hospitalId}/{userId}")]
         public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId, PagingParameter pageInfo)
         {
-            var lstWorkOrders =  _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId);
+            var lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId);
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders.ToList());
         }
 
+
+        //[HttpPut]
+        //[Route("GetAllWorkOrdersByHospitalId/{hospitalId}/{userId}/{statusId}")]
+        //public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId, PagingParameter pageInfo)
+        //{
+        //    var lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId);
+        //    return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders.ToList());
+        //}
 
 
 
@@ -142,7 +148,6 @@ namespace Asset.API.Controllers
             var count = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).ToList().Count;
             return count;
         }
-
         [HttpPut]
         [Route("GetAllWorkOrdersByHospitalStatusId/{hospitalId}/{userId}/{statusId}")]
         public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(PagingParameter pageInfo, int? hospitalId, string userId, int statusId)
@@ -154,9 +159,9 @@ namespace Asset.API.Controllers
 
         [HttpGet]
         [Route("GetCountByStatus/{hospitalId}/{userId}/{statusId}")]
-        public int GetCountByStatus(int? hospitalId, string userId, int statusId)
+        public int GetCountByStatus(int? hospitalId, string userId)
         {
-            return _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId, statusId).Count();
+            return _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).Count();
         }
 
 

@@ -27,8 +27,7 @@ namespace Asset.Core.Repositories
                     PMAssetTaskScheduleObj.Id = model.Id;
                     PMAssetTaskScheduleObj.PMAssetTaskId = model.PMAssetTaskId;
                     PMAssetTaskScheduleObj.PMAssetTimeId = model.PMAssetTimeId;
-
-
+                    PMAssetTaskScheduleObj.HospitalId = model.HospitalId;
                     _context.PMAssetTaskSchedules.Add(PMAssetTaskScheduleObj);
                     _context.SaveChanges();
 
