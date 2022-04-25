@@ -159,9 +159,11 @@ namespace Asset.API.Controllers
 
         [HttpGet]
         [Route("GetCountByStatus/{hospitalId}/{userId}/{statusId}")]
-        public int GetCountByStatus(int? hospitalId, string userId)
+        public int GetCountByStatus(int? hospitalId, string userId, int statusId)
         {
-            return _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).Count();
+            //  return _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId).Count();
+
+            return _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId, statusId).ToList().Count;
         }
 
 

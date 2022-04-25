@@ -62,6 +62,14 @@ namespace Asset.ViewModels.RequestVM
         public string RoleId { get; set; }
 
 
+        public string BuildingName { get; set; }
+        public string BuildingNameAr { get; set; }
+        public string FloorName { get; set; }
+        public string FloorNameAr { get; set; }
+        public string RoomName { get; set; }
+        public string RoomNameAr { get; set; }
+        public string ModelNumber { get; set; }
+
         public List<LstWorkOrderFromTracking> LstWorkOrderTracking { get; set; }
 
         public List<IndexRequestTracking> RequestTrackingList { get; set; }

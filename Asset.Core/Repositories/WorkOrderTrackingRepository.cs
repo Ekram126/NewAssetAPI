@@ -50,6 +50,7 @@ namespace Asset.Core.Repositories
                     workOrderTracking.WorkOrderStatusId = createWorkOrderTrackingVM.WorkOrderStatusId;
                     workOrderTracking.CreatedById = createWorkOrderTrackingVM.CreatedById;
                     workOrderTracking.WorkOrderId = createWorkOrderTrackingVM.WorkOrderId;
+                    workOrderTracking.HospitalId = createWorkOrderTrackingVM.HospitalId;
                     if (assignedTo != "")
                         workOrderTracking.AssignedTo = assignedTo;
                     else

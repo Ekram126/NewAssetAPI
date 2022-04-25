@@ -27,6 +27,6 @@ namespace Asset.ViewModels.WorkOrderVM
         public int WorkOrderPeriorityId { get; set; }
         public int WorkOrderTypeId { get; set; }
         public int RequestId { get; set; }
-
+        public int HospitalId { get; set; }
     }
 }

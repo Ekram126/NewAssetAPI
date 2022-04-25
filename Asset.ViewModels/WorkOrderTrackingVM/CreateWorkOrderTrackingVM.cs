@@ -16,6 +16,7 @@ namespace Asset.ViewModels.WorkOrderTrackingVM
         public string AssignedTo { get; set; }
         public int WorkOrderStatusId { get; set; }
         public int WorkOrderId { get; set; }
+        public int HospitalId { get; set; }
 
         public string ActualStartDate { get; set; }
         public string ActualEndDate { get; set; }

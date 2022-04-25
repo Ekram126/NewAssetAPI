@@ -38,6 +38,7 @@ namespace Asset.Core.Repositories
                     workOrder.WorkOrderPeriorityId = createWorkOrderVM.WorkOrderPeriorityId;
                     workOrder.WorkOrderTypeId = createWorkOrderVM.WorkOrderTypeId;
                     workOrder.RequestId = createWorkOrderVM.RequestId;
+                    workOrder.HospitalId = createWorkOrderVM.HospitalId;
                     _context.WorkOrders.Add(workOrder);
                     _context.SaveChanges();
                     createWorkOrderVM.Id = workOrder.Id;
@@ -225,8 +226,8 @@ namespace Asset.Core.Repositories
                         Id = item.Id,
                         StatusName = item.WorkOrderStatus.Name,
                         StatusNameAr = item.WorkOrderStatus.NameAr,
-                            // CreationDate = DateTime.Parse(item.CreationDate.ToString())
-                        }).ToList();
+                        // CreationDate = DateTime.Parse(item.CreationDate.ToString())
+                    }).ToList();
 
                     list.Add(work);
                 }
@@ -282,6 +283,7 @@ namespace Asset.Core.Repositories
                       .Include(w => w.WorkOrderPeriority)
                       .Include(w => w.Request)
                       .Include(w => w.Request.AssetDetail)
+                      .Include(w => w.Request.AssetDetail.MasterAsset)
                       .Include(w => w.User).ToList();
             foreach (var item in lstWorkOrders)
             {
@@ -289,17 +291,17 @@ namespace Asset.Core.Repositories
                 work.Id = item.Id;
                 work.WorkOrderNumber = item.WorkOrderNumber;
                 work.Subject = item.Subject;
-                work.ModelNumber = item.Request.AssetDetail.MasterAsset.ModelNumber;
+                work.ModelNumber = item.Request.AssetDetail.MasterAsset != null?item.Request.AssetDetail.MasterAsset.ModelNumber:"";
                 work.RequestSubject = item.Request.Subject;
                 work.CreationDate = item.CreationDate;
                 work.Note = item.Note;
-                work.BarCode = item.Request.AssetDetail.Barcode;
+                work.BarCode = item.Request.AssetDetail != null? item.Request.AssetDetail.Barcode:"";
                 work.CreatedById = item.CreatedById;
                 work.CreatedBy = item.User.UserName;
                 work.TypeName = item.WorkOrderType.Name;
                 work.TypeNameAr = item.WorkOrderType.NameAr;
-                work.PeriorityName = item.WorkOrderPeriority.Name;
-                work.PeriorityNameAr = item.WorkOrderPeriority.NameAr;
+                work.PeriorityName = item.WorkOrderPeriority !=null? item.WorkOrderPeriority.Name:"";
+                work.PeriorityNameAr = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.NameAr:"";
                 var lstStatus = _context.WorkOrderTrackings
                        .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
                        .Where(a => a.WorkOrderId == item.Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList();
@@ -344,124 +346,131 @@ namespace Asset.Core.Repositories
                     Id = item.Id,
                     StatusName = item.WorkOrderStatus.Name,
                     StatusNameAr = item.WorkOrderStatus.NameAr,
-                    CreationDate = DateTime.Parse(item.CreationDate.ToString())
+                  //  CreationDate = DateTime.Parse(item.CreationDate.ToString())
                 }).ToList();
 
                 list.Add(work);
             }
-            if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
+            //if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
+            //{
+            //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //}
+            //if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
+            //{
+            //    List<IndexWorkOrderVM> listAssignedUsers = new List<IndexWorkOrderVM>();
+            //    var lstAssigned = (from wo in _context.WorkOrders
+            //                       join trk in _context.WorkOrderTrackings on wo.Id equals trk.WorkOrderId
+            //                       where trk.AssignedTo == userId
+            //                       select wo).ToList().GroupBy(a => a.Id).ToList();
+
+            //    foreach (var item in lstAssigned)
+            //    {
+            //        IndexWorkOrderVM work = new IndexWorkOrderVM();
+            //        work.Id = item.FirstOrDefault().Id;
+            //        work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
+            //        work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
+            //        work.Subject = item.FirstOrDefault().Subject;
+            //        work.RequestSubject = item.FirstOrDefault().Request.Subject;
+            //        work.CreationDate = item.FirstOrDefault().CreationDate;
+            //        work.Note = item.FirstOrDefault().Note;
+            //        work.CreatedById = item.FirstOrDefault().CreatedById;
+            //        work.CreatedBy = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().User.UserName;
+            //        work.TypeName = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().Name;
+            //        work.TypeNameAr = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().NameAr;
+            //        work.WorkOrderPeriorityId = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().Id;
+            //        work.PeriorityName = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().Name;
+            //        work.PeriorityNameAr = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().NameAr;
+            //        var lstStatus = _context.WorkOrderTrackings
+            //               .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
+            //               .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList();
+            //        if (lstStatus.Count > 0)
+            //        {
+            //            work.StatusId = lstStatus[0].WorkOrderStatus.Id;
+            //            work.WorkOrderStatusId = lstStatus[0].WorkOrderStatus.Id;
+            //            work.StatusName = lstStatus[0].WorkOrderStatus.Name;
+            //            work.StatusNameAr = lstStatus[0].WorkOrderStatus.NameAr;
+            //            work.statusColor = lstStatus[0].WorkOrderStatus.Color;
+            //            work.statusIcon = lstStatus[0].WorkOrderStatus.Icon;
+
+            //        }
+
+            //        var lstStatusIds = _context.WorkOrderTrackings
+            //              .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().Select(a => a.WorkOrderStatusId).ToList();
+
+
+
+            //        var exist = lstStatusIds.Contains(9);
+            //        work.ExistStatusId = exist;
+
+            //        work.ActualStartDate = item.FirstOrDefault().ActualStartDate;
+            //        work.ActualEndDate = item.FirstOrDefault().ActualEndDate;
+            //        //work.RequestId = item.FirstOrDefault().RequestId;
+            //        work.RequestId = item.FirstOrDefault().RequestId != null ? (int)item.FirstOrDefault().RequestId : 0;
+            //        work.HospitalId = item.FirstOrDefault().Request.AssetDetail.HospitalId;
+            //        work.AssignedTo = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().AssignedTo;
+            //        listAssignedUsers.Add(work);
+            //    }
+
+
+
+            //    List<IndexWorkOrderVM> listCreatedByUser = new List<IndexWorkOrderVM>();
+            //    var lstcreated = (from wo in _context.WorkOrders
+            //                      join trk in _context.WorkOrderTrackings on wo.Id equals trk.WorkOrderId
+            //                      where trk.CreatedById == userId
+            //                      select wo).ToList().GroupBy(a => a.Id).ToList();
+
+            //    foreach (var item in lstcreated)
+            //    {
+            //        IndexWorkOrderVM work = new IndexWorkOrderVM();
+            //        work.Id = item.FirstOrDefault().Id;
+            //        work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
+            //        work.Subject = item.FirstOrDefault().Subject;
+            //        work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
+            //        work.RequestSubject = _context.Request.Where(a => a.Id == item.FirstOrDefault().RequestId).ToList().FirstOrDefault().Subject;
+            //        work.CreationDate = item.FirstOrDefault().CreationDate;
+            //        work.Note = item.FirstOrDefault().Note;
+            //        work.CreatedById = item.FirstOrDefault().CreatedById;
+            //        work.CreatedBy = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().User.UserName;
+            //        work.TypeName = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().Name;
+            //        work.TypeNameAr = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().NameAr;
+            //        work.PeriorityName = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().Name;
+            //        work.PeriorityNameAr = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().NameAr;
+            //        var lstStatus = _context.WorkOrderTrackings
+            //               .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
+            //               .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList();
+            //        if (lstStatus.Count > 0)
+            //        {
+            //            work.StatusName = lstStatus[0].WorkOrderStatus.Name;
+            //            work.StatusNameAr = lstStatus[0].WorkOrderStatus.NameAr;
+            //            work.WorkOrderStatusId = lstStatus[0].WorkOrderStatus.Id;
+            //            work.statusColor = lstStatus[0].WorkOrderStatus.Color;
+            //            work.statusIcon = lstStatus[0].WorkOrderStatus.Icon;
+
+            //        }
+
+            //        work.ActualStartDate = item.FirstOrDefault().ActualStartDate;
+            //        work.ActualEndDate = item.FirstOrDefault().ActualEndDate;
+            //        //   work.RequestId = item.FirstOrDefault().RequestId;
+            //        work.RequestId = item.FirstOrDefault().RequestId != null ? (int)item.FirstOrDefault().RequestId : 0;
+            //        work.HospitalId = item.FirstOrDefault().Request.AssetDetail.HospitalId;
+            //        work.AssignedTo = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().AssignedTo;
+            //        listAssignedUsers.Add(work);
+            //    }
+
+            //    list = listAssignedUsers.Where(a => a.HospitalId == UserObj.HospitalId).Concat(listCreatedByUser.Where(a => a.HospitalId == UserObj.HospitalId)).ToList();
+            //}
+
+            //if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
+            //{
+            //    list = list.Where(a => a.CreatedById == userId && a.AssignedTo == userId).ToList();
+            //}
+
+            if ( userRoleNames.Contains("EngDepManager"))
             {
-                list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            }
-            if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
-            {
-                List<IndexWorkOrderVM> listAssignedUsers = new List<IndexWorkOrderVM>();
-                var lstAssigned = (from wo in _context.WorkOrders
-                                   join trk in _context.WorkOrderTrackings on wo.Id equals trk.WorkOrderId
-                                   where trk.AssignedTo == userId
-                                   select wo).ToList().GroupBy(a => a.Id).ToList();
-
-                foreach (var item in lstAssigned)
-                {
-                    IndexWorkOrderVM work = new IndexWorkOrderVM();
-                    work.Id = item.FirstOrDefault().Id;
-                    work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
-                    work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
-                    work.Subject = item.FirstOrDefault().Subject;
-                    work.RequestSubject = item.FirstOrDefault().Request.Subject;
-                    work.CreationDate = item.FirstOrDefault().CreationDate;
-                    work.Note = item.FirstOrDefault().Note;
-                    work.CreatedById = item.FirstOrDefault().CreatedById;
-                    work.CreatedBy = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().User.UserName;
-                    work.TypeName = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().Name;
-                    work.TypeNameAr = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().NameAr;
-                    work.WorkOrderPeriorityId = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().Id;
-                    work.PeriorityName = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().Name;
-                    work.PeriorityNameAr = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().NameAr;
-                    var lstStatus = _context.WorkOrderTrackings
-                           .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
-                           .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList();
-                    if (lstStatus.Count > 0)
-                    {
-                        work.StatusId = lstStatus[0].WorkOrderStatus.Id;
-                        work.WorkOrderStatusId = lstStatus[0].WorkOrderStatus.Id;
-                        work.StatusName = lstStatus[0].WorkOrderStatus.Name;
-                        work.StatusNameAr = lstStatus[0].WorkOrderStatus.NameAr;
-                        work.statusColor = lstStatus[0].WorkOrderStatus.Color;
-                        work.statusIcon = lstStatus[0].WorkOrderStatus.Icon;
-
-                    }
-
-                    var lstStatusIds = _context.WorkOrderTrackings
-                          .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().Select(a => a.WorkOrderStatusId).ToList();
-
-
-
-                    var exist = lstStatusIds.Contains(9);
-                    work.ExistStatusId = exist;
-
-                    work.ActualStartDate = item.FirstOrDefault().ActualStartDate;
-                    work.ActualEndDate = item.FirstOrDefault().ActualEndDate;
-                    //work.RequestId = item.FirstOrDefault().RequestId;
-                    work.RequestId = item.FirstOrDefault().RequestId != null ? (int)item.FirstOrDefault().RequestId : 0;
-                    work.HospitalId = item.FirstOrDefault().Request.AssetDetail.HospitalId;
-                    work.AssignedTo = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().AssignedTo;
-                    listAssignedUsers.Add(work);
-                }
-
-
-
-                List<IndexWorkOrderVM> listCreatedByUser = new List<IndexWorkOrderVM>();
-                var lstcreated = (from wo in _context.WorkOrders
-                                  join trk in _context.WorkOrderTrackings on wo.Id equals trk.WorkOrderId
-                                  where trk.CreatedById == userId
-                                  select wo).ToList().GroupBy(a => a.Id).ToList();
-
-                foreach (var item in lstcreated)
-                {
-                    IndexWorkOrderVM work = new IndexWorkOrderVM();
-                    work.Id = item.FirstOrDefault().Id;
-                    work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
-                    work.Subject = item.FirstOrDefault().Subject;
-                    work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
-                    work.RequestSubject = _context.Request.Where(a => a.Id == item.FirstOrDefault().RequestId).ToList().FirstOrDefault().Subject;
-                    work.CreationDate = item.FirstOrDefault().CreationDate;
-                    work.Note = item.FirstOrDefault().Note;
-                    work.CreatedById = item.FirstOrDefault().CreatedById;
-                    work.CreatedBy = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().User.UserName;
-                    work.TypeName = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().Name;
-                    work.TypeNameAr = _context.WorkOrderTypes.Where(a => a.Id == item.FirstOrDefault().WorkOrderTypeId).ToList().FirstOrDefault().NameAr;
-                    work.PeriorityName = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().Name;
-                    work.PeriorityNameAr = _context.WorkOrderPeriorities.Where(a => a.Id == item.FirstOrDefault().WorkOrderPeriorityId).ToList().FirstOrDefault().NameAr;
-                    var lstStatus = _context.WorkOrderTrackings
-                           .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
-                           .Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList();
-                    if (lstStatus.Count > 0)
-                    {
-                        work.StatusName = lstStatus[0].WorkOrderStatus.Name;
-                        work.StatusNameAr = lstStatus[0].WorkOrderStatus.NameAr;
-                        work.WorkOrderStatusId = lstStatus[0].WorkOrderStatus.Id;
-                        work.statusColor = lstStatus[0].WorkOrderStatus.Color;
-                        work.statusIcon = lstStatus[0].WorkOrderStatus.Icon;
-
-                    }
-
-                    work.ActualStartDate = item.FirstOrDefault().ActualStartDate;
-                    work.ActualEndDate = item.FirstOrDefault().ActualEndDate;
-                    //   work.RequestId = item.FirstOrDefault().RequestId;
-                    work.RequestId = item.FirstOrDefault().RequestId != null ? (int)item.FirstOrDefault().RequestId : 0;
-                    work.HospitalId = item.FirstOrDefault().Request.AssetDetail.HospitalId;
-                    work.AssignedTo = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().FirstOrDefault().AssignedTo;
-                    listAssignedUsers.Add(work);
-                }
-
-                list = listAssignedUsers.Where(a => a.HospitalId == UserObj.HospitalId).Concat(listCreatedByUser.Where(a => a.HospitalId == UserObj.HospitalId)).ToList();
+                list = list.Where(a => a.HospitalId == UserObj.HospitalId).ToList();
             }
 
-            if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-            {
-                list = list.Where(a => a.CreatedById == userId && a.AssignedTo == userId).ToList();
-            }
+
             if (statusId > 0)
                 list = list.Where(a => a.WorkOrderStatusId == statusId).ToList();
             else
@@ -1052,8 +1061,8 @@ namespace Asset.Core.Repositories
                 printWorkObj.Note = work.Note;
                 printWorkObj.CreatedById = work.CreatedById;
                 printWorkObj.CreatedBy = work.User.UserName;
-                printWorkObj.PeriorityName = work.WorkOrderPeriority.Name;
-                printWorkObj.PeriorityNameAr = work.WorkOrderPeriority.NameAr;
+                printWorkObj.PeriorityName = work.WorkOrderPeriority != null ? work.WorkOrderPeriority.Name:"";
+                printWorkObj.PeriorityNameAr = work.WorkOrderPeriority != null ? work.WorkOrderPeriority.NameAr:"";
                 printWorkObj.TypeName = work.WorkOrderType.Name;
                 printWorkObj.TypeNameAr = work.WorkOrderType.NameAr;
 
@@ -1208,6 +1217,9 @@ namespace Asset.Core.Repositories
                 getDataObj.SerialNumber = item.Request.AssetDetail.SerialNumber;
 
                 getDataObj.WorkOrderNumber = item.WorkOrderNumber;
+
+
+
                 getDataObj.WorkOrderTypeName = item.WorkOrderType.Name;
                 getDataObj.RequestSubject = item.Request.Subject;
                 getDataObj.AssetId = item.Request.AssetDetailId;
@@ -1259,130 +1271,131 @@ namespace Asset.Core.Repositories
                 }
                 lstData.Add(getDataObj);
             }
-
-            if (searchObj.StatusId != 0)
+            if (lstData.Count > 0)
             {
-                lstData = lstData.Where(a => a.WorkOrderStatusId == searchObj.StatusId).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.PeriorityId != 0)
-            {
-                lstData = lstData.Where(a => a.WorkOrderPeriorityId == searchObj.PeriorityId).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.Subject != "")
-            {
-                lstData = lstData.Where(a => a.Subject.Contains(searchObj.Subject)).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-
-            if (searchObj.ModelNumber != "")
-            {
-                lstData = lstData.Where(a => a.ModelNumber.Contains(searchObj.ModelNumber)).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-            if (searchObj.BarCode != "")
-            {
-                lstData = lstData.Where(b => b.BarCode.Contains(searchObj.BarCode)).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-
-
-            if (searchObj.WONumber != "")
-            {
-                lstData = lstData.Where(b => b.WorkOrderNumber.Contains(searchObj.WONumber)).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-
-            if (searchObj.SerialNumber != "")
-            {
-                lstData = lstData.Where(b => b.SerialNumber.Contains(searchObj.SerialNumber)).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-
-
-            if (searchObj.RequestSubject != "")
-            {
-                lstData = lstData.Where(b => b.RequestSubject.Contains(searchObj.RequestSubject)).ToList();
-            }
-            else
-                lstData = lstData.ToList();
-
-
-            string setstartday, setstartmonth, setendday, setendmonth = "";
-            DateTime startingFrom = new DateTime();
-            DateTime endingTo = new DateTime();
-            if (searchObj.Start == "")
-            {
-                //  searchObj.PlannedStartDate = DateTime.Parse("01/01/1900");
-            }
-            else
-            {
-                searchObj.PlannedStartDate = DateTime.Parse(searchObj.Start.ToString());
-
-                var startyear = searchObj.PlannedStartDate.Value.Year;
-                var startmonth = searchObj.PlannedStartDate.Value.Month;
-                var startday = searchObj.PlannedStartDate.Value.Day;
-                if (startday < 10)
-                    setstartday = searchObj.PlannedStartDate.Value.Day.ToString().PadLeft(2, '0');
+                if (searchObj.StatusId != 0)
+                {
+                    lstData = lstData.Where(a => a.WorkOrderStatusId == searchObj.StatusId).ToList();
+                }
                 else
-                    setstartday = searchObj.PlannedStartDate.Value.Day.ToString();
+                    lstData = lstData.ToList();
 
-                if (startmonth < 10)
-                    setstartmonth = searchObj.PlannedStartDate.Value.Month.ToString().PadLeft(2, '0');
+                if (searchObj.PeriorityId != null)
+                {
+                    lstData = lstData.Where(a => a.WorkOrderPeriorityId == searchObj.PeriorityId).ToList();
+                }
                 else
-                    setstartmonth = searchObj.PlannedStartDate.Value.Month.ToString();
+                    lstData = lstData.ToList();
 
-                var sDate = startyear + "/" + setstartmonth + "/" + setstartday;
-                startingFrom = DateTime.Parse(sDate);
-
-            }
-
-            if (searchObj.End == "")
-            {
-                // searchObj.PlannedEndDate = DateTime.Today.Date;
-            }
-            else
-            {
-                searchObj.PlannedEndDate = DateTime.Parse(searchObj.End.ToString());
-                var endyear = searchObj.PlannedEndDate.Value.Year;
-                var endmonth = searchObj.PlannedEndDate.Value.Month;
-                var endday = searchObj.PlannedEndDate.Value.Day;
-                if (endday < 10)
-                    setendday = searchObj.PlannedEndDate.Value.Day.ToString().PadLeft(2, '0');
+                if (searchObj.Subject != "")
+                {
+                    lstData = lstData.Where(a => a.Subject.Contains(searchObj.Subject)).ToList();
+                }
                 else
-                    setendday = searchObj.PlannedEndDate.Value.Day.ToString();
+                    lstData = lstData.ToList();
 
-                if (endmonth < 10)
-                    setendmonth = searchObj.PlannedEndDate.Value.Month.ToString().PadLeft(2, '0');
+
+                if (searchObj.ModelNumber != "")
+                {
+                    lstData = lstData.Where(a => a.ModelNumber.Contains(searchObj.ModelNumber)).ToList();
+                }
                 else
-                    setendmonth = searchObj.PlannedEndDate.Value.Month.ToString();
+                    lstData = lstData.ToList();
 
-                var eDate = endyear + "/" + setendmonth + "/" + setendday;
-                endingTo = DateTime.Parse(eDate);
+                if (searchObj.BarCode != "")
+                {
+                    lstData = lstData.Where(b => b.BarCode.Contains(searchObj.BarCode)).ToList();
+                }
+                else
+                    lstData = lstData.ToList();
+
+
+
+                if (searchObj.WONumber != "")
+                {
+                    lstData = lstData.Where(b => b.WorkOrderNumber.Contains(searchObj.WONumber)).ToList();
+                }
+                else
+                    lstData = lstData.ToList();
+
+
+                if (searchObj.SerialNumber != "")
+                {
+                    lstData = lstData.Where(b => b.SerialNumber.Contains(searchObj.SerialNumber)).ToList();
+                }
+                else
+                    lstData = lstData.ToList();
+
+
+
+                if (searchObj.RequestSubject != "")
+                {
+                    lstData = lstData.Where(b => b.RequestSubject.Contains(searchObj.RequestSubject)).ToList();
+                }
+                else
+                    lstData = lstData.ToList();
+
+
+                string setstartday, setstartmonth, setendday, setendmonth = "";
+                DateTime startingFrom = new DateTime();
+                DateTime endingTo = new DateTime();
+                if (searchObj.Start == "")
+                {
+                    //  searchObj.PlannedStartDate = DateTime.Parse("01/01/1900");
+                }
+                else
+                {
+                    searchObj.PlannedStartDate = DateTime.Parse(searchObj.Start.ToString());
+
+                    var startyear = searchObj.PlannedStartDate.Value.Year;
+                    var startmonth = searchObj.PlannedStartDate.Value.Month;
+                    var startday = searchObj.PlannedStartDate.Value.Day;
+                    if (startday < 10)
+                        setstartday = searchObj.PlannedStartDate.Value.Day.ToString().PadLeft(2, '0');
+                    else
+                        setstartday = searchObj.PlannedStartDate.Value.Day.ToString();
+
+                    if (startmonth < 10)
+                        setstartmonth = searchObj.PlannedStartDate.Value.Month.ToString().PadLeft(2, '0');
+                    else
+                        setstartmonth = searchObj.PlannedStartDate.Value.Month.ToString();
+
+                    var sDate = startyear + "/" + setstartmonth + "/" + setstartday;
+                    startingFrom = DateTime.Parse(sDate);
+
+                }
+
+                if (searchObj.End == "")
+                {
+                    // searchObj.PlannedEndDate = DateTime.Today.Date;
+                }
+                else
+                {
+                    searchObj.PlannedEndDate = DateTime.Parse(searchObj.End.ToString());
+                    var endyear = searchObj.PlannedEndDate.Value.Year;
+                    var endmonth = searchObj.PlannedEndDate.Value.Month;
+                    var endday = searchObj.PlannedEndDate.Value.Day;
+                    if (endday < 10)
+                        setendday = searchObj.PlannedEndDate.Value.Day.ToString().PadLeft(2, '0');
+                    else
+                        setendday = searchObj.PlannedEndDate.Value.Day.ToString();
+
+                    if (endmonth < 10)
+                        setendmonth = searchObj.PlannedEndDate.Value.Month.ToString().PadLeft(2, '0');
+                    else
+                        setendmonth = searchObj.PlannedEndDate.Value.Month.ToString();
+
+                    var eDate = endyear + "/" + setendmonth + "/" + setendday;
+                    endingTo = DateTime.Parse(eDate);
+                }
+
+
+
+                if (searchObj.Start != "" && searchObj.End != "")
+                {
+                    lstData = lstData.Where(a => a.PlannedStartDate >= startingFrom && a.PlannedStartDate <= endingTo).ToList();
+                }
             }
-
-
-
-            if (searchObj.Start != "" && searchObj.End != "")
-            {
-                lstData = lstData.Where(a => a.PlannedStartDate >= startingFrom && a.PlannedStartDate <= endingTo).ToList();
-            }
-
 
             return lstData;
         }
@@ -1390,123 +1403,22 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj, int statusId)
         {
             var list = GetAllWorkOrdersByHospitalId(hosId, userId);
-
-            if (sortObj.StatusId == 0)
-            {
-                list = list.ToList();
-                if (sortObj.StrRequestSubject != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
-
-                    else
-                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
-                }
-                if (sortObj.StrBarCode != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                    {
-                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
-                    }
-                    else
-                    {
-                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
-                    }
-                }
-                if (sortObj.StrSerial != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                    {
-                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
-                    }
-                    else
-                    {
-                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
-                    }
-                }
-                if (sortObj.StrModel != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                    else
-                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                }
-                if (sortObj.StrWorkOrderNumber != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
-                    else
-                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
-                }
-                if (sortObj.StrSubject != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
-
-                    else
-                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
-                }
-            }
-            else
-            {
-                list = list.Where(a => a.StatusId == sortObj.StatusId).ToList();
-
-                if (sortObj.StrRequestSubject != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
-
-                    else
-                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
-                }
-                if (sortObj.StrBarCode != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                    {
-                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
-                    }
-                    else
-                    {
-                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
-                    }
-                }
-                if (sortObj.StrSerial != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                    {
-                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
-                    }
-                    else
-                    {
-                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
-                    }
-                }
-                if (sortObj.StrModel != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                    else
-                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                }
-                if (sortObj.StrWorkOrderNumber != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
-                    else
-                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
-                }
-                if (sortObj.StrSubject != "")
-                {
-                    if (sortObj.SortStatus == "descending")
-                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
-
-                    else
-                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
-                }
-            }
+            
+         
 
             if (sortObj.AssetName != "")
             {
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusName).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusName).ToList();
+                    }
+                }
                 if (sortObj.StrRequestSubject != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1570,6 +1482,17 @@ namespace Asset.Core.Repositories
 
             if (sortObj.AssetNameAr != "")
             {
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusName).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusName).ToList();
+                    }
+                }
                 if (sortObj.StrRequestSubject != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1637,13 +1560,66 @@ namespace Asset.Core.Repositories
                 {
                     if (sortObj.SortStatus == "descending")
                     {
-                        list = list.Where(b => b.StatusName == sortObj.StatusName && b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusName).ToList();
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusName).ToList();
                     }
                     else
                     {
-                        list = list.OrderBy(d => d.StatusName).ToList();
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusName).ToList();
                     }
                 }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
+
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+
                 else
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1666,16 +1642,6 @@ namespace Asset.Core.Repositories
                         list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
                     }
                 }
-                else
-                {
-                    if (sortObj.SortStatus == "descending")
-                        list = list.OrderByDescending(d => d.StatusNameAr).ToList();
-                    else
-                        list = list.OrderBy(d => d.StatusNameAr).ToList();
-                }
-            }
-            if (sortObj.Barcode != "")
-            {
                 if (sortObj.StrBarCode != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1695,7 +1661,79 @@ namespace Asset.Core.Repositories
                     else
                         list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
                 }
+                if (sortObj.StrSerial != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderByDescending(d => d.SerialNumber).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
+                    }
+                }
+                if (sortObj.StrModel != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    else
+                        list = list.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                }
+                if (sortObj.StrWorkOrderNumber != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderByDescending(d => d.WorkOrderNumber).ToList();
+                    else
+                        list = list.Where(b => b.WorkOrderNumber.Contains(sortObj.StrWorkOrderNumber)).OrderBy(d => d.WorkOrderNumber).ToList();
+                }
+                if (sortObj.StrSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderByDescending(d => d.Subject).ToList();
 
+                    else
+                        list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
+                }
+                else
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.OrderByDescending(d => d.StatusNameAr).ToList();
+                    else
+                        list = list.OrderBy(d => d.StatusNameAr).ToList();
+                }
+            }
+            if (sortObj.Barcode != "")
+            {
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
+                if (sortObj.StrBarCode != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderByDescending(d => d.BarCode).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.BarCode.Contains(sortObj.StrBarCode)).OrderBy(d => d.BarCode).ToList();
+                    }
+                }
+                if (sortObj.StrRequestSubject != "")
+                {
+                    if (sortObj.SortStatus == "descending")
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderByDescending(d => d.RequestSubject).ToList();
+
+                    else
+                        list = list.Where(b => b.RequestSubject.Contains(sortObj.StrRequestSubject)).OrderBy(d => d.RequestSubject).ToList();
+                }
                 if (sortObj.StrSerial != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1739,6 +1777,17 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.SerialNumber != "")
             {
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
                 if (sortObj.StrSerial != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1804,6 +1853,17 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.ModelNumber != "")
             {
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
                 if (sortObj.StrModel != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1867,6 +1927,17 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.WorkOrderNumber != "")
             {
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
                 if (sortObj.StrWorkOrderNumber != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1930,6 +2001,17 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.Subject != "")
             {
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
                 if (sortObj.StrSubject != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -1994,6 +2076,17 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.RequestSubject != "")
             {
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.WorkOrderStatusId == sortObj.StatusId).OrderByDescending(d => d.RequestSubject).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.WorkOrderStatusId == sortObj.StatusId).OrderBy(d => d.RequestSubject).ToList();
+                    }
+                }
                 if (sortObj.StrRequestSubject != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -2046,7 +2139,6 @@ namespace Asset.Core.Repositories
                     else
                         list = list.Where(b => b.Subject.Contains(sortObj.StrSubject)).OrderBy(d => d.Subject).ToList();
                 }
-
                 else
                 {
                     if (sortObj.SortStatus == "descending")
@@ -2057,6 +2149,18 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.CreatedBy != "")
             {
+
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
                 if (sortObj.StrRequestSubject != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -2119,6 +2223,18 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.CreationDate != "")
             {
+
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
                 if (sortObj.StrRequestSubject != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -2181,6 +2297,17 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.ClosedDate != "")
             {
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
                 if (sortObj.StrRequestSubject != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -2243,6 +2370,18 @@ namespace Asset.Core.Repositories
             }
             if (sortObj.Note != "")
             {
+
+                if (sortObj.StatusId != 0)
+                {
+                    if (sortObj.SortStatus == "descending")
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderByDescending(d => d.StatusId).ToList();
+                    }
+                    else
+                    {
+                        list = list.Where(b => b.StatusId == sortObj.StatusId).OrderBy(d => d.StatusId).ToList();
+                    }
+                }
                 if (sortObj.StrRequestSubject != "")
                 {
                     if (sortObj.SortStatus == "descending")
@@ -2497,7 +2636,7 @@ namespace Asset.Core.Repositories
                                   .Include(w => w.WorkOrder.Request.AssetDetail.Hospital)
                                   .Include(w => w.User).ToList().GroupBy(a => a.WorkOrder.RequestId).ToList();
 
-         
+
 
             if (lstWorkOrders.Count > 0)
             {
