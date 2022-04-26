@@ -29,8 +29,8 @@ namespace Asset.Core.Repositories
                     workOrder.Subject = createWorkOrderVM.Subject;
                     workOrder.WorkOrderNumber = createWorkOrderVM.WorkOrderNumber;
                     workOrder.CreationDate = DateTime.Now;
-                    workOrder.PlannedStartDate = createWorkOrderVM.PlannedStartDate;
-                    workOrder.PlannedEndDate = createWorkOrderVM.PlannedEndDate;
+                    workOrder.PlannedStartDate = DateTime.Parse(createWorkOrderVM.PlannedStartDate);
+                    workOrder.PlannedEndDate = DateTime.Parse(createWorkOrderVM.PlannedEndDate);
                     workOrder.ActualStartDate = DateTime.Parse(createWorkOrderVM.ActualStartDate);
                     workOrder.ActualEndDate = DateTime.Parse(createWorkOrderVM.ActualEndDate);
                     workOrder.Note = createWorkOrderVM.Note;
@@ -2498,6 +2498,7 @@ namespace Asset.Core.Repositories
                           .Include(w => w.WorkOrderPeriority)
                           .Include(w => w.Request)
                           .Include(w => w.Request.AssetDetail)
+                          .Include(w => w.Request.AssetDetail.MasterAsset)
                           .Include(w => w.User).OrderByDescending(a => a.CreationDate).ToList().GroupBy(a => a.Id).ToList();
                 foreach (var item in lstWorkOrders)
                 {
@@ -2519,8 +2520,8 @@ namespace Asset.Core.Repositories
 
                     work.TypeName = item.FirstOrDefault().WorkOrderType.Name;
                     work.TypeNameAr = item.FirstOrDefault().WorkOrderType.NameAr;
-                    work.PeriorityName = item.FirstOrDefault().WorkOrderPeriority.Name;
-                    work.PeriorityNameAr = item.FirstOrDefault().WorkOrderPeriority.NameAr;
+                    work.PeriorityName = item.FirstOrDefault().WorkOrderPeriority != null ?item.FirstOrDefault().WorkOrderPeriority.Name:"";
+                    work.PeriorityNameAr = item.FirstOrDefault().WorkOrderPeriority != null ? item.FirstOrDefault().WorkOrderPeriority.NameAr:"";
                     var lstAssignTo = _context.WorkOrderTrackings.Where(a => a.WorkOrderId == item.FirstOrDefault().Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList().GroupBy(a => item.FirstOrDefault().Id).ToList();
 
                     var lstStatus = _context.WorkOrderTrackings

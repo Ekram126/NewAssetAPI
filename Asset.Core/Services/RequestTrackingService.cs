@@ -48,6 +48,11 @@ namespace Asset.Core.Services
             return _unitOfWork.RequestTracking.GetAllTrackingsByRequestId(RequestId);
         }
 
+        public RequestTracking GetFirstTrackForRequestByRequestId(int requestId)
+        {
+            return _unitOfWork.RequestTracking.GetFirstTrackForRequestByRequestId(requestId);
+        }
+
         public IndexRequestTracking GetRequestTrackingById(int id)
         {
             return _unitOfWork.RequestTracking.GetById(id);
@@ -59,9 +64,9 @@ namespace Asset.Core.Services
             return _unitOfWork.RequestTracking.GetRequestTracksByRequestId(requestId);
         }
 
-        public void UpdateRequestTracking(int id, EditRequestTracking editRequestTracking)
+        public void UpdateRequestTracking(EditRequestTracking editRequestTracking)
         {
-            _unitOfWork.RequestTracking.Update(id, editRequestTracking);
+            _unitOfWork.RequestTracking.Update( editRequestTracking);
         }
     }
 }

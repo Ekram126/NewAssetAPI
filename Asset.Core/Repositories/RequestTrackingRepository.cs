@@ -32,6 +32,7 @@ namespace Asset.Core.Repositories
                     requestTracking.RequestStatusId = createRequestTracking.RequestStatusId;
                     requestTracking.CreatedById = createRequestTracking.CreatedById;
                     requestTracking.HospitalId = createRequestTracking.HospitalId;
+                    requestTracking.IsOpened = false;
                     _context.RequestTracking.Add(requestTracking);
                     _context.SaveChanges();
                     createRequestTracking.Id = requestTracking.Id;
@@ -291,11 +292,11 @@ namespace Asset.Core.Repositories
             return RequestTrackingObj;
         }
 
-        public void Update(int id, EditRequestTracking editRequestTracking)
+        public void Update( EditRequestTracking editRequestTracking)
         {
             try
             {
-                RequestTracking requestTracking = new RequestTracking();
+                RequestTracking requestTracking = _context.RequestTracking.Find(editRequestTracking.Id);
                 requestTracking.Description = editRequestTracking.Description;
                 requestTracking.DescriptionDate = editRequestTracking.DescriptionDate; //requestDescriptionDTO.DescriptionDate;
                 requestTracking.RequestId = editRequestTracking.RequestId;
@@ -321,6 +322,18 @@ namespace Asset.Core.Repositories
         {
             return _context.RequestTracking.ToList();
 
+        }
+
+        public RequestTracking GetFirstTrackForRequestByRequestId(int requestId)
+        {
+            RequestTracking trackingObj = new RequestTracking();
+            var lstTracks = _context.RequestTracking.Where(r => r.RequestId == requestId && r.RequestStatusId == 1).OrderBy(a=>a.Id ).ToList();
+            if (lstTracks.Count > 0)
+            {
+                trackingObj = lstTracks[0];
+            }
+
+            return trackingObj;
         }
     }
 }

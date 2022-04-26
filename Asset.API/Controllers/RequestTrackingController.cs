@@ -1,4 +1,5 @@
 ﻿using Asset.Domain.Services;
+using Asset.Models;
 using Asset.ViewModels.RequestTrackingVM;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -24,7 +25,7 @@ namespace Asset.API.Controllers
         [Route("GetAllRequestFromTrackingByuserId/{UserId}/{assetdetailId}")]
         public IEnumerable<IndexRequestTracking> Get(string UserId, int assetDetailId)
         {
-            return _requestTrackingService.GetAllRequestTracking(UserId,assetDetailId);
+            return _requestTrackingService.GetAllRequestTracking(UserId, assetDetailId);
         }
 
         // GET api/<RequestTrackingController>/5
@@ -39,6 +40,18 @@ namespace Asset.API.Controllers
         {
             return _requestTrackingService.GetAllTrackingsByRequestId(requestId);
         }
+
+
+
+        [HttpGet]
+        [Route("GetFirstTrackForRequestByRequestId/{requestId}")]
+        public RequestTracking GetFirstTrackForRequestByRequestId(int requestId)
+        {
+            return _requestTrackingService.GetFirstTrackForRequestByRequestId(requestId);
+        }
+
+
+
 
 
         [HttpGet]
@@ -64,14 +77,15 @@ namespace Asset.API.Controllers
         [Route("AddRequestTracking")]
         public int Post(CreateRequestTracking createRequestTracking)
         {
-           return _requestTrackingService.AddRequestTracking(createRequestTracking);
+            return _requestTrackingService.AddRequestTracking(createRequestTracking);
         }
 
         // PUT api/<RequestTrackingController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, EditRequestTracking editRequestTracking)
+        [HttpPut]
+        [Route("UpdateRequestTracking")]
+        public void Put(EditRequestTracking editRequestTrackingObj)
         {
-            _requestTrackingService.UpdateRequestTracking(id, editRequestTracking);
+            _requestTrackingService.UpdateRequestTracking(editRequestTrackingObj);
         }
 
         // DELETE api/<RequestTrackingController>/5

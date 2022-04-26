@@ -12,12 +12,14 @@ namespace Asset.Domain.Repositories
     {
         IEnumerable<RequestTracking> GetAll();
         IEnumerable<IndexRequestTracking> GetAll(string UserId, int? assetDetailId);
+        RequestTracking GetFirstTrackForRequestByRequestId(int requestId);
+
         IndexRequestTracking GetById(int id);
         RequestDetails GetAllTrackingsByRequestId(int RequestId);
         List<RequestTrackingView> GetRequestTracksByRequestId(int requestId);
         int CountRequestTracksByRequestId(int requestId);
         int Add(CreateRequestTracking createRequestTracking);
-        void Update(int id, EditRequestTracking editRequestTracking);
+        void Update(EditRequestTracking editRequestTracking);
         void Delete(int id);
     }
 }

@@ -19,6 +19,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId,string userId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalAssetId(int assetId);
+        
         int GetTotalOpenRequest(string userId);
         List<Request> ListOpenRequests(int hospitalId);
         List<IndexRequestTracking> ListOpenRequestTracks(int hospitalId);

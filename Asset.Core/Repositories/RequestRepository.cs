@@ -116,9 +116,13 @@ namespace Asset.Core.Repositories
         public IndexRequestsVM GetById(int id)
         {
             IndexRequestsVM requestDTO = new IndexRequestsVM();
-            var lstRequests = _context.Request.
-               Include(p => p.RequestMode).Include(r => r.User).Include(r => r.SubProblem).
-               Include(p => p.RequestPeriority).Include(r => r.RequestType).Include(r => r.AssetDetail)
+            var lstRequests = _context.Request
+               .Include(p => p.RequestMode).Include(r => r.User)
+               .Include(r => r.SubProblem)
+               .Include(r => r.SubProblem.Problem)
+               .Include(p => p.RequestPeriority)
+               .Include(r => r.RequestType)
+               .Include(r => r.AssetDetail)
                .Include(r => r.AssetDetail.MasterAsset)
            .Where(e => e.Id == id).ToList();
 
@@ -502,7 +506,7 @@ namespace Asset.Core.Repositories
 
                     var lstWOStatus = _context.WorkOrderTrackings
                             .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
-                            .OrderByDescending(a => a.CreationDate).ToList();
+                            .OrderByDescending(a => a.Id).ToList();
 
                     if (lstWOStatus.Count > 0)
                     {
