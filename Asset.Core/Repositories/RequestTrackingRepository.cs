@@ -211,9 +211,10 @@ namespace Asset.Core.Repositories
         }
         public RequestDetails GetAllTrackingsByRequestId(int RequestId)
         {
-            var trackings = _context.RequestTracking.Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
+            var trackings = _context.RequestTracking.Include(a=>a.Request).Include(a => a.Request.AssetDetail).Include(a => a.RequestStatus).Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
             {
                 Id = req.Id,
+                Barcode= req.Request.AssetDetail.Barcode,
                 Description = req.Description,
                 DescriptionDate = req.DescriptionDate,
                 CreatedById = req.CreatedById,
@@ -233,6 +234,7 @@ namespace Asset.Core.Repositories
                 {
                     Id = req.Id,
                     Description = req.Description,
+                    Barcode = req.Request.AssetDetail.Barcode,
                     CreatedById = req.CreatedById,
                     UserName = req.User.UserName,
                     Subject = req.Request.Subject,

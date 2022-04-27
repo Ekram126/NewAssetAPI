@@ -31,7 +31,7 @@ namespace Asset.ViewModels.RequestTrackingVM
         public string StatusName { get; set; }
         public string StatusNameAr { get; set; }
 
-
+        public string Barcode { get; set; }
         public string AssetCode { get; set; }
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
