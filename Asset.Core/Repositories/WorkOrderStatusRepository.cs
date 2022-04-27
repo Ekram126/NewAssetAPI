@@ -81,7 +81,8 @@ namespace Asset.Core.Repositories
             ApplicationUser UserObj = new ApplicationUser();
             ApplicationRole roleObj = new ApplicationRole();
             List<string> lstRoleNames = new List<string>();
-            var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+            
+                var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
             if (obj.Count > 0)
             {
                 UserObj = obj[0];
@@ -96,8 +97,8 @@ namespace Asset.Core.Repositories
                 }
 
 
-
-                var lstStatus = _context.WorkOrderStatuses.ToList();
+                var statusIds = new List<int>(new int[] { 6,8,10 });
+                var lstStatus = _context.WorkOrderStatuses.Where(a=> !statusIds.Any(x=> x== a.Id)).ToList();
                 getDataObj.ListStatus = lstStatus;
                 var workorders = _context.WorkOrders
                                     .Include(a => a.Request)

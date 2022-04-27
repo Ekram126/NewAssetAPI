@@ -298,10 +298,10 @@ namespace Asset.Core.Repositories
             {
                 RequestTracking requestTracking = _context.RequestTracking.Find(editRequestTracking.Id);
                 requestTracking.Description = editRequestTracking.Description;
-                requestTracking.DescriptionDate = editRequestTracking.DescriptionDate; //requestDescriptionDTO.DescriptionDate;
-                requestTracking.RequestId = editRequestTracking.RequestId;
-                requestTracking.CreatedById = editRequestTracking.CreatedById;
-                requestTracking.RequestStatusId = editRequestTracking.RequestStatusId;
+                requestTracking.DescriptionDate = DateTime.Now;// editRequestTracking.DescriptionDate; //requestDescriptionDTO.DescriptionDate;
+                //requestTracking.RequestId = editRequestTracking.RequestId;
+                //requestTracking.CreatedById = editRequestTracking.CreatedById;
+                //requestTracking.RequestStatusId = editRequestTracking.RequestStatusId;
                 requestTracking.HospitalId = editRequestTracking.HospitalId;
                 _context.Entry(requestTracking).State = EntityState.Modified;
                 _context.SaveChanges();
