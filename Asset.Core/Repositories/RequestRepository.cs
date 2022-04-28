@@ -162,6 +162,19 @@ namespace Asset.Core.Repositories
                 requestDTO.RequestTrackingId = _context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().Id;
                 requestDTO.RequestStatusId = _context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().RequestStatusId != null ? (int)_context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().RequestStatusId : 0;
 
+
+
+                var lstStatus = _context.RequestTracking
+                               .Include(t => t.Request).Include(t => t.RequestStatus)
+                               .Where(a => a.RequestId == req.Id).ToList().OrderByDescending(a => a.Id).ToList();
+                if (lstStatus.Count > 0)
+                {
+                    requestDTO.StatusId = lstStatus[0].RequestStatus.Id;
+                    requestDTO.StatusName = lstStatus[0].RequestStatus.Name;
+                    requestDTO.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
+                    requestDTO.StatusColor = lstStatus[0].RequestStatus.Color;
+                    requestDTO.StatusIcon = lstStatus[0].RequestStatus.Icon;
+                }
             }
             return requestDTO;
         }

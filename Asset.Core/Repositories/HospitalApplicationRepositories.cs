@@ -417,13 +417,20 @@ namespace Asset.Core.Repositories
 
             if (model.StatusId == 2 && hospitalApplicationObj.AppTypeId == 1)
             {
-                AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
-                assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
-                assetStatusTransactionObj.AssetStatusId = 8;
-                assetStatusTransactionObj.HospitalId = model.HospitalId;
-                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
-                _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
-                _context.SaveChanges();
+                try
+                {
+                    AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
+                    assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
+                    assetStatusTransactionObj.AssetStatusId = 8;
+                    assetStatusTransactionObj.HospitalId = hospitalApplicationObj.HospitalId;
+                    assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                    _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
+                    _context.SaveChanges();
+                }
+                catch(Exception ex)
+                {
+                    string error = ex.Message;
+                }
             }
 
             if (model.StatusId == 2 && hospitalApplicationObj.AppTypeId == 2)
@@ -431,7 +438,28 @@ namespace Asset.Core.Repositories
                 AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
                 assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                 assetStatusTransactionObj.AssetStatusId = 9;
-                assetStatusTransactionObj.HospitalId = model.HospitalId;
+                assetStatusTransactionObj.HospitalId = hospitalApplicationObj.HospitalId;
+                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
+                _context.SaveChanges();
+            }
+            if (model.StatusId == 3 && (hospitalApplicationObj.AppTypeId == 1 || hospitalApplicationObj.AppTypeId == 2))
+            {
+                AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
+                assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
+                assetStatusTransactionObj.AssetStatusId = 3;
+                assetStatusTransactionObj.HospitalId = hospitalApplicationObj.HospitalId;
+                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
+                _context.SaveChanges();
+            }
+
+            if (model.StatusId == 4 && (hospitalApplicationObj.AppTypeId == 1 || hospitalApplicationObj.AppTypeId == 2))
+            {
+                AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
+                assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
+                assetStatusTransactionObj.AssetStatusId = 3;
+                assetStatusTransactionObj.HospitalId = hospitalApplicationObj.HospitalId;
                 assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
                 _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                 _context.SaveChanges();

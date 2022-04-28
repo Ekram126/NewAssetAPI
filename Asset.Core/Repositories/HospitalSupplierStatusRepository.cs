@@ -56,11 +56,21 @@ namespace Asset.Core.Repositories
         {
             IndexHospitalSupplierStatusVM ItemObj = new IndexHospitalSupplierStatusVM();
             var list = _context.HospitalSupplierStatuses.ToList();
+
+            List<HospitalApplication> lstHospitalStatus = new List<HospitalApplication>();
+            if (hospitalId != 0)
+            {
+                 lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
+                     .Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
+            }
+           else
+            {
+                lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).ToList();
+            }
             ItemObj.ListStatus = list;
             foreach (var itm in list)
             {
-                var lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
-                    .Where(a => a.StatusId == itm.Id && a.AssetDetail.HospitalId == hospitalId && a.AppTypeId == appTypeId).ToList();
+                 lstHospitalStatus = lstHospitalStatus.Where(a => a.StatusId == itm.Id &&  a.AppTypeId == appTypeId).ToList();
 
                 if (itm.Id == 1)
                 {
