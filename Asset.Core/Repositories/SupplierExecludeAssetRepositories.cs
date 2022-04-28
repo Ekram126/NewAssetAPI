@@ -83,8 +83,8 @@ namespace Asset.Core.Repositories
                 getDataObj.HospitalId = item.HospitalId;
                 getDataObj.ExNumber = item.ExNumber;
                 getDataObj.AppTypeId = item.AppTypeId;
-                getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
-                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.Date != null ? item.Date.Value.ToString() : "";
+                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToString() : "";
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
@@ -171,15 +171,16 @@ namespace Asset.Core.Repositories
                     supplierExecludeAssetObj.AppTypeId = model.AppTypeId;
                     supplierExecludeAssetObj.Comment = model.Comment;
                     supplierExecludeAssetObj.HospitalId = model.HospitalId;
-                    supplierExecludeAssetObj.Date = DateTime.Today.Date;
+                    supplierExecludeAssetObj.Date = DateTime.Now;
                     if (model.ExecludeDate != "")
                         supplierExecludeAssetObj.ExecludeDate = DateTime.Parse(model.ExecludeDate.ToString());
 
                     if (model.ActionDate != null)
                         supplierExecludeAssetObj.ActionDate = DateTime.Parse(model.ActionDate.ToString());
+                    else
+                        supplierExecludeAssetObj.ActionDate = DateTime.Now;
 
-
-                    supplierExecludeAssetObj.ExNumber = model.ExNumber;
+                  supplierExecludeAssetObj.ExNumber = model.ExNumber;
                     supplierExecludeAssetObj.UserId = model.UserId;
                     _context.SupplierExecludeAssets.Add(supplierExecludeAssetObj);
                     _context.SaveChanges();
@@ -349,16 +350,16 @@ namespace Asset.Core.Repositories
                 if (model.StatusId == 2)
                     supplierExecludeAssetObj.ExecludeDate = model.ExecludeDate;
                 if (model.StatusId == 3)
-                    supplierExecludeAssetObj.ExecludeDate = DateTime.Today.Date;
+                    supplierExecludeAssetObj.ExecludeDate = DateTime.Now;
 
-                supplierExecludeAssetObj.ActionDate = DateTime.Today.Date;
+                supplierExecludeAssetObj.ActionDate = DateTime.Now;
 
                 //if (model.ActionDate != "")
                 //    supplierExecludeAssetObj.ActionDate = DateTime.Today.Date;// DateTime.Parse(model.ActionDate.ToString());
 
                 supplierExecludeAssetObj.UserId = model.UserId;
                 supplierExecludeAssetObj.Comment = model.Comment;
-                supplierExecludeAssetObj.HospitalId = model.HospitalId;
+               // supplierExecludeAssetObj.HospitalId = model.HospitalId;
                 _context.Entry(supplierExecludeAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -368,7 +369,7 @@ namespace Asset.Core.Repositories
                     assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                     assetStatusTransactionObj.AssetStatusId = 8;
                     assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
-                    assetStatusTransactionObj.HospitalId = model.HospitalId;
+                    assetStatusTransactionObj.HospitalId = supplierExecludeAssetObj.HospitalId;
                     _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                     _context.SaveChanges();
                 }
@@ -378,7 +379,7 @@ namespace Asset.Core.Repositories
                     assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                     assetStatusTransactionObj.AssetStatusId = 9;
                     assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
-                    assetStatusTransactionObj.HospitalId = model.HospitalId;
+                    assetStatusTransactionObj.HospitalId = supplierExecludeAssetObj.HospitalId;
                     _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                     _context.SaveChanges();
                 }
@@ -476,8 +477,8 @@ namespace Asset.Core.Repositories
                 getDataObj.ExNumber = item.ExNumber;
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.Comment = item.Comment;
-                getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
-                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.Date != null ? item.Date.Value.ToString() : "";
+                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToString() : "";
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
@@ -677,8 +678,8 @@ namespace Asset.Core.Repositories
                 getDataObj.ExNumber = item.ExNumber;
                 getDataObj.Comment = item.Comment;
                 getDataObj.AppTypeId = item.AppTypeId;
-                getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
-                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.Date != null ? item.Date.Value.ToString() : "";
+                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToString() : "";
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.Name : "";// + " - " + item.AssetDetail.SerialNumber : "";
@@ -777,8 +778,8 @@ namespace Asset.Core.Repositories
                 getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.ExNumber = item.ExNumber;
-                getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
-                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.Date != null ? item.Date.Value.ToString() : "";
+                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToString() : "";
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
@@ -897,8 +898,8 @@ namespace Asset.Core.Repositories
                 getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.ExNumber = item.ExNumber;
-                getDataObj.Date = item.Date != null ? item.Date.Value.ToShortDateString() : "";
-                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.Date != null ? item.Date.Value.ToString() : "";
+                getDataObj.ExecludeDate = item.ExecludeDate != null ? item.ExecludeDate.Value.ToString() : "";
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;

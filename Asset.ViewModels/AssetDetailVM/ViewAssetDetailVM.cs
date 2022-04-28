@@ -30,6 +30,8 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public string Barcode { get; set; }
 
+        public string BarCode { get; set; }
+
         public string InstallationDate { get; set; }
 
         public string WarrantyExpires { get; set; }
@@ -109,6 +111,10 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public string AssetImg { get; set; }
         public string QrFilePath { get; set; }
+
+
+        public string MasterAssetName { get; set; }
+        public string MasterAssetNameAr { get; set; }
 
     }
 }

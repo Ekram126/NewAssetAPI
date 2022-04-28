@@ -49,7 +49,7 @@ namespace Asset.Core.Repositories
                     AssetId = item.AssetId,
                     StatusId = item.StatusId,
                     AppDate = item.AppDate,
-                    DueDate = item.DueDate.Value.ToShortDateString(),
+                    DueDate = item.DueDate.Value.ToString(),
                     AppNumber = item.AppNumber,
                     UserId = item.User.UserName,
                     AppTypeId = item.AppTypeId,
@@ -74,8 +74,8 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = item.Id;
                 getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppNumber = item.AppNumber;
-                getDataObj.Date = item.AppDate.Value.ToShortDateString();
-                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.AppDate.Value.ToString();
+                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
@@ -171,11 +171,12 @@ namespace Asset.Core.Repositories
                     if (model.ActionDate != null)
                         hospitalApplicationObj.ActionDate = DateTime.Parse(model.ActionDate.ToString());
                     else
-                        hospitalApplicationObj.ActionDate = DateTime.Today.Date;
+                        hospitalApplicationObj.ActionDate = DateTime.Now;
 
                     hospitalApplicationObj.AppNumber = model.AppNumber;
                     hospitalApplicationObj.UserId = model.UserId;
                     hospitalApplicationObj.Comment = model.Comment;
+                    hospitalApplicationObj.AppDate = DateTime.Now;
                     _context.HospitalApplications.Add(hospitalApplicationObj);
                     _context.SaveChanges();
                     int id = hospitalApplicationObj.Id;
@@ -467,7 +468,7 @@ namespace Asset.Core.Repositories
                 hospitalApplicationObj.AppTypeId = item.AppTypeId;
                 hospitalApplicationObj.AppDate = item.AppDate;
                 if (item.DueDate != null)
-                    hospitalApplicationObj.DueDate = item.DueDate.Value.ToShortDateString();
+                    hospitalApplicationObj.DueDate = item.DueDate.Value.ToString();
 
                 hospitalApplicationObj.AppNumber = item.AppNumber;
                 hospitalApplicationObj.AppTypeName = item.ApplicationType.Name;
@@ -529,8 +530,8 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = item.Id;
                 getDataObj.AppNumber = item.AppNumber;
                 getDataObj.AssetId = item.AssetDetail.Id;
-                getDataObj.Date = item.AppDate.Value.ToShortDateString();
-                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.AppDate.Value.ToString();
+                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
@@ -753,8 +754,8 @@ namespace Asset.Core.Repositories
                 IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
                 getDataObj.Id = item.Id;
                 getDataObj.AppNumber = item.AppNumber;
-                getDataObj.Date = item.AppDate.Value.ToShortDateString();
-                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.AppDate.Value.ToString();
+                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
@@ -856,8 +857,8 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = item.Id;
                 getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppNumber = item.AppNumber;
-                getDataObj.Date = item.AppDate.Value.ToShortDateString();
-                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.AppDate.Value.ToString();
+                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
@@ -964,8 +965,8 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = item.Id;
                 getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppNumber = item.AppNumber;
-                getDataObj.Date = item.AppDate.Value.ToShortDateString();
-                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.AppDate.Value.ToString();
+                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;
@@ -1100,8 +1101,8 @@ namespace Asset.Core.Repositories
                 getDataObj.Id = item.Id;
                 getDataObj.HospitalId = item.HospitalId;
                 getDataObj.AppNumber = item.AppNumber;
-                getDataObj.Date = item.AppDate.Value.ToShortDateString();
-                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToShortDateString() : "";
+                getDataObj.Date = item.AppDate.Value.ToString();
+                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
                 getDataObj.AppTypeId = item.AppTypeId;
                 getDataObj.UserName = item.User.UserName;
                 getDataObj.AssetId = item.AssetDetail.Id;

@@ -227,5 +227,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.GetLastDocumentForAssetDetailId(assetDetailId);
         }
+
+        public IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(string barcode, int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(barcode,hospitalId);
+        }
     }
 }

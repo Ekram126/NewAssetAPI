@@ -74,9 +74,9 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("GetHospitalAssets/{hospitalId}/{statusId}/{userId}/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId,  int page, int pageSize, Sort sortObj)
+        public IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId, int page, int pageSize, Sort sortObj)
         {
-            return _AssetDetailService.GetHospitalAssets(hospitalId, statusId, userId,  page, pageSize, sortObj);
+            return _AssetDetailService.GetHospitalAssets(hospitalId, statusId, userId, page, pageSize, sortObj);
         }
 
         [HttpPost]
@@ -110,12 +110,26 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.AutoCompleteAssetBarCode(barcode, hospitalId);
         }
+
         [HttpGet]
         [Route("AutoCompleteAssetSerial/{serial}/{hospitalId}")]
         public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId)
         {
             return _AssetDetailService.AutoCompleteAssetSerial(serial, hospitalId);
         }
+
+        [HttpGet]
+        [Route("GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId/{barcode}/{hospitalId}")]
+        public IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(string barcode, int hospitalId)
+        {
+            return _AssetDetailService.GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(barcode, hospitalId);
+        }
+
+
+
+
+
+
         [HttpGet]
         [Route("getcount/{userId}")]
         public int count(string userId)
