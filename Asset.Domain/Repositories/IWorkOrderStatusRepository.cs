@@ -9,7 +9,10 @@ namespace Asset.Domain.Repositories
 {
     public interface IWorkOrderStatusRepository
     {
-        IEnumerable<IndexWorkOrderStatusVM> GetAll(string userId);
+       // IEnumerable<IndexWorkOrderStatusVM> GetAll(string userId);
+
+        IndexWorkOrderStatusVM GetAll(string userId);
+
         IEnumerable<IndexWorkOrderStatusVM> GetAll();
         IndexWorkOrderStatusVM GetById(int id);
         void Add(CreateWorkOrderStatusVM createWorkOrderStatusVM);

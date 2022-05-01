@@ -9,7 +9,9 @@ namespace Asset.Domain.Services
 {
     public interface IWorkOrderStatusService
     {
-        IEnumerable<IndexWorkOrderStatusVM> GetAll(string userId);
+       // IEnumerable<IndexWorkOrderStatusVM> GetAll(string userId);
+
+        IndexWorkOrderStatusVM GetAll(string userId);
         IEnumerable<IndexWorkOrderStatusVM> GetAllWorkOrderStatuses();
         IndexWorkOrderStatusVM GetWorkOrderStatusById(int id);
         void AddWorkOrderStatus(CreateWorkOrderStatusVM createWorkOrderStatusVM);

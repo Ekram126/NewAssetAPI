@@ -27,7 +27,7 @@ namespace Asset.Core.Services
             _unitOfWork.WorkOrderStatus.Delete(id);
         }
 
-        public IEnumerable<IndexWorkOrderStatusVM> GetAll(string userId)
+        public IndexWorkOrderStatusVM GetAll(string userId)
         {
             return _unitOfWork.WorkOrderStatus.GetAll(userId);
         }

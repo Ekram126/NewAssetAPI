@@ -44,7 +44,7 @@ namespace Asset.API.Controllers
 
         [HttpGet]
         [Route("GetAll/{userId}")]
-        public IEnumerable<IndexWorkOrderStatusVM> GetAll(string userId)
+        public IndexWorkOrderStatusVM GetAll(string userId)
         {
             return _workOrderStatusService.GetAll(userId);
         }

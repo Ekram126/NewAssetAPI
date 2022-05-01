@@ -300,6 +300,9 @@ namespace Asset.Core.Repositories
                 work.CreatedBy = item.User.UserName;
                 work.TypeName = item.WorkOrderType.Name;
                 work.TypeNameAr = item.WorkOrderType.NameAr;
+                work.AssetName = item.Request.AssetDetail.MasterAsset.Name;
+                work.AssetNameAr = item.Request.AssetDetail.MasterAsset.NameAr;
+                work.SerialNumber = item.Request.AssetDetail.SerialNumber;
                 work.PeriorityName = item.WorkOrderPeriority !=null? item.WorkOrderPeriority.Name:"";
                 work.PeriorityNameAr = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.NameAr:"";
                 var lstStatus = _context.WorkOrderTrackings
@@ -310,22 +313,22 @@ namespace Asset.Core.Repositories
                     work.AssignedTo = lstStatus[0].AssignedTo;
                     work.CreatedById = lstStatus[0].CreatedById;
                     work.WorkOrderStatusId = lstStatus[0].WorkOrderStatus.Id;
-                    if (work.WorkOrderStatusId == 3 || work.WorkOrderStatusId == 4 || work.WorkOrderStatusId == 5)
-                    {
-                        var pendingStatus = _context.WorkOrderStatuses.Where(a => a.Id == 6).ToList().FirstOrDefault();
-                        work.StatusName = lstStatus[0].WorkOrderStatus.Name + " - " + pendingStatus.Name;
-                        work.StatusNameAr = lstStatus[0].WorkOrderStatus.NameAr + " - " + pendingStatus.NameAr;
-                        work.statusColor = lstStatus[0].WorkOrderStatus.Color;
-                        work.statusIcon = lstStatus[0].WorkOrderStatus.Icon;
-                    }
+                    //if (work.WorkOrderStatusId == 3 || work.WorkOrderStatusId == 4 || work.WorkOrderStatusId == 5)
+                    //{
+                    //    var pendingStatus = _context.WorkOrderStatuses.Where(a => a.Id == 6).ToList().FirstOrDefault();
+                    //    work.StatusName = lstStatus[0].WorkOrderStatus.Name + " - " + pendingStatus.Name;
+                    //    work.StatusNameAr = lstStatus[0].WorkOrderStatus.NameAr + " - " + pendingStatus.NameAr;
+                    //    work.statusColor = lstStatus[0].WorkOrderStatus.Color;
+                    //    work.statusIcon = lstStatus[0].WorkOrderStatus.Icon;
+                    //}
 
-                    else
-                    {
+                    //else
+                    //{
                         work.StatusName = lstStatus[0].WorkOrderStatus.Name;
                         work.StatusNameAr = lstStatus[0].WorkOrderStatus.NameAr;
                         work.statusColor = lstStatus[0].WorkOrderStatus.Color;
                         work.statusIcon = lstStatus[0].WorkOrderStatus.Icon;
-                    }
+                   // }
                 }
 
                 work.ActualStartDate = item.ActualStartDate;
@@ -346,7 +349,7 @@ namespace Asset.Core.Repositories
                     Id = item.Id,
                     StatusName = item.WorkOrderStatus.Name,
                     StatusNameAr = item.WorkOrderStatus.NameAr,
-                  //  CreationDate = DateTime.Parse(item.CreationDate.ToString())
+                    CreationDate =  DateTime.Parse(item.CreationDate.ToString())
                 }).ToList();
 
                 list.Add(work);

@@ -58,10 +58,10 @@ namespace Asset.Core.Repositories
         }
 
 
-        public IEnumerable<IndexWorkOrderStatusVM> GetAll(string userId)
+        public IndexWorkOrderStatusVM GetAll(string userId)
         {
 
-            List<IndexWorkOrderStatusVM> listCountWorkOrders = new List<IndexWorkOrderStatusVM>();
+            //List<IndexWorkOrderStatusVM> listCountWorkOrders = new List<IndexWorkOrderStatusVM>();
             List<WorkOrderTracking> lstAssignedTracks = new List<WorkOrderTracking>();
             List<WorkOrderTracking> lstInProgressTracks = new List<WorkOrderTracking>();
             List<WorkOrderTracking> lstExternalSupportTracks = new List<WorkOrderTracking>();
@@ -74,7 +74,7 @@ namespace Asset.Core.Repositories
             List<WorkOrderTracking> lstTechApproveTracks = new List<WorkOrderTracking>();
             List<WorkOrderTracking> lstUserApproveTracks = new List<WorkOrderTracking>();
             List<WorkOrderTracking> lstCloseTracks = new List<WorkOrderTracking>();
-            IndexWorkOrderStatusVM getDataObj = new IndexWorkOrderStatusVM();
+            IndexWorkOrderStatusVM itemObj = new IndexWorkOrderStatusVM();
 
 
 
@@ -99,7 +99,7 @@ namespace Asset.Core.Repositories
 
                 var statusIds = new List<int>(new int[] { 6,8,10 });
                 var lstStatus = _context.WorkOrderStatuses.Where(a=> !statusIds.Any(x=> x== a.Id)).ToList();
-                getDataObj.ListStatus = lstStatus;
+                itemObj.ListStatus = lstStatus;
                 var workorders = _context.WorkOrders
                                     .Include(a => a.Request)
                                     .Include(a => a.Request.AssetDetail)
@@ -110,18 +110,6 @@ namespace Asset.Core.Repositories
                                     .Include(a => a.Request.AssetDetail.Hospital.SubOrganization)
                                     .Include(a => a.User).ToList();
 
-                //getDataObj.GovernorateId = workorders[0].Request.AssetDetail.Hospital.GovernorateId;
-                //getDataObj.CityId = workorders[0].Request.AssetDetail.Hospital.CityId;
-                //getDataObj.OrganizationId = workorders[0].Request.AssetDetail.Hospital.OrganizationId;
-                //getDataObj.SubOrganizationId = workorders[0].Request.AssetDetail.Hospital.SubOrganizationId;
-                //getDataObj.HospitalId = workorders[0].Request.AssetDetail.HospitalId;
-
-
-                //getDataObj.GovernorateId = UserObj.GovernorateId != null ? workorders[0].Request.AssetDetail.Hospital.GovernorateId : 0;
-                //getDataObj.CityId = UserObj.CityId != null ? workorders[0].Request.AssetDetail.Hospital.CityId : 0;
-                //getDataObj.OrganizationId = UserObj.OrganizationId != null ? workorders[0].Request.AssetDetail.Hospital.OrganizationId : 0;
-                //getDataObj.SubOrganizationId = UserObj.SubOrganizationId != null ? workorders[0].Request.AssetDetail.Hospital.SubOrganizationId : 0;
-                //getDataObj.HospitalId = UserObj.HospitalId != null ? workorders[0].Request.AssetDetail.HospitalId : 0;
 
 
                 if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
@@ -278,23 +266,23 @@ namespace Asset.Core.Repositories
                     }
                 }
 
-                getDataObj.CountAssigned = lstAssignedTracks.Count;
-                getDataObj.CountClosed = lstCloseTracks.Count;
-                getDataObj.CountInProgress = lstInProgressTracks.Count;
-                getDataObj.CountDone = lstDoneTracks.Count;
-                getDataObj.CountEscalate = lstEscalateTracks.Count;
-                getDataObj.CountExternalSupport = lstExternalSupportTracks.Count;
-                getDataObj.CountPending = lstPendingTracks.Count;
-                getDataObj.CountReAssigned = lstReAssignedTracks.Count;
-                getDataObj.CountReview = lstReviewTracks.Count;
-                getDataObj.CountSparePart = lstSparePartTracks.Count;
-                getDataObj.CountTechApprove = lstTechApproveTracks.Count;
-                getDataObj.CountUserApprove = lstUserApproveTracks.Count;
-                listCountWorkOrders.Add(getDataObj);
+                itemObj.CountAssigned = lstAssignedTracks.Count;
+                itemObj.CountClosed = lstCloseTracks.Count;
+                itemObj.CountInProgress = lstInProgressTracks.Count;
+                itemObj.CountDone = lstDoneTracks.Count;
+                itemObj.CountEscalate = lstEscalateTracks.Count;
+                itemObj.CountExternalSupport = lstExternalSupportTracks.Count;
+                itemObj.CountPending = lstPendingTracks.Count;
+                itemObj.CountReAssigned = lstReAssignedTracks.Count;
+                itemObj.CountReview = lstReviewTracks.Count;
+                itemObj.CountSparePart = lstSparePartTracks.Count;
+                itemObj.CountTechApprove = lstTechApproveTracks.Count;
+                itemObj.CountUserApprove = lstUserApproveTracks.Count;
+                //listCountWorkOrders.Add(getDataObj);
 
             }
 
-            return listCountWorkOrders;
+            return itemObj;
         }
         public IEnumerable<IndexWorkOrderStatusVM> GetAll()
         {

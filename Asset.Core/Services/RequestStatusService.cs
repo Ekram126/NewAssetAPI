@@ -49,7 +49,7 @@ namespace Asset.Core.Services
            return _unitOfWork.RequestStatus.Delete(id);
         }
 
-        public IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId)
+        public IndexRequestStatusVM.GetData GetAll(string userId)
         {
             return _unitOfWork.RequestStatus.GetAll(userId);
         }

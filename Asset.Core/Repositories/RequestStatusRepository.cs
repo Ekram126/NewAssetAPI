@@ -59,7 +59,7 @@ namespace Asset.Core.Repositories
             return 0;
         }
 
-        public IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId)
+        public IndexRequestStatusVM.GetData GetAll(string userId)
         {
             ApplicationUser UserObj = new ApplicationUser();
             ApplicationRole roleObj = new ApplicationRole();
@@ -80,18 +80,18 @@ namespace Asset.Core.Repositories
 
             }
        
-            List<IndexRequestStatusVM.GetData> listCountRequests = new List<IndexRequestStatusVM.GetData>();
+            IndexRequestStatusVM.GetData ItemObj = new IndexRequestStatusVM.GetData();
             List<RequestTracking> lstOpenTracks = new List<RequestTracking>();
             List<RequestTracking> lstCloseTracks = new List<RequestTracking>();
             List<RequestTracking> lstInProgressTracks = new List<RequestTracking>();
             List<RequestTracking> lstSolvedTracks = new List<RequestTracking>();
             List<RequestTracking> lstApprovedTracks = new List<RequestTracking>();
-            IndexRequestStatusVM.GetData getDataObj = new IndexRequestStatusVM.GetData();
+          // IndexRequestStatusVM.GetData getDataObj = new IndexRequestStatusVM.GetData();
 
 
 
             var lstStatus = _context.RequestStatus.ToList();
-            getDataObj.ListStatus = lstStatus;
+            ItemObj.ListStatus = lstStatus;
 
 
             var requests = _context.Request.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
@@ -222,16 +222,16 @@ namespace Asset.Core.Repositories
                 }
             }
 
-            getDataObj.CountOpen = lstOpenTracks.Count;
-            getDataObj.CountClosed = lstCloseTracks.Count;
-            getDataObj.CountInProgress = lstInProgressTracks.Count;
-            getDataObj.CountSolved = lstSolvedTracks.Count;
-            getDataObj.CountApproved = lstApprovedTracks.Count;
-            listCountRequests.Add(getDataObj);
+            ItemObj.CountOpen = lstOpenTracks.Count;
+            ItemObj.CountClosed = lstCloseTracks.Count;
+            ItemObj.CountInProgress = lstInProgressTracks.Count;
+            ItemObj.CountSolved = lstSolvedTracks.Count;
+            ItemObj.CountApproved = lstApprovedTracks.Count;
+         //   ItemObj.Add(getDataObj);
 
 
 
-            return listCountRequests;
+            return ItemObj;
         }
 
         public IEnumerable<IndexRequestStatusVM.GetData> GetAll()
