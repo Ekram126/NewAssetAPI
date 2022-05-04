@@ -199,7 +199,16 @@ namespace Asset.Core.Repositories
                             work.statusIcon = lstStatus[0].FirstOrDefault().WorkOrderStatus.Icon;
                         }
 
+
+
+                        if (work.WorkOrderStatusId == 12)
+                        {
+                            work.ClosedDate = lstStatus[0].FirstOrDefault().ActualEndDate;
+                        }
+                      
+
                     }
+
 
                     var lstClosedDate = _context.WorkOrderTrackings
                         .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
