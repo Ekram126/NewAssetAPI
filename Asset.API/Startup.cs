@@ -46,8 +46,10 @@ namespace Asset.API
             var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfigurationVM>();
             services.AddSingleton(emailConfig);
             services.AddScoped<IEmailSender, EmailSender>();
-
+            
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("AssetConnStr")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("GisConnetion")));
+
             services.AddScoped<IRoleCategoryService, RoleCategoryService>();
             services.AddScoped<IOrganizationService, OrganizationService>();
             services.AddScoped<ISubOrganizationService, SubOrganizationService>();

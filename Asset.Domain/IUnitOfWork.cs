@@ -82,5 +82,6 @@ namespace Asset.Domain
         IPMAssetTaskScheduleRepository pMAssetTaskScheduleRepository { get; }
         IPagingRepository pagingRepository { get; }
         IGroupingRepository groupingRepository { get; }
+        IHealthRepository healthRepository { get; }
     }
 }
