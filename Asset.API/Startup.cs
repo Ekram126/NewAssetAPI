@@ -120,6 +120,7 @@ namespace Asset.API
             services.AddTransient<IWorkOrderTrackingService, WorkOrderTrackingService>();
             services.AddTransient<IWorkOrderAttachmentService, WorkOrderAttachmentService>();
             services.AddTransient<IWorkOrderAssignService, WorkOrderAssignService>();
+            services.AddTransient<IHealthService, HealthService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPagingService, PagingService>();
             services.AddScoped<QrController, QrController>();

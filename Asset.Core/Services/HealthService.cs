@@ -2,6 +2,8 @@
 using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.DateVM;
+using Asset.ViewModels.MultiIDVM;
+using Asset.ViewModels.OrganizationVM;
 using System.Collections.Generic;
 
 namespace Asset.Core.Services
@@ -42,6 +44,11 @@ namespace Asset.Core.Services
         public IEnumerable<Hospital> GetHospitalsBySupplier(int[] supplierIds)
         {
             return _unitOfWork.healthRepository.GetHospitalsBySupplier(supplierIds);
+        }
+
+        public IEnumerable<HealthOrganizationVM> GetOrganizationDetails(getMultiIDVM model)
+        {
+            return _unitOfWork.healthRepository.GetOrganizationDetails(model);
         }
 
         public IEnumerable<Hospital> GetPriceRange(decimal FPrice, decimal ToPrice)

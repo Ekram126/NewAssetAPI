@@ -1,6 +1,8 @@
 ﻿using Asset.Domain.Repositories;
 using Asset.Models;
 using Asset.ViewModels.DateVM;
+using Asset.ViewModels.MultiIDVM;
+using Asset.ViewModels.OrganizationVM;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -114,6 +116,34 @@ namespace Asset.Core.Repositories
                              Code = x.code
                          });
             return query.ToList();
+        }
+
+        public IEnumerable<HealthOrganizationVM> GetOrganizationDetails(getMultiIDVM model)
+        {
+            var orgComparer = new Services.Comparer<HealthOrganizationVM>("Id");
+            var query = (from a in _context.Hospitals
+                         join b in _context.SubOrganizations
+                         on a.SubOrganizationId equals b.Id
+                         join c in _context.Organizations
+                         on b.OrganizationId equals c.Id
+                         where model.Id.Contains(a.City.Code)
+                         select new
+                         {
+                             Id = c.Id,
+                             orgName = c.Name,
+                             orgNameAr = c.NameAr,
+                             HospitalCode = a.Code,
+                             subOrgId = b.Id
+                         }).AsEnumerable().Select(x => new HealthOrganizationVM()
+                         {
+
+                             Id = x.Id,
+                             Name = x.orgName,
+                             NameAr = x.orgNameAr,
+                             HospitalCode = x.HospitalCode,
+                             subOrganizationId = x.subOrgId
+                         });
+            return query.Distinct(orgComparer).ToList();
         }
 
         public IEnumerable<Hospital> GetPriceRange(decimal FPrice, decimal ToPrice)
