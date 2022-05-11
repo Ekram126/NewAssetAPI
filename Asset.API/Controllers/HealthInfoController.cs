@@ -6,6 +6,7 @@ using Asset.ViewModels.DateVM;
 using Asset.ViewModels.HospitalVM;
 using Asset.ViewModels.MultiIDVM;
 using Asset.ViewModels.OrganizationVM;
+using Asset.ViewModels.SubOrganizationVM;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BiomedicalSystemAPI.Controllers
@@ -65,11 +66,11 @@ namespace BiomedicalSystemAPI.Controllers
             return _healthService.GetOrganizationDetails(model);
         }
 
-        //[HttpPost("GetSubOrginisations")]
-        //public IEnumerable<SubOrganizationViewModel>GetSubOrginisations(int[] orgId)
-        //{
-        //    return _dbAccessLayer.GetSubOrganizationDetails(orgId);
-        //}
+        [HttpPost("GetSubOrginisations")]
+        public IEnumerable<HealthSubOrganizationVM> GetSubOrginisations(int[] orgId)
+        {
+            return _healthService.GetSubOrganizationDetails(orgId);
+        }
 
         //[HttpPost("GetBrands")]
         //public IEnumerable<ManFactureViewModel> GetBrands(int[] model)

@@ -3,6 +3,7 @@ using Asset.Models;
 using Asset.ViewModels.DateVM;
 using Asset.ViewModels.MultiIDVM;
 using Asset.ViewModels.OrganizationVM;
+using Asset.ViewModels.SubOrganizationVM;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -133,7 +134,7 @@ namespace Asset.Core.Repositories
                              orgName = c.Name,
                              orgNameAr = c.NameAr,
                              HospitalCode = a.Code,
-                             subOrgId = b.Id
+                             subOrgId = b.Id,
                          }).AsEnumerable().Select(x => new HealthOrganizationVM()
                          {
 
@@ -141,7 +142,7 @@ namespace Asset.Core.Repositories
                              Name = x.orgName,
                              NameAr = x.orgNameAr,
                              HospitalCode = x.HospitalCode,
-                             subOrganizationId = x.subOrgId
+                             subOrganizationId = x.subOrgId,
                          });
             return query.Distinct(orgComparer).ToList();
         }
@@ -171,6 +172,34 @@ namespace Asset.Core.Repositories
                 }
             }
             return hosList;
+        }
+
+        public IEnumerable<HealthSubOrganizationVM> GetSubOrganizationDetails(int[] orgId)
+        {
+            var suborgs = new List<HealthSubOrganizationVM>();
+            if (orgId != null)
+            {
+                var query = (from a in _context.Organizations
+                             join b in _context.SubOrganizations
+                             on a.Id equals b.OrganizationId
+                             where orgId.Contains(a.Id)
+                             select new
+                             {
+                                 subOrgName = b.Name,
+                                 subOrgNameAr = b.NameAr,
+                                 orgId = a.Id,
+                                 Id = b.Id,
+                             }).AsEnumerable().Select(x => new HealthSubOrganizationVM()
+                             {
+                                 Name = x.subOrgName,
+                                 NameAr = x.subOrgNameAr,
+                                 OrganizationId = x.orgId,
+                                 Id = x.Id,
+                             });
+
+                return query.ToList();
+            }
+            return null;
         }
     }
 }

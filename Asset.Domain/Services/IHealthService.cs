@@ -2,6 +2,7 @@
 using Asset.ViewModels.DateVM;
 using Asset.ViewModels.MultiIDVM;
 using Asset.ViewModels.OrganizationVM;
+using Asset.ViewModels.SubOrganizationVM;
 using System.Collections.Generic;
 
 namespace Asset.Domain.Services
@@ -13,7 +14,7 @@ namespace Asset.Domain.Services
         //   IEnumerable<HealthCareDevicesViewModels> GetDeviceData(int id);
         //   IEnumerable<HealthCareUnit> GetHospitalData(int id);
            IEnumerable<HealthOrganizationVM> GetOrganizationDetails(getMultiIDVM model);
-        //   IEnumerable<SubOrganizationViewModel> GetSubOrganizationDetails(int[] orgId);
+           IEnumerable<HealthSubOrganizationVM> GetSubOrganizationDetails(int[] orgId);
         //  IEnumerable<HealthCareUnit> GetHospitalsBySubOrginizationsDetails(getMultiIDViewModel model);
         //    IEnumerable<Hospital> GetHospitalsByOrginizationsDetails(getMultiIDViewModel model);
         //   IEnumerable<ManFactureViewModel> GetBrandsetails(int[] model);

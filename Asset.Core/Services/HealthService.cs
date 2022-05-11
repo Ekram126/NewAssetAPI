@@ -4,6 +4,7 @@ using Asset.Models;
 using Asset.ViewModels.DateVM;
 using Asset.ViewModels.MultiIDVM;
 using Asset.ViewModels.OrganizationVM;
+using Asset.ViewModels.SubOrganizationVM;
 using System.Collections.Generic;
 
 namespace Asset.Core.Services
@@ -54,6 +55,11 @@ namespace Asset.Core.Services
         public IEnumerable<Hospital> GetPriceRange(decimal FPrice, decimal ToPrice)
         {
             return _unitOfWork.healthRepository.GetPriceRange(FPrice, ToPrice);
+        }
+
+        public IEnumerable<HealthSubOrganizationVM> GetSubOrganizationDetails(int[] orgId)
+        {
+            return _unitOfWork.healthRepository.GetSubOrganizationDetails(orgId);
         }
     }
 }
