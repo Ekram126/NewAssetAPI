@@ -1,9 +1,12 @@
 ﻿using Asset.Domain.Repositories;
 using Asset.Models;
+using Asset.ViewModels.BrandVM;
 using Asset.ViewModels.DateVM;
+using Asset.ViewModels.DepartmentVM;
 using Asset.ViewModels.MultiIDVM;
 using Asset.ViewModels.OrganizationVM;
 using Asset.ViewModels.SubOrganizationVM;
+using Asset.ViewModels.SupplierVM;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +20,44 @@ namespace Asset.Core.Repositories
         {
             _context = context;
         }
+
+        public IEnumerable<HealthBrandVM> GetBrandsetails(int[] model)
+        {
+            var BrandComparer = new Services.Comparer<HealthBrandVM>("Id");
+            var brands = new List<HealthBrandVM>();
+            if (model != null || model.Length != 0)
+            {
+                var query = (from d in _context.Departments
+                           //  join hd in _context.HospitalDepartments
+                           //  on d.Id equals hd.DepartmentId
+                           //  join h in _context.Hospitals
+                           //  on hd.HospitalId equals h.Id
+                             join a in _context.AssetDetails
+                             on d.Id equals a.DepartmentId
+                             join m in _context.MasterAssets
+                             on a.MasterAssetId equals m.Id
+                             join b in _context.Brands
+                             on m.BrandId equals b.Id
+                             where model.Contains(d.Id)
+                             select new
+                             {
+                                 BrandName = b.Name,
+                                 BrandNameAr = b.NameAr,
+                                 Id = b.Id,
+                                 HospitalCode = a.Hospital.Code
+                             }).AsEnumerable().Select(x => new HealthBrandVM()
+                             {
+                                 Name = x.BrandName,
+                                 NameAr = x.BrandNameAr,
+                                 Id = x.Id,
+                                 HospitalCode = x.HospitalCode
+                             });
+
+                return query.Distinct(BrandComparer).ToList();
+            }
+            return null;
+        }
+
         public IEnumerable<Hospital> GetDateRange(dateVM dates)
         {
             var hosList = new List<Hospital>();
@@ -44,9 +85,41 @@ namespace Asset.Core.Repositories
             return hosList;
         }
 
-        public IEnumerable<Department> GetDepartmants(int[] orgIds)
+        public IEnumerable<HealthDepartmentVM> GetDepartmants(int[] orgIds)
         {
-            throw new System.NotImplementedException();
+            var DeptComparer = new Services.Comparer<HealthDepartmentVM>("DepartmentID");
+            if (orgIds != null)
+            {
+                var query = (from h in _context.Hospitals
+                             join s in _context.SubOrganizations
+                             on h.SubOrganizationId equals s.Id
+                             join hd in _context.HospitalDepartments
+                             on h.Id equals hd.HospitalId
+                             join d in _context.Departments
+                             on hd.DepartmentId equals d.Id
+                             where orgIds.Contains(s.Id)
+                             select new
+                             {
+                                 DeptId = d.Id,
+                                 DeptName = d.Name,
+                                 DeptNameAr = d.NameAr,
+                                 HospitalId = h.Id,
+                                 HospitalCode = h.Code,
+                                 suborg=s.Id
+
+                             }).AsEnumerable().Select(x => new HealthDepartmentVM
+                             {
+                                 DepartmentID = x.DeptId,
+                                 DepartmentArName = x.DeptNameAr,
+                                 DepartmentEngName = x.DeptName,
+                                 HospitalCode = x.HospitalCode,
+                                 HospitalID = x.HospitalId,
+                                 subOrgId=x.suborg
+                             });
+                return query.ToList();
+
+            }
+            return null;
         }
 
         public IEnumerable<Hospital> GetHospitalInCity(string[] modelID)
@@ -66,11 +139,11 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<Hospital> GetHospitalInDepartment(int[] DeptIds)
         {
-            var hos = (from h in _context.Hospitals
-                       join a in _context.AssetDetails
-                       on h.Id equals a.HospitalId
-                       join d in _context.Departments
-                       on a.DepartmentId equals d.Id
+            var hos = (from d in _context.Departments
+                       join hd in _context.HospitalDepartments
+                       on d.Id equals hd.DepartmentId
+                       join h in _context.Hospitals
+                       on hd.HospitalId equals h.Id
                        where DeptIds.Contains(d.Id)
                        select new
                        {
@@ -117,6 +190,17 @@ namespace Asset.Core.Repositories
                              Code = x.code
                          });
             return query.ToList();
+        }
+
+        public IEnumerable<Hospital> GetHospitalsInOrganization(int[] orgIds)
+        {
+            var hospitalLst = new List<Hospital>();
+            foreach (var orgid in orgIds)
+            {
+                var hos = _context.Hospitals.Where(h => h.OrganizationId == orgid).ToList();
+                hospitalLst.AddRange(hos);
+            }
+            return hospitalLst;
         }
 
         public IEnumerable<HealthOrganizationVM> GetOrganizationDetails(getMultiIDVM model)
@@ -200,6 +284,34 @@ namespace Asset.Core.Repositories
                 return query.ToList();
             }
             return null;
+        }
+
+        public IEnumerable<HealthSupplierVM> GetSuppliersDetails(int[] brandId)
+        {
+            var orgComparer = new Services.Comparer<HealthSupplierVM>("Id");
+            var query = (from a in _context.AssetDetails
+                         join m in _context.MasterAssets
+                         //join h in _context.Hospitals
+                         on a.MasterAssetId equals m.Id
+                         join b in _context.Brands
+                         on m.BrandId equals b.Id
+                         join s in _context.Suppliers
+                         on a.SupplierId equals s.Id
+                         where brandId.Contains(b.Id)
+                         select new
+                         {
+                             Name = s.Name,
+                             NameAr = s.NameAr,
+                             //HospitalCod = h.Code,
+                             Id = s.Id
+                         }).AsEnumerable().Select(x => new HealthSupplierVM
+                         {
+                             Name = x.Name,
+                             NameAr = x.NameAr,
+                             //HospitalCode = x.HospitalCod,
+                             Id = x.Id
+                         });
+            return query.Distinct(orgComparer).ToList();
         }
     }
 }

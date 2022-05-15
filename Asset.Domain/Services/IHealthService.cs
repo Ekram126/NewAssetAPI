@@ -1,8 +1,11 @@
 ﻿using Asset.Models;
+using Asset.ViewModels.BrandVM;
 using Asset.ViewModels.DateVM;
+using Asset.ViewModels.DepartmentVM;
 using Asset.ViewModels.MultiIDVM;
 using Asset.ViewModels.OrganizationVM;
 using Asset.ViewModels.SubOrganizationVM;
+using Asset.ViewModels.SupplierVM;
 using System.Collections.Generic;
 
 namespace Asset.Domain.Services
@@ -17,13 +20,13 @@ namespace Asset.Domain.Services
            IEnumerable<HealthSubOrganizationVM> GetSubOrganizationDetails(int[] orgId);
         //  IEnumerable<HealthCareUnit> GetHospitalsBySubOrginizationsDetails(getMultiIDViewModel model);
         //    IEnumerable<Hospital> GetHospitalsByOrginizationsDetails(getMultiIDViewModel model);
-        //   IEnumerable<ManFactureViewModel> GetBrandsetails(int[] model);
-        //    IEnumerable<SupplierViewModel> GetSuppliersDetails(string[] hosCodesInBrand);
+         public IEnumerable<HealthBrandVM> GetBrandsetails(int[] model);
+         public IEnumerable<HealthSupplierVM> GetSuppliersDetails(int[] brandId);
         //    IEnumerable<InstallDateViewModel> GetInstallDateetails(int id);
         //   IEnumerable<PriceViewModel> GetPricetails(int id);
-        public IEnumerable<Department> GetDepartmants(int[] orgIds);
+        public IEnumerable<HealthDepartmentVM> GetDepartmants(int[] orgIds);
         public IEnumerable<Hospital> GetHospitalInCity(string[] model);
-        //    public IEnumerable<Hospital> GetHospitalsInOrganization(int[] orgIds);
+        public IEnumerable<Hospital> GetHospitalsInOrganization(int[] orgIds);
         public IEnumerable<Hospital> GetHospitalInSubOrganization(int[] subOrgIds);
         public IEnumerable<Hospital> GetHospitalInDepartment(int[] DeptIds);
         public IEnumerable<Hospital> GetHospitalsBySupplier(int[] supplierIds);

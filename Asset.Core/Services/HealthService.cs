@@ -1,10 +1,13 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.BrandVM;
 using Asset.ViewModels.DateVM;
+using Asset.ViewModels.DepartmentVM;
 using Asset.ViewModels.MultiIDVM;
 using Asset.ViewModels.OrganizationVM;
 using Asset.ViewModels.SubOrganizationVM;
+using Asset.ViewModels.SupplierVM;
 using System.Collections.Generic;
 
 namespace Asset.Core.Services
@@ -17,14 +20,20 @@ namespace Asset.Core.Services
         {
             _unitOfWork = unitOfWork;
         }
+
+        public IEnumerable<HealthBrandVM> GetBrandsetails(int[] model)
+        {
+            return _unitOfWork.healthRepository.GetBrandsetails(model);
+        }
+
         public IEnumerable<Hospital> GetDateRange(dateVM dates)
         {
             return _unitOfWork.healthRepository.GetDateRange(dates);
         }
 
-        public IEnumerable<Department> GetDepartmants(int[] orgIds)
+        public IEnumerable<HealthDepartmentVM> GetDepartmants(int[] orgIds)
         {
-            throw new System.NotImplementedException();
+            return _unitOfWork.healthRepository.GetDepartmants(orgIds);
         }
 
         public IEnumerable<Hospital> GetHospitalInCity(string[] model)
@@ -47,6 +56,11 @@ namespace Asset.Core.Services
             return _unitOfWork.healthRepository.GetHospitalsBySupplier(supplierIds);
         }
 
+        public IEnumerable<Hospital> GetHospitalsInOrganization(int[] orgIds)
+        {
+            return _unitOfWork.healthRepository.GetHospitalsInOrganization(orgIds);
+        }
+
         public IEnumerable<HealthOrganizationVM> GetOrganizationDetails(getMultiIDVM model)
         {
             return _unitOfWork.healthRepository.GetOrganizationDetails(model);
@@ -60,6 +74,11 @@ namespace Asset.Core.Services
         public IEnumerable<HealthSubOrganizationVM> GetSubOrganizationDetails(int[] orgId)
         {
             return _unitOfWork.healthRepository.GetSubOrganizationDetails(orgId);
+        }
+
+        public IEnumerable<HealthSupplierVM> GetSuppliersDetails(int[] brandId)
+        {
+            return _unitOfWork.healthRepository.GetSuppliersDetails(brandId);
         }
     }
 }

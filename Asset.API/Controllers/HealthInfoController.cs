@@ -2,11 +2,14 @@
 using System.Threading.Tasks;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.BrandVM;
 using Asset.ViewModels.DateVM;
+using Asset.ViewModels.DepartmentVM;
 using Asset.ViewModels.HospitalVM;
 using Asset.ViewModels.MultiIDVM;
 using Asset.ViewModels.OrganizationVM;
 using Asset.ViewModels.SubOrganizationVM;
+using Asset.ViewModels.SupplierVM;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BiomedicalSystemAPI.Controllers
@@ -38,12 +41,12 @@ namespace BiomedicalSystemAPI.Controllers
         //    return _healthService.GetDepartmant(id);
         //}
 
-        //[HttpPost]
-        //[Route("GetDepartmantsData")]
-        //public IEnumerable<DepartmemtByHospitalCodeViewModels> GetDepartmantsData(int[] orgIds)
-        //{
-        //    return _dbAccessLayer.GetDepartmants(orgIds);
-        //}
+        [HttpPost]
+        [Route("GetDepartmantsData")]
+        public IEnumerable<HealthDepartmentVM> GetDepartmantsData(int[] orgIds)
+        {
+            return _healthService.GetDepartmants(orgIds);
+        }
 
 
         //[HttpGet]
@@ -72,11 +75,11 @@ namespace BiomedicalSystemAPI.Controllers
             return _healthService.GetSubOrganizationDetails(orgId);
         }
 
-        //[HttpPost("GetBrands")]
-        //public IEnumerable<ManFactureViewModel> GetBrands(int[] model)
-        //{
-        //    return _dbAccessLayer.GetBrandsetails(model);
-        //}
+        [HttpPost("GetBrands")]
+        public IEnumerable<HealthBrandVM> GetBrands(int[] model)
+        {
+            return _healthService.GetBrandsetails(model);
+        }
 
         // [HttpPost("GetHospitalsBySubOrginizations")]
         // public IEnumerable<HealthCareUnit> GetHospitalsBySubOrginizations(getMultiIDViewModel model)
@@ -90,11 +93,11 @@ namespace BiomedicalSystemAPI.Controllers
         //     return _dbAccessLayer.GetHospitalsByOrginizationsDetails(model);
         // }
 
-        //[HttpPost("GetSuppliers")]
-        //public IEnumerable<SupplierViewModel> GetSuppliers(string[] hosCodesInBrand)
-        //{
-        //    return _dbAccessLayer.GetSuppliersDetails(hosCodesInBrand);
-        //}
+        [HttpPost("GetSuppliers")]
+        public IEnumerable<HealthSupplierVM> GetSuppliers(int[] brandId)
+        {
+            return _healthService.GetSuppliersDetails(brandId);
+        }
 
         //[HttpGet("GetInstallDate")]
         //public IEnumerable<InstallDateViewModel> GetInstallDate(int id)
@@ -140,12 +143,12 @@ namespace BiomedicalSystemAPI.Controllers
         {
             return _healthService.GetHospitalInCity(cityCode);
         }
-        //[HttpPost]
-        //[Route("GetHospitalsInOrganization")]
-        //public IEnumerable<Hospital> GetHospitalsInOrganization(int[] OrgIds)
-        //{
-        //    return _dbAccessLayer.GetHospitalsInOrganization(OrgIds);
-        //}
+        [HttpPost]
+        [Route("GetHospitalsInOrganization")]
+        public IEnumerable<Hospital> GetHospitalsInOrganization(int[] OrgIds)
+        {
+            return _healthService.GetHospitalsInOrganization(OrgIds);
+        }
         [HttpPost]
         [Route("GetHospitalsInSubOrganization")]
         public IEnumerable<Hospital> GetHospitalsInSubOrganization(int[] subOrgIds)
