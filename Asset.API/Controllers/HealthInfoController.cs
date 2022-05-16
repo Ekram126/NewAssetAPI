@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.AssetDetailVM;
 using Asset.ViewModels.BrandVM;
 using Asset.ViewModels.DateVM;
 using Asset.ViewModels.DepartmentVM;
@@ -26,20 +27,20 @@ namespace BiomedicalSystemAPI.Controllers
          //   _generatePdf = generatePdf;
         }
 
-        //[HttpGet]
-        //[Route("GetHealthData")]
-        //public IEnumerable<IndexHospitalVM> GetHealthData(int hospitalId, int departmantId)
-        //{
-        //    return _healthService.GetHealthCareData(hospitalId, departmantId);
-        //}
+        [HttpGet]
+        [Route("GetHealthData")]
+        public IEnumerable<HealthAssetVM> GetHealthData(int hospitalId, int departmantId)
+        {
+            return _healthService.GetHealthCareData(hospitalId, departmantId);
+        }
 
 
-        //[HttpGet]
-        //[Route("GetDepartmantData")]
-        //public IEnumerable<Department> GetDepartmantData(int id)
-        //{
-        //    return _healthService.GetDepartmant(id);
-        //}
+        [HttpGet]
+        [Route("GetDepartmantData")]
+        public IEnumerable<HealthDepartmentVM> GetDepartmantData(string code)
+        {
+            return _healthService.GetDepartmant(code);
+        }
 
         [HttpPost]
         [Route("GetDepartmantsData")]

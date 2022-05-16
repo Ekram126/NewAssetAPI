@@ -1,4 +1,5 @@
 ﻿using Asset.Models;
+using Asset.ViewModels.AssetDetailVM;
 using Asset.ViewModels.BrandVM;
 using Asset.ViewModels.DateVM;
 using Asset.ViewModels.DepartmentVM;
@@ -12,8 +13,8 @@ namespace Asset.Domain.Repositories
 {
     public interface IHealthRepository
     {
-       // IEnumerable<HealthCareDevicesViewModels> GetHealthCareData(int hospitalID, int departmantId);
-       // IEnumerable<DepartmemtByHospitalCodeViewModels> GetDepartmant(int id);
+       public IEnumerable<HealthAssetVM> GetHealthCareData(int hospitalID, int departmantId);
+        IEnumerable<HealthDepartmentVM> GetDepartmant(string code);
      //   IEnumerable<HealthCareDevicesViewModels> GetDeviceData(int id);
      //   IEnumerable<HealthCareUnit> GetHospitalData(int id);
         IEnumerable<HealthOrganizationVM> GetOrganizationDetails(getMultiIDVM model);

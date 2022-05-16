@@ -1,5 +1,6 @@
 ﻿using Asset.Domain.Repositories;
 using Asset.Models;
+using Asset.ViewModels.AssetDetailVM;
 using Asset.ViewModels.BrandVM;
 using Asset.ViewModels.DateVM;
 using Asset.ViewModels.DepartmentVM;
@@ -7,6 +8,7 @@ using Asset.ViewModels.MultiIDVM;
 using Asset.ViewModels.OrganizationVM;
 using Asset.ViewModels.SubOrganizationVM;
 using Asset.ViewModels.SupplierVM;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -85,6 +87,42 @@ namespace Asset.Core.Repositories
             return hosList;
         }
 
+        public IEnumerable<HealthDepartmentVM> GetDepartmant(string code)
+        {
+            if (code == null)
+            {
+                return null;
+            }
+            var query = (from h in _context.Hospitals
+                         //join s in _context.SubOrganizations
+                         //on h.SubOrganizationId equals s.Id
+                         join hd in _context.HospitalDepartments
+                         on h.Id equals hd.HospitalId
+                         join d in _context.Departments
+                         on hd.DepartmentId equals d.Id
+                         where h.Code == code
+                         select new
+                         {
+                             DeptId = d.Id,
+                             DeptName = d.Name,
+                             DeptNameAr = d.NameAr,
+                             HospitalId = h.Id,
+                             HospitalCode = h.Code,
+                             //suborg = s.Id
+
+                         }).AsEnumerable().Select(x => new HealthDepartmentVM
+                         {
+                             DepartmentID = x.DeptId,
+                             DepartmentArName = x.DeptNameAr,
+                             DepartmentEngName = x.DeptName,
+                             HospitalCode = x.HospitalCode,
+                             HospitalID = x.HospitalId,
+                         });
+
+            var uniq = query.GroupBy(x => x.DepartmentArName).Select(y => y.First()).Distinct();
+            return uniq;
+        }
+
         public IEnumerable<HealthDepartmentVM> GetDepartmants(int[] orgIds)
         {
             var DeptComparer = new Services.Comparer<HealthDepartmentVM>("DepartmentID");
@@ -105,7 +143,6 @@ namespace Asset.Core.Repositories
                                  DeptNameAr = d.NameAr,
                                  HospitalId = h.Id,
                                  HospitalCode = h.Code,
-                                 suborg=s.Id
 
                              }).AsEnumerable().Select(x => new HealthDepartmentVM
                              {
@@ -114,12 +151,50 @@ namespace Asset.Core.Repositories
                                  DepartmentEngName = x.DeptName,
                                  HospitalCode = x.HospitalCode,
                                  HospitalID = x.HospitalId,
-                                 subOrgId=x.suborg
                              });
                 return query.ToList();
 
             }
             return null;
+        }
+
+        public IEnumerable<HealthAssetVM> GetHealthCareData(int hospitalId, int departmantId)
+        {
+            if (hospitalId == 0 || departmantId == 0)
+            {
+                return null;
+            }
+            var equipment = _context.AssetDetails
+                .Include(e => e.MasterAsset)
+                .Where(e => e.HospitalId == hospitalId && e.DepartmentId == departmantId)
+                .Select(equip => new
+                {
+                    HospitalArName = equip.Hospital.NameAr,
+                    HospitalEngName = equip.Hospital.Name,
+                    DepartmentArName = equip.Department.NameAr,
+                    DeviceArName = equip.MasterAsset.NameAr,
+                    DeviceEngName = equip.MasterAsset.Name,
+                    DeviceInternData = equip.InstallationDate.ToString(),
+                    DeviceModel = equip.MasterAsset.ModelNumber,
+                    DevicePrice = equip.Price.ToString(),
+                    HospitalId = equip.Hospital.Id,
+                    PurchaseDate = equip.PurchaseDate.ToString(),
+                    DeviceId = equip.Id
+                }).AsEnumerable().Select(x => new HealthAssetVM()
+                {
+                    HospitalArName = x.HospitalArName,
+                    HospitalEngName = x.HospitalEngName,
+                    DepartmentArName = x.DepartmentArName,
+                    DeviceArName = x.DeviceArName,
+                    DeviceEngName = x.DeviceEngName,
+                    DeviceInternData = x.DeviceInternData,
+                    DeviceModel = x.DeviceModel,
+                    DevicePrice = x.DevicePrice.ToString(),
+                    HospitalId = x.HospitalId,
+                    PurchaseDate = x.PurchaseDate,
+                    DeviceId = x.DeviceId
+                }).ToList();
+            return equipment;
         }
 
         public IEnumerable<Hospital> GetHospitalInCity(string[] modelID)

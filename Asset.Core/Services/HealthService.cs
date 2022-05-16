@@ -1,6 +1,7 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
 using Asset.Models;
+using Asset.ViewModels.AssetDetailVM;
 using Asset.ViewModels.BrandVM;
 using Asset.ViewModels.DateVM;
 using Asset.ViewModels.DepartmentVM;
@@ -31,9 +32,19 @@ namespace Asset.Core.Services
             return _unitOfWork.healthRepository.GetDateRange(dates);
         }
 
+        public IEnumerable<HealthDepartmentVM> GetDepartmant(string code)
+        {
+            return _unitOfWork.healthRepository.GetDepartmant(code);
+        }
+
         public IEnumerable<HealthDepartmentVM> GetDepartmants(int[] orgIds)
         {
             return _unitOfWork.healthRepository.GetDepartmants(orgIds);
+        }
+
+        public IEnumerable<HealthAssetVM> GetHealthCareData(int hospitalID, int departmantId)
+        {
+            return _unitOfWork.healthRepository.GetHealthCareData(hospitalID,departmantId);
         }
 
         public IEnumerable<Hospital> GetHospitalInCity(string[] model)

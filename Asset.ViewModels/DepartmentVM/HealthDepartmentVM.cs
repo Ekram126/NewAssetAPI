@@ -15,6 +15,5 @@ namespace Asset.ViewModels.DepartmentVM
         public string HospitalCode { get; set; }
         public string HospitalArName { get; set; }
         public string HospitalEngName { get; set; }
-        public int subOrgId { get; set; }
     }
 }
