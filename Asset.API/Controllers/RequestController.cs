@@ -84,6 +84,18 @@ namespace Asset.API.Controllers
             var lstRequests = _requestService.GetAllRequestsByAssetId(assetId, hospitalId).ToList();
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, lstRequests);
         }
+
+        [HttpPost]
+        [Route("GetAllRequestsByDate")]
+        public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj)
+        {
+
+            return _requestService.GetRequestsByDate(requestDateObj).ToList();
+        
+        }
+
+
+
         [HttpPost]
         [Route("GetRequestsByDate/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(int pagenumber, int pagesize, SearchRequestDateVM requestDateObj)
@@ -259,6 +271,16 @@ namespace Asset.API.Controllers
             var Requests = _requestService.GetAllRequestsByStatusId(userId, statusId).ToList();
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, Requests);
         }
+
+    [HttpPut]
+        [Route("ExportAllRequests/{userId}/{statusId}")]
+        public IEnumerable<IndexRequestVM.GetData> ExportAllRequests(string userId, int statusId)
+        {
+            return _requestService.GetAllRequestsByStatusId(userId, statusId).ToList();
+            
+        }
+
+
         [HttpGet]
         [Route("GetRequestsCountByStatusId/{userId}/{statusId}")]
         public int GetCountByStatusId(string userId, int statusId)

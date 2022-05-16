@@ -80,7 +80,7 @@ namespace Asset.API.Controllers
         public ActionResult<AssetMovement> Add(CreateAssetMovementVM AssetMovementVM)
         {
             var oldMovement = _assetMovementService.GetAllAssetMovements()
-                .Where(a => a.BuildingId == AssetMovementVM.BuildingId && a.FloorId == AssetMovementVM.FloorId && a.RoomId == AssetMovementVM.RoomId).OrderByDescending(a=>a.MovementDate).ToList();
+                .Where(a => a.BuildingId == AssetMovementVM.BuildingId && a.FloorId == AssetMovementVM.FloorId && a.RoomId == AssetMovementVM.RoomId && a.AssetDetailId == AssetMovementVM.AssetDetailId).OrderByDescending(a=>a.MovementDate).ToList();
             if (oldMovement.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "same", Message = "Cannot move asset to same place", MessageAr = "لا يمكن نقل نفس الأصل في ذات المكان" });

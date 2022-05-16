@@ -76,6 +76,12 @@ namespace Contract.API.Controllers
 
 
 
+        [HttpGet]
+        [Route("GetContractByHospitalId/{hospitalId}")]
+        public ActionResult<IEnumerable<IndexContractVM.GetData>> GetContractByHospitalId(int hospitalId)
+        {
+            return _contractDetailService.GetContractByHospitalId(hospitalId).ToList();
+        }
 
         [HttpGet]
         [Route("GetMasterContractsByHospitalId/{hospitalId}")]

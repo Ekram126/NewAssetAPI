@@ -118,6 +118,14 @@ namespace Asset.API.Controllers
            
         }
 
+        [HttpPost]
+        [Route("GetAllWorkOrdersByDate")]
+        public IEnumerable<IndexWorkOrderVM> GetRequestsByDate(SearchWorkOrderByDateVM woDateObj)
+        {
+            return _workOrderService.GetWorkOrdersByDate(woDateObj).ToList();
+        }
+
+
 
         [HttpPost]
         [Route("GetWorkOrdersByDate/{pagenumber}/{pagesize}")]

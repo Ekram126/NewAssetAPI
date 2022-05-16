@@ -13,6 +13,7 @@ namespace Asset.Domain.Services
         IEnumerable<RequestTracking> GetAll();
         IEnumerable<IndexRequestTracking> GetAllRequestTracking(string UserId, int assetDetailId);
         RequestTracking GetFirstTrackForRequestByRequestId(int requestId);
+        RequestTracking GetLastTrackForRequestByRequestId(int requestId);
         IndexRequestTracking GetRequestTrackingById(int id);
         RequestDetails GetAllTrackingsByRequestId(int RequestId);
         List<RequestTrackingView> GetRequestTracksByRequestId(int requestId);

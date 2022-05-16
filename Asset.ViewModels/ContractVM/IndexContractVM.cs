@@ -15,6 +15,7 @@ namespace Asset.ViewModels.ContractVM
         public class GetData
         {
             public int Id { get; set; }
+            public string ContractName { get; set; }
             public string AssetName { get; set; }  
             public string AssetNameAr { get; set; }
             public string ResponseTime { get; set; }

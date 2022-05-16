@@ -286,7 +286,7 @@ namespace Asset.API.Controllers
             _qrController.Index(AssetDetailVM.Id);
             CreateAssetDetailAttachmentVM qrAttach = new CreateAssetDetailAttachmentVM();
             qrAttach.AssetDetailId = AssetDetailVM.Id;
-            qrAttach.FileName = "equipment-" + AssetDetailVM.Id + ".png";
+            qrAttach.FileName = "asset-" + AssetDetailVM.Id + ".png";
             CreateAssetDetailAttachments(qrAttach);
             return Ok(new { assetId = savedId });
 

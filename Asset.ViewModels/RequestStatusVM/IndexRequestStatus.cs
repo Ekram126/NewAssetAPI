@@ -25,6 +25,7 @@ namespace Asset.ViewModels.RequestStatusVM
             public int? CountClosed { get; set; }
             public int? CountInProgress { get; set; }
             public int? CountSolved { get; set; }
+            public int? CountAll { get; set; }
             public int? CountApproved { get; set; }
             public int? HospitalId { get; set; }
             public int? GovernorateId { get; set; }

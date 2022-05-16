@@ -16,8 +16,12 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using QRCoder;
+using System.Drawing;
+
+
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Asset.Core.Repositories
 {
@@ -578,6 +582,7 @@ namespace Asset.Core.Repositories
                 EditAssetDetailVM item = new EditAssetDetailVM();
 
                 item.Id = assetDetailObj.Id;
+                item.MasterAssetId = assetDetailObj.MasterAssetId;
                 item.AssetName = assetDetailObj.MasterAsset.Name;
                 item.AssetNameAr = assetDetailObj.MasterAsset.NameAr;
                 item.Code = assetDetailObj.Code;
@@ -647,6 +652,16 @@ namespace Asset.Core.Repositories
 
             return null;
         }
+
+        private static Byte[] BitmapToBytes(Bitmap img, int assetId)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                img.Save(Directory.GetCurrentDirectory() + "/UploadedAttachments/qrFiles/equipment-" + assetId + ".png", System.Drawing.Imaging.ImageFormat.Png);
+                return stream.ToArray();
+            }
+        }
         public int Update(EditAssetDetailVM model)
         {
             try
@@ -655,11 +670,12 @@ namespace Asset.Core.Repositories
                 var assetDetailObj = _context.AssetDetails.Find(model.Id);
                 assetDetailObj.Id = model.Id;
                 assetDetailObj.Code = model.Code;
-                assetDetailObj.PurchaseDate = model.PurchaseDate != null ? DateTime.Parse(model.PurchaseDate).AddDays(1) : null;
+                assetDetailObj.PurchaseDate = model.PurchaseDate != null ? DateTime.Parse(model.PurchaseDate) : null;
                 assetDetailObj.Price = model.Price;
                 assetDetailObj.SerialNumber = model.SerialNumber;
                 assetDetailObj.Remarks = model.Remarks;
                 assetDetailObj.Barcode = model.Barcode;
+            
                 assetDetailObj.InstallationDate = model.InstallationDate != null ? DateTime.Parse(model.InstallationDate) : null;
 
                 var lstAssetMovements = _context.AssetMovements.Where(a => a.AssetDetailId == model.Id).ToList();
@@ -693,7 +709,22 @@ namespace Asset.Core.Repositories
                 assetDetailObj.WarrantyExpires = model.WarrantyExpires;
                 assetDetailObj.DepreciationRate = model.DepreciationRate;
                 assetDetailObj.CostCenter = model.CostCenter;
-                assetDetailObj.QrFilePath = model.QrFilePath;
+
+                if (assetDetailObj.QrFilePath == null)
+                {
+                    string url = "http://http://10.10.0.119/#/AssetDetail/" + model.Id;
+                    QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                    QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+
+                    QRCode qrCode = new QRCode(qrCodeData);
+                    Bitmap qrCodeImage = qrCode.GetGraphic(15);
+                    var bitmapFiles = BitmapToBytes(qrCodeImage, model.Id);
+                    assetDetailObj.QrFilePath = url;
+                }
+                else
+                {
+                    assetDetailObj.QrFilePath = model.QrFilePath;
+                }
                 _context.Entry(assetDetailObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -1422,7 +1453,8 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<AssetDetail> GetAllSerialsByMasterAssetIdAndHospitalId(int masterAssetId, int hospitalId)
         {
-            var lstAssetDetails = _context.AssetDetails.Where(a => a.HospitalId == hospitalId && a.MasterAssetId == masterAssetId).ToList();
+
+            var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Where(a => a.HospitalId == hospitalId && a.MasterAssetId == masterAssetId).ToList();
             return lstAssetDetails;
         }
 

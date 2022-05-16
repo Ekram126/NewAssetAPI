@@ -193,6 +193,8 @@ namespace Asset.Core.Repositories
                 foreach (var req in requests)
                 {
                     var trackObj = _context.RequestTracking.OrderByDescending(a => a.Id).FirstOrDefault(a => a.RequestId == req.Id);
+                   
+
                     if (trackObj != null)
                     {
                         RequestTracking trk = trackObj;
@@ -227,6 +229,9 @@ namespace Asset.Core.Repositories
             ItemObj.CountInProgress = lstInProgressTracks.Count;
             ItemObj.CountSolved = lstSolvedTracks.Count;
             ItemObj.CountApproved = lstApprovedTracks.Count;
+            ItemObj.CountAll = requests.Count;
+
+
          //   ItemObj.Add(getDataObj);
 
 

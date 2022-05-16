@@ -17,6 +17,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexContractVM.GetData> GetContractsByMasterContractId(int masterContractId);
         List<Hospital> GetListofHospitalsFromAssetContractDetailByMasterContractId(int masterContractId);
         List<IndexContractVM.GetData> GetContractAssetsByHospitalId(int hospitalId, int masterContractId);
+        List<IndexContractVM.GetData> GetContractByHospitalId(int hospitalId);
         int Add(ContractDetail masterContractObj);
         int Update(ContractDetail masterContractObj);
         int Delete(int id);

@@ -180,7 +180,7 @@ namespace Asset.Core.Repositories
                     lstRoleNames.Add(item.Name);
                 }
             }
-            var lstStatus = _context.AssetStatus.Where(a=>a.Id != 1 && a.Id != 2 && a.Id != 5 && a.Id != 6 && a.Id != 7).ToList();
+            var lstStatus = _context.AssetStatus.Where(a=>a.Id != 1 && a.Id != 5 && a.Id != 6 && a.Id != 7).ToList();
             getDataObj.ListStatus = lstStatus;
 
 

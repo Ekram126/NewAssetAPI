@@ -81,8 +81,8 @@ namespace Asset.Core.Repositories
             ApplicationUser UserObj = new ApplicationUser();
             ApplicationRole roleObj = new ApplicationRole();
             List<string> lstRoleNames = new List<string>();
-            
-                var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+
+            var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
             if (obj.Count > 0)
             {
                 UserObj = obj[0];
@@ -97,8 +97,8 @@ namespace Asset.Core.Repositories
                 }
 
 
-                var statusIds = new List<int>(new int[] { 6,8,10 });
-                var lstStatus = _context.WorkOrderStatuses.Where(a=> !statusIds.Any(x=> x== a.Id)).ToList();
+                var statusIds = new List<int>(new int[] { 6, 8, 10 });
+                var lstStatus = _context.WorkOrderStatuses.Where(a => !statusIds.Any(x => x == a.Id)).ToList();
                 itemObj.ListStatus = lstStatus;
                 var workorders = _context.WorkOrders
                                     .Include(a => a.Request)
@@ -278,15 +278,20 @@ namespace Asset.Core.Repositories
                 itemObj.CountSparePart = lstSparePartTracks.Count;
                 itemObj.CountTechApprove = lstTechApproveTracks.Count;
                 itemObj.CountUserApprove = lstUserApproveTracks.Count;
-                //listCountWorkOrders.Add(getDataObj);
-
+                itemObj.CountAll = workorders.Count;
             }
 
             return itemObj;
         }
         public IEnumerable<IndexWorkOrderStatusVM> GetAll()
         {
-            return _context.WorkOrderStatuses.Select(item => new IndexWorkOrderStatusVM
+
+
+            var statusIds = new List<int>(new int[] { 6, 8, 10 });
+            // var lstStatus = _context.WorkOrderStatuses.Where(a => !statusIds.Any(x => x == a.Id)).ToList();
+
+
+            return _context.WorkOrderStatuses.Where(a => !statusIds.Any(x => x == a.Id)).Select(item => new IndexWorkOrderStatusVM
             {
                 Id = item.Id,
                 Color = item.Color,

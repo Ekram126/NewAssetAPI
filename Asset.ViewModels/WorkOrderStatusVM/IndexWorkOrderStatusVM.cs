@@ -36,7 +36,7 @@ namespace Asset.ViewModels.WorkOrderStatusVM
         public int? CountTechApprove { get; set; }
         public int? CountUserApprove { get; set; }
         public int? CountClosed { get; set; }
-
+        public int? CountAll{ get; set; }
 
 
         public List<WorkOrderStatus> ListStatus { get; set; }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Asset.Core.Repositories
 {
@@ -97,6 +98,54 @@ namespace Asset.Core.Repositories
                     getDataObj.SerialNumber = assetDetailObj.SerialNumber;
                     getDataObj.HospitalId = assetDetailObj.HospitalId;
                     getDataObj.BarCode = assetDetailObj.Barcode;
+                    var lstmasters = _context.MasterAssets.Where(a => a.Id == lstassets[0].MasterAssetId).ToList();
+                    if (lstmasters.Count > 0)
+                    {
+                        MasterAsset masterAssetObj = lstmasters[0];
+                        getDataObj.AssetName = masterAssetObj.Name;
+                        getDataObj.AssetNameAr = masterAssetObj.NameAr;
+                    }
+                }
+                getDataObj.HasSpareParts = item.HasSpareParts.ToString();
+                getDataObj.ResponseTime = item.ResponseTime.ToString();
+                lstAssetDetails.Add(getDataObj);
+            }
+
+            return lstAssetDetails;
+        }
+
+        public List<IndexContractVM.GetData> GetContractByHospitalId(int hospitalId)
+        {
+            List<IndexContractVM.GetData> lstAssetDetails = new List<IndexContractVM.GetData>();
+
+            //var lstAssets = (from master in _context.MasterContracts
+            //                 join detail in _context.ContractDetails on master.Id equals detail.MasterContractId
+            //                 join assetDetail in _context.AssetDetails on detail.AssetDetailId equals assetDetail.Id
+            //                 join host in _context.Hospitals on assetDetail.HospitalId equals host.Id
+            //                 where assetDetail.HospitalId == hospitalId                           
+            //                 select detail).ToList();
+
+
+            var lstAssets = _context.ContractDetails.Include(a => a.MasterContract)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
+                .Where(a => a.HospitalId == hospitalId).OrderByDescending(a=>a.Id).ToList();
+                      
+
+
+
+            foreach (var item in lstAssets)
+            {
+                IndexContractVM.GetData getDataObj = new IndexContractVM.GetData();
+                getDataObj.ContractName = item.MasterContract.Subject;
+                getDataObj.Id = item.Id;
+                var lstassets = _context.AssetDetails.Where(a => a.Id == item.AssetDetailId).ToList();
+                if (lstassets.Count > 0)
+                {
+                    AssetDetail assetDetailObj = lstassets[0];
+                    getDataObj.SerialNumber = assetDetailObj.SerialNumber;
+                    getDataObj.HospitalId = assetDetailObj.HospitalId;
+                    getDataObj.BarCode = assetDetailObj.Barcode;
+
                     var lstmasters = _context.MasterAssets.Where(a => a.Id == lstassets[0].MasterAssetId).ToList();
                     if (lstmasters.Count > 0)
                     {

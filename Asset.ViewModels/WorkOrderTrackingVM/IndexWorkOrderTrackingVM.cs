@@ -10,8 +10,8 @@ namespace Asset.ViewModels.WorkOrderTrackingVM
     {
         public int Id { get; set; }
         public int TrackId { get; set; }
-        public DateTime WorkOrderDate { get; set; }
-        public DateTime CreationDate { get; set; }
+        public DateTime? WorkOrderDate { get; set; }
+        public DateTime? CreationDate { get; set; }
         public string Notes { get; set; }
         public string CreatedById { get; set; }
         public string CreatedBy { get; set; }

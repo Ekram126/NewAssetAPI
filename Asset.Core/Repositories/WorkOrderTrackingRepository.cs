@@ -710,25 +710,49 @@ namespace Asset.Core.Repositories
 
         public List<IndexWorkOrderTrackingVM> GetTrackOfWorkOrderByWorkOrderId(int workOrderId)
         {
-            var lstTracks = _context.WorkOrderTrackings.Where(r => r.WorkOrderId == workOrderId)
-                      .Include(w => w.WorkOrderStatus).Include(w => w.User)
-                      .Select(work => new IndexWorkOrderTrackingVM
-                      {
-                          Id = work.Id,
-                          TrackId = work.Id,
-                          WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
-                          CreationDate = DateTime.Parse(work.CreationDate.ToString()),
-                          AssignedTo = _context.ApplicationUser.Where(a => a.Id == work.AssignedTo).FirstOrDefault().UserName,
-                          Notes = work.Notes,
-                          CreatedById = work.CreatedById,
-                          CreatedBy = work.User.UserName,
-                          WorkOrderStatusId = work.WorkOrderStatusId,
-                          WorkOrderStatusName = work.WorkOrderStatus.Name,
-                          WorkOrderStatusNameAr = work.WorkOrderStatus.NameAr,
-                          ActualStartDate = work.ActualStartDate,
-                          ActualEndDate = work.ActualEndDate,
+            List<IndexWorkOrderTrackingVM> lstTracks = new List<IndexWorkOrderTrackingVM>();
 
-                      }).ToList().OrderByDescending(a => a.CreationDate).ToList();
+            var lstTracks2 = _context.WorkOrderTrackings.Where(r => r.WorkOrderId == workOrderId)
+                      .Include(w => w.WorkOrderStatus).Include(w => w.User).OrderByDescending(a => a.CreationDate).ToList();
+
+            foreach (var work in lstTracks2)
+            {
+                IndexWorkOrderTrackingVM item = new IndexWorkOrderTrackingVM();
+                item.Id = work.Id;
+                item.TrackId = work.Id;
+                item.WorkOrderDate = work.WorkOrderDate != null ? DateTime.Parse(work.WorkOrderDate.ToString()):null;
+                item.CreationDate = work.CreationDate != null ? DateTime.Parse(work.CreationDate.ToString()):null;
+                item.AssignedTo = work.AssignedTo != null ? _context.ApplicationUser.Where(a => a.Id == work.AssignedTo).FirstOrDefault().UserName : "";
+                item.Notes = work.Notes;
+                item.CreatedById = work.CreatedById;
+                item.CreatedBy = work.User.UserName;
+                item.WorkOrderStatusId = work.WorkOrderStatusId;
+                item.WorkOrderStatusName = work.WorkOrderStatus.Name;
+                item.WorkOrderStatusNameAr = work.WorkOrderStatus.NameAr;
+                item.ActualStartDate = work.ActualStartDate;
+                item.ActualEndDate = work.ActualEndDate;
+                lstTracks.Add(item);
+            }
+
+
+
+            //.Select(work => new IndexWorkOrderTrackingVM
+            //{
+            //    Id = work.Id,
+            //    TrackId = work.Id,
+            //    WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
+            //    CreationDate = DateTime.Parse(work.CreationDate.ToString()),
+            //    AssignedTo = work.AssignedTo != null ?_context.ApplicationUser.Where(a => a.Id == work.AssignedTo).FirstOrDefault().UserName:"",
+            //    Notes = work.Notes,
+            //    CreatedById = work.CreatedById,
+            //    CreatedBy = work.User.UserName,
+            //    WorkOrderStatusId = work.WorkOrderStatusId,
+            //    WorkOrderStatusName = work.WorkOrderStatus.Name,
+            //    WorkOrderStatusNameAr = work.WorkOrderStatus.NameAr,
+            //    ActualStartDate = work.ActualStartDate,
+            //    ActualEndDate = work.ActualEndDate,
+
+            //}).ToList().OrderByDescending(a => a.CreationDate).ToList();
 
             return lstTracks;
         }

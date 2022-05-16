@@ -337,5 +337,17 @@ namespace Asset.Core.Repositories
 
             return trackingObj;
         }
+
+        public RequestTracking GetLastTrackForRequestByRequestId(int requestId)
+        {
+            RequestTracking trackingObj = new RequestTracking();
+            var lstTracks = _context.RequestTracking.Where(r => r.RequestId == requestId).OrderByDescending(a => a.Id).ToList();
+            if (lstTracks.Count > 0)
+            {
+                trackingObj = lstTracks[0];
+            }
+
+            return trackingObj;
+        }
     }
 }

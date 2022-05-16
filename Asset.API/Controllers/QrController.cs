@@ -22,14 +22,14 @@ namespace Asset.API.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ApplicationDbContext _context;
         private IAssetDetailService _AssetDetailService;
-      
+
         public QrController(IAssetDetailService AssetDetailService,
           ApplicationDbContext context,
           UserManager<ApplicationUser> userManager)
         {
             _AssetDetailService = AssetDetailService;
             _context = context;
-           
+
             this.userManager = userManager;
         }
         [HttpPost]
@@ -39,36 +39,36 @@ namespace Asset.API.Controllers
         {
             int assetId = eqId;
 
-            string url = "http://http://196.219.39.212:7777/#/AssetDetail/" + assetId;
+            string url = "http://http://10.10.0.119/#/AssetDetail/" + assetId;
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
 
-                QRCode qrCode = new QRCode(qrCodeData);
-                Bitmap qrCodeImage = qrCode.GetGraphic(15);
-                var bitmapFiles = BitmapToBytes(qrCodeImage, assetId);
-                
-                var asset = _context.AssetDetails.Where(e => e.Id == assetId).FirstOrDefault();
-                asset.QrFilePath = url;
-               _context.Entry(asset).State = EntityState.Modified;
-               _context.SaveChanges();
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(15);
+            var bitmapFiles = BitmapToBytes(qrCodeImage, assetId);
+
+            var asset = _context.AssetDetails.Where(e => e.Id == assetId).FirstOrDefault();
+            asset.QrFilePath = url;
+            _context.Entry(asset).State = EntityState.Modified;
+            _context.SaveChanges();
 
 
 
             return Ok(url);
         }
 
-            private static Byte[] BitmapToBytes(Bitmap img,int assetId)
+        private static Byte[] BitmapToBytes(Bitmap img, int assetId)
+        {
+            //var eq= _context.Equipments.Where(e => e.Id == qrText).FirstOrDefault();
+            using (MemoryStream stream = new MemoryStream())
             {
-                //var eq= _context.Equipments.Where(e => e.Id == qrText).FirstOrDefault();
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    img.Save(Directory.GetCurrentDirectory() + "/UploadedAttachments/qrFiles/equipment-" + assetId + ".png", System.Drawing.Imaging.ImageFormat.Png);
-              
+                img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                img.Save(Directory.GetCurrentDirectory() + "/UploadedAttachments/qrFiles/equipment-" + assetId + ".png", System.Drawing.Imaging.ImageFormat.Png);
+
 
                 return stream.ToArray();
-                }
             }
+        }
 
 
     }

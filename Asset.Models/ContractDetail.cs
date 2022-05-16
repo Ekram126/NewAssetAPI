@@ -11,6 +11,7 @@ namespace Asset.Models
     public class ContractDetail
     {
         public int Id { get; set; }
+
         public int? MasterContractId { get; set; }
         [ForeignKey("MasterContractId")]
         public virtual MasterContract MasterContract { get; set; }

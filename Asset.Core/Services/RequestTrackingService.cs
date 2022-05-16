@@ -53,6 +53,11 @@ namespace Asset.Core.Services
             return _unitOfWork.RequestTracking.GetFirstTrackForRequestByRequestId(requestId);
         }
 
+        public RequestTracking GetLastTrackForRequestByRequestId(int requestId)
+        {
+            return _unitOfWork.RequestTracking.GetLastTrackForRequestByRequestId(requestId);
+        }
+
         public IndexRequestTracking GetRequestTrackingById(int id)
         {
             return _unitOfWork.RequestTracking.GetById(id);
@@ -66,7 +71,7 @@ namespace Asset.Core.Services
 
         public void UpdateRequestTracking(EditRequestTracking editRequestTracking)
         {
-            _unitOfWork.RequestTracking.Update( editRequestTracking);
+            _unitOfWork.RequestTracking.Update(editRequestTracking);
         }
     }
 }
