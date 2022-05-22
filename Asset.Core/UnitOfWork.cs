@@ -83,7 +83,7 @@ namespace Asset.Core
         private HospitalReasonTransactionRepositories _hospitalReasonTransactionRepositories;
         private ISupplierExecludeRepository _supplierExecludeRepository;
         private ApplicationDbContext _context;
-
+        private IHealthRepository _healthRepository;
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -239,6 +239,8 @@ namespace Asset.Core
         public IHospitalReasonTransactionRepository HospitalReasonTransactionRepository => _hospitalReasonTransactionRepositories = _hospitalReasonTransactionRepositories ?? new HospitalReasonTransactionRepositories(_context);
 
         public ISupplierExecludeRepository SupplierExecludeRepository => _supplierExecludeRepository= _supplierExecludeRepository ?? new SupplierExecludeRepositories(_context);
+
+        public IHealthRepository healthRepository => _healthRepository = _healthRepository ?? new HealthRepository(_context);
     }
 }
 

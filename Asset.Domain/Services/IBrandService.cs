@@ -13,7 +13,6 @@ namespace Asset.Domain.Services
         IEnumerable<IndexBrandVM.GetData> GetAll();
         IEnumerable<IndexBrandVM.GetData> GetTop10Brands(int hospitalId);
         EditBrandVM GetById(int id);
-
         IEnumerable<Brand> GetAllBrands();
         IEnumerable<IndexBrandVM.GetData> GetBrandByName(string brandName);
         int Add(CreateBrandVM brandObj);

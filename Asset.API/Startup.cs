@@ -52,6 +52,8 @@ namespace Asset.API
 
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("AssetConnStr")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("GisConnetion")));
+
             services.AddScoped<IRoleCategoryService, RoleCategoryService>();
             services.AddScoped<IOrganizationService, OrganizationService>();
             services.AddScoped<ISubOrganizationService, SubOrganizationService>();
@@ -122,6 +124,7 @@ namespace Asset.API
             services.AddTransient<IWorkOrderTrackingService, WorkOrderTrackingService>();
             services.AddTransient<IWorkOrderAttachmentService, WorkOrderAttachmentService>();
             services.AddTransient<IWorkOrderAssignService, WorkOrderAssignService>();
+            services.AddTransient<IHealthService, HealthService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPagingService, PagingService>();
             services.AddScoped<QrController, QrController>();
