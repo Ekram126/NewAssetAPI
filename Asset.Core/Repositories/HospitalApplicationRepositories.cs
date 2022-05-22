@@ -25,7 +25,7 @@ namespace Asset.Core.Repositories
 
         public EditHospitalApplicationVM GetById(int id)
         {
-
+            EditHospitalApplicationVM hospitalAppVM = new EditHospitalApplicationVM();
             var execludIds = (from execlude in _context.HospitalExecludeReasons
                               join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
                               where trans.HospitalApplicationId == id
@@ -39,17 +39,20 @@ namespace Asset.Core.Repositories
 
 
 
+            var lstHospitalApps = _context.HospitalApplications.Include(a => a.User).Include(a => a.ApplicationType)
+                  .Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset)
+                  .Where(a => a.Id == id).ToList();
 
-
-            return _context.HospitalApplications.Include(a => a.User).Include(a => a.ApplicationType)
-                .Include(a => a.User).Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Where(a => a.Id == id).Select(item => new EditHospitalApplicationVM
+            if (lstHospitalApps.Count > 0)
+            {
+                HospitalApplication item = lstHospitalApps[0];
+               hospitalAppVM = new EditHospitalApplicationVM
                 {
                     Id = item.Id,
-
                     AssetId = item.AssetId,
                     StatusId = item.StatusId,
                     AppDate = item.AppDate,
-                    DueDate = item.DueDate.Value.ToString(),
+                    DueDate = item.DueDate != null ? item.DueDate.Value.ToString():null,
                     AppNumber = item.AppNumber,
                     UserId = item.User.UserName,
                     AppTypeId = item.AppTypeId,
@@ -58,8 +61,12 @@ namespace Asset.Core.Repositories
                     HoldReasonIds = holdIds,
                     assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
                     assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber
+                };
+              
 
-                }).FirstOrDefault();
+            }
+
+            return hospitalAppVM;
         }
 
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetAll()
@@ -427,7 +434,7 @@ namespace Asset.Core.Repositories
                     _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                     _context.SaveChanges();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     string error = ex.Message;
                 }

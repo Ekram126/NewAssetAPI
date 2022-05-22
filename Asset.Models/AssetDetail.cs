@@ -14,6 +14,8 @@ namespace Asset.Models
         [StringLength(5)]
         public string Code { get; set; }
         public DateTime? PurchaseDate { get; set; }
+
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal? Price { get; set; }
 
 
@@ -92,6 +94,7 @@ namespace Asset.Models
 
         public string PONumber { get; set; }
 
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal? DepreciationRate { get; set; }
 
         [StringLength(50)]

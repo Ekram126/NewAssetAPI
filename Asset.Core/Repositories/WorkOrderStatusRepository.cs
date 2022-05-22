@@ -278,7 +278,8 @@ namespace Asset.Core.Repositories
                 itemObj.CountSparePart = lstSparePartTracks.Count;
                 itemObj.CountTechApprove = lstTechApproveTracks.Count;
                 itemObj.CountUserApprove = lstUserApproveTracks.Count;
-                itemObj.CountAll = workorders.Count;
+                itemObj.CountAll = (lstAssignedTracks.Count + lstCloseTracks.Count + lstInProgressTracks.Count + lstDoneTracks.Count +
+                    lstEscalateTracks.Count + lstExternalSupportTracks.Count + lstPendingTracks.Count + lstReAssignedTracks.Count + lstReviewTracks.Count + lstSparePartTracks.Count + lstTechApproveTracks.Count + lstUserApproveTracks.Count);
             }
 
             return itemObj;
@@ -288,7 +289,6 @@ namespace Asset.Core.Repositories
 
 
             var statusIds = new List<int>(new int[] { 6, 8, 10 });
-            // var lstStatus = _context.WorkOrderStatuses.Where(a => !statusIds.Any(x => x == a.Id)).ToList();
 
 
             return _context.WorkOrderStatuses.Where(a => !statusIds.Any(x => x == a.Id)).Select(item => new IndexWorkOrderStatusVM

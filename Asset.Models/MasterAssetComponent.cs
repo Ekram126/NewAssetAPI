@@ -28,7 +28,7 @@ namespace Asset.Models
         [ForeignKey("MasterAssetId")]
         public virtual MasterAsset MasterAsset { get; set; }
 
-
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal? Price { get; set; }
 
 

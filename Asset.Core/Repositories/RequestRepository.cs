@@ -3054,8 +3054,9 @@ namespace Asset.Core.Repositories
                 }
                 if (userRoleNames.Contains("Eng"))
                 {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
 
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                  //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
                 }
                 if (userRoleNames.Contains("AssetOwner"))
                 {
@@ -3094,7 +3095,9 @@ namespace Asset.Core.Repositories
                 }
                 if (userRoleNames.Contains("Eng"))
                 {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                   // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+
                 }
 
                 if (userRoleNames.Contains("DE"))
@@ -3174,7 +3177,8 @@ namespace Asset.Core.Repositories
                 var woObj = _context.WorkOrders
                 .Include(wo => wo.User)
                  .Include(wo => wo.WorkOrderPeriority)
-                .Include(wo => wo.Request.AssetDetail).OrderByDescending(a => a.CreationDate).Where(a => a.Request.Id == req.Id && a.Request.AssetDetailId == assetId).ToList();
+                .Include(wo => wo.Request.AssetDetail)
+                .Where(a => a.Request.Id == req.Id && a.Request.AssetDetailId == assetId).OrderByDescending(a => a.CreationDate).ToList();
                 if (woObj.Count > 0)
                 {
                     var workOrderObj = woObj[0];
@@ -3200,45 +3204,6 @@ namespace Asset.Core.Repositories
 
 
 
-
-                //getDataObj.ListWorkOrder = _context.WorkOrders
-                //.Include(wo => wo.User)
-                //.Include(wo => wo.Request.AssetDetail).OrderByDescending(a=>a.CreationDate).Where(a => a.Request.Id == req.Id && a.Request.AssetDetailId == assetId).Select(wo => new IndexWorkOrderVM
-                //{
-                //    Id = req.Id,
-                //    Subject = wo.Subject,
-                //    WorkOrderNumber = wo.WorkOrderNumber,
-                //    CreatedById = wo.CreatedById,
-                //    CreatedBy = wo.User.UserName,
-                //    UserName = wo.User.UserName,
-                //    PeriorityName = wo.WorkOrderPeriority.Name,
-                //    PeriorityNameAr = wo.WorkOrderPeriority.NameAr,
-                //    ListTracks = _context.WorkOrderTrackings.Include(t => t.User).Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus).Where(a => a.WorkOrderId == wo.Id).Select(track => new LstWorkOrderFromTracking
-                //    {
-
-                //        Notes = track.Notes,
-                //        CreationDate = track.CreationDate,
-                //        ActualStartDate = DateTime.Parse(track.ActualStartDate.Value.ToString()),
-                //        ActualEndDate = DateTime.Parse(track.ActualEndDate.Value.ToString()),
-                //        CreatedBy = track.User.UserName,
-                //        StatusName = track.WorkOrderStatus.Name,
-                //        StatusNameAr = track.WorkOrderStatus.NameAr,
-                //    }).ToList()
-                //}).ToList();
-
-
-
-                //getDataObj.ListTracks = _context.RequestTracking
-                //.Include(req => req.User)
-                //.Include(req => req.Request.AssetDetail).Where(a => a.Request.AssetDetailId == assetId && a.Request.Id == req.Id).Select(req => new IndexRequestTrackingVM.GetData
-                //{
-                //    Id = req.Id,
-                //    Description = req.Description,
-                //    Date = req.DescriptionDate,
-                //    UserName = req.User.UserName,
-                //    StatusName = req.RequestStatus.Name,
-                //    StatusNameAr = req.RequestStatus.NameAr,
-                //}).ToList();
 
 
 

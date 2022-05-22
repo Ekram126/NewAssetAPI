@@ -39,13 +39,14 @@ namespace Asset.API.Controllers
         {
             int assetId = eqId;
 
-            string url = "http://http://10.10.0.119/#/AssetDetail/" + assetId;
+            string url = "http://http://10.10.0.119:2020/#/dash/hospitalassets/edithospitalasset/" + assetId;
+           // string url = "http://http://10.10.0.119:2020/#/AssetDetail/" + assetId;
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
 
-            QRCode qrCode = new QRCode(qrCodeData);
-            Bitmap qrCodeImage = qrCode.GetGraphic(15);
-            var bitmapFiles = BitmapToBytes(qrCodeImage, assetId);
+            //QRCode qrCode = new QRCode(qrCodeData);
+            //Bitmap qrCodeImage = qrCode.GetGraphic(15);
+            //var bitmapFiles = BitmapToBytes(qrCodeImage, assetId);
 
             var asset = _context.AssetDetails.Where(e => e.Id == assetId).FirstOrDefault();
             asset.QrFilePath = url;

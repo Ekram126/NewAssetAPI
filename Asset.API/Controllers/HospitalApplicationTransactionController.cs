@@ -15,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,7 +28,7 @@ namespace Asset.API.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private IHospitalApplicationService _hospitalApplicationService;
-
+        private readonly EmailConfigurationVM _emailConfig;
         private IHospitalExecludeReasonService _hospitalExecludeReasonService;
         private IHospitalHoldReasonService _hospitalHoldReasonService;
         private IMasterAssetService _masterAssetService;
@@ -42,7 +44,7 @@ namespace Asset.API.Controllers
         IWebHostEnvironment _webHostingEnvironment;
         public HospitalApplicationTransactionController(UserManager<ApplicationUser> userManager, IHospitalReasonTransactionService hospitalReasonTransactionService,
             IHospitalApplicationService hospitalApplicationService, IWebHostEnvironment webHostingEnvironment, IPagingService pagingService,
-            IEmailSender emailSender, IAssetDetailService assetDetailService,
+            IEmailSender emailSender, IAssetDetailService assetDetailService, EmailConfigurationVM emailConfig,
             IHospitalExecludeReasonService hospitalExecludeReasonService, IHospitalHoldReasonService hospitalHoldReasonService,
             IMasterAssetService masterAssetService)
         {
@@ -50,6 +52,7 @@ namespace Asset.API.Controllers
             _hospitalApplicationService = hospitalApplicationService;
             _webHostingEnvironment = webHostingEnvironment;
             _pagingService = pagingService;
+            _emailConfig = emailConfig;
 
 
             _userManager = userManager;
@@ -95,121 +98,23 @@ namespace Asset.API.Controllers
         }
 
 
-  
         [HttpPost]
         [Route("AddHospitalReasonTransaction")]
-        public async Task<int> Add(CreateHospitalReasonTransactionVM transObj)
+        public int Add(CreateHospitalReasonTransactionVM transObj)
         {
-            string strExcludes = "";
-            string  strHolds = "";
-            List<string> execludeNames = new List<string>();
-            List<IndexHospitalExecludeReasonVM.GetData> lstExcludes = new List<IndexHospitalExecludeReasonVM.GetData>();
-            List<IndexHospitalHoldReasonVM.GetData> lstHolds = new List<IndexHospitalHoldReasonVM.GetData>();
 
-
-            var savedId = _hospitalReasonTransactionService.Add(transObj);
-            var applicationObj = _hospitalApplicationService.GetById(int.Parse(transObj.HospitalApplicationId.ToString()));
-            var userObj = await _userManager.FindByNameAsync("MemberUser");
-            var assetObj = _assetDetailService.GetById(int.Parse(applicationObj.AssetId.ToString()));
-            var masterObj = _masterAssetService.GetById(int.Parse(assetObj.MasterAssetId.ToString()));
-
-
-            var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.HospitalApplicationId == transObj.HospitalApplicationId).ToList();
-
-
-            if (lstReasons.Count > 0)
-            {
-                if (applicationObj.AppTypeId == 1)
-                {
-                    foreach (var item in lstReasons)
-                    {
-                        lstExcludes.Add(_hospitalExecludeReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
-
-
-                    }
-                    foreach (var reason in lstExcludes)
-                    {
-                        execludeNames.Add(reason.NameAr);
-                    }
-                    strExcludes = string.Join(",", execludeNames);
-                }
-
-
-
-                if (applicationObj.AppTypeId == 2)
-                {
-                    foreach (var item in lstReasons)
-                    {
-                        lstHolds.Add(_hospitalHoldReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
-                    }
-
-                    foreach (var reason in lstHolds)
-                    {
-                        execludeNames.Add(reason.NameAr);
-                    }
-                    strHolds = string.Join(",", execludeNames);
-                }
-            }
-
-            StringBuilder strBuild = new StringBuilder();
-            strBuild.Append($"Dear {userObj.UserName}\r\n");
-            strBuild.Append("<table>");
-            strBuild.Append("<tr>");
-            strBuild.Append("<td> Asset Name");
-            strBuild.Append("</td>");
-            strBuild.Append("<td>" + masterObj.NameAr);
-            strBuild.Append("</td>");
-            strBuild.Append("</tr>");
-            strBuild.Append("<tr>");
-            strBuild.Append("<td> Serial");
-            strBuild.Append("</td>");
-            strBuild.Append("<td>" + assetObj.SerialNumber);
-            strBuild.Append("</td>");
-            strBuild.Append("</tr>");
-            strBuild.Append("<tr>");
-            strBuild.Append("<td> BarCode");
-            strBuild.Append("</td>");
-            strBuild.Append("<td>" + assetObj.Barcode);
-            strBuild.Append("</td>");
-            strBuild.Append("</tr>");
-            if (applicationObj.AppTypeId == 1)
-            {
-                strBuild.Append("<tr>");
-                strBuild.Append("<td> Reasons");
-                strBuild.Append("</td>");
-                strBuild.Append("<td>" + strExcludes);
-                strBuild.Append("</td>");
-                strBuild.Append("</tr>");
-            }
-            if (applicationObj.AppTypeId == 2)
-            {
-                strBuild.Append("<tr>");
-                strBuild.Append("<td> Reasons");
-                strBuild.Append("</td>");
-                strBuild.Append("<td>" + strHolds);
-                strBuild.Append("</td>");
-                strBuild.Append("</tr>");
-            }
-            strBuild.Append("</table>");
-
-
-            var message = new MessageVM(new string[] { userObj.Email }, "Exclude-Hold Asset", strBuild.ToString());
-            var message2 = new MessageVM(new string[] { "pineapple_126@hotmail.com" }, "Exclude-Hold Asset", strBuild.ToString());
-   
-            _emailSender.SendEmail(message);
-            _emailSender.SendEmail(message2);
-
-
-            return savedId;
+            return  _hospitalReasonTransactionService.Add(transObj);           
         }
 
+
+     
         [HttpDelete]
         [Route("DeleteHospitalReasonTransaction/{id}")]
         public ActionResult<HospitalApplication> Delete(int id)
         {
             try
             {
-                var HospitalApplicationObj = _hospitalReasonTransactionService.GetById(id);
+                //var HospitalApplicationObj = _hospitalReasonTransactionService.GetById(id);
                 int deletedRow = _hospitalReasonTransactionService.Delete(id);
             }
             catch (DbUpdateConcurrencyException ex)

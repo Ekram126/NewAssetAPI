@@ -76,7 +76,7 @@ namespace Asset.Core.Repositories
             return _context.ContractDetails.Find(id);
         }
 
-        public List<IndexContractVM.GetData> GetContractAssetsByHospitalId(int hospitalId, int masterContractId)
+        public IEnumerable<IndexContractVM.GetData> GetContractAssetsByHospitalId(int hospitalId, int masterContractId)
         {
             List<IndexContractVM.GetData> lstAssetDetails = new List<IndexContractVM.GetData>();
 
@@ -114,7 +114,7 @@ namespace Asset.Core.Repositories
             return lstAssetDetails;
         }
 
-        public List<IndexContractVM.GetData> GetContractByHospitalId(int hospitalId)
+        public IEnumerable<IndexContractVM.GetData> GetContractByHospitalId(int hospitalId)
         {
             List<IndexContractVM.GetData> lstAssetDetails = new List<IndexContractVM.GetData>();
 
@@ -126,10 +126,12 @@ namespace Asset.Core.Repositories
             //                 select detail).ToList();
 
 
-            var lstAssets = _context.ContractDetails.Include(a => a.MasterContract)
-                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
-                .Where(a => a.HospitalId == hospitalId).OrderByDescending(a=>a.Id).ToList();
-                      
+            var lstAssets = _context.ContractDetails
+                .Include(a => a.MasterContract)
+               .Include(a => a.AssetDetail)
+                .Include(a => a.AssetDetail.Hospital)
+                .Where(a => a.HospitalId == hospitalId).OrderByDescending(a => a.Id).ToList();
+
 
 
 
@@ -165,30 +167,55 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexContractVM.GetData> GetContractsByMasterContractId(int masterContractId)
         {
 
-            return (from master in _context.MasterContracts
-                    join detail in _context.ContractDetails on master.Id equals detail.MasterContractId
-                    join assetDetail in _context.AssetDetails on detail.AssetDetailId equals assetDetail.Id
-                    join mainAsset in _context.MasterAssets on assetDetail.MasterAssetId equals mainAsset.Id
-                    where master.Id == masterContractId
-                    select new IndexContractVM.GetData
-                    {
-                        Id = detail.Id,
-                        AssetDetailId = assetDetail.Id,
-                        HospitalId = assetDetail.HospitalId,
-                        SerialNumber = assetDetail.SerialNumber,
-                        BarCode = assetDetail.Barcode,
-                        ContractDate = detail.ContractDate,
-                        MasterContractId = master.Id,
-                        AssetName = mainAsset.Name,
-                        AssetNameAr = mainAsset.NameAr,
-                        HospitalName = _context.Hospitals.Where(a => a.Id == assetDetail.HospitalId).FirstOrDefault().Name,
-                        HospitalNameAr = _context.Hospitals.Where(a => a.Id == assetDetail.HospitalId).FirstOrDefault().NameAr,
-                        HasSpareParts = detail.HasSpareParts.ToString(),
-                        ResponseTime = detail.ResponseTime.ToString()
-                    }).ToList();
+            return _context.ContractDetails
+                .Include(a => a.AssetDetail)
+                .Include(a => a.AssetDetail.MasterAsset)
+                .Include(a => a.AssetDetail.Hospital).Include(a => a.MasterContract)
+                .Where(a => a.MasterContract.Id == masterContractId)
+                .Select(item => new IndexContractVM.GetData
+                {
+                    Id = item.Id,
+                    ContractDate = item.ContractDate,
+                    MasterContractId = item.MasterContractId,
+                    HasSpareParts = item.HasSpareParts.ToString(),
+                    ResponseTime = item.ResponseTime.ToString(),
+
+                    AssetDetailId = item.AssetDetail.Id,
+                    HospitalId = item.AssetDetail.HospitalId,
+                    SerialNumber = item.AssetDetail.SerialNumber,
+                    BarCode = item.AssetDetail.Barcode,
+                    AssetName = item.AssetDetail.MasterAsset.Name,
+                    AssetNameAr = item.AssetDetail.MasterAsset.NameAr,
+                    HospitalName = item.AssetDetail.Hospital.Name,
+                    HospitalNameAr = item.AssetDetail.Hospital.NameAr,
+
+                }).ToList();
+
+
+            //return (from master in _context.MasterContracts
+            //        join detail in _context.ContractDetails on master.Id equals detail.MasterContractId
+            //        join assetDetail in _context.AssetDetails on detail.AssetDetailId equals assetDetail.Id
+            //        join mainAsset in _context.MasterAssets on assetDetail.MasterAssetId equals mainAsset.Id
+            //        where master.Id == masterContractId
+            //        select new IndexContractVM.GetData
+            //        {
+            //            Id = detail.Id,
+            //            AssetDetailId = assetDetail.Id,
+            //            HospitalId = assetDetail.HospitalId,
+            //            SerialNumber = assetDetail.SerialNumber,
+            //            BarCode = assetDetail.Barcode,
+            //            ContractDate = detail.ContractDate,
+            //            MasterContractId = master.Id,
+            //            AssetName = mainAsset.Name,
+            //            AssetNameAr = mainAsset.NameAr,
+            //            HospitalName = _context.Hospitals.Where(a => a.Id == assetDetail.HospitalId).FirstOrDefault().Name,
+            //            HospitalNameAr = _context.Hospitals.Where(a => a.Id == assetDetail.HospitalId).FirstOrDefault().NameAr,
+            //            HasSpareParts = detail.HasSpareParts.ToString(),
+            //            ResponseTime = detail.ResponseTime.ToString()
+            //        }).ToList();
         }
 
-        public List<Hospital> GetListofHospitalsFromAssetContractDetailByMasterContractId(int masterContractId)
+        public IEnumerable<Hospital> GetListofHospitalsFromAssetContractDetailByMasterContractId(int masterContractId)
         {
             List<Hospital> lstHospitals = new List<Hospital>();
             var lstAssets = (from master in _context.MasterContracts

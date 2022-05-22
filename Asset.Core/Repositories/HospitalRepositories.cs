@@ -35,8 +35,8 @@ namespace Asset.Core.Repositories
                  AddressAr = item.AddressAr,
                  Email = item.Email,
                  Mobile = item.Mobile,
-                 Latitude = item.Latitude,
-                 Longtitude = item.Longtitude,
+                 Latitude = decimal.Parse(item.Latitude.ToString()),
+                 Longtitude = decimal.Parse(item.Longtitude.ToString()),
                  ManagerName = item.ManagerName,
                  ManagerNameAr = item.ManagerNameAr,
                  GovernorateId = item.GovernorateId != null? item.GovernorateId:0,
@@ -96,8 +96,8 @@ namespace Asset.Core.Repositories
                     HospitalObj.Mobile = HospitalVM.Mobile;
                     HospitalObj.ManagerName = HospitalVM.ManagerName;
                     HospitalObj.ManagerNameAr = HospitalVM.ManagerNameAr;
-                    HospitalObj.Latitude = HospitalVM.Latitude;
-                    HospitalObj.Longtitude = HospitalVM.Longtitude;
+                    HospitalObj.Latitude =float.Parse( HospitalVM.Latitude.ToString());
+                    HospitalObj.Longtitude = float.Parse(HospitalVM.Longtitude.ToString());
                     HospitalObj.GovernorateId = HospitalVM.GovernorateId;
                     HospitalObj.CityId = HospitalVM.CityId;
                     HospitalObj.OrganizationId = HospitalVM.OrganizationId;
@@ -166,8 +166,8 @@ namespace Asset.Core.Repositories
                 HospitalObj.Mobile = HospitalVM.Mobile;
                 HospitalObj.ManagerName = HospitalVM.ManagerName;
                 HospitalObj.ManagerNameAr = HospitalVM.ManagerNameAr;
-                HospitalObj.Latitude = HospitalVM.Latitude;
-                HospitalObj.Longtitude = HospitalVM.Longtitude;
+                HospitalObj.Latitude = float.Parse(HospitalVM.Latitude.ToString());
+                HospitalObj.Longtitude = float.Parse(HospitalVM.Longtitude.ToString());
                 HospitalObj.GovernorateId = HospitalVM.GovernorateId;
                 HospitalObj.CityId = HospitalVM.CityId;
                 HospitalObj.OrganizationId = HospitalVM.OrganizationId;
@@ -320,8 +320,8 @@ namespace Asset.Core.Repositories
                 AddressAr = item.AddressAr,
                 Email = item.Email,
                 Mobile = item.Mobile,
-                Latitude = item.Latitude,
-                Longtitude = item.Longtitude,
+                Latitude = decimal.Parse(item.Latitude.ToString()),
+                Longtitude = decimal.Parse(item.Longtitude.ToString()),
                 ManagerName = item.ManagerName,
                 ManagerNameAr = item.ManagerNameAr,
 
@@ -711,9 +711,9 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexHospitalVM.GetData> GetTop10Hospitals()
         {
-            var lstHospitals = _context.Hospitals.Take(10).Include(a => a.Governorate)
+            var lstHospitals = _context.Hospitals.Include(a => a.Governorate)
                .Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
-               .ToList().Select(item => new IndexHospitalVM.GetData
+               .ToList().Take(10).Select(item => new IndexHospitalVM.GetData
                {
                    Id = item.Id,
                    Code = item.Code,

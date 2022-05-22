@@ -31,7 +31,7 @@ namespace Asset.Models
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }
 
-
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal? Cost { get; set; }
 
         public int? HospitalId { get; set; }

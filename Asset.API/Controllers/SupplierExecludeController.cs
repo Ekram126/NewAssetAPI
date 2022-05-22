@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -90,7 +92,16 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddSupplierExeclude")]
-        public async Task<int> Add(SupplierExeclude supplierExecludeObj)
+        public int Add(SupplierExeclude supplierExecludeObj)
+        {
+           
+          return _supplierExecludeService.Add(supplierExecludeObj);
+        }
+
+
+        [HttpGet]
+        [Route("SendSupplierExcludeEmail/{supplierExecludeAssetId}")]
+        public async Task<int> SendSupplierExcludeEmail(int supplierExecludeAssetId)
         {
             string strExcludes = "";
             string strHolds = "";
@@ -99,19 +110,15 @@ namespace Asset.API.Controllers
             List<IndexSupplierHoldReasonVM.GetData> lstHolds = new List<IndexSupplierHoldReasonVM.GetData>();
 
 
-            var savedId =  _supplierExecludeService.Add(supplierExecludeObj);
-
-
-
-            var applicationObj = _supplierExecludeService.GetById(int.Parse(supplierExecludeObj.SupplierExecludeAssetId.ToString()));
-            var hospitalAssetObj = _supplierExecludeAssetService.GetById(int.Parse(supplierExecludeObj.SupplierExecludeAssetId.ToString()));
+            var applicationObj = _supplierExecludeService.GetById(supplierExecludeAssetId);
+            var hospitalAssetObj = _supplierExecludeAssetService.GetById(supplierExecludeAssetId);
             var userObj = await _userManager.FindByNameAsync("MemberUser");
             var assetObj = _assetDetailService.GetById(int.Parse(hospitalAssetObj.AssetId.ToString()));
             var masterObj = _masterAssetService.GetById(int.Parse(assetObj.MasterAssetId.ToString()));
 
             if (hospitalAssetObj.AppTypeId == 1)
             {
-                var lstReasons = _supplierExecludeService.GetAll().Where(a => a.SupplierExecludeAssetId == supplierExecludeObj.SupplierExecludeAssetId).ToList();
+                var lstReasons = _supplierExecludeService.GetAll().Where(a => a.SupplierExecludeAssetId == supplierExecludeAssetId).ToList();
                 if (lstReasons.Count > 0)
                 {
 
@@ -131,7 +138,7 @@ namespace Asset.API.Controllers
 
             if (hospitalAssetObj.AppTypeId == 2)
             {
-                var lstReasons = _supplierExecludeService.GetAll().Where(a => a.SupplierExecludeAssetId == supplierExecludeObj.SupplierExecludeAssetId).ToList();
+                var lstReasons = _supplierExecludeService.GetAll().Where(a => a.SupplierExecludeAssetId == supplierExecludeAssetId).ToList();
                 foreach (var item in lstReasons)
                 {
                     var itemObj = _supplierHoldReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault();
@@ -189,25 +196,31 @@ namespace Asset.API.Controllers
             strBuild.Append("</table>");
 
 
-            var message = new MessageVM(new string[] { userObj.Email }, "Exclude-Hold Supplier Asset", strBuild.ToString());
-            var message2 = new MessageVM(new string[] { "pineapple_126@hotmail.com" }, "Exclude-Hold Supplier Asset", strBuild.ToString());
-            //   var message = new MessageVM(new string[] { userObj.Email }, "Exclude-Hold Asset", $"Dear {userObj.UserName}\r\n This asset:{assetObj.SerialNumber} want to be excluded");
 
-            _emailSender.SendEmail(message);
-            _emailSender.SendEmail(message2);
+            string from = "almostakbaltechnology.dev@gmail.com";
+            string to = "pineapple_126@hotmail.com ";
+            string subject = "Exclude-Hold Asset";
+            string body = strBuild.ToString();
+            string appSpecificPassword = "fajtjigwpcnxyyuv";
+
+            var mailMessage = new MailMessage(from, to, subject, body);
+            var mailMessage2 = new MailMessage(from, userObj.Email, subject, body);
+            mailMessage.IsBodyHtml = true;
+            mailMessage2.IsBodyHtml = true;
+            using (var smtpClient = new SmtpClient("smtp.gmail.com", 587))
+            {
+
+                smtpClient.EnableSsl = true;
+                smtpClient.Credentials = new NetworkCredential(from, appSpecificPassword);
+                smtpClient.Send(mailMessage);
+                smtpClient.Send(mailMessage2);
+            }
 
 
 
 
+            return 1;
 
-
-
-
-
-
-            return savedId;
         }
-
-
     }
 }

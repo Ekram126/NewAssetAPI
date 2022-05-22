@@ -15,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,7 +34,7 @@ namespace Asset.API.Controllers
         private IHospitalHoldReasonService _hospitalHoldReasonService;
         private IMasterAssetService _masterAssetService;
         private IAssetDetailService _assetDetailService;
-
+        private ApplicationUser applicationUser;
 
         private readonly IEmailSender _emailSender;
 
@@ -271,6 +273,129 @@ namespace Asset.API.Controllers
         {
             return _hospitalApplicationService.CreateHospitalApplicationAttachments(attachObj);
         }
+
+        [HttpGet]
+        [Route("SendHospitalExcludeEmail/{hospitalApplicationId}")]
+        public async Task<int> SendHospitalExcludeEmail(int hospitalApplicationId)
+        {
+            string strExcludes = "";
+            string strHolds = "";
+            List<string> execludeNames = new List<string>();
+            List<IndexHospitalExecludeReasonVM.GetData> lstExcludes = new List<IndexHospitalExecludeReasonVM.GetData>();
+            List<IndexHospitalHoldReasonVM.GetData> lstHolds = new List<IndexHospitalHoldReasonVM.GetData>();
+            var userObj = await _userManager.FindByNameAsync("MemberUser");
+
+            var transObj = _hospitalReasonTransactionService.GetById(hospitalApplicationId);
+            var applicationObj = _hospitalApplicationService.GetById(int.Parse(transObj.HospitalApplicationId.ToString()));
+
+            var assetObj = _assetDetailService.GetById(int.Parse(applicationObj.AssetId.ToString()));
+            var masterObj = _masterAssetService.GetById(int.Parse(assetObj.MasterAssetId.ToString()));
+            var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.Id == applicationObj.Id).ToList();
+            if (lstReasons.Count > 0)
+            {
+                if (applicationObj.AppTypeId == 1)
+                {
+                    foreach (var item in lstReasons)
+                    {
+                        lstExcludes.Add(_hospitalExecludeReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
+                    }
+                    foreach (var reason in lstExcludes)
+                    {
+                        execludeNames.Add(reason.NameAr);
+                    }
+                    strExcludes = string.Join(",", execludeNames);
+                }
+                if (applicationObj.AppTypeId == 2)
+                {
+                    foreach (var item in lstReasons)
+                    {
+                        lstHolds.Add(_hospitalHoldReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
+                    }
+
+                    foreach (var reason in lstHolds)
+                    {
+                        execludeNames.Add(reason.NameAr);
+                    }
+                    strHolds = string.Join(",", execludeNames);
+                }
+            }
+
+            StringBuilder strBuild = new StringBuilder();
+            strBuild.Append($"Dear {userObj.UserName}\r\n");
+            strBuild.Append("<table>");
+            strBuild.Append("<tr>");
+            strBuild.Append("<td> Asset Name");
+            strBuild.Append("</td>");
+            strBuild.Append("<td>" + masterObj.NameAr);
+            strBuild.Append("</td>");
+            strBuild.Append("</tr>");
+            strBuild.Append("<tr>");
+            strBuild.Append("<td> Serial");
+            strBuild.Append("</td>");
+            strBuild.Append("<td>" + assetObj.SerialNumber);
+            strBuild.Append("</td>");
+            strBuild.Append("</tr>");
+            strBuild.Append("<tr>");
+            strBuild.Append("<td> BarCode");
+            strBuild.Append("</td>");
+            strBuild.Append("<td>" + assetObj.Barcode);
+            strBuild.Append("</td>");
+            strBuild.Append("</tr>");
+            if (applicationObj.AppTypeId == 1)
+            {
+                strBuild.Append("<tr>");
+                strBuild.Append("<td> Reasons");
+                strBuild.Append("</td>");
+                strBuild.Append("<td>" + strExcludes);
+                strBuild.Append("</td>");
+                strBuild.Append("</tr>");
+            }
+            if (applicationObj.AppTypeId == 2)
+            {
+                strBuild.Append("<tr>");
+                strBuild.Append("<td> Reasons");
+                strBuild.Append("</td>");
+                strBuild.Append("<td>" + strHolds);
+                strBuild.Append("</td>");
+                strBuild.Append("</tr>");
+            }
+            strBuild.Append("</table>");
+
+
+            //var message = new MessageVM(new string[] { userObj.Email, "pineapple_126@hotmail.com" }, "Exclude-Hold Asset", strBuild.ToString());
+            //_emailSender.SendEmail(message);
+
+
+
+            string from = "almostakbaltechnology.dev@gmail.com";
+            string to = "pineapple_126@hotmail.com ";
+            string subject = "Exclude-Hold Asset";
+            string body = strBuild.ToString();
+            string appSpecificPassword = "fajtjigwpcnxyyuv";
+
+            var mailMessage = new MailMessage(from, to, subject, body);
+            var mailMessage2 = new MailMessage(from, userObj.Email, subject, body);
+            mailMessage.IsBodyHtml = true;
+            mailMessage2.IsBodyHtml = true;
+            using (var smtpClient = new SmtpClient("smtp.gmail.com", 587))
+            {
+
+                smtpClient.EnableSsl = true;
+                smtpClient.Credentials = new NetworkCredential(from, appSpecificPassword);
+                smtpClient.Send(mailMessage);
+                smtpClient.Send(mailMessage2);
+            }
+
+
+
+
+            return 1;
+        }
+
+
+
+
+
         [HttpPost]
         [Route("UploadHospitalApplicationFiles")]
         public ActionResult UploadHospitalApplicationFiles(IFormFile file)

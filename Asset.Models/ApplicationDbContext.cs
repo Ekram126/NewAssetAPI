@@ -13,6 +13,24 @@ namespace Asset.Models
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Governorate>().Property(g => g.Area).HasColumnType("decimal(18, 2)");
+            builder.Entity<Governorate>().Property(g => g.Latitude).HasColumnType("decimal(18, 8)");
+            builder.Entity<Governorate>().Property(g => g.Longtitude).HasColumnType("decimal(18, 8)");
+            builder.Entity<Governorate>().Property(g => g.Longtitude).HasColumnType("decimal(18, 3)");
+
+
+            builder.Entity<City>().Property(g => g.Latitude).HasColumnType("decimal(18, 8)");
+            builder.Entity<City>().Property(g => g.Longtitude).HasColumnType("decimal(18, 8)");
+
+
+            builder.Entity<AssetDetail>().Property(g => g.Price).HasColumnType("decimal(18, 2)");
+            builder.Entity<AssetDetail>().Property(g => g.DepreciationRate).HasColumnType("decimal(18, 2)");
+
+            builder.Entity<MasterContract>().Property(g => g.Cost).HasColumnType("decimal(18, 2)");
+
+
+            //builder.Entity<Hospital>().Property(g => g.Latitude).HasColumnType("float");
+            //builder.Entity<Hospital>().Property(g => g.Longtitude).HasColumnType("float");
         }
 
         public DbSet<RoleCategory> RoleCategories { get; set; }

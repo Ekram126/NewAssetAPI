@@ -82,7 +82,7 @@ namespace Asset.Core.Repositories
                     CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
                     countHospitalObj.BrandName = item.Name;
                     countHospitalObj.BrandNameAr = item.NameAr;
-                    countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Include(a=>a.MasterAsset).Where(a => a.MasterAsset.BrandId == item.Id && a.HospitalId== hospitalId).ToList().Count();
+                    countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset).Where(a => a.MasterAsset.BrandId == item.Id && a.HospitalId == hospitalId).ToList().Count();
                     list.Add(countHospitalObj);
                 }
             }
@@ -181,7 +181,7 @@ namespace Asset.Core.Repositories
         {
             List<IndexMasterAssetVM.GetData> list = new List<IndexMasterAssetVM.GetData>();
             var lstMasters = _context.MasterAssets.Include(a => a.brand).Include(a => a.Category)
-                
+
                 .Include(a => a.SubCategory).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
 
             foreach (var item in lstMasters)
@@ -273,35 +273,72 @@ namespace Asset.Core.Repositories
 
         public EditMasterAssetVM GetById(int id)
         {
-            return _context.MasterAssets.Where(a => a.Id == id).Select(item => new EditMasterAssetVM
+            var lstMasterAssets = _context.MasterAssets.Where(a => a.Id == id).ToList();
+
+            if (lstMasterAssets.Count > 0)
             {
-                Id = item.Id,
-                Name = item.Name,
-                NameAr = item.NameAr,
-                Code = item.Code,
-                ECRIId = item.ECRIId != null ? (int)item.ECRIId : null,
-                BrandId = item.BrandId != null ? item.BrandId : null,
-                CategoryId = item.CategoryId != null ? item.CategoryId : null,
-                SubCategoryId = item.SubCategoryId != null ? item.SubCategoryId : null,
-                Description = item.Description,
-                DescriptionAr = item.DescriptionAr,
-                ExpectedLifeTime = item.ExpectedLifeTime != null ? (int)item.ExpectedLifeTime : 0,
-                Height = item.Height,
-                Length = item.Length,
-                ModelNumber = item.ModelNumber,
-                VersionNumber = item.VersionNumber,
-                Weight = item.Weight,
-                Width = item.Width,
-                PeriorityId = item.PeriorityId,
-                OriginId = item.OriginId != null ? item.OriginId : null,
-                Power = item.Power,
-                Voltage = item.Voltage,
-                Ampair = item.Ampair,
-                Frequency = item.Frequency,
-                ElectricRequirement = item.ElectricRequirement,
-                PMTimeId = item.PMTimeId,
-                AssetImg = item.AssetImg
-            }).First();
+                MasterAsset item = lstMasterAssets[0];
+                EditMasterAssetVM masterAssetObj = new EditMasterAssetVM();
+                masterAssetObj.Id = item.Id;
+                masterAssetObj.Name = item.Name;
+                masterAssetObj.NameAr = item.NameAr;
+                masterAssetObj.Code = item.Code;
+                masterAssetObj.ECRIId = item.ECRIId != null ? (int)item.ECRIId : null;
+                masterAssetObj.BrandId = item.BrandId != null ? item.BrandId : null;
+                masterAssetObj.CategoryId = item.CategoryId != null ? item.CategoryId : null;
+                masterAssetObj.SubCategoryId = item.SubCategoryId != null ? item.SubCategoryId : null;
+                masterAssetObj.Description = item.Description;
+                masterAssetObj.DescriptionAr = item.DescriptionAr;
+                masterAssetObj.ExpectedLifeTime = item.ExpectedLifeTime != null ? (int)item.ExpectedLifeTime : 0;
+                masterAssetObj.Height = item.Height;
+                masterAssetObj.Length = item.Length;
+                masterAssetObj.ModelNumber = item.ModelNumber;
+                masterAssetObj.VersionNumber = item.VersionNumber;
+                masterAssetObj.Weight = item.Weight;
+                masterAssetObj.Width = item.Width;
+                masterAssetObj.PeriorityId = item.PeriorityId;
+                masterAssetObj.OriginId = item.OriginId != null ? item.OriginId : null;
+                masterAssetObj.Power = item.Power;
+                masterAssetObj.Voltage = item.Voltage;
+                masterAssetObj.Ampair = item.Ampair;
+                masterAssetObj.Frequency = item.Frequency;
+                masterAssetObj.ElectricRequirement = item.ElectricRequirement;
+                masterAssetObj.PMTimeId = item.PMTimeId;
+                masterAssetObj.AssetImg = item.AssetImg;
+                return masterAssetObj;
+            }
+
+            return null;
+
+            //.Select(item => new EditMasterAssetVM
+            //{
+            //    Id = item.Id,
+            //    Name = item.Name,
+            //    NameAr = item.NameAr,
+            //    Code = item.Code,
+            //    ECRIId = item.ECRIId != null ? (int)item.ECRIId : null,
+            //    BrandId = item.BrandId != null ? item.BrandId : null,
+            //    CategoryId = item.CategoryId != null ? item.CategoryId : null,
+            //    SubCategoryId = item.SubCategoryId != null ? item.SubCategoryId : null,
+            //    Description = item.Description,
+            //    DescriptionAr = item.DescriptionAr,
+            //    ExpectedLifeTime = item.ExpectedLifeTime != null ? (int)item.ExpectedLifeTime : 0,
+            //    Height = item.Height,
+            //    Length = item.Length,
+            //    ModelNumber = item.ModelNumber,
+            //    VersionNumber = item.VersionNumber,
+            //    Weight = item.Weight,
+            //    Width = item.Width,
+            //    PeriorityId = item.PeriorityId,
+            //    OriginId = item.OriginId != null ? item.OriginId : null,
+            //    Power = item.Power,
+            //    Voltage = item.Voltage,
+            //    Ampair = item.Ampair,
+            //    Frequency = item.Frequency,
+            //    ElectricRequirement = item.ElectricRequirement,
+            //    PMTimeId = item.PMTimeId,
+            //    AssetImg = item.AssetImg
+            //}).First();
         }
 
         public int Update(EditMasterAssetVM model)
@@ -558,7 +595,7 @@ namespace Asset.Core.Repositories
                 .Include(a => a.Category)
                 .Include(a => a.SubCategory)
                 .Include(a => a.Origin)
-                .Include(a => a.ECRIS).Take(20).Take(20).ToList();
+                .Include(a => a.ECRIS).ToList().Take(20).ToList();
 
             foreach (var item in list)
             {
@@ -610,12 +647,12 @@ namespace Asset.Core.Repositories
             }
             if (searchObj.AssetName != "")
             {
-                if(searchObj.SortStatus== "descending")
+                if (searchObj.SortStatus == "descending")
                     lstData = lstData.OrderByDescending(d => d.AssetName).ToList();
                 else
                     lstData = lstData.OrderBy(d => d.AssetName).ToList();
             }
-            else if(searchObj.AssetNameAr != "")
+            else if (searchObj.AssetNameAr != "")
             {
                 if (searchObj.SortStatus == "descending")
                     lstData = lstData.OrderByDescending(d => d.AssetNameAr).ToList();
@@ -629,7 +666,7 @@ namespace Asset.Core.Repositories
                 else
                     lstData = lstData.OrderBy(d => d.OriginName).ToList();
             }
-            else if(searchObj.OriginNameAr != "")
+            else if (searchObj.OriginNameAr != "")
             {
                 if (searchObj.SortStatus == "descending")
                     lstData = lstData.OrderByDescending(d => d.OriginNameAr).ToList();
@@ -643,21 +680,21 @@ namespace Asset.Core.Repositories
                 else
                     lstData = lstData.OrderBy(d => d.ECRIName).ToList();
             }
-            else if(searchObj.ECRINameAr != "")
+            else if (searchObj.ECRINameAr != "")
             {
                 if (searchObj.SortStatus == "descending")
                     lstData = lstData.OrderByDescending(d => d.ECRINameAr).ToList();
                 else
                     lstData = lstData.OrderBy(d => d.ECRINameAr).ToList();
             }
-            else if(searchObj.BrandName != "")
+            else if (searchObj.BrandName != "")
             {
                 if (searchObj.SortStatus == "descending")
                     lstData = lstData.OrderByDescending(d => d.BrandName).ToList();
                 else
                     lstData = lstData.OrderBy(d => d.BrandName).ToList();
             }
-            else if(searchObj.BrandNameAr != "")
+            else if (searchObj.BrandNameAr != "")
             {
                 if (searchObj.SortStatus == "descending")
                     lstData = lstData.OrderByDescending(d => d.BrandNameAr).ToList();
@@ -671,7 +708,7 @@ namespace Asset.Core.Repositories
                 else
                     lstData = lstData.OrderBy(d => d.CategoryName).ToList();
             }
-            else if(searchObj.CategoryNameAr != "")
+            else if (searchObj.CategoryNameAr != "")
             {
                 if (searchObj.SortStatus == "descending")
                     lstData = lstData.OrderByDescending(d => d.CategoryNameAr).ToList();
@@ -685,7 +722,7 @@ namespace Asset.Core.Repositories
                 else
                     lstData = lstData.OrderBy(d => d.SubCategoryName).ToList();
             }
-            else if(searchObj.SubCategoryNameAr != "")
+            else if (searchObj.SubCategoryNameAr != "")
             {
                 if (searchObj.SortStatus == "descending")
                     lstData = lstData.OrderByDescending(d => d.SubCategoryNameAr).ToList();
@@ -699,7 +736,7 @@ namespace Asset.Core.Repositories
                 else
                     lstData = lstData.OrderBy(d => d.AssetName).ToList();
             }
-            else if(searchObj.AssetNameAr != "")
+            else if (searchObj.AssetNameAr != "")
             {
                 if (searchObj.SortStatus == "descending")
                     lstData = lstData.OrderByDescending(d => d.AssetNameAr).ToList();
@@ -713,7 +750,7 @@ namespace Asset.Core.Repositories
                 else
                     lstData = lstData.OrderBy(d => d.Code).ToList();
             }
-            
+
             else if (searchObj.ModelNumber != "")
             {
                 if (searchObj.SortStatus == "descending")
@@ -734,15 +771,15 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset(int hospitalId)
         {
             List<IndexMasterAssetVM.GetData> list = new List<IndexMasterAssetVM.GetData>();
-          
+
             if (hospitalId != 0)
             {
                 var lstAssets = _context.AssetDetails
                     .Include(a => a.MasterAsset)
                     .Include(a => a.MasterAsset.brand)
                     .Include(a => a.MasterAsset.ECRIS)
-                    .Include(a => a.MasterAsset.Origin).OrderBy(a => a.MasterAsset.Name)
-                    .Where(a => a.HospitalId == hospitalId).ToList();//.GroupBy(a=>a.MasterAsset.Id);
+                    .Include(a => a.MasterAsset.Origin)
+                    .Where(a => a.HospitalId == hospitalId).ToList().OrderBy(a => a.MasterAsset.Name).ToList();//.GroupBy(a=>a.MasterAsset.Id);
                 foreach (var item in lstAssets)
                 {
                     IndexMasterAssetVM.GetData getDataObj = new IndexMasterAssetVM.GetData();
@@ -764,7 +801,7 @@ namespace Asset.Core.Repositories
             }
             else
             {
-                var lstMasters = _context.MasterAssets.Take(10).Include(a => a.brand).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
+                var lstMasters = _context.MasterAssets.Include(a => a.brand).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).Take(10).ToList();
                 foreach (var item in lstMasters)
                 {
                     IndexMasterAssetVM.GetData getDataObj = new IndexMasterAssetVM.GetData();

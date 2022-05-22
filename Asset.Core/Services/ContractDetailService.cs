@@ -42,12 +42,12 @@ namespace Asset.Core.Services
             return _unitOfWork.ContractDetailRepository.GetById(id);
         }
 
-        public List<IndexContractVM.GetData> GetContractAssetsByHospitalId(int hospitalId, int masterContractId)
+        public IEnumerable<IndexContractVM.GetData> GetContractAssetsByHospitalId(int hospitalId, int masterContractId)
         {
             return _unitOfWork.ContractDetailRepository.GetContractAssetsByHospitalId(hospitalId,masterContractId);
         }
 
-        public List<IndexContractVM.GetData> GetContractByHospitalId(int hospitalId)
+        public IEnumerable<IndexContractVM.GetData> GetContractByHospitalId(int hospitalId)
         {
             return _unitOfWork.ContractDetailRepository.GetContractByHospitalId(hospitalId);
         }
@@ -57,7 +57,7 @@ namespace Asset.Core.Services
             return _unitOfWork.ContractDetailRepository.GetContractsByMasterContractId(masterContractId);
         }
 
-        public List<Hospital> GetListofHospitalsFromAssetContractDetailByMasterContractId(int masterContractId)
+        public IEnumerable<Hospital> GetListofHospitalsFromAssetContractDetailByMasterContractId(int masterContractId)
         {
             return _unitOfWork.ContractDetailRepository.GetListofHospitalsFromAssetContractDetailByMasterContractId(masterContractId);
         }

@@ -25,8 +25,9 @@ namespace Asset.Models
         [ForeignKey("GovernorateId")]
         public virtual Governorate Governorate { get; set; }
 
-
+        [Column(TypeName = "decimal(18, 8)")]
         public decimal? Latitude { get; set; }
+        [Column(TypeName = "decimal(18, 8)")]
         public decimal? Longtitude { get; set; }
     }
 }

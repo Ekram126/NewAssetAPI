@@ -25,7 +25,7 @@ namespace Asset.Core.Repositories
 
         public HospitalReasonTransaction GetById(int id)
         {
-            return _context.HospitalReasonTransactions.FirstOrDefault();
+            return _context.HospitalReasonTransactions.Find(id);
         }
         public IEnumerable<HospitalReasonTransaction> GetAll()
         {

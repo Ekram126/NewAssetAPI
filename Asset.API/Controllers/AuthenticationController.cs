@@ -18,6 +18,7 @@ using System.Net;
 using System.Net.Sockets;
 using Asset.API.Helpers;
 using Asset.Domain;
+using System.Net.Mail;
 
 namespace Asset.API.Controllers
 {
@@ -212,8 +213,26 @@ namespace Asset.API.Controllers
             strBuild.Append("من فضلك اضغط على الرابط التالي لتغيير كلمة المرور");
             strBuild.Append("<br />");
             strBuild.Append("<a href='" + replace + "'>اضغط هنا</a>");
-            var message = new MessageVM(new string[] { user.Email }, "Al-Mostakbal Technology.", strBuild.ToString());
-            _emailSender.SendEmail(message);
+            //var message = new MessageVM(new string[] { user.Email }, "Al-Mostakbal Technology.", strBuild.ToString());
+            //_emailSender.SendEmail(message);
+
+
+
+            string from = "almostakbaltechnology.dev@gmail.com";
+            string subject = "Al-Mostakbal Technology";
+            string body = strBuild.ToString();
+            string appSpecificPassword = "fajtjigwpcnxyyuv";
+
+
+            var mailMessage = new MailMessage(from, user.Email, subject, body);
+            mailMessage.IsBodyHtml = true;
+            using (var smtpClient = new SmtpClient("smtp.gmail.com", 587))
+            {
+                smtpClient.EnableSsl = true;
+                smtpClient.Credentials = new NetworkCredential(from, appSpecificPassword);
+                smtpClient.Send(mailMessage);
+            }
+
 
             return Ok();
         }

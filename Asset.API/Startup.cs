@@ -43,9 +43,13 @@ namespace Asset.API
 
             //  services.AddControllers();
             services.AddControllers().AddNewtonsoftJson();
+
+
             var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfigurationVM>();
             services.AddSingleton(emailConfig);
             services.AddScoped<IEmailSender, EmailSender>();
+
+
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("AssetConnStr")));
             services.AddScoped<IRoleCategoryService, RoleCategoryService>();

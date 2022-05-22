@@ -27,9 +27,9 @@ namespace Asset.Core.Services
         public int Delete(int id)
         {
             var HospitalApplicationObj = _unitOfWork.HospitalReasonTransactionRepository.GetById(id);
-            _unitOfWork.HospitalApplicationRepository.Delete(HospitalApplicationObj.Id);
-            _unitOfWork.CommitAsync();
-            return HospitalApplicationObj.Id;
+            _unitOfWork.HospitalApplicationRepository.Delete(int.Parse(HospitalApplicationObj.HospitalApplicationId.ToString()));
+           _unitOfWork.CommitAsync();
+            return 1;
         }
         public IEnumerable<HospitalReasonTransaction> GetAll()
         {
