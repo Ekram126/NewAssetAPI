@@ -370,6 +370,8 @@ namespace Asset.Core.Repositories
                          on a.MasterAssetId equals m.Id
                          join b in _context.Brands
                          on m.BrandId equals b.Id
+                         join h in _context.Hospitals
+                         on a.HospitalId equals h.Id
                          join s in _context.Suppliers
                          on a.SupplierId equals s.Id
                          where brandId.Contains(b.Id)
@@ -377,13 +379,13 @@ namespace Asset.Core.Repositories
                          {
                              Name = s.Name,
                              NameAr = s.NameAr,
-                             //HospitalCod = h.Code,
+                             HospitalCod = h.Code,
                              Id = s.Id
                          }).AsEnumerable().Select(x => new HealthSupplierVM
                          {
                              Name = x.Name,
                              NameAr = x.NameAr,
-                             //HospitalCode = x.HospitalCod,
+                             HospitalCode = x.HospitalCod,
                              Id = x.Id
                          });
             return query.Distinct(orgComparer).ToList();
