@@ -18,6 +18,9 @@ namespace Asset.ViewModels.WorkOrderTrackingVM
         public string AssignedToName { get; set; }
         public int WorkOrderStatusId { get; set; }
         public string WorkOrderStatusName { get; set; }
+        public string WorkOrderStatusNameAr { get; set; }
+        public string WorkOrderStatusIcon { get; set; }
+        public string WorkOrderStatusColor { get; set; }
         public string WorkOrderSubject { get; set; }
 
         public string StatusName { get; set; }
@@ -33,6 +36,11 @@ namespace Asset.ViewModels.WorkOrderTrackingVM
         public string Note { get; set; }
         public int WorkOrderPeriorityId { get; set; }
         public string WorkOrderPeriorityName { get; set; }
+        public string WorkOrderPeriorityNameAr { get; set; }
+
+        public string WorkOrderPeriorityIcon { get; set; }
+        public string WorkOrderPeriorityColor { get; set; }
+
         public int WorkOrderTypeId { get; set; }
         public string WorkOrderTypeName { get; set; }
         public int RequestId { get; set; }

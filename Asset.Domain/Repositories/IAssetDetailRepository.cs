@@ -43,6 +43,9 @@ namespace Asset.Domain.Repositories
         int Update(EditAssetDetailVM assetDetailObj);
         int Delete(int id);
         List<CountAssetVM> CountAssetsByHospital();
+       int CountAssetsByHospitalId(int hospitalId);
+
+
         int CreateAssetDetailDocuments(CreateAssetDetailAttachmentVM attachObj);
         IEnumerable<AssetDetailAttachment> GetAttachmentByAssetDetailId(int assetId);
         int DeleteAssetDetailAttachment(int id);

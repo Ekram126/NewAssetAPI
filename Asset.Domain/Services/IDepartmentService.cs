@@ -9,6 +9,7 @@ namespace Asset.Domain.Services
     {
         IEnumerable<Department> GetAllDepartments();
         IEnumerable<IndexDepartmentVM.GetData> GetAll();
+        IEnumerable<Department> GetDepartmentsByHospitalId(int hospitalId);
         EditDepartmentVM GetById(int id);
         int Add(CreateDepartmentVM Department); 
         int Update(EditDepartmentVM Department);

@@ -164,15 +164,15 @@ namespace Asset.API.Controllers
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "MasterAsset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
                 }
-                var lstNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Name == MasterAssetVM.Name && a.Id != id).ToList();
+                var lstNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Name == MasterAssetVM.Name && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber && a.Id != id).ToList();
                 if (lstNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "MasterAsset name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
                 }
-                var lstArNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.NameAr == MasterAssetVM.NameAr && a.Id != id).ToList();
+                var lstArNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.NameAr == MasterAssetVM.NameAr && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber  && a.Id != id).ToList();
                 if (lstArNames.Count > 0)
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "MasterAsset arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "MasterAsset arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
                 }
                 else
                 {
@@ -217,15 +217,15 @@ namespace Asset.API.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "MasterAsset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
             }
-            var lstNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Name == MasterAssetVM.Name).ToList();
+            var lstNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Name == MasterAssetVM.Name && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber).ToList();
             if (lstNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "MasterAsset name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "MasterAsset already exist with this data", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
-            var lstArNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.NameAr == MasterAssetVM.NameAr).ToList();
+            var lstArNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.NameAr == MasterAssetVM.NameAr && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber).ToList();
             if (lstArNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "MasterAsset arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "MasterAsset arabic already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {

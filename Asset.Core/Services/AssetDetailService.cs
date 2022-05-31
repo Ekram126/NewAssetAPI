@@ -30,13 +30,13 @@ namespace Asset.Core.Services
         public int Add(CreateAssetDetailVM assetDetailObj)
         {
             return _unitOfWork.AssetDetailRepository.Add(assetDetailObj);
-          //  return _unitOfWork.CommitAsync();
+            //  return _unitOfWork.CommitAsync();
 
         }
 
         public int Delete(int id)
         {
-             var assetDetailObj = _unitOfWork.AssetDetailRepository.GetById(id);
+            var assetDetailObj = _unitOfWork.AssetDetailRepository.GetById(id);
             _unitOfWork.AssetDetailRepository.Delete(assetDetailObj.Id);
             _unitOfWork.CommitAsync();
 
@@ -88,20 +88,20 @@ namespace Asset.Core.Services
         }
 
         public ViewAssetDetailVM ViewAssetDetailByMasterId(int masterId)
-        {    
+        {
             return _unitOfWork.AssetDetailRepository.ViewAssetDetailByMasterId(masterId);
-          
+
         }
 
         public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM searchObj)
         {
-            return  _unitOfWork.AssetDetailRepository.SearchAssetInHospital(searchObj);
-           
+            return _unitOfWork.AssetDetailRepository.SearchAssetInHospital(searchObj);
+
         }
 
         public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj)
         {
-            return  _unitOfWork.AssetDetailRepository.SearchAssetInHospitalByHospitalId(searchObj);
+            return _unitOfWork.AssetDetailRepository.SearchAssetInHospitalByHospitalId(searchObj);
         }
 
         public IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId)
@@ -118,7 +118,7 @@ namespace Asset.Core.Services
         public IEnumerable<AssetDetail> GetAllSerialsByMasterAssetIdAndHospitalId(int masterAssetId, int hospitalId)
         {
             return _unitOfWork.AssetDetailRepository.GetAllSerialsByMasterAssetIdAndHospitalId(masterAssetId, hospitalId);
-                }
+        }
 
         public IEnumerable<AssetDetail> GetAllAssetDetailsByHospitalId(int hospitalId)
         {
@@ -140,7 +140,7 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.GetAllwithgrouping(masterId);
         }
-        public List<IndexAssetDetailVM.GetData>FilterAsset(filterDto data)
+        public List<IndexAssetDetailVM.GetData> FilterAsset(filterDto data)
         {
             return _unitOfWork.AssetDetailRepository.FilterAsset(data);
         }
@@ -172,7 +172,7 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetDetailRepository.GetAssetByOrganization(AssetModel);
         }
 
-        public async Task< IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj)
+        public async Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj)
         {
             return await _unitOfWork.AssetDetailRepository.SortAssets(sortObj);
         }
@@ -189,13 +189,13 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId)
         {
-            return _unitOfWork.AssetDetailRepository.AutoCompleteAssetBarCode(barcode,hospitalId);
+            return _unitOfWork.AssetDetailRepository.AutoCompleteAssetBarCode(barcode, hospitalId);
         }
 
         public IEnumerable<IndexAssetDetailVM.GetData> GetAllAssetsByStatusId(int statusId, string userId)
         {
             return _unitOfWork.AssetDetailRepository.GetAllAssetsByStatusId(statusId, userId);
-          
+
         }
 
         public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId)
@@ -220,7 +220,7 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId, int page, int pageSize, Sort sortObj)
         {
-            return _unitOfWork.AssetDetailRepository.GetHospitalAssets(hospitalId, statusId, userId,  page,  pageSize, sortObj);
+            return _unitOfWork.AssetDetailRepository.GetHospitalAssets(hospitalId, statusId, userId, page, pageSize, sortObj);
         }
 
         public AssetDetailAttachment GetLastDocumentForAssetDetailId(int assetDetailId)
@@ -230,7 +230,12 @@ namespace Asset.Core.Services
 
         public IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(string barcode, int hospitalId)
         {
-            return _unitOfWork.AssetDetailRepository.GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(barcode,hospitalId);
+            return _unitOfWork.AssetDetailRepository.GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(barcode, hospitalId);
+        }
+
+        public int CountAssetsByHospitalId(int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.CountAssetsByHospitalId(hospitalId);
         }
     }
 }

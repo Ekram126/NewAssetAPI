@@ -281,6 +281,7 @@ namespace Asset.API.Controllers
             string strExcludes = "";
             string strHolds = "";
             List<string> execludeNames = new List<string>();
+			 List<string> holdNames = new List<string>();
             List<IndexHospitalExecludeReasonVM.GetData> lstExcludes = new List<IndexHospitalExecludeReasonVM.GetData>();
             List<IndexHospitalHoldReasonVM.GetData> lstHolds = new List<IndexHospitalHoldReasonVM.GetData>();
             var userObj = await _userManager.FindByNameAsync("MemberUser");
@@ -290,7 +291,7 @@ namespace Asset.API.Controllers
 
             var assetObj = _assetDetailService.GetById(int.Parse(applicationObj.AssetId.ToString()));
             var masterObj = _masterAssetService.GetById(int.Parse(assetObj.MasterAssetId.ToString()));
-            var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.Id == applicationObj.Id).ToList();
+             var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.HospitalApplicationId == applicationObj.Id).ToList();
             if (lstReasons.Count > 0)
             {
                 if (applicationObj.AppTypeId == 1)
@@ -314,9 +315,9 @@ namespace Asset.API.Controllers
 
                     foreach (var reason in lstHolds)
                     {
-                        execludeNames.Add(reason.NameAr);
+                        holdNames.Add(reason.NameAr);
                     }
-                    strHolds = string.Join(",", execludeNames);
+                    strHolds = string.Join(",", holdNames);
                 }
             }
 

@@ -29,6 +29,16 @@ namespace Asset.API.Controllers
         }
 
 
+
+        //[Route("GetAllWorkOrderFromTrackingByServiceRequestId/{ServiceRequestId}/{userId}")]
+        //public IEnumerable<LstWorkOrderFromTracking> GetAllWorkOrderFromTrackingByServiceRequestId(int ServiceRequestId, string userId)
+        //{
+        //    return _workOrderTrackingService.GetAllWorkOrderFromTrackingByServiceRequestId(ServiceRequestId, userId);
+        //}
+
+
+
+
         [Route("GetAllWorkOrderFromTrackingByUserId/{userId}")]
         public IEnumerable<LstWorkOrderFromTracking> GetAllWorkOrderFromTrackingByUserId(string userId)
         {

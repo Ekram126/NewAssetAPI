@@ -103,6 +103,13 @@ namespace Asset.Core.Repositories
                                                RequestPeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0,
                                                PeriorityName = req.RequestPeriority.Name,
                                                CreatedById = req.CreatedById,
+                                               ClosedDate =
+
+
+                                               _context.RequestTracking.Include(t => t.Request).Include(t => t.RequestStatus).Where(a => a.RequestId == req.Id && a.DescriptionDate.HasValue && a.DescriptionDate != null).Select(a => a.DescriptionDate).ToString(),
+
+
+
                                                CreatedBy = req.User.UserName,
                                                AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0,
                                                SerialNumber = req.AssetDetail.SerialNumber,
@@ -524,7 +531,7 @@ namespace Asset.Core.Repositories
                     if (lstWOStatus.Count > 0)
                     {
                         getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
-                      //  getDataObj.workorderS = lstWOStatus[0].WorkOrderStatusId;
+                        //  getDataObj.workorderS = lstWOStatus[0].WorkOrderStatusId;
                     }
 
 
@@ -1130,7 +1137,7 @@ namespace Asset.Core.Repositories
                                     .Include(t => t.Request.RequestPeriority).Where(a => a.Id == workOrderId).ToList();
             if (lstRequests.Count > 0)
             {
-                var item = lstRequests[0];          
+                var item = lstRequests[0];
                 reqObj.Id = item.Id;
                 reqObj.RequestCode = item.Request.RequestCode;
                 reqObj.Barcode = item.Request.AssetDetail.Barcode;
@@ -2924,66 +2931,86 @@ namespace Asset.Core.Repositories
             else
                 requestDateObj.EndDate = DateTime.Today.Date;
 
-            var lstRequests = _context.Request
-                               .Include(t => t.AssetDetail)
-                               .Include(t => t.AssetDetail.MasterAsset)
-                               .Include(t => t.User)
-                               .Include(t => t.RequestMode)
-                               .Include(t => t.RequestPeriority).OrderByDescending(a => a.RequestDate)
-                               .Where(a => a.RequestDate >= requestDateObj.StartDate.Value.Date && a.RequestDate <= requestDateObj.EndDate.Value.Date).ToList();
+            //var lstRequests = _context.Request
+            //                   .Include(t => t.AssetDetail)
+            //                   .Include(t => t.AssetDetail.MasterAsset)
+            //                   .Include(t => t.User)
+            //                   .Include(t => t.RequestMode)
+            //                   .Include(t => t.RequestPeriority).OrderByDescending(a => a.RequestDate)
+            //                   .Where(a => a.RequestDate >= requestDateObj.StartDate.Value.Date && a.RequestDate <= requestDateObj.EndDate.Value.Date).ToList();
+
+
+
+
+            var lstRequests = _context.RequestTracking
+                 .Include(t => t.Request)
+                             .Include(t => t.Request.AssetDetail)
+                             .Include(t => t.Request.AssetDetail.MasterAsset)
+                             .Include(t => t.User)
+                             .Include(t => t.Request.RequestMode).Include(t => t.RequestStatus)
+                             .Include(t => t.Request.RequestPeriority).OrderByDescending(a => a.DescriptionDate)
+
+                          //   .Where(a => a.DescriptionDate >= requestDateObj.StartDate.Value.Date && a.DescriptionDate <= requestDateObj.EndDate.Value.Date)
+                             
+                             .ToList();
+
+
 
             foreach (var req in lstRequests)
             {
                 IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
-                getDataObj.RequestId = req.Id;
-                getDataObj.Id = req.Id;
-                getDataObj.RequestCode = req.RequestCode;
-                getDataObj.Barcode = req.AssetDetail.Barcode;
+                getDataObj.RequestId = req.Request.Id;
+                getDataObj.Id = req.Request.Id;
+                getDataObj.RequestCode = req.Request.RequestCode;
+                getDataObj.Barcode = req.Request.AssetDetail.Barcode;
                 getDataObj.CreatedById = req.CreatedById;
                 getDataObj.UserName = req.User.UserName;
-                getDataObj.Subject = req.Subject;
-                getDataObj.AssetHospitalId = req.HospitalId;
-                getDataObj.RequestDate = req.RequestDate;
-                getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
-                getDataObj.HospitalId = req.AssetDetail.HospitalId;
-                var lstStatus = _context.RequestTracking
-                                 .Include(t => t.Request).Include(t => t.RequestStatus)
-                                 .Where(a => a.RequestId == req.Id).ToList().OrderByDescending(a => a.Id).ToList();
-                if (lstStatus.Count > 0)
-                {
-                    getDataObj.StatusId = lstStatus[0].RequestStatus.Id;
-                    getDataObj.StatusName = lstStatus[0].RequestStatus.Name;
-                    getDataObj.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
-                    getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
-                    getDataObj.StatusIcon = lstStatus[0].RequestStatus.Icon;
-                }
-                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
-                getDataObj.ModeId = req.RequestMode.Id;
-                getDataObj.ModeName = req.RequestMode.Name;
-                getDataObj.ModeNameAr = req.RequestMode.NameAr;
+                getDataObj.Subject = req.Request.Subject;
+                getDataObj.AssetHospitalId = req.Request.HospitalId;
+                getDataObj.RequestDate = req.Request.RequestDate;
+                getDataObj.AssetDetailId = req.Request.AssetDetailId != null ? (int)req.Request.AssetDetailId : 0;
+                getDataObj.HospitalId = req.Request.AssetDetail.HospitalId;
+                getDataObj.DescriptionDate = req.DescriptionDate;
+
+              
+                getDataObj.StatusId = int.Parse(req.RequestStatusId.ToString());
+                getDataObj.StatusName = req.RequestStatus.Name;
+                getDataObj.StatusNameAr = req.RequestStatus.NameAr;
+                getDataObj.StatusColor = req.RequestStatus.Color;
+                getDataObj.StatusIcon = req.RequestStatus.Icon;
+
+                if (getDataObj.StatusId == 2)
+                    getDataObj.ClosedDate = req.DescriptionDate.ToString();
+                else
+                    getDataObj.ClosedDate = "";
+
+               getDataObj.SerialNumber = req.Request.AssetDetail.SerialNumber;
+                getDataObj.ModeId = req.Request.RequestMode.Id;
+                getDataObj.ModeName = req.Request.RequestMode.Name;
+                getDataObj.ModeNameAr = req.Request.RequestMode.NameAr;
 
 
-                getDataObj.PeriorityId = req.RequestPeriority.Id;
-                getDataObj.PeriorityName = req.RequestPeriority.Name.Trim();
-                getDataObj.PeriorityNameAr = req.RequestPeriority.NameAr.Trim();
-                getDataObj.PeriorityColor = req.RequestPeriority.Color.Trim();
-                getDataObj.PeriorityIcon = req.RequestPeriority.Icon;
+                getDataObj.PeriorityId = req.Request.RequestPeriority.Id;
+                getDataObj.PeriorityName = req.Request.RequestPeriority.Name.Trim();
+                getDataObj.PeriorityNameAr = req.Request.RequestPeriority.NameAr.Trim();
+                getDataObj.PeriorityColor = req.Request.RequestPeriority.Color.Trim();
+                getDataObj.PeriorityIcon = req.Request.RequestPeriority.Icon;
 
 
-                getDataObj.AssetName = req.AssetDetail.MasterAsset.Name.Trim();
-                getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
-                getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
-                        .ToList().Select(item => new IndexRequestTrackingVM.GetData
-                        {
-                            Id = item.Id,
-                            StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
-                            StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
-                            Description = item.Description,
-                            Date = item.DescriptionDate,
-                            StatusId = item.RequestStatus.Id,
-                            isExpanded = (_context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
-                            ListDocuments = _context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).ToList(),
-                        }).ToList();
+                getDataObj.AssetName = req.Request.AssetDetail.MasterAsset.Name.Trim();
+                getDataObj.AssetNameAr = req.Request.AssetDetail.MasterAsset.NameAr;
+                //getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
+                //        .ToList().Select(item => new IndexRequestTrackingVM.GetData
+                //        {
+                //            Id = item.Id,
+                //            StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
+                //            StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                //            Description = item.Description,
+                //            Date = item.DescriptionDate,
+                //            StatusId = item.RequestStatus.Id,
+                //            isExpanded = (_context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
+                //            ListDocuments = _context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).ToList(),
+                //        }).ToList();
 
                 var lstWOStatus = _context.WorkOrderTrackings
                         .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
@@ -3056,11 +3083,12 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
 
-                  //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                    //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
                 }
                 if (userRoleNames.Contains("AssetOwner"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
                 if (userRoleNames.Contains("DE"))
                 {
@@ -3091,12 +3119,14 @@ namespace Asset.Core.Repositories
                 }
                 if (userRoleNames.Contains("AssetOwner"))
                 {
+                   // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
                 }
                 if (userRoleNames.Contains("Eng"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                   // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                    // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
 
                 }
 
@@ -3109,7 +3139,14 @@ namespace Asset.Core.Repositories
                     list = list = new List<IndexRequestVM.GetData>();
                 }
             }
+            DateTime start = new DateTime();
+            DateTime end = new DateTime();
+            if (requestDateObj.StrStartDate != "")
+             start = DateTime.Parse(requestDateObj.StrStartDate);
+            if (requestDateObj.StrEndDate != "")
+                end = DateTime.Parse(requestDateObj.StrEndDate);
 
+            list = list.Where(a => (a.DescriptionDate >= start && a.DescriptionDate <= end) && (a.RequestDate >= start &&a.RequestDate <= end)).ToList();
             return list;
 
         }

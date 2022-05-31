@@ -591,6 +591,7 @@ namespace Asset.Core.Repositories
                     item.MasterAssetId = assetDetailObj.MasterAssetId;
                     item.AssetName = assetDetailObj.MasterAsset.Name;
                     item.AssetNameAr = assetDetailObj.MasterAsset.NameAr;
+                    item.Model = assetDetailObj.MasterAsset.ModelNumber;
                     item.Code = assetDetailObj.Code;
                     item.PurchaseDate = assetDetailObj.PurchaseDate != null ? assetDetailObj.PurchaseDate.Value.ToShortDateString() : "";
                     item.Price = assetDetailObj.Price;
@@ -1473,6 +1474,7 @@ namespace Asset.Core.Repositories
         public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId)
         {
             var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Supplier)
+                .Include(a => a.MasterAsset.brand)
                                      .Where(a => a.HospitalId == hospitalId)
                                      .Select(item => new ViewAssetDetailVM
                                      {
@@ -1482,9 +1484,12 @@ namespace Asset.Core.Repositories
                                          MasterAssetId = item.MasterAsset.Id,
                                          AssetName = item.MasterAsset.Name,
                                          AssetNameAr = item.MasterAsset.NameAr,
+                                         ModelNumber = item.MasterAsset.ModelNumber,
                                          SerialNumber = item.SerialNumber,
                                          SupplierName = item.Supplier.Name,
                                          SupplierNameAr = item.Supplier.NameAr,
+                                         BrandName = item.MasterAsset.brand.Name,
+                                         BrandNameAr = item.MasterAsset.brand.NameAr,
                                          HospitalName = item.Hospital.Name,
                                          HospitalNameAr = item.Hospital.NameAr,
                                          Barcode = item.Barcode,
@@ -3203,6 +3208,11 @@ namespace Asset.Core.Repositories
                 }
             }
             return viewAssetDetailList;
+        }
+
+        public int CountAssetsByHospitalId(int hospitalId)
+        {
+          return  _context.AssetDetails.Where(a => a.HospitalId == hospitalId).Count();
         }
     }
 }

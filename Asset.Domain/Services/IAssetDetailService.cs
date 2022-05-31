@@ -43,6 +43,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj);
         IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId);
         List<CountAssetVM> CountAssetsByHospital();
+        int CountAssetsByHospitalId(int hospitalId);
         List<PmDateGroupVM> GetAllwithgrouping(int? masterId);
         List<IndexAssetDetailVM.GetData> FilterAsset(filterDto data);
         List<BrandGroupVM> GetAssetByBrands(List<IndexAssetDetailVM.GetData> AssetModel);

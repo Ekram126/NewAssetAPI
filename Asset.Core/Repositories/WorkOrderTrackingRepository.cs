@@ -196,6 +196,7 @@ namespace Asset.Core.Repositories
                     CreatedBy = _context.ApplicationUser.Where(a => a.Id == work.CreatedById).ToList().FirstOrDefault().UserName,
                     WorkOrderStatusId = work.WorkOrderStatusId,
                     WorkOrderStatusName = work.WorkOrderStatus.Name,
+                    WorkOrderStatusNameAr = work.WorkOrderStatus.NameAr,
                     AssignedTo = work.AssignedTo,
                     AssignedToName = _context.ApplicationUser.Where(a => a.Id == work.AssignedTo).ToList().FirstOrDefault().UserName,
                     // from work order
@@ -208,7 +209,8 @@ namespace Asset.Core.Repositories
                     ActualEndDate = DateTime.Parse(work.WorkOrder.ActualEndDate.ToString()),
                     Note = work.WorkOrder.Note,
                     WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId : 0,
-                    WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriority.Name,
+                    WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriorityId != null ? work.WorkOrder.WorkOrderPeriority.Name:"",
+                    WorkOrderPeriorityNameAr = work.WorkOrder.WorkOrderPeriorityId != null ? work.WorkOrder.WorkOrderPeriority.NameAr:"",
                     WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId != null ? (int)work.WorkOrder.WorkOrderTypeId : 0,
                     WorkOrderTypeName = work.WorkOrder.WorkOrderType.Name,
                     RequestId = work.WorkOrder.RequestId != null ? (int)work.WorkOrder.RequestId : 0,
@@ -285,7 +287,8 @@ namespace Asset.Core.Repositories
                 }
                 if (userRoleName == "AssetOwner")
                 {
-                    lstWorkOrderTrackingVM = lstWorkOrderTrackingVM.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    lstWorkOrderTrackingVM = lstWorkOrderTrackingVM.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    //lstWorkOrderTrackingVM = lstWorkOrderTrackingVM.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
                 if (userRoleName == "DE")
                 {
@@ -307,7 +310,8 @@ namespace Asset.Core.Repositories
                 }
                 if (userRoleName == "AssetOwner")
                 {
-                    lstWorkOrderTrackingVM = lstWorkOrderTrackingVM.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    lstWorkOrderTrackingVM = lstWorkOrderTrackingVM.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                   // lstWorkOrderTrackingVM = lstWorkOrderTrackingVM.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
                 if (userRoleName == "DE")
                 {
@@ -343,7 +347,7 @@ namespace Asset.Core.Repositories
                                                 .Include(w => w.WorkOrderStatus)
                                                 .Include(w => w.WorkOrder).Include(w => w.WorkOrder.WorkOrderPeriority)
                                                 .Include(w => w.WorkOrder.WorkOrderType).Include(w => w.WorkOrder.Request)
-                                                .Include(w => w.WorkOrder.Request.AssetDetail).ToList();
+                                                .Include(w => w.WorkOrder.Request.AssetDetail).OrderByDescending(a=>a.CreationDate).ToList();
 
             foreach (var item in ListWorkOrderFromTracking)
             {
@@ -362,6 +366,9 @@ namespace Asset.Core.Repositories
 
                 getDataObj.WorkOrderStatusId = item.WorkOrderStatusId;
                 getDataObj.WorkOrderStatusName = item.WorkOrderStatus.Name;
+                getDataObj.WorkOrderStatusNameAr = item.WorkOrderStatus.NameAr;
+                getDataObj.WorkOrderStatusIcon = item.WorkOrderStatus.Icon;
+                getDataObj.WorkOrderStatusColor = item.WorkOrderStatus.Color;
                 getDataObj.AssignedTo = item.AssignedTo;
                 var lstAssignedToUsers = _context.ApplicationUser.Where(a => a.Id == item.AssignedTo).ToList();
                 if (lstAssignedToUsers.Count > 0)
@@ -382,6 +389,13 @@ namespace Asset.Core.Repositories
                 getDataObj.Note = item.WorkOrder.Note;
                 getDataObj.WorkOrderPeriorityId = item.WorkOrder.WorkOrderPeriorityId != null ? (int)item.WorkOrder.WorkOrderPeriorityId : 0;
                 getDataObj.WorkOrderPeriorityName = item.WorkOrder.WorkOrderPeriority.Name;
+
+                getDataObj.WorkOrderPeriorityNameAr = item.WorkOrder.WorkOrderPeriority.NameAr;
+                //getDataObj.WorkOrderPeriorityIcon = item.WorkOrder.WorkOrderPeriority.;
+                //getDataObj.WorkOrderPeriorityColor = item.WorkOrder.WorkOrderPeriority.Color;
+
+
+
                 getDataObj.WorkOrderTypeId = item.WorkOrder.WorkOrderTypeId != null ? (int)item.WorkOrder.WorkOrderTypeId : 0;
                 getDataObj.WorkOrderTypeName = item.WorkOrder.WorkOrderType.Name;
                 getDataObj.RequestId = item.WorkOrder.RequestId != null ? (int)item.WorkOrder.RequestId : 0;
@@ -467,7 +481,9 @@ namespace Asset.Core.Repositories
                 }
                 if (userRoleName == "AssetOwner")
                 {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId ).ToList();
+
+                   // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
                 if (userRoleName == "DE")
                 {

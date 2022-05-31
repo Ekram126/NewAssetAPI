@@ -25,33 +25,40 @@ namespace Asset.Core.Repositories
 
         public EditHospitalVM GetById(int id)
         {
-            var HospitalObj = _context.Hospitals.Where(a => a.Id == id).Select(item => new EditHospitalVM
-             {
-                 Id = item.Id,
-                 Code = item.Code,
-                 Name = item.Name,
-                 NameAr = item.NameAr,
-                 Address = item.Address,
-                 AddressAr = item.AddressAr,
-                 Email = item.Email,
-                 Mobile = item.Mobile,
-                 Latitude = decimal.Parse(item.Latitude.ToString()),
-                 Longtitude = decimal.Parse(item.Longtitude.ToString()),
-                 ManagerName = item.ManagerName,
-                 ManagerNameAr = item.ManagerNameAr,
-                 GovernorateId = item.GovernorateId != null? item.GovernorateId:0,
-                 CityId = item.CityId != null ? item.CityId:0,
-                 OrganizationId = item.OrganizationId != null ? item.OrganizationId:0,
-                 SubOrganizationId = item.SubOrganizationId != null ? item.SubOrganizationId:0,
-                 Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList(),
-                 EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).ToList().Count> 0 ? 
+            var lstHospitals = _context.Hospitals.Where(a => a.Id == id).ToList();
+
+            if (lstHospitals.Count > 0)
+            {
+                Hospital item = lstHospitals[0];
+                EditHospitalVM hospitalObj = new EditHospitalVM();
+                hospitalObj.Id = item.Id;
+                hospitalObj.Code = item.Code;
+                hospitalObj.Name = item.Name;
+                hospitalObj.NameAr = item.NameAr;
+                hospitalObj.Address = item.Address;
+                hospitalObj.AddressAr = item.AddressAr;
+                hospitalObj.Email = item.Email;
+                hospitalObj.Mobile = item.Mobile;
+                hospitalObj.Latitude = item.Latitude != null? decimal.Parse(item.Latitude.ToString()):0;
+                hospitalObj.Longtitude = item.Longtitude != null ? decimal.Parse(item.Longtitude.ToString()):0;
+                hospitalObj.ManagerName = item.ManagerName;
+                hospitalObj.ManagerNameAr = item.ManagerNameAr;
+                hospitalObj.GovernorateId = item.GovernorateId != null ? item.GovernorateId : 0;
+                hospitalObj.CityId = item.CityId != null ? item.CityId : 0;
+                hospitalObj.OrganizationId = item.OrganizationId != null ? item.OrganizationId : 0;
+                hospitalObj.SubOrganizationId = item.SubOrganizationId != null ? item.SubOrganizationId : 0;
+                hospitalObj.Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList();
+                hospitalObj.EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).ToList().Count > 0 ?
                  _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
                  {
                      DepartmentId = item.DepartmentId,
                      IsActive = item.IsActive
-                 }).ToList() :  null
-             }).First();
-            return HospitalObj;
+                 }).ToList() : null;
+
+                return hospitalObj;
+            }
+
+            return new EditHospitalVM();
         }
 
 
@@ -96,7 +103,7 @@ namespace Asset.Core.Repositories
                     HospitalObj.Mobile = HospitalVM.Mobile;
                     HospitalObj.ManagerName = HospitalVM.ManagerName;
                     HospitalObj.ManagerNameAr = HospitalVM.ManagerNameAr;
-                    HospitalObj.Latitude =float.Parse( HospitalVM.Latitude.ToString());
+                    HospitalObj.Latitude = float.Parse(HospitalVM.Latitude.ToString());
                     HospitalObj.Longtitude = float.Parse(HospitalVM.Longtitude.ToString());
                     HospitalObj.GovernorateId = HospitalVM.GovernorateId;
                     HospitalObj.CityId = HospitalVM.CityId;
@@ -231,7 +238,7 @@ namespace Asset.Core.Repositories
                 lstHospitals = _context.Hospitals.Include(a => a.Governorate).Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
                      .Select(item => new IndexHospitalVM.GetData
                      {
-                          Id = item.Id,
+                         Id = item.Id,
                          Code = item.Code,
                          Name = item.Name,
                          NameAr = item.NameAr,
@@ -737,15 +744,15 @@ namespace Asset.Core.Repositories
 
             //   var byAge = _context.Hospitals.ToList().GroupBy(x => 10 * (x.Id / 10));
             decimal? price = 0;
-            var hosWithAsset= _context.Hospitals.ToList().Select(item => new HospitalWithAssetVM
+            var hosWithAsset = _context.Hospitals.ToList().Select(item => new HospitalWithAssetVM
             {
                 Id = item.Id,
                 Name = item.Name,
                 NameAr = item.NameAr,
                 AssetCount = _context.AssetDetails.Where(a => a.HospitalId == item.Id).ToList().Count(),
-                Assetprice =0
+                Assetprice = 0
             }).ToList();
-            if(hosWithAsset!=null)
+            if (hosWithAsset != null)
             {
                 for (var i = 0; i < hosWithAsset.Count; i++)
                 {
@@ -766,7 +773,7 @@ namespace Asset.Core.Repositories
 
         public int CountDepartmentsByHospitalId(int hospitalId)
         {
-          return  _context.HospitalDepartments.Include(a => a.Hospital).Where(a => a.HospitalId == hospitalId).ToList().Count;
+            return _context.HospitalDepartments.Include(a => a.Hospital).Where(a => a.HospitalId == hospitalId).ToList().Count;
         }
     }
 }

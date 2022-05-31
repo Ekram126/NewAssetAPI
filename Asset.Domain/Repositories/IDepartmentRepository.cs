@@ -8,7 +8,8 @@ namespace Asset.Domain.Repositories
   public  interface IDepartmentRepository
     {
         IEnumerable<Department> GetAllDepartments();
-        IEnumerable<IndexDepartmentVM.GetData> GetAll();
+        IEnumerable<IndexDepartmentVM.GetData> GetAll(); 
+        IEnumerable<Department> GetDepartmentsByHospitalId(int hospitalId);
         EditDepartmentVM GetById(int id);
 
 

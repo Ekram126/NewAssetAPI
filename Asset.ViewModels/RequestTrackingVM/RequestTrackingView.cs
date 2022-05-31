@@ -13,7 +13,7 @@ namespace Asset.ViewModels.RequestTrackingVM
         public int RequestId { get; set; }
         public string Description { get; set; }
         public string Barcode { get; set; }
-        public DateTime DescriptionDate { get; set; }
+        public DateTime? DescriptionDate { get; set; }
         public int RequestStatusId { get; set; }
         public string StatusName { get; set; }
         public string StatusNameAr { get; set; }

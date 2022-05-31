@@ -269,7 +269,22 @@ namespace Asset.API.Controllers
         {
             try
             {
-                int updatedRow = _AssetDetailService.Update(AssetDetailVM);
+                //a.BarCode == AssetDetailVM.Barcode && a.SerialNumber == AssetDetailVM.SerialNumber
+                int id = AssetDetailVM.Id;
+                var lstCode = _AssetDetailService.GetAll().Where(a => a.Code == AssetDetailVM.Code && a.Id != id).ToList();
+                if (lstCode.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Asset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
+                }
+                var lstNames = _AssetDetailService.GetAll().ToList().Where(a => a.BarCode == AssetDetailVM.Barcode && a.SerialNumber == AssetDetailVM.SerialNumber && a.Id != id).ToList();
+                if (lstNames.Count > 0)
+                {
+                }
+
+                else
+                {
+                    int updatedRow = _AssetDetailService.Update(AssetDetailVM);
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -282,13 +297,29 @@ namespace Asset.API.Controllers
         [Route("AddAssetDetail")]
         public ActionResult<AssetDetail> Add(CreateAssetDetailVM AssetDetailVM)
         {
-            var savedId = _AssetDetailService.Add(AssetDetailVM);
-            _qrController.Index(AssetDetailVM.Id);
-            CreateAssetDetailAttachmentVM qrAttach = new CreateAssetDetailAttachmentVM();
-            qrAttach.AssetDetailId = AssetDetailVM.Id;
-            qrAttach.FileName = "asset-" + AssetDetailVM.Id + ".png";
-            CreateAssetDetailAttachments(qrAttach);
-            return Ok(new { assetId = savedId });
+            var lstCode = _AssetDetailService.GetAll().ToList().Where(a => a.Code == AssetDetailVM.Code).ToList();
+            if (lstCode.Count > 0)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Asset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
+            }
+            var lstNames = _AssetDetailService.GetAll().ToList().Where(a => a.BarCode == AssetDetailVM.Barcode && a.SerialNumber == AssetDetailVM.SerialNumber).ToList();
+            if (lstNames.Count > 0)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Asset already exist with this data", MessageAr = "هذا الجهاز مسجل سابقاً" });
+            }
+            else
+            {
+                var savedId = _AssetDetailService.Add(AssetDetailVM);
+                _qrController.Index(AssetDetailVM.Id);
+                CreateAssetDetailAttachmentVM qrAttach = new CreateAssetDetailAttachmentVM();
+                qrAttach.AssetDetailId = AssetDetailVM.Id;
+                qrAttach.FileName = "asset-" + AssetDetailVM.Id + ".png";
+                CreateAssetDetailAttachments(qrAttach);
+                return Ok(new { assetId = savedId });
+            }
+
+
+            // return Ok(new { assetId = AssetDetailVM.Id });
 
         }
 
@@ -370,6 +401,14 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.CountAssetsByHospital();
         }
+
+     [HttpGet]
+        [Route("CountAssetsByHospitalId/{hospitalId}")]
+        public int CountAssetsByHospitalId(int hospitalId)
+        {
+            return _AssetDetailService.CountAssetsByHospitalId(hospitalId);
+        }
+
         [HttpGet]
         [Route("Group/{masterId}")]
         public IEnumerable<PmDateGroupVM> GetEquimentswithgrouping(int masterId)

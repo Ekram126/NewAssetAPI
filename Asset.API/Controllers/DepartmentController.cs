@@ -71,6 +71,13 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetDepartmentsByHospitalId/{hospitalId}")]
+        public List<Department> GetDepartmentsByHospitalId(int hospitalId)
+        {
+            return _DepartmentService.GetDepartmentsByHospitalId(hospitalId).ToList();
+        }
+
 
         [HttpPut]
         [Route("UpdateDepartment/{id}")]

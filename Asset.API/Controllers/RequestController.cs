@@ -85,14 +85,12 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, lstRequests);
         }
 
-        [HttpPost]
-        [Route("GetAllRequestsByDate")]
-        public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj)
-        {
-
-            return _requestService.GetRequestsByDate(requestDateObj).ToList();
-        
-        }
+        //[HttpPost]
+        //[Route("GetAllRequestsByDate")]
+        //public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj)
+        //{
+        //    return _requestService.GetRequestsByDate(requestDateObj).ToList();        
+        //}
 
 
 

@@ -11,7 +11,7 @@ namespace Asset.Models
     {
         public int Id { get; set; }
         public string Description { get; set; }
-        public DateTime DescriptionDate { get; set; }
+        public DateTime? DescriptionDate { get; set; }
         public int? RequestStatusId { get; set; }
         [ForeignKey("RequestStatusId")]
         public virtual RequestStatus RequestStatus { get; set; }

@@ -49,6 +49,11 @@ namespace Asset.Core.Services
             return _unitOfWork.DepartmentRepository.GetById(id);
         }
 
+        public IEnumerable<Department> GetDepartmentsByHospitalId(int hospitalId)
+        {
+            return _unitOfWork.DepartmentRepository.GetDepartmentsByHospitalId(hospitalId);
+        }
+
         public IEnumerable<IndexDepartmentVM.GetData> SortDepartments(SortDepartmentVM sortObj)
         {
             return _unitOfWork.DepartmentRepository.SortDepartments(sortObj);
