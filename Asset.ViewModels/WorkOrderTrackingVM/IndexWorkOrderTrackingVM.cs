@@ -20,6 +20,8 @@ namespace Asset.ViewModels.WorkOrderTrackingVM
         public int WorkOrderStatusId { get; set; }
         public string WorkOrderStatusName { get; set; }
         public string WorkOrderStatusNameAr { get; set; }
+        public string WorkOrderStatusColor { get; set; }
+        public string WorkOrderStatusIcon { get; set; }
         public int WorkOrderId { get; set; }
         public string WorkOrderSubject { get; set; }
         public string CreatedToId { get; set; }

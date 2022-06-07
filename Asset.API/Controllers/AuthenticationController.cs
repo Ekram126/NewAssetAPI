@@ -213,10 +213,7 @@ namespace Asset.API.Controllers
             strBuild.Append("من فضلك اضغط على الرابط التالي لتغيير كلمة المرور");
             strBuild.Append("<br />");
             strBuild.Append("<a href='" + replace + "'>اضغط هنا</a>");
-            //var message = new MessageVM(new string[] { user.Email }, "Al-Mostakbal Technology.", strBuild.ToString());
-            //_emailSender.SendEmail(message);
-
-
+      
 
             string from = "almostakbaltechnology.dev@gmail.com";
             string subject = "Al-Mostakbal Technology";

@@ -72,5 +72,18 @@ namespace Asset.ViewModels.AssetDetailVM
         public int? CityId { get; set; }
         public int? OrganizationId { get; set; }
         public int? SubOrganizationId { get; set; }
-    }
+
+        public string SupplierNameAr { get; set; }
+        public string SupplierName { get; set; }
+
+
+        public string BrandNameAr { get; set; }
+        public string BrandName
+        {
+            get; set;
+        }
+
+
+
+        }
 }

@@ -40,7 +40,7 @@ namespace Asset.Core.Services
         }
         public void UpdateRequest(EditRequestVM editRequestVM)
         {
-            _unitOfWork.Request.Update( editRequestVM);
+            _unitOfWork.Request.Update(editRequestVM);
         }
 
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserId(string userId)
@@ -49,16 +49,16 @@ namespace Asset.Core.Services
         }
 
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId)
-        { 
+        {
             throw new NotImplementedException();
         }
 
 
 
         public IndexRequestsVM GetRequestByWorkOrderId(int workOrderId)
-        { 
+        {
             return _unitOfWork.Request.GetRequestByWorkOrderId(workOrderId);
-           
+
         }
 
         public int GetTotalRequestForAssetInHospital(int assetDetailId)
@@ -93,7 +93,7 @@ namespace Asset.Core.Services
 
         public async Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj, int statusId)
         {
-            return await _unitOfWork.Request.SortRequests(sortObj,statusId);
+            return await _unitOfWork.Request.SortRequests(sortObj, statusId);
         }
 
         public int GetTotalOpenRequest(string userId)
@@ -103,25 +103,26 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId)
         {
-            return _unitOfWork.Request.GetAllRequestsByAssetId(assetId,hospitalId);
+            return _unitOfWork.Request.GetAllRequestsByAssetId(assetId, hospitalId);
         }
 
         public IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj)
-        {   return _unitOfWork.Request.SortRequestsByAssetId(sortObj);
-            
+        {
+            return _unitOfWork.Request.SortRequestsByAssetId(sortObj);
+
         }
 
         public PrintServiceRequestVM PrintServiceRequestById(int id)
         {
             return _unitOfWork.Request.PrintServiceRequestById(id);
-           
+
         }
 
         public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj)
         {
 
             return _unitOfWork.Request.GetRequestsByDate(requestDateObj);
-          
+
         }
 
         public IndexRequestsVM GetByRequestCode(string code)
@@ -136,7 +137,7 @@ namespace Asset.Core.Services
 
         public int CountRequestsByHospitalId(int hospitalId, string userId)
         {
-            return _unitOfWork.Request.CountRequestsByHospitalId(hospitalId,userId);
+            return _unitOfWork.Request.CountRequestsByHospitalId(hospitalId, userId);
         }
 
         public int CreateRequestAttachments(RequestDocument attachObj)
@@ -149,6 +150,12 @@ namespace Asset.Core.Services
             return _unitOfWork.Request.ListOpenRequests(hospitalId);
         }
 
+        public List<IndexRequestVM.GetData> ListNewRequests(int hospitalId)
+        {
+            return _unitOfWork.Request.ListNewRequests(hospitalId);
+        }
+
+
         public int UpdateOpenedRequest(int requestId)
         {
             return _unitOfWork.Request.UpdateOpenedRequest(requestId);
@@ -156,12 +163,17 @@ namespace Asset.Core.Services
 
         public List<IndexRequestTracking> ListOpenRequestTracks(int hospitalId)
         {
-            return _unitOfWork.Request.ListOpenRequestTracks(hospitalId);           
+            return _unitOfWork.Request.ListOpenRequestTracks(hospitalId);
         }
 
         public int UpdateOpenedRequestTrack(int trackId)
         {
             return _unitOfWork.Request.UpdateOpenedRequestTrack(trackId);
+        }
+
+        public List<ReportRequestVM> GetRequestEstimationById(int id)
+        {
+           return _unitOfWork.Request.GetRequestEstimationById(id);
         }
     }
 }

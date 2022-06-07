@@ -12,6 +12,8 @@ namespace Asset.ViewModels.EmployeeVM
         public string UserId { get; set; }
 
         public int Id { get; set; }
+
+        public string RoleId { get; set; }
         public string Name { get; set; }
         public string NameAr { get; set; }
     }

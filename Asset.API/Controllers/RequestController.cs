@@ -54,7 +54,7 @@ namespace Asset.API.Controllers
 
 
 
-   
+
         [HttpGet]
         [Route("GenerateRequestNumber")]
         public GeneratedRequestNumberVM GenerateRequestNumber()
@@ -85,12 +85,12 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, lstRequests);
         }
 
-        //[HttpPost]
-        //[Route("GetAllRequestsByDate")]
-        //public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj)
-        //{
-        //    return _requestService.GetRequestsByDate(requestDateObj).ToList();        
-        //}
+        [HttpPost]
+        [Route("GetAllRequestsByDate")]
+        public IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj)
+        {
+            return _requestService.GetRequestsByDate(requestDateObj).ToList();
+        }
 
 
 
@@ -148,12 +148,24 @@ namespace Asset.API.Controllers
             return _requestService.GetTotalOpenRequest(userId);
         }
 
+
         [HttpGet]
         [Route("ListOpenRequests/{hospitalId}")]
         public List<Request> ListOpenRequests(int hospitalId)
         {
             return _requestService.ListOpenRequests(hospitalId);
         }
+
+
+
+        [HttpGet]
+        [Route("ListNewRequests/{hospitalId}")]
+        public List<IndexRequestVM.GetData> ListNewRequests(int hospitalId)
+        {
+            return _requestService.ListNewRequests(hospitalId);
+        }
+
+
 
 
         [HttpGet]
@@ -270,12 +282,12 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, Requests);
         }
 
-    [HttpPut]
+        [HttpPut]
         [Route("ExportAllRequests/{userId}/{statusId}")]
         public IEnumerable<IndexRequestVM.GetData> ExportAllRequests(string userId, int statusId)
         {
             return _requestService.GetAllRequestsByStatusId(userId, statusId).ToList();
-            
+
         }
 
 
@@ -365,6 +377,17 @@ namespace Asset.API.Controllers
         {
             return _requestService.CreateRequestAttachments(attachObj);
         }
+
+        [HttpGet]
+        [Route("GetRequestEstimationById/{id}")]
+        public  List<ReportRequestVM> GetRequestEstimationById(int id)
+        {
+            return _requestService.GetRequestEstimationById(id);
+        }
+
+
+
+
         //[HttpPost]
         //[Route("SortRequestsCount")]
         //public async Task<int> SortRequestsCount(SortRequestVM sortObj, int statusId)

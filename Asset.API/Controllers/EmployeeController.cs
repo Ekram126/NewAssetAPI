@@ -106,9 +106,10 @@ namespace Asset.API.Controllers
 
 
         [HttpGet]
-        [Route("GetUnregisteredUsers/{hospitalId?}")]
+        [Route("GetUnregisteredUsers/{hospitalId}")]
         public IEnumerable<IndexEmployeeVM.GetData> GetUnregisteredUsers(int? hospitalId)
         {
+
             var removeRegistered = _EmployeeService.GetAll().Where(a => a.HospitalId == hospitalId).ToList();
             if (hospitalId > 0)
             {

@@ -569,13 +569,16 @@ namespace Asset.Core.Repositories
         }
         public EditAssetDetailVM GetById(int id)
         {
-            var lstAssetDetail = _context.AssetDetails.Include(a => a.Building)
+            var lstAssetDetail = _context.AssetDetails
+                                .Include(a => a.Supplier)
+                                .Include(a => a.MasterAsset.brand)
+                                .Include(a => a.Building)
                                 .Include(a => a.Floor).Include(a => a.Room)
                                 .Include(a => a.Hospital)
-                                  .Include(a => a.Hospital.Governorate)
-                                    .Include(a => a.Hospital.City)
-                                      .Include(a => a.Hospital.Organization)
-                                      .Include(a => a.Hospital.SubOrganization)
+                                .Include(a => a.Hospital.Governorate)
+                                .Include(a => a.Hospital.City)
+                                .Include(a => a.Hospital.Organization)
+                                .Include(a => a.Hospital.SubOrganization)
                                 .Include(a => a.MasterAsset).Where(a => a.Id == id).ToList();//.FirstOrDefault();
 
 
@@ -653,6 +656,13 @@ namespace Asset.Core.Repositories
                     item.OrganizationId = assetDetailObj.Hospital.OrganizationId;
                     item.SubOrganizationId = assetDetailObj.Hospital.SubOrganizationId;
 
+
+
+                    item.SupplierName = assetDetailObj.Supplier.Name;
+                    item.SupplierNameAr = assetDetailObj.Supplier.NameAr;
+
+                    item.BrandName = assetDetailObj.MasterAsset.brand.Name;
+                    item.BrandNameAr = assetDetailObj.MasterAsset.brand.NameAr;
                     return item;
 
                 }

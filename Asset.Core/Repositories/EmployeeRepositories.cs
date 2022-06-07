@@ -129,7 +129,7 @@ namespace Asset.Core.Repositories
             return _context.Employees.Where(a => a.Id == id).Select(item => new EditEmployeeVM
             {
                 Id = item.Id,
-                
+
                 Name = item.Name,
                 NameAr = item.NameAr,
                 Dob = item.Dob.Value.ToShortDateString(),
@@ -176,17 +176,34 @@ namespace Asset.Core.Repositories
 
         public List<EmployeeEngVM> GetEmployeesHasEngRoleInHospital(int hospitalId)
         {
-            var lstEngineers = (from emp in _context.Employees
-                                join usr in _context.ApplicationUser on emp.Email equals usr.Email
-                                join role in _context.ApplicationRole on usr.RoleId equals role.Id
-                                where usr.HospitalId == hospitalId
-                                select new EmployeeEngVM
-                                {
-                                    Name = usr.UserName,
-                                    roleName = role.Name,
-                                    UserId = usr.Id,
-                                    Id = emp.Id
-                                }).ToList().Where(a => a.roleName == "EngDepManager").ToList();
+            List<EmployeeEngVM> lstEngineers = new List<EmployeeEngVM>();
+            var lstEmployees = _context.Employees.Where(a => a.HospitalId == hospitalId).ToList();
+            foreach (var empObj in lstEmployees)
+            {
+                var lstUsers = _context.ApplicationUser.Where(a => a.Email == empObj.Email).ToList();
+                if (lstUsers.Count > 0)
+                {
+                    foreach (var usrObj in lstUsers)
+                    {
+                        var lstRoles = (from roles in _context.ApplicationRole
+                                        join usrroles in _context.UserRoles on roles.Id equals usrroles.RoleId
+                                        where roles.Name == "EngDepManager"
+                                        && usrroles.UserId == usrObj.Id
+                                        select roles).ToList();
+
+                        if (lstRoles.Count > 0)
+                        {
+                            EmployeeEngVM employeeEngObj = new EmployeeEngVM();
+                            employeeEngObj.Name = usrObj.UserName;
+                            employeeEngObj.roleName = lstRoles[0].Name;
+                            employeeEngObj.UserId = usrObj.Id;
+                            employeeEngObj.Id = empObj.Id;
+                            lstEngineers.Add(employeeEngObj);
+                        }
+                    }
+                }
+            }
+
             return lstEngineers;
         }
 
@@ -377,17 +394,30 @@ namespace Asset.Core.Repositories
 
         public List<EmployeeEngVM> GetEmployeesEngineersByHospitalId(int hospitalId)
         {
-            var lstEngineers = (from emp in _context.Employees
-                                join usr in _context.ApplicationUser on emp.Email equals usr.Email
-                                join role in _context.ApplicationRole on usr.RoleId equals role.Id
-                                where usr.HospitalId == hospitalId
-                                select new EmployeeEngVM
-                                {
-                                    Name = usr.UserName,
-                                    roleName = role.Name,
-                                    UserId = usr.Id,
-                                    Id = emp.Id
-                                }).ToList().Where(a => a.roleName == "EngDepManager" || a.roleName == "Eng").ToList();
+            List<EmployeeEngVM> lstEngineers = new List<EmployeeEngVM>();
+            var listEngEmployees = (from emp in _context.Employees
+                                    join usr in _context.ApplicationUser on emp.Email equals usr.Email
+                                    // join role in _context.ApplicationRole on usr.RoleId equals role.Id
+                                    where usr.HospitalId == hospitalId
+                                    select usr).ToList();
+
+            foreach (var item in listEngEmployees)
+            {
+                var empObj = _context.Employees.Where(a => a.Email == item.Email).ToList().FirstOrDefault();
+
+                var itemObj = (from role in _context.ApplicationRole
+                               join usrrole in _context.UserRoles on role.Id equals usrrole.RoleId
+                               where role.Name == "EngDepManager" || role.Name == "Eng"
+                               select new EmployeeEngVM
+                               {
+                                   Name = item.UserName,
+                                   roleName = role.Name,
+                                   UserId = item.Id,
+                                   Id = empObj.Id
+                               }).FirstOrDefault();
+
+                lstEngineers.Add(itemObj);
+            }
             return lstEngineers;
         }
     }

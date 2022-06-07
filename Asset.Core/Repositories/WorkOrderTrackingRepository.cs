@@ -52,9 +52,16 @@ namespace Asset.Core.Repositories
                     workOrderTracking.WorkOrderId = createWorkOrderTrackingVM.WorkOrderId;
                     workOrderTracking.HospitalId = createWorkOrderTrackingVM.HospitalId;
                     if (assignedTo != "")
+                    {
                         workOrderTracking.AssignedTo = assignedTo;
+                        //workOrderTracking.CreatedById = createWorkOrderTrackingVM.CreatedById;
+                    }
                     else
-                        workOrderTracking.AssignedTo = createWorkOrderTrackingVM.AssignedTo;
+                    {
+                      //  workOrderTracking.AssignedTo = createWorkOrderTrackingVM.AssignedTo;
+                        workOrderTracking.AssignedTo = createWorkOrderTrackingVM.CreatedById;
+
+                    }
 
 
                     workOrderTracking.ActualStartDate = createWorkOrderTrackingVM.ActualStartDate != "" ? DateTime.Parse(createWorkOrderTrackingVM.ActualStartDate) : null;
@@ -738,13 +745,20 @@ namespace Asset.Core.Repositories
                 item.TrackId = work.Id;
                 item.WorkOrderDate = work.WorkOrderDate != null ? DateTime.Parse(work.WorkOrderDate.ToString()):null;
                 item.CreationDate = work.CreationDate != null ? DateTime.Parse(work.CreationDate.ToString()):null;
-                item.AssignedTo = work.AssignedTo != null ? _context.ApplicationUser.Where(a => a.Id == work.AssignedTo).FirstOrDefault().UserName : "";
+                item.AssignedTo = work.AssignedTo != "" ? _context.ApplicationUser.Where(a => a.Id == work.AssignedTo).FirstOrDefault().UserName : "";
                 item.Notes = work.Notes;
                 item.CreatedById = work.CreatedById;
                 item.CreatedBy = work.User.UserName;
                 item.WorkOrderStatusId = work.WorkOrderStatusId;
                 item.WorkOrderStatusName = work.WorkOrderStatus.Name;
                 item.WorkOrderStatusNameAr = work.WorkOrderStatus.NameAr;
+
+
+                item.WorkOrderStatusColor = work.WorkOrderStatus.Color;
+                item.WorkOrderStatusIcon = work.WorkOrderStatus.Icon;
+
+
+
                 item.ActualStartDate = work.ActualStartDate;
                 item.ActualEndDate = work.ActualEndDate;
                 lstTracks.Add(item);

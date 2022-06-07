@@ -39,7 +39,8 @@ namespace Asset.API.Controllers
         {
             int assetId = eqId;
 
-            string url = "http://http://10.10.0.119:2020/#/dash/hospitalassets/edithospitalasset/" + assetId;
+            string url = "http://http://192.168.0.102:2020/#/dash/hospitalassets/edithospitalasset/" + assetId;
+            //string url = "http://http://10.10.0.119:2020/#/dash/hospitalassets/edithospitalasset/" + assetId;
            // string url = "http://http://10.10.0.119:2020/#/AssetDetail/" + assetId;
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
