@@ -60,35 +60,81 @@ namespace Asset.Core.Repositories
             List<HospitalApplication> lstHospitalStatus = new List<HospitalApplication>();
             if (hospitalId != 0)
             {
-                 lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
-                     .Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
+                 
+                foreach (var itm in list)
+                {
+
+                    lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
+                    .Where(a => a.AssetDetail.HospitalId == hospitalId && a.AppTypeId == appTypeId && a.StatusId == itm.Id).ToList();
+                    if (itm.Id == 1)
+                    {
+                        ItemObj.OpenStatus = lstHospitalStatus.Count;
+                    }
+                    if (itm.Id == 2)
+                    {
+                        ItemObj.ApproveStatus = lstHospitalStatus.Count;
+                    }
+                    if (itm.Id == 3)
+                    {
+                        ItemObj.RejectStatus = lstHospitalStatus.Count;
+                    }
+                    if (itm.Id == 4)
+                    {
+                        ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
+                    }
+                }
+
             }
            else
             {
-                lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).ToList();
+         
+                foreach (var itm in list)
+                {
+                    lstHospitalStatus = _context.HospitalApplications.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).ToList().Where(a => a.StatusId == itm.Id && a.AppTypeId == appTypeId).ToList();
+
+                    if (itm.Id == 1)
+                    {
+                        ItemObj.OpenStatus = lstHospitalStatus.Count;
+                    }
+                    if (itm.Id == 2)
+                    {
+                        ItemObj.ApproveStatus = lstHospitalStatus.Count;
+                    }
+                    if (itm.Id == 3)
+                    {
+                        ItemObj.RejectStatus = lstHospitalStatus.Count;
+                    }
+                    if (itm.Id == 4)
+                    {
+                        ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
+                    }
+                }
             }
             ItemObj.ListStatus = list;
-            foreach (var itm in list)
-            {
-                 lstHospitalStatus = lstHospitalStatus.Where(a => a.StatusId == itm.Id &&  a.AppTypeId == appTypeId).ToList();
 
-                if (itm.Id == 1)
-                {
-                    ItemObj.OpenStatus = lstHospitalStatus.Count;
-                }
-                if (itm.Id == 2)
-                {
-                    ItemObj.ApproveStatus = lstHospitalStatus.Count;
-                }
-                if (itm.Id == 3)
-                {
-                    ItemObj.RejectStatus = lstHospitalStatus.Count;
-                }
-                if (itm.Id == 4)
-                {
-                    ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
-                }
-            }
+
+
+            //foreach (var itm in list)
+            //{
+            //     lstHospitalStatus = lstHospitalStatus.Where(a => a.StatusId == itm.Id &&  a.AppTypeId == appTypeId).ToList();
+
+            //    if (itm.Id == 1)
+            //    {
+            //        ItemObj.OpenStatus = lstHospitalStatus.Count;
+            //    }
+            //    if (itm.Id == 2)
+            //    {
+            //        ItemObj.ApproveStatus = lstHospitalStatus.Count;
+            //    }
+            //    if (itm.Id == 3)
+            //    {
+            //        ItemObj.RejectStatus = lstHospitalStatus.Count;
+            //    }
+            //    if (itm.Id == 4)
+            //    {
+            //        ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
+            //    }
+            //}
             return ItemObj;
         }
 

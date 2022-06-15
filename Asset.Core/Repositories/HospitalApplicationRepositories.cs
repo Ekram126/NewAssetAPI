@@ -978,12 +978,13 @@ namespace Asset.Core.Repositories
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
             var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
                 .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
-                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).ToList().OrderByDescending(a => a.AppDate.Value.Date).ToList();
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).ToList()
+                .OrderByDescending(a => a.AppDate.Value.Date).ToList();
+
+
 
             if (hospitalId != 0)
                 lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
-
-
 
             if (appTypeId != 0)
                 lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == appTypeId).ToList();

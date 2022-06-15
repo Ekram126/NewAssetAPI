@@ -110,25 +110,44 @@ namespace Asset.API.Controllers
         public IEnumerable<IndexEmployeeVM.GetData> GetUnregisteredUsers(int? hospitalId)
         {
 
+            List<IndexEmployeeVM.GetData> list = new List<IndexEmployeeVM.GetData>();
             var removeRegistered = _EmployeeService.GetAll().Where(a => a.HospitalId == hospitalId).ToList();
             if (hospitalId > 0)
             {
-                var users = _userManager.Users.Where(a => a.HospitalId == hospitalId).ToList();
+                var users = _userManager.Users.Where(a => a.HospitalId == hospitalId).ToList();            
                 var employees = _EmployeeService.GetAll().Where(a => a.HospitalId == hospitalId).ToList();
 
-                foreach (var employee in employees)
+                List<string> usersEmails = new List<string>();
+                List<string> employeeEmails = new List<string>();
+
+                foreach (var item in users)
                 {
-                    foreach (var user in users)
-                    {
-                        if (employee.Email == user.Email)
-                            removeRegistered.Remove(employee);
-                    }
+                    usersEmails.Add(item.Email);
                 }
 
-                return removeRegistered;
-            }
+                foreach (var item in employees)
+                {
+                    employeeEmails.Add(item.Email);
+                }
 
-            return removeRegistered;
+                List<string> remainEmails  = employeeEmails.Except(usersEmails).ToList();
+
+                foreach (var item in remainEmails)
+                {
+                    list.Add(_EmployeeService.GetAll().Where(a => a.Email == item).FirstOrDefault());
+                }
+
+                //foreach (var employee in employees)
+                //{
+                //    foreach (var user in users)
+                //    {
+                //        if (employee.Email == user.Email)
+                //            removeRegistered.Remove(employee);
+                //    }
+                //}
+                return list;
+            }
+            return list;
         }
 
 
