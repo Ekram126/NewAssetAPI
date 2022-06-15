@@ -306,7 +306,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<Hospital> GetHospitalsByCityId(int cityId)
         {
-            return _context.Hospitals.ToList().Where(a => a.CityId == cityId).ToList();
+            return _context.Hospitals.ToList().Where(a => a.CityId == cityId).OrderBy(a=>a.Id).ToList();
 
         }
 

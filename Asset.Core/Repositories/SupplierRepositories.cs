@@ -72,8 +72,8 @@ namespace Asset.Core.Repositories
             {
                 Id = item.Id,
                 Code=item.Code,
-                Name = item.Name.Trim(),
-                NameAr = item.NameAr.Trim()
+                Name = item.Name,
+                NameAr = item.NameAr
             });
         }
 
