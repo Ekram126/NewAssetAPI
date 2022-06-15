@@ -32,5 +32,7 @@
         public int? PMTimeId { get; set; }
 
         public string AssetImg { get; set; }
+
+        public int? HospitalId { get; set; }
     }
 }

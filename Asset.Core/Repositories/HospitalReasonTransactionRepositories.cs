@@ -50,7 +50,7 @@ namespace Asset.Core.Repositories
             }
             catch (Exception ex)
             {
-                //msg = ex.Message;
+              string str = ex.Message;
             }
             return transactionObj.Id;
         }

@@ -54,6 +54,8 @@ namespace Asset.Core.Repositories
                     masterAssetObj.ElectricRequirement = model.ElectricRequirement;
                     masterAssetObj.PMTimeId = model.PMTimeId;
                     masterAssetObj.AssetImg = model.AssetImg;
+       masterAssetObj.HospitalId = model.HospitalId;
+
                     _context.MasterAssets.Add(masterAssetObj);
                     _context.SaveChanges();
                     return masterAssetObj.Id;
@@ -82,7 +84,8 @@ namespace Asset.Core.Repositories
                     CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
                     countHospitalObj.BrandName = item.Name;
                     countHospitalObj.BrandNameAr = item.NameAr;
-                    countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset).Where(a => a.MasterAsset.BrandId == item.Id && a.HospitalId == hospitalId).ToList().Count();
+                    countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
+                        .Where(a => a.MasterAsset.BrandId == item.Id && a.HospitalId == hospitalId).ToList().Count();
                     list.Add(countHospitalObj);
                 }
             }
@@ -200,8 +203,8 @@ namespace Asset.Core.Repositories
                 getDataObj.NameAr = item.NameAr;
                 getDataObj.OriginName = item.OriginId != null ? item.Origin.Name : "";
                 getDataObj.OriginNameAr = item.OriginId != null ? item.Origin.NameAr : "";
-                getDataObj.BrandName = item.BrandId != null ? item.brand.Name : "";
-                getDataObj.BrandNameAr = item.BrandId != null ? item.brand.NameAr : "";
+                getDataObj.BrandName = item.brand != null ? item.brand.Name : "";
+                getDataObj.BrandNameAr = item.brand != null ? item.brand.NameAr : "";
                 list.Add(getDataObj);
             }
             return list;
@@ -233,7 +236,7 @@ namespace Asset.Core.Repositories
                                    join detail in _context.AssetDetails on asset.Id equals detail.MasterAssetId
                                    join owner in _context.AssetOwners on detail.Id equals owner.AssetDetailId
                                    where detail.HospitalId == hospitalId
-                                   where owner.EmployeeId == employeeId
+                                  where owner.EmployeeId == employeeId
                                    select asset).ToList().GroupBy(a => a.Id).ToList();
 
             foreach (var item in lstMasterAssets)
@@ -284,7 +287,7 @@ namespace Asset.Core.Repositories
                 masterAssetObj.NameAr = item.NameAr;
                 masterAssetObj.Code = item.Code;
                 masterAssetObj.ECRIId = item.ECRIId != null ? (int)item.ECRIId : null;
-                masterAssetObj.BrandId = item.BrandId != null ? item.BrandId : null;
+                masterAssetObj.BrandId = item.brand != null ? item.BrandId : null;
                 masterAssetObj.CategoryId = item.CategoryId != null ? item.CategoryId : null;
                 masterAssetObj.SubCategoryId = item.SubCategoryId != null ? item.SubCategoryId : null;
                 masterAssetObj.Description = item.Description;
@@ -305,40 +308,12 @@ namespace Asset.Core.Repositories
                 masterAssetObj.ElectricRequirement = item.ElectricRequirement;
                 masterAssetObj.PMTimeId = item.PMTimeId;
                 masterAssetObj.AssetImg = item.AssetImg;
+                masterAssetObj.HospitalId = item.HospitalId;
+
                 return masterAssetObj;
             }
 
             return null;
-
-            //.Select(item => new EditMasterAssetVM
-            //{
-            //    Id = item.Id,
-            //    Name = item.Name,
-            //    NameAr = item.NameAr,
-            //    Code = item.Code,
-            //    ECRIId = item.ECRIId != null ? (int)item.ECRIId : null,
-            //    BrandId = item.BrandId != null ? item.BrandId : null,
-            //    CategoryId = item.CategoryId != null ? item.CategoryId : null,
-            //    SubCategoryId = item.SubCategoryId != null ? item.SubCategoryId : null,
-            //    Description = item.Description,
-            //    DescriptionAr = item.DescriptionAr,
-            //    ExpectedLifeTime = item.ExpectedLifeTime != null ? (int)item.ExpectedLifeTime : 0,
-            //    Height = item.Height,
-            //    Length = item.Length,
-            //    ModelNumber = item.ModelNumber,
-            //    VersionNumber = item.VersionNumber,
-            //    Weight = item.Weight,
-            //    Width = item.Width,
-            //    PeriorityId = item.PeriorityId,
-            //    OriginId = item.OriginId != null ? item.OriginId : null,
-            //    Power = item.Power,
-            //    Voltage = item.Voltage,
-            //    Ampair = item.Ampair,
-            //    Frequency = item.Frequency,
-            //    ElectricRequirement = item.ElectricRequirement,
-            //    PMTimeId = item.PMTimeId,
-            //    AssetImg = item.AssetImg
-            //}).First();
         }
 
         public int Update(EditMasterAssetVM model)
@@ -373,6 +348,8 @@ namespace Asset.Core.Repositories
                 masterAssetObj.ElectricRequirement = model.ElectricRequirement;
                 masterAssetObj.PMTimeId = model.PMTimeId;
                 masterAssetObj.AssetImg = model.AssetImg;
+                masterAssetObj.HospitalId = model.HospitalId;
+
                 _context.Entry(masterAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return masterAssetObj.Id;
@@ -411,6 +388,7 @@ namespace Asset.Core.Repositories
             //  model.PMTimeId = masterAssetObj.PMTimeId;
             model.AssetImg = masterAssetObj.AssetImg;
 
+            model.HospitalId = masterAssetObj.HospitalId;
 
 
 
@@ -616,7 +594,7 @@ namespace Asset.Core.Repositories
                     getDataObj.OriginName = item.Origin.Name;
                     getDataObj.OriginNameAr = item.Origin.NameAr;
                 }
-                if (item.BrandId != null)
+                if (item.brand != null)
                 {
                     getDataObj.BrandId = item.BrandId;
                     getDataObj.BrandName = item.brand.Name;
@@ -816,8 +794,8 @@ namespace Asset.Core.Repositories
                     getDataObj.NameAr = item.NameAr;
                     getDataObj.OriginName = item.OriginId != null ? item.Origin.Name : "";
                     getDataObj.OriginNameAr = item.OriginId != null ? item.Origin.NameAr : "";
-                    getDataObj.BrandName = item.BrandId != null ? item.brand.Name : "";
-                    getDataObj.BrandNameAr = item.BrandId != null ? item.brand.NameAr : "";
+                    getDataObj.BrandName = item.brand != null ? item.brand.Name : "";
+                    getDataObj.BrandNameAr = item.brand != null ? item.brand.NameAr : "";
                     list.Add(getDataObj);
                 }
             }

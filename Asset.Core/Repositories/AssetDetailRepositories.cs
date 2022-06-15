@@ -3222,7 +3222,43 @@ namespace Asset.Core.Repositories
 
         public int CountAssetsByHospitalId(int hospitalId)
         {
+
+          //  if(hospitalId!= 0)
           return  _context.AssetDetails.Where(a => a.HospitalId == hospitalId).Count();
+        }
+
+        public List<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId)
+        {
+            List<CountAssetVM> list = new List<CountAssetVM>();
+            if (hospitalId == 0)
+            {
+                var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Take(10).ToList().GroupBy(a => a.MasterAssetId);
+                foreach (var asset in lstAssetDetails)
+                {
+
+                    CountAssetVM countAssetObj = new CountAssetVM();
+                    countAssetObj.AssetName = asset.FirstOrDefault().MasterAsset.Name;
+                    countAssetObj.AssetNameAr = asset.FirstOrDefault().MasterAsset.NameAr;
+                    countAssetObj.AssetPrice = _context.AssetDetails.Where(a => a.HospitalId == asset.FirstOrDefault().HospitalId).Sum(a => Convert.ToDecimal(asset.FirstOrDefault().Price.ToString()));
+                    countAssetObj.CountAssetsByHospital = _context.AssetDetails.Where(a => a.HospitalId == asset.FirstOrDefault().HospitalId && a.MasterAssetId == asset.FirstOrDefault().MasterAssetId).Count();
+                    list.Add(countAssetObj);
+                }
+            }
+            else
+            {
+                var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Take(10).Where(a=>a.HospitalId == hospitalId).ToList().GroupBy(a => a.MasterAssetId);
+                foreach (var asset in lstAssetDetails)
+                {
+
+                    CountAssetVM countAssetObj = new CountAssetVM();
+                    countAssetObj.AssetName = asset.FirstOrDefault().MasterAsset.Name;
+                    countAssetObj.AssetNameAr = asset.FirstOrDefault().MasterAsset.NameAr;
+                    countAssetObj.AssetPrice = _context.AssetDetails.Where(a => a.HospitalId == asset.FirstOrDefault().HospitalId).Sum(a => Convert.ToDecimal(asset.FirstOrDefault().Price.ToString()));
+                    countAssetObj.CountAssetsByHospital = _context.AssetDetails.Where(a => a.HospitalId == asset.FirstOrDefault().HospitalId && a.MasterAssetId == asset.FirstOrDefault().MasterAssetId).Count();
+                    list.Add(countAssetObj);
+                }
+            }
+            return list;
         }
     }
 }

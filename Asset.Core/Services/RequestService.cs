@@ -175,5 +175,10 @@ namespace Asset.Core.Services
         {
            return _unitOfWork.Request.GetRequestEstimationById(id);
         }
+
+        public List<ReportRequestVM> GetRequestEstimations(SearchRequestDateVM searchRequestDateObj)
+        {
+            return _unitOfWork.Request.GetRequestEstimations(searchRequestDateObj);
+        }
     }
 }

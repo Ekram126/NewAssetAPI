@@ -43,7 +43,9 @@ namespace Asset.Domain.Repositories
         int Update(EditAssetDetailVM assetDetailObj);
         int Delete(int id);
         List<CountAssetVM> CountAssetsByHospital();
-       int CountAssetsByHospitalId(int hospitalId);
+        List<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId);
+
+        int CountAssetsByHospitalId(int hospitalId);
 
 
         int CreateAssetDetailDocuments(CreateAssetDetailAttachmentVM attachObj);

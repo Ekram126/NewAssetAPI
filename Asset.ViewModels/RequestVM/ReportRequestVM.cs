@@ -9,7 +9,10 @@ namespace Asset.ViewModels.RequestVM
    public class ReportRequestVM
     {
         public int Id { get; set; }
+        public string RequestNumber { get; set; }
+
         public string StartRequestDate { get; set; }
+        public string InitialWorkOrderDate { get; set; }
         public string StartWorkOrderDate { get; set; }
         public string DurationBetweenStartRequestWorkOrder { get; set; }
 

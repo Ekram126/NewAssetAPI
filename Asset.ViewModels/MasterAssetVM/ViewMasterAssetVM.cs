@@ -30,6 +30,7 @@
         public int? BrandId { get; set; }
         public int? CategoryId { get; set; }
         public int? SubCategoryId { get; set; }
+        public int? HospitalId { get; set; }
 
         public string PMTimeName { get; set; }
         public string ECRIName { get; set; }
@@ -49,5 +50,7 @@
         public string BrandNameAr { get; set; }
         public string CategoryNameAr { get; set; }
         public string SubCategoryNameAr { get; set; }
+
+
     }
 }

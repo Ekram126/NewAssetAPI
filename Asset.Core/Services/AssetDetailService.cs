@@ -237,5 +237,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.CountAssetsByHospitalId(hospitalId);
         }
+
+        public List<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.ListTopAssetsByHospitalId(hospitalId);
+        }
     }
 }

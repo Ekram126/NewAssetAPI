@@ -2999,8 +2999,8 @@ namespace Asset.Core.Repositories
                 getDataObj.PeriorityId = req.FirstOrDefault().Request.RequestPeriority.Id;
                 getDataObj.PeriorityName = req.FirstOrDefault().Request.RequestPeriority.Name.Trim();
                 getDataObj.PeriorityNameAr = req.FirstOrDefault().Request.RequestPeriority.NameAr.Trim();
-                getDataObj.PeriorityColor = req.FirstOrDefault().Request.RequestPeriority.Color.Trim();
-                getDataObj.PeriorityIcon = req.FirstOrDefault().Request.RequestPeriority.Icon;
+                getDataObj.PeriorityColor = req.FirstOrDefault().Request.RequestPeriority != null ? req.FirstOrDefault().Request.RequestPeriority.Color.Trim():"";
+                getDataObj.PeriorityIcon = req.FirstOrDefault().Request.RequestPeriority != null ? req.FirstOrDefault().Request.RequestPeriority.Icon:"";
 
 
                 getDataObj.AssetName = req.FirstOrDefault().Request.AssetDetail.MasterAsset.Name.Trim();
@@ -3511,6 +3511,8 @@ namespace Asset.Core.Repositories
             if (lstTracks.Count > 0)
             {
                 var trackObj = lstTracks[0];
+                var srWorkOrder = _context.WorkOrderTrackings.Include(a => a.WorkOrder).Include(a => a.WorkOrder.Request).Where(a => a.WorkOrder.RequestId == id && a.WorkOrderStatusId == 1).ToList().FirstOrDefault();
+
                 var lstWorkorders = _context.WorkOrderTrackings.Include(a => a.WorkOrder).Include(a => a.WorkOrder.Request).Where(a => a.WorkOrder.RequestId == id).ToList();
 
                 if (lstWorkorders.Count > 0)
@@ -3518,9 +3520,12 @@ namespace Asset.Core.Repositories
 
                     WorkOrderTracking woObj = lstWorkorders[0];
                     //foreach (var woObj in lstWorkorders)
-                    //{
+                    //{ 
                     ReportRequestVM reportObj = new ReportRequestVM();
                     reportObj.Id = trackObj.Request.Id;
+                    reportObj.InitialWorkOrderDate = srWorkOrder.CreationDate.ToString();
+                    reportObj.RequestNumber = trackObj.Request.RequestCode;
+
                     reportObj.StartRequestDate = trackObj.Request.RequestDate.ToString();
                     lstWorkorders = lstWorkorders.Where(a => a.WorkOrderStatusId == 2 && a.WorkOrder.RequestId == id).ToList();
                     if (lstWorkorders.Count > 0)
@@ -3565,7 +3570,7 @@ namespace Asset.Core.Repositories
 
                     if (closedWorkOrder.Count > 0)
                     {
-          
+
                         var workOrderCloseDate = closedWorkOrder.ToList().Last();
                         reportObj.ClosedWorkOrderDate = workOrderCloseDate.CreationDate.ToString();
 
@@ -3590,6 +3595,157 @@ namespace Asset.Core.Repositories
                 }
             }
 
+            return list;
+        }
+
+
+
+        public List<ReportRequestVM> GetRequestEstimations(SearchRequestDateVM searchRequestDateObj)
+        {
+            List<ReportRequestVM> list = new List<ReportRequestVM>();
+            DateTime start = new DateTime();
+            DateTime end = new DateTime();
+            if (searchRequestDateObj.StrStartDate != "")
+                start = DateTime.Parse(searchRequestDateObj.StrStartDate);
+            if (searchRequestDateObj.StrEndDate != "")
+                end = DateTime.Parse(searchRequestDateObj.StrEndDate);
+
+
+
+
+            var lstTracks = _context.RequestTracking.Include(a => a.Request).Where(a => a.RequestStatusId == 1
+            && (a.Request.RequestDate.Date >= start.Date && a.Request.RequestDate.Date <= end.Date)).ToList().GroupBy(a => a.RequestId).ToList();
+            if (lstTracks.Count > 0)
+            {
+                foreach (var trackObj in lstTracks)
+                {
+                    var srWorkOrder = _context.WorkOrderTrackings.Include(a => a.WorkOrder)
+                                        .Include(a => a.WorkOrder.Request).Where(a => a.WorkOrder.RequestId == trackObj.FirstOrDefault().RequestId && a.WorkOrderStatusId == 1).ToList()
+                                        .FirstOrDefault();
+
+
+                    var lstWorkorders = _context.WorkOrderTrackings.Include(a => a.WorkOrder)
+                                        .Include(a => a.WorkOrder.Request).Where(a => a.WorkOrder.RequestId == trackObj.FirstOrDefault().RequestId).ToList().GroupBy(a => a.WorkOrder.RequestId).ToList();
+
+                    if (lstWorkorders.Count > 0)
+                    {
+                        foreach (var woObj in lstWorkorders)
+                        {
+                            ReportRequestVM reportObj = new ReportRequestVM();
+                            reportObj.Id = trackObj.FirstOrDefault().Request.Id;
+                            reportObj.RequestNumber = trackObj.FirstOrDefault().Request.RequestCode;
+                            reportObj.StartRequestDate = trackObj.FirstOrDefault().Request.RequestDate.ToString();
+                            reportObj.InitialWorkOrderDate = srWorkOrder.CreationDate.ToString();
+
+                            var lstWorkorders2 = _context.WorkOrderTrackings.Include(a => a.WorkOrder)
+                                                  .Include(a => a.WorkOrder.Request)
+                                                  .Where(a => a.WorkOrderStatusId == 2 && a.WorkOrder.RequestId == trackObj.FirstOrDefault().RequestId)
+                                                  .ToList().GroupBy(a => a.WorkOrder.RequestId).ToList();
+
+
+
+                            if (lstWorkorders2.Count > 0)
+                            {
+                                var woLastTrack = lstWorkorders2.ToList().First();
+                                reportObj.StartWorkOrderDate = woLastTrack.FirstOrDefault().CreationDate.ToString();
+                                string elapsedTime = "";
+                                TimeSpan difference = DateTime.Parse(woObj.FirstOrDefault().CreationDate.ToString()) - DateTime.Parse(trackObj.FirstOrDefault().Request.RequestDate.ToString());
+                                int days = difference.Days;
+                                int hours = difference.Hours;
+                                int minutes = difference.Minutes;
+                                int seconds = difference.Seconds;
+                                if (searchRequestDateObj.Lang == "en")
+                                    elapsedTime = days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds";
+                                else
+                                    elapsedTime = days + " يوم " + hours + " ساعة " + minutes + " دقيقة " + seconds + " ثانية";
+
+                                reportObj.DurationBetweenStartRequestWorkOrder = elapsedTime;
+                            }
+
+                            var firstInProgressWork = _context.WorkOrderTrackings.Include(a => a.WorkOrder).Include(a => a.WorkOrder.Request).Where(a => a.WorkOrderStatusId == 2 && a.WorkOrder.RequestId == trackObj.FirstOrDefault().RequestId).ToList();
+                            var lastInProgressWork = _context.WorkOrderTrackings.Include(a => a.WorkOrder).Include(a => a.WorkOrder.Request).Where(a => a.WorkOrderStatusId == 12 && a.WorkOrder.RequestId == trackObj.FirstOrDefault().RequestId).ToList();
+
+                            WorkOrderTracking workOrderStartInProgress = new WorkOrderTracking();
+                            WorkOrderTracking workOrderEndInProgress = new WorkOrderTracking();
+                            if (firstInProgressWork.Count > 0)
+                            {
+                                workOrderStartInProgress = firstInProgressWork.ToList().First();
+                                reportObj.FirstStepInTrackWorkOrderInProgress = workOrderStartInProgress.CreationDate.ToString();
+                            }
+                            if (firstInProgressWork.Count > 0 && lastInProgressWork.Count > 0)
+                            {
+                                workOrderEndInProgress = lastInProgressWork.ToList().Last();
+                                reportObj.LastStepInTrackWorkOrderInProgress = workOrderEndInProgress.CreationDate.ToString();
+                            }
+                            if (firstInProgressWork.Count > 0 && lastInProgressWork.Count > 0)
+                            {
+                                TimeSpan difference = DateTime.Parse(workOrderEndInProgress.CreationDate.ToString()) - DateTime.Parse(workOrderStartInProgress.CreationDate.ToString());
+                                int days = difference.Days;
+                                int hours = difference.Hours;
+                                int minutes = difference.Minutes;
+                                int seconds = difference.Seconds;
+                               // var elapsedTime = days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds";
+                                string elapsedTime = "";
+                                if (searchRequestDateObj.Lang == "en")
+                                    elapsedTime = days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds";
+                                else
+                                    elapsedTime = days + " يوم " + hours + " ساعة " + minutes + " دقيقة " + seconds + " ثانية";
+
+                                reportObj.DurationBetweenWorkOrders = elapsedTime;
+                            }
+
+
+
+                            var closedWorkOrder = _context.WorkOrderTrackings.Where(a => a.WorkOrderStatusId == 12 && a.WorkOrder.Request.Id == trackObj.FirstOrDefault().RequestId && a.WorkOrderId == woObj.FirstOrDefault().Id).ToList();
+                            var closeRequest = _context.RequestTracking.Where(a => a.RequestId == trackObj.FirstOrDefault().RequestId && a.RequestStatusId == 2).ToList();
+
+                            WorkOrderTracking workOrderCloseDate = new WorkOrderTracking();
+                            RequestTracking requestCloseDate = new RequestTracking();
+
+                            if (closedWorkOrder.Count > 0)
+                            {
+                                workOrderCloseDate = closedWorkOrder.ToList().Last();
+                                reportObj.ClosedWorkOrderDate = workOrderCloseDate.CreationDate.ToString();
+                            }
+                            if (closeRequest.Count > 0)
+                            {
+                                requestCloseDate = closeRequest.ToList().Last();
+                                reportObj.CloseRequestDate = requestCloseDate.DescriptionDate.ToString();
+                            }
+
+                            if (closedWorkOrder.Count > 0 && closeRequest.Count > 0)
+                            {
+                                TimeSpan difference = DateTime.Parse(workOrderCloseDate.CreationDate.ToString()) - DateTime.Parse(trackObj.FirstOrDefault().Request.RequestDate.ToString());
+                                int days = difference.Days;
+                                int hours = difference.Hours;
+                                int minutes = difference.Minutes;
+                                int seconds = difference.Seconds;
+                              //  var elapsedTime = days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds";
+
+                                string elapsedTime = "";
+                                if (searchRequestDateObj.Lang == "en")
+                                    elapsedTime = days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds";
+                                else
+                                    elapsedTime = days + " يوم " + hours + " ساعة " + minutes + " دقيقة " + seconds + " ثانية";
+
+                                reportObj.DurationTillCloseDate = elapsedTime;
+                            }
+
+                            list.Add(reportObj);
+                        }
+                    }
+
+                    else
+                    {
+                        ReportRequestVM reportObj = new ReportRequestVM();
+                        reportObj.Id = trackObj.FirstOrDefault().Request.Id;
+                        reportObj.RequestNumber = trackObj.FirstOrDefault().Request.RequestCode;
+                        reportObj.StartRequestDate = trackObj.FirstOrDefault().Request.RequestDate.ToString();
+                        list.Add(reportObj);
+                    }
+
+                }
+            }
             return list;
         }
     }

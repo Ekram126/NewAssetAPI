@@ -22,6 +22,10 @@ namespace Asset.Domain.Repositories
 
         List<ReportRequestVM> GetRequestEstimationById(int id);
 
+        List<ReportRequestVM> GetRequestEstimations(SearchRequestDateVM searchRequestDateObj);
+
+
+
         IndexRequestsVM GetRequestByWorkOrderId(int workOrderId);
         int GetTotalRequestForAssetInHospital(int assetDetailId);
         int GetTotalOpenRequest(string userId);

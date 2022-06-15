@@ -402,7 +402,17 @@ namespace Asset.API.Controllers
             return _AssetDetailService.CountAssetsByHospital();
         }
 
-     [HttpGet]
+        [HttpGet]
+        [Route("ListTopAssetsByHospitalId/{hospitalId}")]
+        public IEnumerable<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId)
+        {
+            return _AssetDetailService.ListTopAssetsByHospitalId(hospitalId);
+        }
+
+
+
+
+        [HttpGet]
         [Route("CountAssetsByHospitalId/{hospitalId}")]
         public int CountAssetsByHospitalId(int hospitalId)
         {

@@ -17,5 +17,7 @@ namespace Asset.ViewModels.RequestVM
         public string StrStartDate { get; set; }
         public string StrEndDate { get; set; }
 
+        public string Lang { get; set; }
+
     }
 }
