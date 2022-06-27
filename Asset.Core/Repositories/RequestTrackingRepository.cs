@@ -211,10 +211,12 @@ namespace Asset.Core.Repositories
         }
         public RequestDetails GetAllTrackingsByRequestId(int RequestId)
         {
-            var trackings = _context.RequestTracking.Include(a=>a.Request).Include(a => a.Request.AssetDetail).Include(a => a.RequestStatus).Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
+            string wonotes="";
+            var trackings = _context.RequestTracking.Include(a => a.Request).Include(a => a.Request.AssetDetail).Include(a => a.RequestStatus).Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
             {
                 Id = req.Id,
-                Barcode= req.Request.AssetDetail.Barcode,
+
+                Barcode = req.Request.AssetDetail.Barcode,
                 Description = req.Description,
                 DescriptionDate = req.DescriptionDate,
                 CreatedById = req.CreatedById,
@@ -225,52 +227,57 @@ namespace Asset.Core.Repositories
                 StatusNameAr = req.RequestStatusId != null ? req.RequestStatus.NameAr : ""
             }).OrderByDescending(t => t.DescriptionDate).ToList();
 
-
+            var lstWONotes = _context.WorkOrderTrackings.Include(a => a.WorkOrder).Include(a => a.WorkOrder.Request).Where(a => a.WorkOrder.RequestId == RequestId).OrderByDescending(a => a.CreationDate).ToList();
+            if (lstWONotes.Count > 0)
+            {
+                wonotes = lstWONotes[0].Notes;
+            }
 
             var lstRequestTracking = _context.RequestTracking.Include(t => t.Request.AssetDetail).Include(t => t.Request.AssetDetail.MasterAsset)
-                .Include(t => t.Request.RequestMode).Include(t => t.Request.RequestPeriority)
-                .Include(t => t.Request.SubProblem).Include(t => t.Request.SubProblem.Problem).Include(t => t.Request.RequestType).Include(r => r.RequestStatus)
-                .Where(r => r.RequestId == RequestId).Select(req => new RequestDetails
-                {
-                    Id = req.Id,
-                    Description = req.Description,
-                    Barcode = req.Request.AssetDetail.Barcode,
-                    CreatedById = req.CreatedById,
-                    UserName = req.User.UserName,
-                    Subject = req.Request.Subject,
-                    AssetCode = req.Request.AssetDetail.Code,
-                    RequestCode = req.Request.RequestCode,
-                    RequestDate = req.Request.RequestDate,
-                    AssetDetailId = req.Request.AssetDetailId != null ? (int)req.Request.AssetDetailId : 0,
-                    HospitalId = req.HospitalId,
-                    MasterAssetId = (int)req.Request.AssetDetail.MasterAssetId,
-                    SerialNumber = req.Request.AssetDetail.SerialNumber,
-                    RequestModeId = req.Request.RequestModeId != null ? (int)req.Request.RequestModeId : 0,
-                    RequestPeriorityId = req.Request.RequestPeriorityId != null ? (int)req.Request.RequestPeriorityId : 0,
-                    RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
+            .Include(t => t.Request.RequestMode).Include(t => t.Request.RequestPeriority)
+            .Include(t => t.Request.SubProblem).Include(t => t.Request.SubProblem.Problem).Include(t => t.Request.RequestType).Include(r => r.RequestStatus)
+            .Where(r => r.RequestId == RequestId).Select(req => new RequestDetails
+            {
+                Id = req.Id,
+                Description = req.Description,
+                Barcode = req.Request.AssetDetail.Barcode,
+                CreatedById = req.CreatedById,
+                UserName = req.User.UserName,
+                Subject = req.Request.Subject,
+                AssetCode = req.Request.AssetDetail.Code,
+                RequestCode = req.Request.RequestCode,
+                RequestDate = req.Request.RequestDate,
+                AssetDetailId = req.Request.AssetDetailId != null ? (int)req.Request.AssetDetailId : 0,
+                HospitalId = req.HospitalId,
+                MasterAssetId = (int)req.Request.AssetDetail.MasterAssetId,
+                SerialNumber = req.Request.AssetDetail.SerialNumber,
+                RequestModeId = req.Request.RequestModeId != null ? (int)req.Request.RequestModeId : 0,
+                RequestPeriorityId = req.Request.RequestPeriorityId != null ? (int)req.Request.RequestPeriorityId : 0,
+                RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
 
-                    ModeName = req.Request.RequestModeId != null ? req.Request.RequestMode.Name : "",
-                    ModeNameAr = req.Request.RequestModeId != null ? req.Request.RequestMode.NameAr : "",
+                ModeName = req.Request.RequestModeId != null ? req.Request.RequestMode.Name : "",
+                ModeNameAr = req.Request.RequestModeId != null ? req.Request.RequestMode.NameAr : "",
 
-                    PeriorityName = req.Request.RequestPeriority.Name,
-                    PeriorityNameAr = req.Request.RequestPeriority.NameAr,
-
-
-                    ProblemId = req.Request.SubProblemId != null ? (int)req.Request.SubProblem.ProblemId : 0,
-                    ProblemName = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.Name : "",
-                    ProblemNameAr = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.NameAr : "",
+                PeriorityName = req.Request.RequestPeriority.Name,
+                PeriorityNameAr = req.Request.RequestPeriority.NameAr,
 
 
-                    RequestTypeId = req.Request.RequestTypeId != null ? (int)req.Request.RequestTypeId : 0,
-                    RequestTypeName = req.Request.RequestTypeId != null ? req.Request.RequestType.Name : "",
-                    RequestTypeNameAr = req.Request.RequestTypeId != null ? req.Request.RequestType.NameAr : "",
+                ProblemId = req.Request.SubProblemId != null ? (int)req.Request.SubProblem.ProblemId : 0,
+                ProblemName = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.Name : "",
+                ProblemNameAr = req.Request.SubProblemId != null ? req.Request.SubProblem.Problem.NameAr : "",
 
-                    StatusName = req.RequestStatus.Name,
-                    StatusNameAr = req.RequestStatus.NameAr,
-                    AssetName = req.Request.AssetDetail.MasterAsset.Name,
-                    AssetNameAr = req.Request.AssetDetail.MasterAsset.NameAr,
-                    lstTracking = trackings
-                }).FirstOrDefault();
+
+                RequestTypeId = req.Request.RequestTypeId != null ? (int)req.Request.RequestTypeId : 0,
+                RequestTypeName = req.Request.RequestTypeId != null ? req.Request.RequestType.Name : "",
+                RequestTypeNameAr = req.Request.RequestTypeId != null ? req.Request.RequestType.NameAr : "",
+
+                StatusName = req.RequestStatus.Name,
+                StatusNameAr = req.RequestStatus.NameAr,
+                AssetName = req.Request.AssetDetail.MasterAsset.Name,
+                AssetNameAr = req.Request.AssetDetail.MasterAsset.NameAr,
+                WONotes = wonotes,
+                lstTracking = trackings
+            }).FirstOrDefault();
 
 
 
@@ -294,7 +301,7 @@ namespace Asset.Core.Repositories
             return RequestTrackingObj;
         }
 
-        public void Update( EditRequestTracking editRequestTracking)
+        public void Update(EditRequestTracking editRequestTracking)
         {
             try
             {
@@ -329,7 +336,7 @@ namespace Asset.Core.Repositories
         public RequestTracking GetFirstTrackForRequestByRequestId(int requestId)
         {
             RequestTracking trackingObj = new RequestTracking();
-            var lstTracks = _context.RequestTracking.Where(r => r.RequestId == requestId && r.RequestStatusId == 1).OrderBy(a=>a.Id ).ToList();
+            var lstTracks = _context.RequestTracking.Where(r => r.RequestId == requestId && r.RequestStatusId == 1).OrderBy(a => a.Id).ToList();
             if (lstTracks.Count > 0)
             {
                 trackingObj = lstTracks[0];

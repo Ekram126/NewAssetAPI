@@ -12,11 +12,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +29,7 @@ namespace Asset.API.Controllers
     [ApiController]
     public class SupplierExecludeController : ControllerBase
     {
-
+        private ISupplierService _supplierService;
         private ISupplierExecludeService _supplierExecludeService;
         private ISupplierExecludeReasonService _supplierExecludeReasonService;
         private ISupplierHoldReasonService _supplierHoldReasonService;
@@ -42,7 +44,7 @@ namespace Asset.API.Controllers
         public SupplierExecludeController(UserManager<ApplicationUser> userManager, ISupplierExecludeService supplierExecludeService,
             IEmailSender emailSender, IAssetDetailService assetDetailService, ISupplierExecludeAssetService supplierExecludeAssetService,
             ISupplierExecludeReasonService supplierExecludeReasonService, ISupplierHoldReasonService supplierHoldReasonService,
-            IMasterAssetService masterAssetService)
+            IMasterAssetService masterAssetService, ISupplierService supplierService)
         {
             _supplierExecludeService = supplierExecludeService;
 
@@ -54,6 +56,7 @@ namespace Asset.API.Controllers
             _supplierHoldReasonService = supplierHoldReasonService;
             _supplierExecludeReasonService = supplierExecludeReasonService;
             _supplierExecludeAssetService = supplierExecludeAssetService;
+            _supplierService = supplierService;
 
         }
 
@@ -105,6 +108,8 @@ namespace Asset.API.Controllers
         {
             string strExcludes = "";
             string strHolds = "";
+            string phone = "";
+            string exchold = "";
             List<string> execludeNames = new List<string>();
             List<IndexSupplierExcludeReasonVM.GetData> lstExcludes = new List<IndexSupplierExcludeReasonVM.GetData>();
             List<IndexSupplierHoldReasonVM.GetData> lstHolds = new List<IndexSupplierHoldReasonVM.GetData>();
@@ -113,11 +118,22 @@ namespace Asset.API.Controllers
             var applicationObj = _supplierExecludeService.GetById(supplierExecludeAssetId);
             var hospitalAssetObj = _supplierExecludeAssetService.GetById(supplierExecludeAssetId);
             var userObj = await _userManager.FindByNameAsync("MemberUser");
+
+            var lstSuppliers = _supplierService.GetAllSuppliers().Where(a => a.EMail == userObj.Email).ToList();
+            if (lstSuppliers.Count > 0)
+            {
+                phone = lstSuppliers[0].Mobile;
+            }
+            if (lstSuppliers.Count == 0)
+            {
+                phone = userObj.PhoneNumber;
+            }
             var assetObj = _assetDetailService.GetById(int.Parse(hospitalAssetObj.AssetId.ToString()));
             var masterObj = _masterAssetService.GetById(int.Parse(assetObj.MasterAssetId.ToString()));
 
             if (hospitalAssetObj.AppTypeId == 1)
             {
+                exchold = "Exclude";
                 var lstReasons = _supplierExecludeService.GetAll().Where(a => a.SupplierExecludeAssetId == supplierExecludeAssetId).ToList();
                 if (lstReasons.Count > 0)
                 {
@@ -138,6 +154,7 @@ namespace Asset.API.Controllers
 
             if (hospitalAssetObj.AppTypeId == 2)
             {
+                exchold = "Hold";
                 var lstReasons = _supplierExecludeService.GetAll().Where(a => a.SupplierExecludeAssetId == supplierExecludeAssetId).ToList();
                 foreach (var item in lstReasons)
                 {
@@ -216,6 +233,20 @@ namespace Asset.API.Controllers
                 smtpClient.Send(mailMessage2);
             }
 
+
+
+            //var SMSobj = new SendSMS();
+            //SMSobj.Language = 1;
+            //SMSobj.Mobile = phone;// "01021162629";
+            //SMSobj.Message = $"This Asset {masterObj.NameAr} with barcode:{assetObj.Barcode} requested to be {exchold}";
+            //var json = JsonConvert.SerializeObject(SMSobj);
+            //var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            //var UrlSMS = "https://smsmisr.com/api/v2";
+            //using var client = new HttpClient();
+            //var response = await client.PostAsync(UrlSMS, data);
+            //string resultS = response.Content.ReadAsStringAsync().Result;
+            //Console.WriteLine(resultS);
 
 
 

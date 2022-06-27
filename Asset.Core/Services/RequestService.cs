@@ -180,5 +180,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.GetRequestEstimations(searchRequestDateObj);
         }
+
+        public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId, int page, int pageSize)
+        {
+            return _unitOfWork.Request.GetAllRequestsByStatusId(userId, statusId,page,pageSize);
+        }
     }
 }

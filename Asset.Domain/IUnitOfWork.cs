@@ -83,5 +83,11 @@ namespace Asset.Domain
         IPagingRepository pagingRepository { get; }
         IGroupingRepository groupingRepository { get; }
         IHealthRepository healthRepository { get; }
+
+        IVisitRepository visitRepository { get; }
+        IVisitTypeRepository visitTypeRepository { get; }
+
+        IEngineerRepository EngineerRepository { get; }
+
     }
 }

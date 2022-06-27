@@ -84,6 +84,13 @@ namespace Asset.Core
         private ISupplierExecludeRepository _supplierExecludeRepository;
         private ApplicationDbContext _context;
         private IHealthRepository _healthRepository;
+
+        private VisitRepository _visitRepository;
+        private VisitTypeRepository _visitTypeRepository;
+        private EngineerRepository _engineerRepository;
+
+
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -241,6 +248,14 @@ namespace Asset.Core
         public ISupplierExecludeRepository SupplierExecludeRepository => _supplierExecludeRepository= _supplierExecludeRepository ?? new SupplierExecludeRepositories(_context);
 
         public IHealthRepository healthRepository => _healthRepository = _healthRepository ?? new HealthRepository(_context);
+
+
+        public IVisitRepository visitRepository => _visitRepository = _visitRepository ?? new VisitRepository(_context);
+
+        public IVisitTypeRepository visitTypeRepository => _visitTypeRepository = _visitTypeRepository ?? new VisitTypeRepository(_context);
+
+        public IEngineerRepository EngineerRepository => _engineerRepository = _engineerRepository ?? new EngineerRepository(_context);
+
     }
 }
 

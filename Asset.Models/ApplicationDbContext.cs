@@ -25,12 +25,11 @@ namespace Asset.Models
 
             builder.Entity<AssetDetail>().Property(g => g.Price).HasColumnType("decimal(18, 2)");
             builder.Entity<AssetDetail>().Property(g => g.DepreciationRate).HasColumnType("decimal(18, 2)");
-
             builder.Entity<MasterContract>().Property(g => g.Cost).HasColumnType("decimal(18, 2)");
 
 
-            //builder.Entity<Hospital>().Property(g => g.Latitude).HasColumnType("float");
-            //builder.Entity<Hospital>().Property(g => g.Longtitude).HasColumnType("float");
+            builder.Entity<Hospital>().Property(g => g.Latitude).HasColumnType("float");
+            builder.Entity<Hospital>().Property(g => g.Longtitude).HasColumnType("float");
         }
 
         public DbSet<RoleCategory> RoleCategories { get; set; }
@@ -118,6 +117,10 @@ namespace Asset.Models
         public DbSet<HospitalApplicationAttachment> HospitalApplicationAttachments { get; set; }
         public DbSet<HospitalReasonTransaction> HospitalReasonTransactions { get; set; }
 
-
+        public DbSet<Visit> Visits { get; set; }
+        public DbSet<Engineer> Engineers { get; set; }
+        public DbSet<VisitType> VisitTypes { get; set; }
+        public DbSet<HospitalEngineer> HospitalEngineers { get; set; }
+        public DbSet<VisitAttachment> VisitAttachments { get; set; }
     }
 }

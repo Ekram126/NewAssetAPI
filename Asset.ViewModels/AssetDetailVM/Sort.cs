@@ -10,10 +10,25 @@ namespace Asset.ViewModels.AssetDetailVM
     {
         public int Id { get; set; }
 
-  public int StatusId { get; set; }
+        public int StatusId { get; set; }
+        public int? HospitalId { get; set; }
+
+        public int? GovernorateId { get; set; }
+        public int? CityId { get; set; }
+        public int? OrganizationId { get; set; }
+        public int? SubOrganizationId { get; set; }
+        public int? MasterAssetId { get; set; }
+        public int? AssetModel { get; set; }
+        public int? OriginId { get; set; }
+        public int? SupplierId { get; set; }
+        public int? BrandId { get; set; }
+
+
         public string UserId { get; set; }
         public string Code { get; set; }
         public string BarCode { get; set; }
+        public string BarCodeValue { get; set; }
+        public string SerialValue { get; set; }
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
         public string HospitalName { get; set; }

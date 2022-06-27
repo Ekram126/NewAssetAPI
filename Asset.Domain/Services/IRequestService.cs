@@ -14,6 +14,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestsVM> GetAllRequests();
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserId(string userId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId);
+        IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId, int page, int pageSize);
         IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId,int assetId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId,string userId);

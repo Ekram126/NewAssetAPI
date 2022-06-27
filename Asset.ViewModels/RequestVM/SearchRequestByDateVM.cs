@@ -19,5 +19,12 @@ namespace Asset.ViewModels.RequestVM
 
         public string Lang { get; set; }
 
+        public string UserName { get; set; }
+
+
+        public string HospitalName { get; set; }
+        public string HospitalNameAr { get; set; }
+
+        public string PrintedBy { get; set; }
     }
 }

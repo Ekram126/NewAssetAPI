@@ -90,7 +90,7 @@ namespace Asset.Core.Repositories
 
 
 
-            var lstStatus = _context.RequestStatus.ToList();
+            var lstStatus = _context.RequestStatus.Where(a=>a.Id != 5).ToList();
             ItemObj.ListStatus = lstStatus;
 
 

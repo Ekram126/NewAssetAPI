@@ -127,6 +127,12 @@ namespace Asset.API
             services.AddTransient<IHealthService, HealthService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPagingService, PagingService>();
+            services.AddScoped<IVisitService, VisitService>();
+            services.AddScoped<IVisitTypeService, VisitTypeService>();
+            services.AddScoped<IEngineerService, EngineerService>();
+
+
+
             services.AddScoped<QrController, QrController>();
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()

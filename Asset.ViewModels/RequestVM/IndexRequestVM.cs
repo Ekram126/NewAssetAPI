@@ -93,8 +93,9 @@ namespace Asset.ViewModels.RequestVM
             public string WorkOrderStatusIcon { get; set; }
             public string WorkOrderStatusColor { get; set; }
 
+            public string ElapsedTime { get; set; }
             public DateTime? DescriptionDate { get; set; }
-
+            public string WOLastTrackDescription { get; set; }
             public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
             public List<IndexWorkOrderVM> ListWorkOrder { get; set; }
             public List<LstWorkOrderFromTracking> ListWorkOrderTracking { get; set; }

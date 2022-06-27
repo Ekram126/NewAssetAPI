@@ -13,4 +13,8 @@
     <ProjectReference Include="..\Asset.Models\Asset.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="VisitVM\NewFolder\" />
+  </ItemGroup>
+
 </Project>

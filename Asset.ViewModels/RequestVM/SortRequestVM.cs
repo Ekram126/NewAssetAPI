@@ -34,6 +34,7 @@ namespace Asset.ViewModels.RequestVM
         public string CreatedBy { get; set; }
         public string SortStatus { get; set; }
         public string Description { get; set; }
+        public string WOLastTrackDescription { get; set; }
         public int CountListTracks { get; set; }
         public int CountWorkOrder { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using Asset.Domain;
+﻿using Asset.API.Helpers;
+using Asset.Domain;
 using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.HospitalApplicationVM;
@@ -11,11 +12,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +35,8 @@ namespace Asset.API.Controllers
 
         private IHospitalExecludeReasonService _hospitalExecludeReasonService;
         private IHospitalHoldReasonService _hospitalHoldReasonService;
+
+        private IEmployeeService _employeeService;
         private IMasterAssetService _masterAssetService;
         private IAssetDetailService _assetDetailService;
         private ApplicationUser applicationUser;
@@ -43,7 +48,7 @@ namespace Asset.API.Controllers
 
 
         public HospitalApplicationController(UserManager<ApplicationUser> userManager, IHospitalApplicationService hospitalApplicationService, IWebHostEnvironment webHostingEnvironment,
-            IPagingService pagingService, IEmailSender emailSender, IAssetDetailService assetDetailService,
+            IPagingService pagingService, IEmailSender emailSender, IAssetDetailService assetDetailService, IEmployeeService employeeService,
             IHospitalExecludeReasonService hospitalExecludeReasonService, IHospitalHoldReasonService hospitalHoldReasonService,
             IMasterAssetService masterAssetService, IHospitalReasonTransactionService hospitalReasonTransactionService)
         {
@@ -57,6 +62,7 @@ namespace Asset.API.Controllers
             _hospitalReasonTransactionService = hospitalReasonTransactionService;
             _hospitalExecludeReasonService = hospitalExecludeReasonService;
             _hospitalHoldReasonService = hospitalHoldReasonService;
+            _employeeService = employeeService;
         }
 
         [HttpGet]
@@ -280,12 +286,22 @@ namespace Asset.API.Controllers
         {
             string strExcludes = "";
             string strHolds = "";
+            string phone = "";
+            string exchold = "";
             List<string> execludeNames = new List<string>();
 			 List<string> holdNames = new List<string>();
             List<IndexHospitalExecludeReasonVM.GetData> lstExcludes = new List<IndexHospitalExecludeReasonVM.GetData>();
             List<IndexHospitalHoldReasonVM.GetData> lstHolds = new List<IndexHospitalHoldReasonVM.GetData>();
             var userObj = await _userManager.FindByNameAsync("MemberUser");
-
+            var lstEmployees = _employeeService.GetAll().Where(a => a.Email == userObj.Email).ToList();
+            if(lstEmployees.Count > 0)
+            {
+                phone = lstEmployees[0].Phone;
+            }
+            if(lstEmployees.Count ==0)
+            {
+                phone = userObj.PhoneNumber;
+            }
             var transObj = _hospitalReasonTransactionService.GetById(hospitalApplicationId);
             var applicationObj = _hospitalApplicationService.GetById(int.Parse(transObj.HospitalApplicationId.ToString()));
 
@@ -296,6 +312,7 @@ namespace Asset.API.Controllers
             {
                 if (applicationObj.AppTypeId == 1)
                 {
+                    exchold = "Exclude";
                     foreach (var item in lstReasons)
                     {
                         lstExcludes.Add(_hospitalExecludeReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
@@ -308,6 +325,7 @@ namespace Asset.API.Controllers
                 }
                 if (applicationObj.AppTypeId == 2)
                 {
+                    exchold = "Hold";
                     foreach (var item in lstReasons)
                     {
                         lstHolds.Add(_hospitalHoldReasonService.GetAll().Where(a => a.Id == item.ReasonId).FirstOrDefault());
@@ -388,6 +406,23 @@ namespace Asset.API.Controllers
             }
 
 
+
+            //phone
+
+
+            //var SMSobj = new SendSMS();
+            //SMSobj.Language = 1;
+            //SMSobj.Mobile = phone;// "01021162629";
+            //SMSobj.Message = $"This Asset {masterObj.NameAr} with barcode:{assetObj.Barcode} requested to be {exchold}";
+            //var json = JsonConvert.SerializeObject(SMSobj);
+            //var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            //var UrlSMS = "https://smsmisr.com/api/v2";
+            //using var client = new HttpClient();
+            //var response = await client.PostAsync(UrlSMS, data);
+            //string resultS = response.Content.ReadAsStringAsync().Result;
+            //Console.WriteLine(resultS);
+           
 
 
             return 1;
