@@ -16,6 +16,9 @@ using iTextSharp.text.pdf;
 using iTextSharp.text;
 using System.Diagnostics;
 using System.Globalization;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace Asset.API.Controllers
 {
@@ -271,13 +274,33 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexRequestVM.GetData>(pageInfo, Requests);
         }
 
+
+
+        [HttpPost]
+        [Route("GetRequestsByStatusIdAndPaging/{userId}/{statusId}/{pageNumber}/{pageSize}")]
+        public List<IndexRequestVM.GetData> GetRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize)
+        {
+            var Requests = _requestService.GetRequestsByStatusIdAndPaging(userId, statusId,pageNumber,pageSize).ToList();
+            return Requests;
+        }
+
+
+
         [HttpPut]
         [Route("ExportAllRequests/{userId}/{statusId}")]
         public IEnumerable<IndexRequestVM.GetData> ExportAllRequests(string userId, int statusId)
         {
-            return _requestService.GetAllRequestsByStatusId(userId, statusId).ToList();
+            return _requestService.ExportRequestsByStatusId(userId, statusId).ToList();
 
         }
+
+
+        //[HttpGet]
+        //[Route("GetRequestsCountByStatusId/{userId}/{statusId}")]
+        //public int GetCountByStatusId(string userId, int statusId)
+        //{
+        //    return _requestService.GetAllRequestsByStatusId(userId, statusId).ToList().Count;
+        //}
 
 
         [HttpGet]
@@ -286,8 +309,6 @@ namespace Asset.API.Controllers
         {
             return _requestService.GetAllRequestsByStatusId(userId, statusId).ToList().Count;
         }
-
-
 
 
         [HttpPost]
@@ -509,7 +530,7 @@ namespace Asset.API.Controllers
             document.Add(ph);
 
             PdfPTable bodytable = createFirstTable(searchRequestDateObj);
-            int countnewpages = bodytable.Rows.Count / 15;
+            int countnewpages = bodytable.Rows.Count / 20;
             for (int i = 1; i <= countnewpages; i++)
             {
                 document.NewPage();
@@ -518,7 +539,7 @@ namespace Asset.API.Controllers
 
             document.Close();
             byte[] bytes = memoryStream.ToArray();
-            System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRWOReport.pdf", bytes);
+            System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRWOReports/SRWOReport.pdf", bytes);
 
 
             memoryStream = new MemoryStream();
@@ -567,7 +588,7 @@ namespace Asset.API.Controllers
                     titleTable.SetTotalWidth(new float[] { 800f });
                     titleTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
                     titleTable.WidthPercentage = 100;
-                    titleTable.AddCell(new PdfPCell(new Phrase("طلب خدمة", titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+                    titleTable.AddCell(new PdfPCell(new Phrase("بلاغات الأعطال  /  أوامر الشغل", titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
 
                     var sDate = DateTime.Parse(searchRequestDateObj.StrStartDate);
                     var sday = ArabicNumeralHelper.toArabicNumber(sDate.Day.ToString());
@@ -586,15 +607,15 @@ namespace Asset.API.Controllers
                 }
                 for (int i = 1; i <= pages; i++)
                 {
-                    PdfPTable bodytable2 = new PdfPTable(10);
-                    bodytable2.SetTotalWidth(new float[] { 80f, 80f, 80f, 80f, 80f, 80f, 80f, 85f, 85f, 90f });
+                    PdfPTable bodytable2 = new PdfPTable(12);
+                    bodytable2.SetTotalWidth(new float[] { 70f, 70f, 70f, 70f, 70f, 70f, 70f, 70f, 65f, 65f, 65f, 65f });
                     bodytable2.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
                     bodytable2.HorizontalAlignment = Element.ALIGN_RIGHT;
                     bodytable2.WidthPercentage = 100;
                     bodytable2.PaddingTop = 200;
                     bodytable2.HeaderRows = 1;
 
-                    bodytable2.SetWidths(new int[] { 12, 12, 12, 12, 12, 12, 12, 12, 12, 6 });
+                    bodytable2.SetWidths(new int[] { 25, 25, 25, 25, 25, 25, 25, 25, 25, 20, 20, 7 });
                     int countRows = bodytable.Rows.Count;
                     if (countRows > 20)
                     {
@@ -614,37 +635,40 @@ namespace Asset.API.Controllers
                 }
             }
             bytes = memoryStream.ToArray();
-            System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRWOReport.pdf", bytes);
-
-
+            System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRWOReports/SRWOReport.pdf", bytes);
             memoryStream.Close();
-            var processing = new Process();
-            processing.StartInfo = new ProcessStartInfo(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRWOReport.pdf")
-            {
-                UseShellExecute = true
-            };
-            processing.Start();
+            document.Close();
+
+            //var processing = new Process();
+            //processing.StartInfo = new ProcessStartInfo(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRWOReport.pdf")
+            //{
+            //    UseShellExecute = true,
+            //    Verb = "runas"
+            //};
+            //processing.Start();
+
+
 
         }
         public PdfPTable createFirstTable(SearchRequestDateVM searchRequestDateObj)
         {
             var lstData = _requestService.GetRequestEstimations(searchRequestDateObj).ToList();
-            PdfPTable table = new PdfPTable(10);
+            PdfPTable table = new PdfPTable(12);
 
-            table.SetTotalWidth(new float[] { 90f, 80f, 80f, 80f, 80f, 80f, 80f, 85f, 85f, 80f });
+            table.SetTotalWidth(new float[] { 70f, 70f, 70f, 70f, 70f, 70f, 70f, 70f, 65f, 65f, 65f, 65f });
             table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
             table.HorizontalAlignment = Element.ALIGN_RIGHT;
             table.WidthPercentage = 100;
             table.PaddingTop = 200;
             table.HeaderRows = 1;
-            table.SetWidths(new int[] { 15, 10, 10, 15, 10, 10, 15, 10, 10, 5 });
+            table.SetWidths(new int[] { 25, 25, 25, 25, 25, 25, 25, 25, 25, 20, 20, 7 });
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             string ARIALUNI_TFF = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
             BaseFont bfArialUniCode = BaseFont.CreateFont(ARIALUNI_TFF, BaseFont.IDENTITY_H, true);
             iTextSharp.text.Font font = new iTextSharp.text.Font(bfArialUniCode, 12);
 
 
-            string[] col = { "المدة", "إغلاق أمر الشغل", "إغلاق البلاغ", "المدة", "نهاية أمر الشغل", "بداية أمر الشغل", "المدة", "إنشاء أمر الشغل", "تاريخ البلاغ", "رقم الأمر" };
+            string[] col = { " المدة بين إغلاق البلاغ وأمر الشغل", "ت. إغلاق أمر الشغل", "ت. إغلاق البلاغ", "المدة بين بداية ونهاية أمر الشغل", "ت. نهاية أمر الشغل", "ت. بداية أمر الشغل", " المدة من بداية البلاغ حتى تاريخ إنشاء أمر الشغل", "إنشاء أمر الشغل", "تاريخ بلاغ العطل", "رقم بلاغ العطل", "رقم امر الشغل", "م" };
             for (int i = col.Length - 1; i >= 0; i--)
             {
                 PdfPCell cell = new PdfPCell(new Phrase(col[i], font));
@@ -652,13 +676,30 @@ namespace Asset.API.Controllers
                 cell.PaddingBottom = 10;
                 table.AddCell(cell);
             }
-
+            int index = 0;
             foreach (var item in lstData)
             {
-                //string finalValue=ConverToArabicNumerals(DateTime.Now.ToString("g", new CultureInfo("ar-AE")));
+                ++index;
+                table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font)) { PaddingBottom = 5 });
 
-                table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.RequestNumber), font)) { PaddingBottom = 5 });
-                table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.StartRequestDate).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+
+                if (item.WorkOrderNumber != null)
+                    table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.WorkOrderNumber), font)) { PaddingBottom = 5 });
+                else
+                    table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                if (item.RequestNumber != null)
+                    table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.RequestNumber), font)) { PaddingBottom = 5 });
+                else
+                    table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+
+                if (item.StartRequestDate != null)
+                    table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.StartRequestDate).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+                else
+                    table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+
                 if (item.InitialWorkOrderDate != null)
                     table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.InitialWorkOrderDate).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
                 else
@@ -711,6 +752,9 @@ namespace Asset.API.Controllers
 
 
 
+
+
+
         [HttpPost]
         [Route("CreateSRReportWithinDatePDF")]
         public void CreateSRReportWithinDatePDF(SearchRequestDateVM searchRequestDateObj)
@@ -730,7 +774,7 @@ namespace Asset.API.Controllers
             document.Add(ph);
 
             PdfPTable bodytable = createSRReportWithinDateTable(searchRequestDateObj);
-            int countnewpages = bodytable.Rows.Count / 15;
+            int countnewpages = bodytable.Rows.Count / 20;
             for (int i = 1; i <= countnewpages; i++)
             {
                 document.NewPage();
@@ -740,7 +784,6 @@ namespace Asset.API.Controllers
             document.Close();
             byte[] bytes = memoryStream.ToArray();
             System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRReports/SRReport.pdf", bytes);
-
 
             memoryStream = new MemoryStream();
             PdfReader reader = new PdfReader(bytes);
@@ -810,13 +853,13 @@ namespace Asset.API.Controllers
                 for (int i = 1; i <= pages; i++)
                 {
                     PdfPTable bodytable2 = new PdfPTable(10);
-                    bodytable2.SetTotalWidth(new float[] { 70f, 70f, 90f, 90f, 80f, 95f, 95f, 70f, 90f, 10f });
+                    bodytable2.SetTotalWidth(new float[] { 90f, 80f, 100f, 90f, 90f, 90f, 100f, 90f, 90f, 15f });
                     bodytable2.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
                     bodytable2.HorizontalAlignment = Element.ALIGN_RIGHT;
                     bodytable2.WidthPercentage = 100;
                     bodytable2.PaddingTop = 200;
                     bodytable2.HeaderRows = 1;
-                    bodytable2.SetWidths(new int[] { 15, 12, 12, 10, 25, 25, 25, 10, 25, 7 });
+                    bodytable2.SetWidths(new int[] { 20, 20, 48, 20, 20, 20, 35, 25, 20, 7 });
 
                     int countRows = bodytable.Rows.Count;
                     if (countRows > 20)
@@ -841,13 +884,14 @@ namespace Asset.API.Controllers
 
 
             memoryStream.Close();
-            var processing = new Process();
-            processing.StartInfo = new ProcessStartInfo(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRReports/SRReport.pdf")
-            {
-                UseShellExecute = true
-            };
-            processing.Start();
-
+            document.Close();
+            //var processing = new Process();
+            //processing.StartInfo = new ProcessStartInfo(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRReports/SRReport.pdf")
+            //{
+            //    UseShellExecute = true,
+            //    Verb = "runas"
+            //};
+            //processing.Start();
         }
         public PdfPTable createSRReportWithinDateTable(SearchRequestDateVM searchRequestDateObj)
         {
@@ -856,13 +900,13 @@ namespace Asset.API.Controllers
             PdfPTable table = new PdfPTable(10);
 
 
-            table.SetTotalWidth(new float[] { 80f, 80f, 90f, 90f, 90f, 100f, 95f, 70f, 95f, 25f });
+            table.SetTotalWidth(new float[] { 90f, 80f, 90f, 90f, 90f, 90f, 100f, 90f, 90f, 15f });
             table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
             table.HorizontalAlignment = Element.ALIGN_RIGHT;
             table.WidthPercentage = 100;
             table.PaddingTop = 200;
             table.HeaderRows = 1;
-            table.SetWidths(new int[] { 15, 12, 12, 15, 15, 25, 25, 10, 25, 10 });
+            table.SetWidths(new int[] { 20, 20, 48, 20, 20, 20, 35, 25, 20, 7 });
 
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -870,7 +914,13 @@ namespace Asset.API.Controllers
             BaseFont bfArialUniCode = BaseFont.CreateFont(ARIALUNI_TFF, BaseFont.IDENTITY_H, true);
             iTextSharp.text.Font font = new iTextSharp.text.Font(bfArialUniCode, 12);
 
-            string[] col = { "تاريخ الإغلاق", "حالة البلاغ", "الوصف", "السيريال", "الباركود", "اسم الأصل", "التاريخ", "رقم البلاغ", "الوقت", "م" };
+            // string[] col = { "تاريخ الإغلاق", "حالة البلاغ", "الوصف", "السيريال", "الباركود", "اسم الأصل", "التاريخ", "رقم البلاغ", "الوقت", "م" };
+
+
+
+
+            string[] col = { "تاريخ إغلاق بلاغ العطل", "حالة بلاغ العطل", "الوصف", "الوقت", "الرقم المسلسل", "الباركود", "اسم الأصل", "التاريخ", "رقم بلاغ العطل", "م" };
+
 
             for (int i = col.Length - 1; i >= 0; i--)
             {
@@ -886,35 +936,6 @@ namespace Asset.API.Controllers
                 ++index;
 
                 table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font)) { PaddingBottom = 5 });
-
-
-
-                TimeSpan diff = DateTime.Now - item.RequestDate;
-                var days = diff.Days;
-                var hours = diff.Hours;
-                int minutes = diff.Minutes;
-                int seconds = diff.Seconds;
-
-
-                if (searchRequestDateObj.Lang == "en")
-                {
-                    var elapsedTime = days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds";
-                    item.ElapsedTime = elapsedTime;
-                }
-                else
-                {
-                    var elapsedTime = days + " يوم " + hours + " ساعة " + minutes + " دقيقة " + seconds + " ثانية";
-                    item.ElapsedTime = elapsedTime;
-                }
-
-                if (item.ElapsedTime != null)
-                    table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.ElapsedTime), font)) { PaddingBottom = 5 });
-                else
-                    table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-
-
                 if (item.RequestCode != null)
                     table.AddCell(new PdfPCell(new Phrase(item.RequestCode, font)) { PaddingBottom = 5 });
                 else
@@ -930,39 +951,47 @@ namespace Asset.API.Controllers
                 else
                     table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
 
-
-
-
                 if (item.Barcode != null)
                     table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.Barcode), font)) { PaddingBottom = 5 });
                 else
                     table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
 
                 if (item.SerialNumber != null)
                     table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.SerialNumber), font)) { PaddingBottom = 5 });
                 else
                     table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
 
+                TimeSpan diff = DateTime.Now - item.RequestDate;
+                var days = diff.Days;
+                var hours = diff.Hours;
+                int minutes = diff.Minutes;
+                int seconds = diff.Seconds;
 
+                if (searchRequestDateObj.Lang == "en")
+                {
+                    var elapsedTime = days + " days " + hours + " hours ";// + minutes + " minutes " + seconds + " seconds";
+                    item.ElapsedTime = elapsedTime;
+                }
+                else
+                {
+                    var elapsedTime = days + " يوم " + hours + " ساعة ";// + minutes + " دقيقة " + seconds + " ثانية";
+                    item.ElapsedTime = elapsedTime;
+                }
 
+                if (item.ElapsedTime != null)
+                    table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.ElapsedTime), font)) { PaddingBottom = 5 });
+                else
+                    table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
 
                 if (item.Description != null)
                     table.AddCell(new PdfPCell(new Phrase(item.Description, font)) { PaddingBottom = 5 });
                 else
                     table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
 
-
-
-
                 if (item.StatusNameAr != null)
                     table.AddCell(new PdfPCell(new Phrase(item.StatusNameAr, font)) { PaddingBottom = 5 });
                 else
                     table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-
 
                 if (item.StatusId == 2)
                     table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.ClosedDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
@@ -972,6 +1001,36 @@ namespace Asset.API.Controllers
             }
 
             return table;
+        }
+
+
+
+        [HttpGet]
+        [Route("DownloadCreateSRReportWithinDatePDF")]
+        public HttpResponseMessage DownloadFile()
+        {
+            var file = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRReports/SRReport.pdf";
+            HttpResponseMessage response = null;
+            if (!System.IO.File.Exists(file))
+                return new HttpResponseMessage(HttpStatusCode.Gone);
+            else
+            {
+                //if file present than read file 
+                var fStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                //compose response and include file as content in it
+                response = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StreamContent(fStream)
+                };
+                response.Content.Headers.ContentDisposition =
+                                            new ContentDispositionHeaderValue("attachment")
+                                            {
+                                                FileName = Path.GetFileName(fStream.Name)
+                                            };
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            }
+            return response;
         }
     }
 }

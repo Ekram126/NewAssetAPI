@@ -185,5 +185,15 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.GetAllRequestsByStatusId(userId, statusId,page,pageSize);
         }
+
+        public List<IndexRequestVM.GetData> GetRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.Request.GetRequestsByStatusIdAndPaging(userId, statusId, pageNumber, pageSize).ToList();
+        }
+
+        public IEnumerable<IndexRequestVM.GetData> ExportRequestsByStatusId(string userId, int statusId)
+        {
+            return _unitOfWork.Request.ExportRequestsByStatusId(userId, statusId).ToList();
+        }
     }
 }

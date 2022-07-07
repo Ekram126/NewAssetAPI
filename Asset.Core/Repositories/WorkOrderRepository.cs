@@ -151,10 +151,7 @@ namespace Asset.Core.Repositories
                     work.SerialNumber = item.FirstOrDefault().Request.AssetDetail.SerialNumber;
                     work.BarCode = item.FirstOrDefault().Request.AssetDetail.Barcode;
                     work.ModelNumber = item.FirstOrDefault().Request.AssetDetail.MasterAsset.ModelNumber;
-
-
                     work.WorkOrderNumber = item.FirstOrDefault().WorkOrderNumber;
-
                     work.ModelNumber = item.FirstOrDefault().Request.AssetDetail.MasterAsset.ModelNumber;
                     work.Subject = item.FirstOrDefault().Subject;
                     work.RequestSubject = item.FirstOrDefault().Request.Subject;
@@ -314,6 +311,9 @@ namespace Asset.Core.Repositories
                 work.SerialNumber = item.Request.AssetDetail.SerialNumber;
                 work.PeriorityName = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.Name : "";
                 work.PeriorityNameAr = item.WorkOrderPeriority != null ? item.WorkOrderPeriority.NameAr : "";
+
+
+
                 var lstStatus = _context.WorkOrderTrackings
                        .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
                        .Where(a => a.WorkOrderId == item.Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList();
@@ -495,13 +495,16 @@ namespace Asset.Core.Repositories
         public IndexWorkOrderVM GetById(int id)
         {
             IndexWorkOrderVM work = new IndexWorkOrderVM();
-            var woObj = _context.WorkOrders.Where(a => a.Id == id).Include(w => w.Request).Include(w => w.Request.AssetDetail)
+            var woObj = _context.WorkOrders.Where(a => a.Id == id).Include(w => w.Request).Include(w => w.Request.AssetDetail).Include(w => w.Request.AssetDetail.Supplier)
                 .Include(w => w.Request.AssetDetail.MasterAsset).Include(w => w.WorkOrderType).Include(w => w.WorkOrderPeriority).Include(w => w.User).ToList();
             if (woObj.Count > 0)
             {
                 work.Id = woObj[0].Id;
                 work.Subject = woObj[0].Subject;
                 work.BarCode = woObj[0].Request.AssetDetail.Barcode;
+                work.SerialNumber = woObj[0].Request.AssetDetail.SerialNumber;
+                work.SupplierName = woObj[0].Request.AssetDetail.Supplier.Name;
+                work.SupplierNameAr = woObj[0].Request.AssetDetail.Supplier.NameAr;
                 work.WorkOrderNumber = woObj[0].WorkOrderNumber;
                 work.ModelNumber = woObj[0].Request.AssetDetail.MasterAsset.ModelNumber;
                 work.CreationDate = woObj[0].CreationDate;
@@ -528,10 +531,31 @@ namespace Asset.Core.Repositories
                 work.HospitalId = woObj[0].Request.AssetDetail.HospitalId;
                 work.WorkOrderTrackingId = _context.WorkOrderTrackings.Where(t => t.WorkOrderId == id).FirstOrDefault().Id;
                 work.WorkOrderStatusId = _context.WorkOrderTrackings.Where(t => t.WorkOrderId == id).FirstOrDefault().WorkOrderStatusId;
-                work.StatusName = _context.WorkOrderTrackings
-                    .Include(a => a.WorkOrderStatus).Where(t => t.WorkOrderId == id).FirstOrDefault().WorkOrderStatus.Name;
-                work.StatusNameAr = _context.WorkOrderTrackings
-                  .Include(a => a.WorkOrderStatus).Where(t => t.WorkOrderId == id).FirstOrDefault().WorkOrderStatus.NameAr;
+
+               // var lstStatus = _context.WorkOrderTrackings.Include(a => a.WorkOrderStatus).Where(t => t.WorkOrderId == id).OrderByDescending(a => DateTime.Parse(a.CreationDate.ToString())).ToList();
+                var lstStatus = _context.WorkOrderTrackings.Include(a => a.WorkOrderStatus).Where(t => t.WorkOrderId == id).ToList();
+
+                if (lstStatus.Count > 0)
+                {
+                    work.Note = lstStatus[0].Notes;
+                    work.StatusName = lstStatus[0].WorkOrderStatus.Name;
+                    work.StatusNameAr = lstStatus[0].WorkOrderStatus.NameAr;
+                    if (lstStatus[0].WorkOrderStatusId == 12)
+                    {
+                        work.ClosedDate = lstStatus[0].CreationDate;
+                    }
+                }
+
+
+                //work.StatusName = _context.WorkOrderTrackings
+                //    .Include(a => a.WorkOrderStatus).Where(t => t.WorkOrderId == id).FirstOrDefault().WorkOrderStatus.Name;
+                //work.StatusNameAr = _context.WorkOrderTrackings
+                //  .Include(a => a.WorkOrderStatus).Where(t => t.WorkOrderId == id).FirstOrDefault().WorkOrderStatus.NameAr;
+
+                //if (work.WorkOrderStatusId == 12)
+                //{
+                //    work.ClosedDate = lstStatus[0].FirstOrDefault().ActualEndDate;
+                //}
 
             }
 
@@ -898,7 +922,7 @@ namespace Asset.Core.Repositories
                      SubOrganizationId = wo.User.SubOrganizationId,
                      RoleId = wo.User.RoleId,
 
-                 }).OrderByDescending(o => o.Id).Where(a => a.RequestId == requestId).ToList();
+                 }).OrderByDescending(o => o.CreationDate).Where(a => a.RequestId == requestId).ToList();
 
 
 
@@ -1362,6 +1386,10 @@ namespace Asset.Core.Repositories
                 {
                     //  searchObj.PlannedStartDate = DateTime.Parse("01/01/1900");
                 }
+                if (searchObj.Start == null)
+                {
+                    //  searchObj.PlannedStartDate = DateTime.Parse("01/01/1900");
+                }
                 else
                 {
                     searchObj.PlannedStartDate = DateTime.Parse(searchObj.Start.ToString());
@@ -1385,6 +1413,10 @@ namespace Asset.Core.Repositories
                 }
 
                 if (searchObj.End == "")
+                {
+                    // searchObj.PlannedEndDate = DateTime.Today.Date;
+                }
+                if (searchObj.End == null)
                 {
                     // searchObj.PlannedEndDate = DateTime.Today.Date;
                 }
@@ -2512,16 +2544,16 @@ namespace Asset.Core.Repositories
                 {
                     userRoleNames.Add(role.Name);
                 }
-                      var lstWorkOrders = _context.WorkOrderTrackings
-                           .Include(t => t.WorkOrder)
-                           .Include(t => t.WorkOrderStatus)
-                            .Include(w => w.WorkOrder.WorkOrderType)
-                            .Include(w => w.WorkOrder.WorkOrderPeriority)
-                            .Include(w => w.WorkOrder.Request)
-                            .Include(w => w.WorkOrder.Request.AssetDetail)
-                            .Include(w => w.WorkOrder.Request.AssetDetail.MasterAsset)
-                            .Include(w => w.User)
-                            .ToList().OrderByDescending(a => a.WorkOrder.CreationDate).ToList().GroupBy(a=>a.WorkOrder.Id).ToList();
+                var lstWorkOrders = _context.WorkOrderTrackings
+                     .Include(t => t.WorkOrder)
+                     .Include(t => t.WorkOrderStatus)
+                      .Include(w => w.WorkOrder.WorkOrderType)
+                      .Include(w => w.WorkOrder.WorkOrderPeriority)
+                      .Include(w => w.WorkOrder.Request)
+                      .Include(w => w.WorkOrder.Request.AssetDetail)
+                      .Include(w => w.WorkOrder.Request.AssetDetail.MasterAsset)
+                      .Include(w => w.User)
+                      .ToList().OrderByDescending(a => a.WorkOrder.CreationDate).ToList().GroupBy(a => a.WorkOrder.Id).ToList();
                 //.GroupBy(a => a.WorkOrder.Id).ToList();
 
 
@@ -2566,7 +2598,7 @@ namespace Asset.Core.Repositories
                         //}
                         //else
                         //{
-                           
+
                         //}
                     }
                     work.ActualStartDate = item.FirstOrDefault().ActualStartDate;

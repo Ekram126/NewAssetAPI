@@ -14,33 +14,20 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexRequestsVM> GetAll();
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserId(string userId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId);
-
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId, int page, int pageSize);
-
-
-
-
         IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId, int assetId);
+        IEnumerable<IndexRequestVM.GetData> ExportRequestsByStatusId(string userId, int statusId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId, string userId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalAssetId(int assetId);
-
         List<ReportRequestVM> GetRequestEstimationById(int id);
-
         List<ReportRequestVM> GetRequestEstimations(SearchRequestDateVM searchRequestDateObj);
-
-
-
         IndexRequestsVM GetRequestByWorkOrderId(int workOrderId);
         int GetTotalRequestForAssetInHospital(int assetDetailId);
         int GetTotalOpenRequest(string userId);
         List<Request> ListOpenRequests(int hospitalId);
-
         List<IndexRequestVM.GetData> ListNewRequests(int hospitalId);
-
-
-
         List<IndexRequestTracking> ListOpenRequestTracks(int hospitalId);
         int UpdateOpenedRequest(int requestId);
         int UpdateOpenedRequestTrack(int trackId);
@@ -57,5 +44,11 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
         int CountRequestsByHospitalId(int hospitalId, string userId);
        int CreateRequestAttachments(RequestDocument attachObj);
+
+
+
+
+        List<IndexRequestVM.GetData> GetRequestsByStatusIdAndPaging(string userId, int statusId,int pageNumber,int pageSize);
+
     }
 }

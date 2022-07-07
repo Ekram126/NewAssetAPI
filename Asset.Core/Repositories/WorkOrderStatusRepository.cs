@@ -97,7 +97,7 @@ namespace Asset.Core.Repositories
                 }
 
 
-                var statusIds = new List<int>(new int[] { 6, 8, 10 });
+                var statusIds = new List<int>(new int[] { 6,7, 8, 10 });
                 var lstStatus = _context.WorkOrderStatuses.Where(a => !statusIds.Any(x => x == a.Id)).ToList();
                 itemObj.ListStatus = lstStatus;
                 var workorders = _context.WorkOrders
@@ -288,7 +288,7 @@ namespace Asset.Core.Repositories
         {
 
 
-            var statusIds = new List<int>(new int[] { 6, 8, 10 });
+            var statusIds = new List<int>(new int[] { 6, 7,8, 10 });
 
 
             return _context.WorkOrderStatuses.Where(a => !statusIds.Any(x => x == a.Id)).Select(item => new IndexWorkOrderStatusVM

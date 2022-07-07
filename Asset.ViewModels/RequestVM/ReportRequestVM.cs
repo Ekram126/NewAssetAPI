@@ -10,7 +10,7 @@ namespace Asset.ViewModels.RequestVM
     {
         public int Id { get; set; }
         public string RequestNumber { get; set; }
-
+        public string WorkOrderNumber { get; set; }
         public string StartRequestDate { get; set; }
         public string InitialWorkOrderDate { get; set; }
         public string StartWorkOrderDate { get; set; }

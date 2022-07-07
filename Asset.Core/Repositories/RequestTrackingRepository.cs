@@ -212,7 +212,8 @@ namespace Asset.Core.Repositories
         public RequestDetails GetAllTrackingsByRequestId(int RequestId)
         {
             string wonotes="";
-            var trackings = _context.RequestTracking.Include(a => a.Request).Include(a => a.Request.AssetDetail).Include(a => a.RequestStatus).Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
+            var trackings = _context.RequestTracking.Include(a => a.Request).Include(a => a.Request.AssetDetail).Include(a => a.RequestStatus)
+                .Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
             {
                 Id = req.Id,
 
@@ -225,9 +226,15 @@ namespace Asset.Core.Repositories
                 RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                 StatusName = req.RequestStatusId != null ? req.RequestStatus.Name : "",
                 StatusNameAr = req.RequestStatusId != null ? req.RequestStatus.NameAr : ""
-            }).OrderByDescending(t => t.DescriptionDate).ToList();
+            }).OrderByDescending(t => t.DescriptionDate).ThenBy(a => a.DescriptionDate.Value.TimeOfDay).ToList();
 
-            var lstWONotes = _context.WorkOrderTrackings.Include(a => a.WorkOrder).Include(a => a.WorkOrder.Request).Where(a => a.WorkOrder.RequestId == RequestId).OrderByDescending(a => a.CreationDate).ToList();
+            //listOfA.OrderByDescending(a => a.Start.Date)
+            //                   .ThenBy(a => a.Start.TimeOfDay);
+
+            var lstWONotes = _context.WorkOrderTrackings.Include(a => a.WorkOrder).Include(a => a.WorkOrder.Request).Where(a => a.WorkOrder.RequestId == RequestId)
+                .OrderByDescending(a =>a.CreationDate).ThenBy(a => a.CreationDate.Value.TimeOfDay).ToList();
+
+            
             if (lstWONotes.Count > 0)
             {
                 wonotes = lstWONotes[0].Notes;

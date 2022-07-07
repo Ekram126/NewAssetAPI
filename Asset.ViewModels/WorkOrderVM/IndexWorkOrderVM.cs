@@ -57,7 +57,8 @@ namespace Asset.ViewModels.WorkOrderVM
         public string SerialNumber { get; set; }
         public string ModelNumber { get; set; }
 
-
+        public string SupplierName { get; set; }
+        public string SupplierNameAr { get; set; }
 
         public string UserName { get; set; }
 
@@ -71,6 +72,8 @@ namespace Asset.ViewModels.WorkOrderVM
         public int? OrganizationId { get; set; }
         public int? SubOrganizationId { get; set; }
         public string RoleId { get; set; }
+
+        public string ElapsedTime { get; set; }
 
         public List<LstWorkOrderFromTracking> ListTracks { get; set; }
 

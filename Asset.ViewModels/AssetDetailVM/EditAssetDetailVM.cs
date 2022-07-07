@@ -24,6 +24,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public string Remarks { get; set; }
 
         public string Barcode { get; set; }
+        public string BarCode { get; set; }
 
         public string InstallationDate { get; set; }
 

@@ -20,6 +20,10 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalUserId(int hospitalId,string userId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByAssetId(int assetId, int hospitalId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalAssetId(int assetId);
+        IEnumerable<IndexRequestVM.GetData> ExportRequestsByStatusId(string userId, int statusId);
+
+
+
 
         List<ReportRequestVM> GetRequestEstimationById(int id);
         List<ReportRequestVM> GetRequestEstimations(SearchRequestDateVM searchRequestDateObj);
@@ -44,5 +48,8 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
         int CountRequestsByHospitalId(int hospitalId, string userId);
         int CreateRequestAttachments(RequestDocument attachObj);
+
+
+        List<IndexRequestVM.GetData> GetRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize);
     }
 }

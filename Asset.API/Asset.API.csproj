@@ -45,6 +45,8 @@
     <Folder Include="Reports\" />
     <Folder Include="UploadedAttachments\HospitalApplications\" />
     <Folder Include="UploadedAttachments\MasterContractFiles\" />
+    <Folder Include="UploadedAttachments\SRWOReports\" />
+    <Folder Include="UploadedAttachments\WOReports\" />
     <Folder Include="UploadedAttachments\SRReports\" />
     <Folder Include="UploadedAttachments\qrFiles\" />
     <Folder Include="UploadedAttachments\SupplierExecludeAssets\" />
