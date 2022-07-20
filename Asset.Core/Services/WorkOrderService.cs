@@ -14,13 +14,13 @@ namespace Asset.Core.Services
     {
         private IUnitOfWork _unitOfWork;
 
-        public WorkOrderService(IUnitOfWork unitOfWork) 
+        public WorkOrderService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
         public int AddWorkOrder(CreateWorkOrderVM createWorkOrderVM)
         {
-           return _unitOfWork.WorkOrder.Add(createWorkOrderVM);
+            return _unitOfWork.WorkOrder.Add(createWorkOrderVM);
         }
 
         public void DeleteWorkOrder(int id)
@@ -45,7 +45,7 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexWorkOrderVM> GetworkOrder(string userId)
         {
-            return _unitOfWork.WorkOrder.GetworkOrder( userId);
+            return _unitOfWork.WorkOrder.GetworkOrder(userId);
         }
 
 
@@ -55,15 +55,15 @@ namespace Asset.Core.Services
         }
 
         public IndexWorkOrderVM GetWorkOrderByRequestId(int requestId)
-        {  
-            
+        {
+
             return _unitOfWork.WorkOrder.GetWorkOrderByRequestId(requestId);
-          
+
         }
 
-        public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId,string userId)
+        public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId)
         {
-            return  _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalId(hospitalId, userId);
+            return _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalId(hospitalId, userId);
         }
 
         public GeneratedWorkOrderNumberVM GenerateWorOrderNumber()
@@ -83,7 +83,7 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId, int statusId)
         {
-            return _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalId(hospitalId, userId,statusId);
+            return _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalId(hospitalId, userId, statusId);
         }
 
         public IEnumerable<IndexWorkOrderVM> SearchWorkOrders(SearchWorkOrderVM searchObj)
@@ -92,7 +92,7 @@ namespace Asset.Core.Services
         }
         public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj, int statusId)
         {
-            return _unitOfWork.WorkOrder.SortWorkOrders(hosId, userId, sortObj,  statusId);
+            return _unitOfWork.WorkOrder.SortWorkOrders(hosId, userId, sortObj, statusId);
         }
 
         public List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId)
@@ -113,12 +113,22 @@ namespace Asset.Core.Services
         public int CreateWorkOrderAttachments(WorkOrderAttachment attachObj)
         {
             return _unitOfWork.WorkOrder.CreateWorkOrderAttachments(attachObj);
-           
+
         }
 
         public List<IndexWorkOrderVM> GetLastRequestAndWorkOrderByAssetId(int assetId, int requestId)
         {
             return _unitOfWork.WorkOrder.GetLastRequestAndWorkOrderByAssetId(assetId, requestId);
+        }
+
+        public List<IndexWorkOrderVM> GetAllWorkOrdersByHospitalIdAndPaging(int? hospitalId, string userId, int statusId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalIdAndPaging(hospitalId, userId, statusId, pageNumber, pageSize);
+        }
+
+        public int GetWorkOrdersCountByStatusIdAndPaging(int? hospitalId, string userId, int statusId)
+        {
+            return _unitOfWork.WorkOrder.GetWorkOrdersCountByStatusIdAndPaging(hospitalId, userId, statusId);
         }
     }
 }

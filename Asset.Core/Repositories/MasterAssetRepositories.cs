@@ -76,7 +76,7 @@ namespace Asset.Core.Repositories
         public List<CountMasterAssetBrands> CountMasterAssetsByBrand(int hospitalId)
         {
             List<CountMasterAssetBrands> list = new List<CountMasterAssetBrands>();
-            var lstBrands = _context.Brands.ToList().Take(5);
+            var lstBrands = _context.Brands.ToList().Take(10);
             if (hospitalId != 0)
             {
                 foreach (var item in lstBrands)
@@ -106,7 +106,7 @@ namespace Asset.Core.Repositories
         public List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier(int hospitalId)
         {
             List<CountMasterAssetSuppliers> list = new List<CountMasterAssetSuppliers>();
-            var lstSuppliers = _context.Suppliers.ToList().Take(5);
+            var lstSuppliers = _context.Suppliers.ToList().Take(10);
             if (hospitalId != 0)
             {
                 foreach (var item in lstSuppliers)
@@ -779,7 +779,7 @@ namespace Asset.Core.Repositories
             }
             else
             {
-                var lstMasters = _context.MasterAssets.Include(a => a.brand).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).Take(10).ToList();
+                var lstMasters = _context.MasterAssets.Include(a => a.brand).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
                 foreach (var item in lstMasters)
                 {
                     IndexMasterAssetVM.GetData getDataObj = new IndexMasterAssetVM.GetData();

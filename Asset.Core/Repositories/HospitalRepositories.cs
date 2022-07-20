@@ -720,7 +720,7 @@ namespace Asset.Core.Repositories
         {
             var lstHospitals = _context.Hospitals.Include(a => a.Governorate)
                .Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization)
-               .ToList().Take(10).Select(item => new IndexHospitalVM.GetData
+               .ToList().Select(item => new IndexHospitalVM.GetData
                {
                    Id = item.Id,
                    Code = item.Code,

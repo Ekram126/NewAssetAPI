@@ -276,6 +276,7 @@ namespace Asset.API.Controllers
 
 
 
+
         [HttpPost]
         [Route("GetRequestsByStatusIdAndPaging/{userId}/{statusId}/{pageNumber}/{pageSize}")]
         public List<IndexRequestVM.GetData> GetRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize)
@@ -283,8 +284,6 @@ namespace Asset.API.Controllers
             var Requests = _requestService.GetRequestsByStatusIdAndPaging(userId, statusId,pageNumber,pageSize).ToList();
             return Requests;
         }
-
-
 
         [HttpPut]
         [Route("ExportAllRequests/{userId}/{statusId}")]
@@ -295,12 +294,12 @@ namespace Asset.API.Controllers
         }
 
 
-        //[HttpGet]
-        //[Route("GetRequestsCountByStatusId/{userId}/{statusId}")]
-        //public int GetCountByStatusId(string userId, int statusId)
-        //{
-        //    return _requestService.GetAllRequestsByStatusId(userId, statusId).ToList().Count;
-        //}
+        [HttpGet]
+        [Route("GetRequestsCountByStatusIdAndPaging/{userId}/{statusId}")]
+        public int GetRequestsCountByStatusIdAndPaging(string userId, int statusId)
+        {
+            return _requestService.GetRequestsCountByStatusIdAndPaging(userId, statusId);
+        }
 
 
         [HttpGet]
@@ -320,30 +319,22 @@ namespace Asset.API.Controllers
         }
 
 
-
-
-
-        //[HttpPost]
-        //[Route("GetRequestsByPageNumber/{userId}/{assetId}/{page}/{pageSize}")]
-        //public IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserIdWithPagingAndStatusIdAndRequestId(string userId, int assetId, int page, int pageSize)
-        //{
-        //    return _requestService.GetAllRequestsByStatusId(userId, assetId,  page,  pageSize).ToList();
-
-        //}
-
-
-
-
-
-
-
-
         [HttpGet]
         [Route("GetRequestsByUserIdWithPagingAndStatusIdAndAssetIdCount")]
         public int GetAllRequestsWithTrackingByUserIdWithPagingAndStatusIdAndRequestIdCount(string userId, int assetId)
         {
             return _requestService.GetRequestsByUserIdAssetId(userId, assetId).ToList().Count;
         }
+
+        [HttpPost]
+        [Route("SortRequestsByPaging/{statusId}/{pageNumber}/{pageSize}")]
+        public async Task<List<IndexRequestsVM>> SortRequestsByPaging(SortRequestVM sortObj, int statusId, int pageNumber, int pageSize)
+        {
+            var Requests = await _requestService.SortRequestsByPaging(sortObj, statusId, pageNumber, pageSize);
+            return Requests;
+        }
+
+
 
         [HttpPost]
         [Route("SortRequests/{pagenumber}/{pagesize}/{statusId}")]

@@ -495,7 +495,7 @@ namespace Asset.API.Controllers
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list = await _AssetDetailService.SortAssets(sortObj);
+            var list = await Task.Run(() => _AssetDetailService.SortAssets(sortObj));
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list.ToList());
         }
 

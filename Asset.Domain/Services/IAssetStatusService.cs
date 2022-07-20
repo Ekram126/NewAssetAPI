@@ -18,7 +18,12 @@ namespace Asset.Domain.Services
         IEnumerable<IndexAssetStatusVM.GetData> SortAssetStatuses(SortAssetStatusVM sortObj);
  
 
-        IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId);
+        //IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId);
+
+
+        //  IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId,string userId);
+
+        IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId, int hospitalId);
 
         int Add(CreateAssetStatusVM AssetStatusVM);
         int Update(EditAssetStatusVM AssetStatusVM);

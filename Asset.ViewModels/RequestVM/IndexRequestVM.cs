@@ -13,9 +13,10 @@ namespace Asset.ViewModels.RequestVM
     {
         public List<GetData> Results { get; set; }
 
-
+        public int Count { get; set; }
         public class GetData
         {
+ //public int Count { get; set; }
             public int Id { get; set; }
             public int RequestId { get; set; }
             public string Subject { get; set; }
@@ -96,6 +97,13 @@ namespace Asset.ViewModels.RequestVM
             public string ElapsedTime { get; set; }
             public DateTime? DescriptionDate { get; set; }
             public string WOLastTrackDescription { get; set; }
+
+            public string BrandName { get; set; }
+            public string BrandNameAr { get; set; }
+
+            public string DepartmentName { get; set; }
+            public string DepartmentNameAr { get; set; }
+
             public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
             public List<IndexWorkOrderVM> ListWorkOrder { get; set; }
             public List<LstWorkOrderFromTracking> ListWorkOrderTracking { get; set; }

@@ -104,14 +104,6 @@ namespace Asset.API.Controllers
         }
 
 
-        //[HttpPut]
-        //[Route("GetAllWorkOrdersByHospitalId/{hospitalId}/{userId}/{statusId}")]
-        //public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId, PagingParameter pageInfo)
-        //{
-        //    var lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId);
-        //    return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders.ToList());
-        //}
-
 
 
         [HttpGet]
@@ -128,6 +120,24 @@ namespace Asset.API.Controllers
         {
             return _workOrderService.GetWorkOrdersByDate(woDateObj).ToList();
         }
+
+
+        [HttpPost]
+        [Route("GetAllWorkOrdersByHospitalIdAndPaging/{hospitalId}/{userId}/{statusId}/{pageNumber}/{pageSize}")]
+        public List<IndexWorkOrderVM> GetAllWorkOrdersByHospitalIdAndPaging(int hospitalId, string userId, int statusId, int pageNumber, int pageSize)
+        {
+            var workOrders = _workOrderService.GetAllWorkOrdersByHospitalIdAndPaging(hospitalId,userId, statusId, pageNumber, pageSize).ToList();
+            return workOrders;
+        }
+
+        [HttpGet]
+        [Route("GetWorkOrdersCountByStatusIdAndPaging/{hospitalId}/{userId}/{statusId}")]
+        public int GetWorkOrdersCountByStatusIdAndPaging(int hospitalId,string userId, int statusId)
+        {
+            return _workOrderService.GetWorkOrdersCountByStatusIdAndPaging(hospitalId,userId, statusId);
+        }
+
+
 
 
 

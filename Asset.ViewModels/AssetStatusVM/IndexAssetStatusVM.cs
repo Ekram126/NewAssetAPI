@@ -41,6 +41,8 @@ namespace Asset.ViewModels.AssetStatusVM
             public int? CountShutdown { get; set; }
             public int? CountExecluded { get; set; }
             public int? CountHold { get; set; }
+
+            public int? TotalCount { get; set; }
         }
     }
 }

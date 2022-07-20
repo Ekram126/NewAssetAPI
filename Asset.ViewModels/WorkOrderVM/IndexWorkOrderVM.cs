@@ -75,6 +75,13 @@ namespace Asset.ViewModels.WorkOrderVM
 
         public string ElapsedTime { get; set; }
 
+
+        public string BrandName { get; set; }
+        public string BrandNameAr { get; set; }
+
+        public string DepartmentName { get; set; }
+        public string DepartmentNameAr { get; set; }
+
         public List<LstWorkOrderFromTracking> ListTracks { get; set; }
 
     }

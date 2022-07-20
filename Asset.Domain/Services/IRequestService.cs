@@ -50,6 +50,11 @@ namespace Asset.Domain.Services
         int CreateRequestAttachments(RequestDocument attachObj);
 
 
+
+        Task<List<IndexRequestsVM>> SortRequestsByPaging(SortRequestVM sortObj, int statusId, int pageNumber, int pageSize);
         List<IndexRequestVM.GetData> GetRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize);
+        int GetRequestsCountByStatusIdAndPaging(string userId, int statusId);
+
+  
     }
 }

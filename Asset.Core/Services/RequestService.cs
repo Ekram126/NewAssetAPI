@@ -96,6 +96,14 @@ namespace Asset.Core.Services
             return await _unitOfWork.Request.SortRequests(sortObj, statusId);
         }
 
+
+        public async Task<List<IndexRequestsVM>> SortRequestsByPaging(SortRequestVM sortObj, int statusId, int pageNumber, int pageSize)
+        {
+            return await _unitOfWork.Request.SortRequestsByPaging(sortObj, statusId, pageNumber, pageSize);
+        }
+
+
+
         public int GetTotalOpenRequest(string userId)
         {
             return _unitOfWork.Request.GetTotalOpenRequest(userId);
@@ -173,7 +181,7 @@ namespace Asset.Core.Services
 
         public List<ReportRequestVM> GetRequestEstimationById(int id)
         {
-           return _unitOfWork.Request.GetRequestEstimationById(id);
+            return _unitOfWork.Request.GetRequestEstimationById(id);
         }
 
         public List<ReportRequestVM> GetRequestEstimations(SearchRequestDateVM searchRequestDateObj)
@@ -183,7 +191,7 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId, int page, int pageSize)
         {
-            return _unitOfWork.Request.GetAllRequestsByStatusId(userId, statusId,page,pageSize);
+            return _unitOfWork.Request.GetAllRequestsByStatusId(userId, statusId, page, pageSize);
         }
 
         public List<IndexRequestVM.GetData> GetRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize)
@@ -194,6 +202,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexRequestVM.GetData> ExportRequestsByStatusId(string userId, int statusId)
         {
             return _unitOfWork.Request.ExportRequestsByStatusId(userId, statusId).ToList();
+        }
+
+        public int GetRequestsCountByStatusIdAndPaging(string userId, int statusId)
+        {
+            return _unitOfWork.Request.GetRequestsCountByStatusIdAndPaging(userId, statusId);
         }
     }
 }

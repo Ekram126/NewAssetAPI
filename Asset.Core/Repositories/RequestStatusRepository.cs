@@ -99,7 +99,7 @@ namespace Asset.Core.Repositories
                   .Include(a => a.AssetDetail.Hospital.City)
                     .Include(a => a.AssetDetail.Hospital.Organization)
                       .Include(a => a.AssetDetail.Hospital.SubOrganization)
-                .Include(a => a.User).ToList();
+                .Include(a => a.User).OrderByDescending(a=>a.RequestDate.Date).ToList();
 
             //getDataObj.GovernorateId = requests[0].User.GovernorateId;
             //getDataObj.CityId = requests[0].User.CityId;
@@ -128,7 +128,6 @@ namespace Asset.Core.Repositories
             {
                 requests = requests.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
-
             if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
             {
                 if (lstRoleNames.Contains("Admin"))
@@ -155,6 +154,10 @@ namespace Asset.Core.Repositories
                 if (lstRoleNames.Contains("AssetOwner"))
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                }
+                if (lstRoleNames.Contains("EngDepManager"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
             }
             if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
@@ -184,16 +187,20 @@ namespace Asset.Core.Repositories
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-          
 
+                if (lstRoleNames.Contains("EngDepManager"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
             }
 
             if (requests.Count > 0)
             {
                 foreach (var req in requests)
                 {
-                    var trackObj = _context.RequestTracking.OrderByDescending(a => a.Id).FirstOrDefault(a => a.RequestId == req.Id);
-                   
+                   // var trackObj = _context.RequestTracking.OrderByDescending(a => a.DescriptionDate.Value.Date).FirstOrDefault(a => a.RequestId == req.Id);
+                    var trackObj = _context.RequestTracking.OrderByDescending(a => a.DescriptionDate).Where(a => a.RequestId == req.Id).FirstOrDefault();
+
 
                     if (trackObj != null)
                     {

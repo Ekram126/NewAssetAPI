@@ -106,7 +106,7 @@ namespace Asset.Core.Repositories
             if (hospitalId != 0)
             {
                 return _context.AssetDetails.Include(a=>a.MasterAsset.brand).Include(a => a.Hospital).Where(a=>a.HospitalId == hospitalId)
-                    .ToList().Take(10).GroupBy(a => a.MasterAsset.BrandId).Select(item => new IndexBrandVM.GetData
+                    .ToList().GroupBy(a => a.MasterAsset.BrandId).Select(item => new IndexBrandVM.GetData
                 {
                     Id = item.FirstOrDefault().MasterAsset.brand.Id,
                     Code = item.FirstOrDefault().MasterAsset.brand.Code,
@@ -116,7 +116,7 @@ namespace Asset.Core.Repositories
             }
             else
             {
-                return _context.Brands.Take(10).ToList().Select(item => new IndexBrandVM.GetData
+                return _context.Brands.ToList().Select(item => new IndexBrandVM.GetData
                 {
                     Id = item.Id,
                     Code = item.Code,

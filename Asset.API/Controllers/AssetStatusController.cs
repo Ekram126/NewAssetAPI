@@ -66,10 +66,10 @@ namespace Asset.API.Controllers
 
 
         [HttpPost] 
-        [Route("GetAllAssetsGroupByStatusId/{statusId}/{userId}")]
-        public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId)
+        [Route("GetAllAssetsGroupByStatusId/{statusId}/{userId}/{hospitalId}")]
+        public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId, int hospitalId)
          {
-            var lstAssetStatuses = _assetStatusService.GetAllAssetsGroupByStatusId(statusId,userId).ToList();
+            var lstAssetStatuses = _assetStatusService.GetAllAssetsGroupByStatusId(statusId,userId,hospitalId).ToList();
             return lstAssetStatuses;
         }
 
