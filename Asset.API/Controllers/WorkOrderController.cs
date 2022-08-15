@@ -174,6 +174,11 @@ namespace Asset.API.Controllers
         [Route("GetAllWorkOrdersByHospitalStatusId/{hospitalId}/{userId}/{statusId}")]
         public IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(PagingParameter pageInfo, int? hospitalId, string userId, int statusId)
         {
+
+
+            //PagingParameter pageInfo = new PagingParameter();
+            //pageInfo.PageNumber = pagenumber;
+            //pageInfo.PageSize = pagesize;
             var lstWorkOrders = _workOrderService.GetAllWorkOrdersByHospitalId(hospitalId, userId, statusId).ToList();
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstWorkOrders);
         }

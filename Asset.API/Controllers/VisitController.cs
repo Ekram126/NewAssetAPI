@@ -192,5 +192,15 @@ namespace Asset.API.Controllers
             return _visitService.GetVisitAttachmentByVisitId(visitId);
         }
 
+
+
+        [HttpGet]
+        [Route("GenerateVisitCode")]
+        public GeneratedVisitCodeVM GenerateVisitCode()
+        {
+            return _visitService.GenerateVisitCode();
+        }
+
+
     }
 }

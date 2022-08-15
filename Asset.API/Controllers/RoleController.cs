@@ -19,18 +19,18 @@ namespace Asset.API.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-      
+
         RoleManager<ApplicationRole> _applicationRole;
         private readonly ApplicationDbContext _context;
         private IPagingService _pagingService;
         private IRoleCategoryService _roleCategoryService;
 
-        public RoleController(ApplicationDbContext context,RoleManager<ApplicationRole> applicationRole, 
+        public RoleController(ApplicationDbContext context, RoleManager<ApplicationRole> applicationRole,
             IRoleCategoryService roleCategoryService, IPagingService pagingService)
         {
             _context = context;
             _applicationRole = applicationRole;
-           _roleCategoryService = roleCategoryService;
+            _roleCategoryService = roleCategoryService;
             _pagingService = pagingService;
         }
 
@@ -42,6 +42,27 @@ namespace Asset.API.Controllers
             List<IndexRoleVM.GetData> lstRoles = new List<IndexRoleVM.GetData>();
             var rlst = _context.ApplicationRole.ToList();
             var roles = _pagingService.GetAll<ApplicationRole>(pageInfo, rlst);
+            foreach (var item in roles)
+            {
+                IndexRoleVM.GetData roleObj = new IndexRoleVM.GetData();
+                roleObj.Id = item.Id;
+                roleObj.Name = item.Name;
+                roleObj.DisplayName = item.DisplayName;
+                roleObj.CategoryName = _roleCategoryService.GetById(item.RoleCategoryId).Name;
+                lstRoles.Add(roleObj);
+            }
+            return lstRoles;
+        }
+
+
+
+        [HttpGet]
+        [Route("ListRoles")]
+        public List<IndexRoleVM.GetData> ListRoles()
+        {
+            List<IndexRoleVM.GetData> lstRoles = new List<IndexRoleVM.GetData>();
+            var roles = _context.ApplicationRole.ToList();
+            //var roles = _pagingService.GetAll<ApplicationRole>(pageInfo, rlst);
             foreach (var item in roles)
             {
                 IndexRoleVM.GetData roleObj = new IndexRoleVM.GetData();
@@ -73,7 +94,7 @@ namespace Asset.API.Controllers
         [Route("GetRolesByRoleCategoryId/{catId}")]
         public async Task<List<ApplicationRole>> GetById(int catId)
         {
-            var lstRoles=   await _applicationRole.Roles.Where(a => a.RoleCategoryId == catId).ToListAsync();
+            var lstRoles = await _applicationRole.Roles.Where(a => a.RoleCategoryId == catId).ToListAsync();
             return lstRoles;
         }
 
@@ -104,12 +125,12 @@ namespace Asset.API.Controllers
 
         [HttpDelete]
         [Route("DeleteRole/{id}")]
-        public async Task< ActionResult<ApplicationRole>> Delete(string id)
+        public async Task<ActionResult<ApplicationRole>> Delete(string id)
         {
             try
             {
                 var deleteRoleObj = await _applicationRole.FindByIdAsync(id);
-              await  _applicationRole.DeleteAsync(deleteRoleObj);
+                await _applicationRole.DeleteAsync(deleteRoleObj);
             }
             catch (DbUpdateConcurrencyException ex)
             {

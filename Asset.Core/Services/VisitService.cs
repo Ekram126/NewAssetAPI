@@ -77,5 +77,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.visitRepository.UpdateVer(editVisitVM);
         }
+
+        public GeneratedVisitCodeVM GenerateVisitCode()
+        {
+            return _unitOfWork.visitRepository.GenerateVisitCode();
+        }
     }
 }

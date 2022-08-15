@@ -31,6 +31,9 @@ namespace Asset.Domain.Repositories
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetNoneExcludedAssetsByHospitalId(int hospitalId);
 
+
+
+
         IEnumerable<ViewAssetDetailVM> GetSupplierNoneExcludedAssetsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(string barcode, int hospitalId);
 
@@ -44,6 +47,14 @@ namespace Asset.Domain.Repositories
         int Delete(int id);
         List<CountAssetVM> CountAssetsByHospital();
         List<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId);
+
+
+        List<CountAssetVM> ListAssetsByGovernorateIds();
+        List<CountAssetVM> ListAssetsByCityIds();
+
+        List<CountAssetVM> CountAssetsInHospitalByHospitalId(int hospitalId);
+
+
 
         int CountAssetsByHospitalId(int hospitalId);
 
@@ -59,7 +70,9 @@ namespace Asset.Domain.Repositories
         List<GroupCityVM> GetAssetByCity(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupSupplierVM> GetAssetBySupplier(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupOrganizationVM> GetAssetByOrganization(List<IndexAssetDetailVM.GetData> AssetModel);
-        Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj);
+       // Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj);
+
+        IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj);
         List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId);
         List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge model);
         IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId);

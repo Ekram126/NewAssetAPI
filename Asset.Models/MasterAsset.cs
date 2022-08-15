@@ -93,9 +93,9 @@ namespace Asset.Models
         [StringLength(50)]
         public string AssetImg { get; set; }
 
-        public int? HospitalId { get; set; }
-        [ForeignKey("HospitalId")]
-        public virtual Hospital Hospital { get; set; }
+        //public int? HospitalId { get; set; }
+        //[ForeignKey("HospitalId")]
+        //public virtual Hospital Hospital { get; set; }
 
     }
 }

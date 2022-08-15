@@ -21,5 +21,8 @@ namespace Asset.Domain.Services
         int UpdateVer(EditVisitVM editVisitVM);
         public int CreateVisitAttachments(VisitAttachment attachObj);
         public IEnumerable<VisitAttachment> GetVisitAttachmentByVisitId(int visitId);
+
+
+        GeneratedVisitCodeVM GenerateVisitCode();
     }
 }

@@ -172,9 +172,9 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetDetailRepository.GetAssetByOrganization(AssetModel);
         }
 
-        public async Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj)
+        public  IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj)
         {
-            return await _unitOfWork.AssetDetailRepository.SortAssets(sortObj);
+            return  _unitOfWork.AssetDetailRepository.SortAssets(sortObj);
         }
 
         public List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)
@@ -241,6 +241,21 @@ namespace Asset.Core.Services
         public List<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId)
         {
             return _unitOfWork.AssetDetailRepository.ListTopAssetsByHospitalId(hospitalId);
+        }
+
+        public List<CountAssetVM> ListAssetsByGovernorateIds()
+        {
+            return _unitOfWork.AssetDetailRepository.ListAssetsByGovernorateIds();
+        }
+
+        public List<CountAssetVM> ListAssetsByCityIds()
+        {
+            return _unitOfWork.AssetDetailRepository.ListAssetsByCityIds();
+        }
+
+        public List<CountAssetVM> CountAssetsInHospitalByHospitalId(int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.CountAssetsInHospitalByHospitalId(hospitalId);
         }
     }
 }

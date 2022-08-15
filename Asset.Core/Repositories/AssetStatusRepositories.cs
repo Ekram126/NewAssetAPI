@@ -377,7 +377,7 @@ namespace Asset.Core.Repositories
                             .Include(a => a.AssetDetail)
                             .Include(a => a.AssetDetail.Hospital)
                             .Include(a => a.AssetDetail.MasterAsset)
-                            .OrderByDescending(a => a.StatusDate.Value.Date).ToList();
+                            .OrderByDescending(a => a.StatusDate).ToList();
 
 
 

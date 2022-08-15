@@ -54,7 +54,7 @@ namespace Asset.Core.Repositories
                     masterAssetObj.ElectricRequirement = model.ElectricRequirement;
                     masterAssetObj.PMTimeId = model.PMTimeId;
                     masterAssetObj.AssetImg = model.AssetImg;
-       masterAssetObj.HospitalId = model.HospitalId;
+  //     masterAssetObj.HospitalId = model.HospitalId;
 
                     _context.MasterAssets.Add(masterAssetObj);
                     _context.SaveChanges();
@@ -308,7 +308,7 @@ namespace Asset.Core.Repositories
                 masterAssetObj.ElectricRequirement = item.ElectricRequirement;
                 masterAssetObj.PMTimeId = item.PMTimeId;
                 masterAssetObj.AssetImg = item.AssetImg;
-                masterAssetObj.HospitalId = item.HospitalId;
+            //    masterAssetObj.HospitalId = item.HospitalId;
 
                 return masterAssetObj;
             }
@@ -348,7 +348,7 @@ namespace Asset.Core.Repositories
                 masterAssetObj.ElectricRequirement = model.ElectricRequirement;
                 masterAssetObj.PMTimeId = model.PMTimeId;
                 masterAssetObj.AssetImg = model.AssetImg;
-                masterAssetObj.HospitalId = model.HospitalId;
+          //      masterAssetObj.HospitalId = model.HospitalId;
 
                 _context.Entry(masterAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
@@ -388,7 +388,7 @@ namespace Asset.Core.Repositories
             //  model.PMTimeId = masterAssetObj.PMTimeId;
             model.AssetImg = masterAssetObj.AssetImg;
 
-            model.HospitalId = masterAssetObj.HospitalId;
+        //    model.HospitalId = masterAssetObj.HospitalId;
 
 
 

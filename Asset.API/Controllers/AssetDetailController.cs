@@ -149,18 +149,21 @@ namespace Asset.API.Controllers
             return _AssetDetailService.GetAllAssetDetailsByHospitalId(hospitalId);
         }
         [HttpPost]
-        [Route("GetAllAssetsByStatusId/{userId}/{statusId}")]
+        [Route("GetAllAssetsByStatusId/{statusId}/{userId}")]
         public IEnumerable<IndexAssetDetailVM.GetData> GetAllRequestsByStatusId(int statusId, string userId, PagingParameter pageInfo)
         {
             var lstAssets = _AssetDetailService.GetAllAssetsByStatusId(statusId, userId).ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, lstAssets);
         }
         [HttpPost]
-        [Route("GetAllAssetsCountByStatusId/{userId}/{statusId}")]
+        [Route("GetAllAssetsCountByStatusId/{statusId}/{userId}")]
         public int GetCountByStatusId(int statusId, string userId)
         {
             return _AssetDetailService.GetAllAssetsByStatusId(statusId, userId).ToList().Count;
         }
+
+
+
         //[HttpPost]
         //[Route("SearchAssetDetailsByHospitalId")]
         //public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetDetailsByHospitalId(SearchMasterAssetVM model)
@@ -411,6 +414,37 @@ namespace Asset.API.Controllers
 
 
 
+        [HttpGet]
+        [Route("ListAssetsByGovernorateIds")]
+        public IEnumerable<CountAssetVM> ListAssetsByGovernorateIds()
+        {
+            return _AssetDetailService.ListAssetsByGovernorateIds();
+        }
+
+        [HttpGet]
+        [Route("ListAssetsByCityIds")]
+        public IEnumerable<CountAssetVM> ListAssetsByCityIds()
+        {
+            return _AssetDetailService.ListAssetsByCityIds();
+        }
+
+
+
+
+        [HttpGet]
+        [Route("CountAssetsInHospitalByHospitalId/{hospitalId}")]
+        public IEnumerable<CountAssetVM> CountAssetsInHospitalByHospitalId(int hospitalId)
+        {
+            return _AssetDetailService.CountAssetsInHospitalByHospitalId(hospitalId);
+        }
+
+
+
+
+
+
+
+
 
         [HttpGet]
         [Route("CountAssetsByHospitalId/{hospitalId}")]
@@ -490,21 +524,23 @@ namespace Asset.API.Controllers
         }
         [HttpPost]
         [Route("SortAssets/{pagenumber}/{pagesize}")]
-        public async Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(int pagenumber, int pagesize, Sort sortObj)
+        public IEnumerable<IndexAssetDetailVM.GetData> SortAssets(int pagenumber, int pagesize, Sort sortObj)
         {
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list = await Task.Run(() => _AssetDetailService.SortAssets(sortObj));
+            var list =  _AssetDetailService.SortAssets(sortObj);
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list.ToList());
         }
 
 
         [HttpPost]
         [Route("SortAssetsCount")]
-        public async Task<int> SortAssets(Sort sortObj)
+        public int SortAssets(Sort sortObj)
         {
-            var list = await Task.Run(() => _AssetDetailService.SortAssets(sortObj));
+            var list =_AssetDetailService.SortAssets(sortObj);
+           // var list = await Task.Run(() => _AssetDetailService.SortAssets(sortObj));
+
             var count = list.Count();
             return count;
         }

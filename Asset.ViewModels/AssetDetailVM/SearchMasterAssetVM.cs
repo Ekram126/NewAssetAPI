@@ -18,6 +18,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public int? HospitalId { get; set; }
         public int? GovernorateId { get; set; }
         public int? CityId { get; set; }
+        public int? StatusId { get; set; }
         public int? OrganizationId { get; set; }
         public int? SubOrganizationId { get; set; }
         public int? AssetId { get; set; }

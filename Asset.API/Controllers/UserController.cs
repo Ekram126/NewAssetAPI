@@ -349,30 +349,8 @@ namespace Asset.API.Controllers
         public async Task<IActionResult> Update(ApplicationUser userObj)
         {
             var updateObj = await _context.ApplicationUser.FindAsync(userObj.Id);
-            updateObj.UserName = userObj.UserName;
-            updateObj.Email = userObj.Email;
-            updateObj.PhoneNumber = userObj.PhoneNumber;
-            updateObj.GovernorateId = userObj.GovernorateId;
-            updateObj.CityId = userObj.CityId;
-            updateObj.OrganizationId = userObj.OrganizationId;
-            updateObj.SubOrganizationId = userObj.SubOrganizationId;
-            updateObj.HospitalId = userObj.HospitalId;
-            updateObj.RoleCategoryId = userObj.RoleCategoryId;
-            updateObj.RoleId = userObj.RoleId;
-            //  var token = await _applicationUser.GeneratePasswordResetTokenAsync(updateObj);
-            //   var result = await _applicationUser.ResetPasswordAsync(updateObj, token, updateObj.PasswordHash);
-
-            var result = await _applicationUser.UpdateAsync(updateObj);
-
-
             if (userObj.RoleIds.Count > 0)
             {
-                //var savedRoleIds = (from userRole in _context.UserRoles
-                //                    join role in _roleManager.Roles on userRole.RoleId equals role.Id
-                //                    where userObj.Id == userRole.UserId
-                //                    select userRole).ToList().Select(a => a.RoleId).ToList();
-
-
                 var lstUserRoles = _context.UserRoles.Where(a => a.UserId == userObj.Id).ToList();
                 foreach (var roleUserObj in lstUserRoles)
                 {
@@ -384,37 +362,102 @@ namespace Asset.API.Controllers
                 foreach (var itm in userObj.RoleIds)
                 {
                     var roleName = _context.ApplicationRole.Where(a => a.Id == itm).FirstOrDefault().Name;
+                    if (roleName == "VisitEngineer")
+                    {
+                        var lstEngineers = _context.Engineers.Where(a => a.Email == updateObj.Email).ToList();
+                        if (lstEngineers.Count > 0)
+                        {
+                            updateObj.Email = userObj.Email;
+
+                            var engObj = lstEngineers[0];
+                            engObj.Email = userObj.Email;
+                            engObj.Phone = userObj.PhoneNumber;
+                            engObj.WhatsApp = userObj.PhoneNumber;
+                            _context.Entry(engObj).State = EntityState.Modified;
+                            _context.SaveChanges();
+                        }
+                    }
+                    if (roleName == "VisitEngineerManager")
+                    {
+                        var lstEngineers = _context.Engineers.Where(a => a.Email == updateObj.Email).ToList();
+                        if (lstEngineers.Count > 0)
+                        {
+                            updateObj.Email = userObj.Email;
+
+                            var engObj = lstEngineers[0];
+                            engObj.Email = userObj.Email;
+                            engObj.Phone = userObj.PhoneNumber;
+                            engObj.WhatsApp = userObj.PhoneNumber;
+                            _context.Entry(engObj).State = EntityState.Modified;
+                            _context.SaveChanges();
+                        }
+                    }
+                    if (roleName == "AssetOwner")
+                    {
+                        var lstEmployees = _context.Employees.Where(a => a.Email == updateObj.Email).ToList();
+                        if (lstEmployees.Count > 0)
+                        {
+                            updateObj.Email = userObj.Email;
+
+                            var empObj = lstEmployees[0];
+                            empObj.Email = userObj.Email;
+                            empObj.Phone = userObj.PhoneNumber;
+                            empObj.WhatsApp = userObj.PhoneNumber;
+                            _context.Entry(empObj).State = EntityState.Modified;
+                            _context.SaveChanges();
+                        }
+                    }
+
+                    if (roleName == "EngDepManager")
+                    {
+                        var lstEmployees = _context.Employees.Where(a => a.Email == updateObj.Email).ToList();
+                        if (lstEmployees.Count > 0)
+                        {
+                            updateObj.Email = userObj.Email;
+
+                            var empObj = lstEmployees[0];
+                            empObj.Email = userObj.Email;
+                            empObj.Phone = userObj.PhoneNumber;
+                            empObj.WhatsApp = userObj.PhoneNumber;
+                            _context.Entry(empObj).State = EntityState.Modified;
+                            _context.SaveChanges();
+                        }
+                    }
+                    if (roleName == "TLHospitalManager")
+                    {
+                        var lstEmployees = _context.Employees.Where(a => a.Email == updateObj.Email).ToList();
+                        if (lstEmployees.Count > 0)
+                        {
+                            updateObj.Email = userObj.Email;
+
+                            var empObj = lstEmployees[0];
+                            empObj.Email = userObj.Email;
+                            empObj.Phone = userObj.PhoneNumber;
+                            empObj.WhatsApp = userObj.PhoneNumber;
+                            _context.Entry(empObj).State = EntityState.Modified;
+                            _context.SaveChanges();
+                        }
+                    }
+                   else
+                    {
+
+                        updateObj.Email = userObj.Email;
+                        updateObj.PhoneNumber = userObj.PhoneNumber;
+                    }
                     await _applicationUser.AddToRoleAsync(updateObj, roleName);
                 }
 
-
-
-                //var savedIds = savedRoleIds.Except(userObj.RoleIds);
-
-                //if (savedIds.Count() > 0)
-                //{
-                //    foreach (var item in savedIds)
-                //    {
-                //        var row = _context.UserRoles.Where(a => a.RoleId == item && a.UserId == userObj.Id).ToList();
-                //        if (row.Count > 0)
-                //        {
-                //            var roleUserObj = row[0];
-                //            _context.UserRoles.Remove(roleUserObj);
-                //            _context.SaveChanges();
-                //        }
-                //    }
-                //}
-                //var neewIds = userObj.RoleIds.Except(savedIds);
-                //if (neewIds.Count() > 0)
-                //{
-                //    foreach (var itm in neewIds)
-                //    {
-                //        var roleName = _context.ApplicationRole.Where(a => a.Id == itm).FirstOrDefault().Name;
-                //        await _applicationUser.AddToRoleAsync(updateObj, roleName);
-                //    }
-                //}
-
             }
+            updateObj.UserName = userObj.UserName;
+            updateObj.GovernorateId = userObj.GovernorateId;
+            updateObj.CityId = userObj.CityId;
+            updateObj.OrganizationId = userObj.OrganizationId;
+            updateObj.SubOrganizationId = userObj.SubOrganizationId;
+            updateObj.HospitalId = userObj.HospitalId;
+            updateObj.RoleCategoryId = userObj.RoleCategoryId;
+            updateObj.RoleId = userObj.RoleId;
+
+            var result = await _applicationUser.UpdateAsync(updateObj);
             return Ok(new Response { Status = "Success", Message = "User updated successfully!" });
 
             //await _applicationUser.UpdateAsync(updateObj);

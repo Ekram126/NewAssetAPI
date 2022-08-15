@@ -44,6 +44,12 @@ namespace Asset.Domain.Services
         IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId);
         List<CountAssetVM> CountAssetsByHospital();
         List<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId);
+
+        List<CountAssetVM> ListAssetsByGovernorateIds();
+        List<CountAssetVM> ListAssetsByCityIds();
+
+        List<CountAssetVM> CountAssetsInHospitalByHospitalId(int hospitalId);
+
         int CountAssetsByHospitalId(int hospitalId);
         List<PmDateGroupVM> GetAllwithgrouping(int? masterId);
         List<IndexAssetDetailVM.GetData> FilterAsset(filterDto data);
@@ -53,7 +59,9 @@ namespace Asset.Domain.Services
         List<GroupCityVM> GetAssetByCity(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupSupplierVM> GetAssetBySupplier(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupOrganizationVM> GetAssetByOrganization(List<IndexAssetDetailVM.GetData> AssetModel);
-        Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj);
+       // Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj);
+        IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj);
+
         List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId);
         List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge model);
         IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId);

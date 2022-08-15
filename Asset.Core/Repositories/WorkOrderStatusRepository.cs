@@ -97,7 +97,7 @@ namespace Asset.Core.Repositories
                 }
 
 
-                var statusIds = new List<int>(new int[] { 6,7, 8, 10 });
+                var statusIds = new List<int>(new int[] { 6, 7, 8, 10 });
                 var lstStatus = _context.WorkOrderStatuses.Where(a => !statusIds.Any(x => x == a.Id)).ToList();
                 itemObj.ListStatus = lstStatus;
                 var workorders = _context.WorkOrders
@@ -143,6 +143,10 @@ namespace Asset.Core.Repositories
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
+                    if (lstRoleNames.Contains("EngDepManager"))
+                    {
+                        workorders = workorders.Where(t => t.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
                     if (lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
@@ -183,6 +187,10 @@ namespace Asset.Core.Repositories
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
+                    if (lstRoleNames.Contains("EngDepManager"))
+                    {
+                        workorders = workorders.Where(t => t.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
                     if (lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
@@ -190,6 +198,10 @@ namespace Asset.Core.Repositories
                     if (lstRoleNames.Contains("AssetOwner"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    }
+                    if (lstRoleNames.Contains("EngDepManager"))
+                    {
+                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
                     if (lstRoleNames.Contains("Eng") && !lstRoleNames.Contains("EngDepManager"))
                     {
@@ -208,11 +220,10 @@ namespace Asset.Core.Repositories
 
                     foreach (var wo in workorders)
                     {
-                        var trackObj = _context.WorkOrderTrackings.OrderByDescending(a => a.Id).FirstOrDefault(a => a.WorkOrderId == wo.Id);
+                        var trackObj = _context.WorkOrderTrackings.OrderByDescending(a => a.CreationDate).Where(a => a.WorkOrderId == wo.Id).FirstOrDefault();
                         if (trackObj != null)
                         {
                             WorkOrderTracking trk = trackObj;
-
                             if (trk.WorkOrderStatusId == 1)
                             {
                                 lstAssignedTracks.Add(trk);
@@ -262,7 +273,6 @@ namespace Asset.Core.Repositories
                                 lstCloseTracks.Add(trk);
                             }
                         }
-
                     }
                 }
 
@@ -278,6 +288,10 @@ namespace Asset.Core.Repositories
                 itemObj.CountSparePart = lstSparePartTracks.Count;
                 itemObj.CountTechApprove = lstTechApproveTracks.Count;
                 itemObj.CountUserApprove = lstUserApproveTracks.Count;
+
+
+
+
                 itemObj.CountAll = (lstAssignedTracks.Count + lstCloseTracks.Count + lstInProgressTracks.Count + lstDoneTracks.Count +
                     lstEscalateTracks.Count + lstExternalSupportTracks.Count + lstPendingTracks.Count + lstReAssignedTracks.Count + lstReviewTracks.Count + lstSparePartTracks.Count + lstTechApproveTracks.Count + lstUserApproveTracks.Count);
             }
@@ -288,7 +302,7 @@ namespace Asset.Core.Repositories
         {
 
 
-            var statusIds = new List<int>(new int[] { 6, 7,8, 10 });
+            var statusIds = new List<int>(new int[] { 6, 7, 8, 10 });
 
 
             return _context.WorkOrderStatuses.Where(a => !statusIds.Any(x => x == a.Id)).Select(item => new IndexWorkOrderStatusVM

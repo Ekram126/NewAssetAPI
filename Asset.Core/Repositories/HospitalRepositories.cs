@@ -317,40 +317,47 @@ namespace Asset.Core.Repositories
 
         public DetailHospitalVM GetHospitalDetailById(int id)
         {
-            var HospitalObj = _context.Hospitals.Include(a => a.Governorate).Include(a => a.City).Include(a => a.Organization).Include(a => a.SubOrganization).Where(a => a.Id == id).Select(item => new DetailHospitalVM
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                NameAr = item.NameAr,
-                Address = item.Address,
-                AddressAr = item.AddressAr,
-                Email = item.Email,
-                Mobile = item.Mobile,
-                Latitude = decimal.Parse(item.Latitude.ToString()),
-                Longtitude = decimal.Parse(item.Longtitude.ToString()),
-                ManagerName = item.ManagerName,
-                ManagerNameAr = item.ManagerNameAr,
+            var HospitalObj = _context.Hospitals
+                                .Include(a => a.Governorate)
+                                .Include(a => a.City)
+                                .Include(a => a.Organization)
+                                .Include(a => a.SubOrganization)
+                                .Where(a => a.Id == id).Select(item => new DetailHospitalVM
+                            {
+                                Id = item.Id,
+                                Code = item.Code,
+                                Name = item.Name,
+                                NameAr = item.NameAr,
+                                Address = item.Address,
+                                AddressAr = item.AddressAr,
+                                Email = item.Email,
+                                Mobile = item.Mobile,
+                                Latitude = item.Latitude != null ? decimal.Parse(item.Latitude.ToString()):0,
+                                Longtitude = item.Longtitude != null ? decimal.Parse(item.Longtitude.ToString()):0,
+                                ManagerName = item.ManagerName,
+                                ManagerNameAr = item.ManagerNameAr,
 
 
-                Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList(),
-                EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
-                {
-                    DepartmentId = item.DepartmentId,
-                    IsActive = item.IsActive
-                }).ToList(),
+                                Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList().Count>0? _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList(): null,
+             
+                
+                                EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
+                                {
+                                    DepartmentId = item.DepartmentId,
+                                    IsActive = item.IsActive
+                                }).ToList(),
 
 
-                GovernorateName = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.Name : "",
-                GovernorateNameAr = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.NameAr : "",
-                CityName = (item.CityId != null || item.CityId != 0) ? item.City.Name : "",
-                CityNameAr = (item.CityId != null || item.CityId != 0) ? item.City.NameAr : "",
-                SubOrganizationName = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.Name : "",
-                SubOrganizationNameAr = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.NameAr : "",
-                OrganizationName = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.Name : "",
-                OrganizationNameAr = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.NameAr : ""
+                                GovernorateName = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.Name : "",
+                                GovernorateNameAr = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.NameAr : "",
+                                CityName = (item.CityId != null || item.CityId != 0) ? item.City.Name : "",
+                                CityNameAr = (item.CityId != null || item.CityId != 0) ? item.City.NameAr : "",
+                                SubOrganizationName = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.Name : "",
+                                SubOrganizationNameAr = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.NameAr : "",
+                                OrganizationName = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.Name : "",
+                                OrganizationNameAr = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.NameAr : ""
 
-            }).First();
+                            }).First();
 
             return HospitalObj;
         }

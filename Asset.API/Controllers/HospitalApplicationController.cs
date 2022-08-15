@@ -410,19 +410,19 @@ namespace Asset.API.Controllers
             //phone
 
 
-            //var SMSobj = new SendSMS();
-            //SMSobj.Language = 1;
-            //SMSobj.Mobile = phone;// "01021162629";
-            //SMSobj.Message = $"This Asset {masterObj.NameAr} with barcode:{assetObj.Barcode} requested to be {exchold}";
-            //var json = JsonConvert.SerializeObject(SMSobj);
-            //var data = new StringContent(json, Encoding.UTF8, "application/json");
+            var SMSobj = new SendSMS();
+            SMSobj.Language = 1;
+            SMSobj.Mobile = phone;// "01021162629";
+            SMSobj.Message = $"This Asset {masterObj.NameAr} with barcode:{assetObj.Barcode} requested to be {exchold}";
+            var json = JsonConvert.SerializeObject(SMSobj);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            //var UrlSMS = "https://smsmisr.com/api/v2";
-            //using var client = new HttpClient();
-            //var response = await client.PostAsync(UrlSMS, data);
-            //string resultS = response.Content.ReadAsStringAsync().Result;
-            //Console.WriteLine(resultS);
-           
+            var UrlSMS = "https://smsmisr.com/api/v2";
+            using var client = new HttpClient();
+            var response = await client.PostAsync(UrlSMS, data);
+            string resultS = response.Content.ReadAsStringAsync().Result;
+            Console.WriteLine(resultS);
+
 
 
             return 1;

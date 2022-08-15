@@ -370,6 +370,25 @@ namespace Asset.Core.Repositories
             var lstAttachments = _context.VisitAttachments.Where(a => a.VisitId == visitId).ToList();
             return lstAttachments;
         }
+
+        public GeneratedVisitCodeVM GenerateVisitCode()
+        {
+            GeneratedVisitCodeVM numberObj = new GeneratedVisitCodeVM();
+            string WO = "VS";
+
+            var lstIds = _context.Visits.ToList();
+            if (lstIds.Count > 0)
+            {
+                var code = lstIds.LastOrDefault().Id;
+                numberObj.VisitCode = WO + (code + 1);
+            }
+            else
+            {
+                numberObj.VisitCode = WO + 1;
+            }
+
+            return numberObj;
+        }
     }
 }
 
