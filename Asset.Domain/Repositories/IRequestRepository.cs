@@ -15,6 +15,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsWithTrackingByUserId(string userId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId);
 
+        IEnumerable<IndexRequestVM.GetData> ExportRequestByStatusId(int? hospitalId, string userId, int statusId);
+
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId, int page, int pageSize);
         IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId, int assetId);
         IEnumerable<IndexRequestVM.GetData> ExportRequestsByStatusId(string userId, int statusId);
@@ -45,15 +47,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
         int CountRequestsByHospitalId(int hospitalId, string userId);
         int CreateRequestAttachments(RequestDocument attachObj);
-
-
-
         Task<List<IndexRequestsVM>> SortRequestsByPaging(SortRequestVM sortObj, int statusId, int pageNumber, int pageSize);
-
-
         List<IndexRequestVM.GetData> GetRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize);
         int GetRequestsCountByStatusIdAndPaging(string userId, int statusId);
-
-
     }
 }

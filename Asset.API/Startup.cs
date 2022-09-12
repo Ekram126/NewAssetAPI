@@ -164,10 +164,24 @@ namespace Asset.API
                 };
             });
 
+            //services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
+            //{
+            //    opt.Password.RequiredLength = 6;
+            //    opt.Password.RequireDigit = true;
+            //    opt.Password.RequireUppercase = false;
+            //    opt.Password.RequireNonAlphanumeric = true;
+
+            //  //  opt.User.RequireUniqueEmail = true;
+            //})
+            // .AddEntityFrameworkStores<ApplicationDbContext>()
+            // .AddDefaultTokenProviders();
+
+
+
 
             services.AddCors();
 
-        }
+                    }
 
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

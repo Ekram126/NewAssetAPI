@@ -13,6 +13,8 @@ namespace Asset.ViewModels.WorkOrderVM
         public string Subject { get; set; }
         public string MasterAssetCode { get; set; }
         public string AssetCode { get; set; }
+        public string BrandName { get; set; }
+        public string BrandNameAr { get; set; }
         public string ModelNumber { get; set; }
         public string WorkOrderNumber { get; set; }
         public DateTime? CreationDate { get; set; }
@@ -55,6 +57,10 @@ namespace Asset.ViewModels.WorkOrderVM
         public int? OrganizationId { get; set; }
         public int? SubOrganizationId { get; set; }
         public string RoleId { get; set; }
+
+
+        public string FirstRequest { get; set; }
+        public string LastWorkOrder { get; set; }
 
 
         public List<LstWorkOrderFromTracking> LstWorkOrderTracking{ get; set; }

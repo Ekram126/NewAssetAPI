@@ -15,6 +15,7 @@ namespace Asset.Domain.Services
         List<IndexWorkOrderVM> GetAllWorkOrdersByHospitalIdAndPaging(int? hospitalId, string userId, int statusId, int pageNumber, int pageSize);
         int GetWorkOrdersCountByStatusIdAndPaging(int? hospitalId, string userId, int statusId);
 
+        IEnumerable<IndexWorkOrderVM> ExportWorkOrdersByStatusId(int? hospitalId, string userId, int statusId);
         IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId, int statusId);
         IEnumerable<IndexWorkOrderVM> GetworkOrderByUserId(int requestId, string userId);
         IEnumerable<IndexWorkOrderVM> GetworkOrder(string userId);

@@ -202,10 +202,13 @@ namespace Asset.API.Controllers
              };
 
             var callback = QueryHelpers.AddQueryString(forgotPasswordModel.ClientURI, param);
-
             var hash = callback.Split("#");
             var query = hash[0];
-            replace = query.Replace("/?", "/#/ResetPassword?");
+           replace = query.Replace("/?", "/#/reset?");
+
+
+           // replace = query.Replace("ResetPassword?", "#/ResetPassword?");
+
 
             StringBuilder strBuild = new StringBuilder();
             strBuild.Append("Dear " + user.UserName + ":");
@@ -213,7 +216,7 @@ namespace Asset.API.Controllers
             strBuild.Append("من فضلك اضغط على الرابط التالي لتغيير كلمة المرور");
             strBuild.Append("<br />");
             strBuild.Append("<a href='" + replace + "'>اضغط هنا</a>");
-      
+
 
             string from = "almostakbaltechnology.dev@gmail.com";
             string subject = "Al-Mostakbal Technology";
@@ -239,6 +242,8 @@ namespace Asset.API.Controllers
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordVM resetPasswordDto)
         {
+            List<string> lstErrors = new List<string>();
+            string errormessage = "";
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -246,12 +251,26 @@ namespace Asset.API.Controllers
             if (user == null)
                 return BadRequest("Invalid Request");
 
-            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, code, resetPasswordDto.Password);
             if (!resetPassResult.Succeeded)
             {
                 var errors = resetPassResult.Errors.Select(e => e.Description);
 
-                return BadRequest(new { Errors = errors });
+                foreach (var error in errors)
+                {
+                    lstErrors.Add(error);
+             
+                }
+             //   errormessage = String.Join(",", $"\n\n{lstErrors}\n\n");
+
+              //  errormessage = string.Join($",\n\n", lstErrors);
+                errormessage = string.Join("<br />", lstErrors);
+
+
+                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = errormessage, MessageAr = errormessage });
+
+          //      return BadRequest(new { Errors = errors });
             }
 
             return Ok();

@@ -59,5 +59,7 @@ namespace Asset.ViewModels.WorkOrderTrackingVM
         public string RoleName { get; set; }
         public string RoleId { get; set; }
 
+        public string ClosedDate { get; set; }
+
     }
 }

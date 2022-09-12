@@ -130,5 +130,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WorkOrder.GetWorkOrdersCountByStatusIdAndPaging(hospitalId, userId, statusId);
         }
+
+        public IEnumerable<IndexWorkOrderVM> ExportWorkOrdersByStatusId(int? hospitalId, string userId, int statusId)
+        {
+            return _unitOfWork.WorkOrder.ExportWorkOrdersByStatusId(hospitalId, userId, statusId);
+        }
     }
 }

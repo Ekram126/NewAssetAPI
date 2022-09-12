@@ -803,6 +803,81 @@ namespace Asset.Core.Repositories
                 }
 
 
+
+
+                if (model.MasterAssetId > 0 && model.InstallationDate != null)
+                {
+                    var dates = new List<DateTime>();
+                    var masterObj = _context.MasterAssets.Find(model.MasterAssetId);
+
+                
+                    var pmtimeId = masterObj.PMTimeId;
+                    if (pmtimeId == 1)
+                    {
+                        var pmdate = DateTime.Parse(model.InstallationDate).AddYears(1);
+                        if (pmdate.DayOfWeek == DayOfWeek.Friday)
+                        {
+                            pmdate = pmdate.AddDays(-1);
+                        }
+                        if (pmdate.DayOfWeek == DayOfWeek.Saturday)
+                        {
+                            pmdate = pmdate.AddDays(1);
+                        }
+
+                    }
+                    if (pmtimeId == 2)
+                    {
+
+                        for (var dt = DateTime.Parse(model.InstallationDate).AddDays(1); dt <= DateTime.Parse(model.InstallationDate).AddYears(1); dt = dt.AddMonths(6))
+                        {
+                            if (dt.DayOfWeek == DayOfWeek.Friday)
+                            {
+                                dt = dt.AddDays(-1);
+                            }
+                            if (dt.DayOfWeek == DayOfWeek.Saturday)
+                            {
+                                dt = dt.AddDays(1);
+                            }
+
+                            dates.Add(dt);
+                        }
+
+                    }
+                    if (pmtimeId == 3)
+                    {
+                        for (var dt = DateTime.Parse(model.InstallationDate).AddDays(1); dt <= DateTime.Parse(model.InstallationDate).AddYears(1); dt = dt.AddMonths(3))
+                        {
+                            if (dt.DayOfWeek == DayOfWeek.Friday)
+                            {
+                                dt = dt.AddDays(-1);
+                            }
+                            if (dt.DayOfWeek == DayOfWeek.Saturday)
+                            {
+                                dt = dt.AddDays(1);
+                            }
+
+                            dates.Add(dt);
+                        }
+                    }
+
+                    if (dates.Count > 0)
+                    {
+                        //   var lstSavedDates = _context.PMAssetTimes.ToList().Where(a=>a.Id == model.Id)
+
+                        foreach (var item in dates)
+                        {
+                            PMAssetTime assetTimeObj = new PMAssetTime();
+                            assetTimeObj.PMDate = item;
+                            assetTimeObj.AssetDetailId = model.Id;
+                            assetTimeObj.HospitalId = model.HospitalId;
+                            _context.PMAssetTimes.Add(assetTimeObj);
+                            _context.SaveChanges();
+                        }
+                    }
+
+                }
+
+
                 return assetDetailObj.Id;
             }
             catch (Exception ex)
@@ -8815,7 +8890,7 @@ namespace Asset.Core.Repositories
                         CountMasterId = group.Count(),
                         Name = group.FirstOrDefault().MasterAsset.Name,
                         NameAr = group.FirstOrDefault().MasterAsset.NameAr,
-                        AssetPrice = group.Sum(a => Convert.ToDecimal(group.FirstOrDefault().Price.ToString()))
+                        AssetPrice = group.FirstOrDefault().Price != null ? group.Sum(a => Convert.ToDecimal(group.FirstOrDefault().Price.ToString())) : 0
                     }).OrderByDescending(x => x.CountMasterId).ToList().Take(10).ToList();
 
                     if(lstGroupMaster.Count> 0)
@@ -8902,7 +8977,7 @@ namespace Asset.Core.Repositories
                         CountMasterId = group.Count(),
                         Name = group.FirstOrDefault().MasterAsset.Name,
                         NameAr = group.FirstOrDefault().MasterAsset.NameAr,
-                        AssetPrice = group.Sum(a => Convert.ToDecimal(group.FirstOrDefault().Price.ToString()))
+                        AssetPrice = group.FirstOrDefault().Price != null ? group.Sum(a => Convert.ToDecimal(group.FirstOrDefault().Price.ToString())) : 0
                     }).OrderByDescending(x => x.CountMasterId).ToList();
 
                     if (lstGroupMaster.Count > 0)

@@ -42,7 +42,7 @@ namespace Asset.API.Controllers
             return _requestDocumentService.GetRequestDocumentsByRequestTrackingId(RequestTrackingId);
         }
 
-     [Route("GetLastDocumentForRequestTrackingId/{RequestTrackingId}")]
+        [Route("GetLastDocumentForRequestTrackingId/{RequestTrackingId}")]
         public RequestDocument GetLastDocumentForRequestTrackingId(int RequestTrackingId)
         {
             return _requestDocumentService.GetLastDocumentForRequestTrackingId(RequestTrackingId);
@@ -51,8 +51,8 @@ namespace Asset.API.Controllers
 
 
         // POST api/<RequestDocumentController>
-        [HttpPost] 
-      //  [Route("AddRequestDocuments")]
+        [HttpPost]
+        //  [Route("AddRequestDocuments")]
         public void Post(List<CreateRequestDocument> requestDocuments)
         {
             _requestDocumentService.AddRequestDocument(requestDocuments);
@@ -71,6 +71,19 @@ namespace Asset.API.Controllers
             _requestDocumentService.DeleteRequestDocument(id);
             return Ok();
         }
+
+
+        [HttpDelete]
+        [Route("DeleteRequestDocument/{id}")]
+        public ActionResult DeleteRequestDocument(int id)
+        {
+            _requestDocumentService.DeleteRequestDocument(id);
+            return Ok();
+        }
+
+
+
+
         [HttpPost, DisableRequestSizeLimit]
         [Route("uploadimage")]
         public IActionResult Upload()

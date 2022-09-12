@@ -4,6 +4,7 @@ using Asset.ViewModels.RequestDocumentVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace Asset.Core.Repositories
                     foreach (var item in requestDocuments)
                     {
                         RequestDocument requestDocument = new RequestDocument();
-                       // requestDocument.Id = item.Id;
+                        // requestDocument.Id = item.Id;
                         requestDocument.FileName = item.FileName;
                         requestDocument.DocumentName = item.DocumentName;
                         requestDocument.RequestTrackingId = item.RequestTrackingId;
@@ -45,11 +46,19 @@ namespace Asset.Core.Repositories
 
         public void DeleteRequestDocument(int id)
         {
-            RequestDocument requestDocument=_context.RequestDocument.Find(id);
+            RequestDocument requestDocument = _context.RequestDocument.Find(id);
             try
             {
                 if (requestDocument != null)
                 {
+                    var folderName = Path.Combine("UploadedAttachments", "RequestDocuments");
+                    var folderPathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                    var filePath = folderPathToSave + "/" + requestDocument.FileName;
+                    FileInfo file = new FileInfo(filePath);
+                    if (file.Exists)
+                    {
+                        file.Delete();
+                    }
                     _context.RequestDocument.Remove(requestDocument);
                     _context.SaveChanges();
                 }
@@ -62,7 +71,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexRequestDocument> GetAll()
         {
-            return _context.RequestDocument.Include(r=>r.RequestTracking.Request).Select(req => new IndexRequestDocument
+            return _context.RequestDocument.Include(r => r.RequestTracking.Request).Select(req => new IndexRequestDocument
             {
                 Id = req.Id,
                 FileName = req.FileName,
@@ -74,7 +83,7 @@ namespace Asset.Core.Repositories
 
         public IndexRequestDocument GetById(int id)
         {
-            return _context.RequestDocument.Where(r=>r.Id==id).Include(r => r.RequestTracking.Request).Select(req => new IndexRequestDocument
+            return _context.RequestDocument.Where(r => r.Id == id).Include(r => r.RequestTracking.Request).Select(req => new IndexRequestDocument
             {
                 Id = req.Id,
                 FileName = req.FileName,
@@ -88,7 +97,7 @@ namespace Asset.Core.Repositories
         {
             RequestDocument documentObj = new RequestDocument();
             var lstDocuments = _context.RequestDocument.Where(a => a.RequestTrackingId == RequestTrackingId).ToList();
-            if(lstDocuments.Count >0)
+            if (lstDocuments.Count > 0)
             {
                 documentObj = lstDocuments.Last();
             }
@@ -97,7 +106,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexRequestDocument> GetRequestDocumentsByRequestTrackingId(int RequestTrackingId)
         {
-            return _context.RequestDocument.Include(r => r.RequestTracking.Request).Where(req=>req.RequestTrackingId== RequestTrackingId).OrderBy(a=>a.FileName).Select(req => new IndexRequestDocument
+            return _context.RequestDocument.Include(r => r.RequestTracking.Request).Where(req => req.RequestTrackingId == RequestTrackingId).OrderBy(a => a.FileName).Select(req => new IndexRequestDocument
             {
                 Id = req.Id,
                 FileName = req.FileName,

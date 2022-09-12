@@ -21,7 +21,7 @@ namespace Asset.Domain.Repositories
 
 
 
-
+        IEnumerable<IndexWorkOrderVM> ExportWorkOrdersByStatusId(int? hospitalId, string userId, int statusId);
         IEnumerable<IndexWorkOrderVM> GetAllWorkOrdersByHospitalId(int? hospitalId, string userId,int statusId);
         IEnumerable<IndexWorkOrderVM> GetworkOrderByUserId(int requestId, string userId);
         IEnumerable<IndexWorkOrderVM> GetworkOrder(string userId);

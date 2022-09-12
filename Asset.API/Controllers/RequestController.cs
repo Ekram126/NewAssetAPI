@@ -69,11 +69,25 @@ namespace Asset.API.Controllers
         }
 
         [HttpGet]
+        [Route("ExportRequestsByStatusId/{hospitalId}/{userId}/{statusId}")]
+        public IEnumerable<IndexRequestVM.GetData> ExportRequestByStatusId(int hospitalId, string userId,int statusId)
+        {
+            return _requestService.ExportRequestByStatusId(hospitalId, userId,statusId);
+        }
+
+
+
+
+
+
+
+        [HttpGet]
         [Route("CountRequestsByHospitalId/{hospitalId}/{userId}")]
         public int CountRequestsByHospitalId(int hospitalId, string userId)
         {
             return _requestService.CountRequestsByHospitalId(hospitalId, userId);
         }
+
 
 
 

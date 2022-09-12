@@ -121,6 +121,13 @@ namespace Asset.API.Controllers
             return _workOrderService.GetWorkOrdersByDate(woDateObj).ToList();
         }
 
+        [HttpGet]
+        [Route("ExportWorkOrdersByStatusId/{hospitalId}/{userId}/{statusId}")]
+        public List<IndexWorkOrderVM> ExportWorkOrdersByStatusId(int hospitalId, string userId, int statusId)
+        {
+            var workOrders = _workOrderService.ExportWorkOrdersByStatusId(hospitalId,userId, statusId).ToList();
+            return workOrders;
+        }
 
         [HttpPost]
         [Route("GetAllWorkOrdersByHospitalIdAndPaging/{hospitalId}/{userId}/{statusId}/{pageNumber}/{pageSize}")]

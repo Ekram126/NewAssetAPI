@@ -39,8 +39,8 @@ namespace Asset.Core.Repositories
                 hospitalObj.AddressAr = item.AddressAr;
                 hospitalObj.Email = item.Email;
                 hospitalObj.Mobile = item.Mobile;
-                hospitalObj.Latitude = item.Latitude != null? decimal.Parse(item.Latitude.ToString()):0;
-                hospitalObj.Longtitude = item.Longtitude != null ? decimal.Parse(item.Longtitude.ToString()):0;
+                hospitalObj.Latitude = item.Latitude != null ? decimal.Parse(item.Latitude.ToString()) : 0;
+                hospitalObj.Longtitude = item.Longtitude != null ? decimal.Parse(item.Longtitude.ToString()) : 0;
                 hospitalObj.ManagerName = item.ManagerName;
                 hospitalObj.ManagerNameAr = item.ManagerNameAr;
                 hospitalObj.GovernorateId = item.GovernorateId != null ? item.GovernorateId : 0;
@@ -254,59 +254,43 @@ namespace Asset.Core.Repositories
                          SubOrganizationId = item.SubOrganization != null ? item.SubOrganization.Id : 0,
                          SubOrgName = (item.SubOrganization != null) ? item.SubOrganization.Name : "",
                          SubOrgNameAr = (item.SubOrganization != null) ? item.SubOrganization.NameAr : ""
-
-
                      }).ToList();
 
                 if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
                 {
                     lstHospitals = lstHospitals.ToList();
                 }
-
-
                 if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.HospitalId == 0)
                 {
                     lstHospitals = lstHospitals.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
                 }
-
                 if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.HospitalId == 0)
                 {
                     lstHospitals = lstHospitals.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
                 }
                 if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.HospitalId > 0)
                 {
-
                     lstHospitals = lstHospitals.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId && a.Id == userObj.HospitalId).ToList();
                 }
-
-
-
                 if (userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0)
                 {
                     lstHospitals = lstHospitals.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
                 }
-
-
-
                 if (userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
                 {
-
                     lstHospitals = lstHospitals.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
                 }
                 if (userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
                 {
-
                     lstHospitals = lstHospitals.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.Id == userObj.HospitalId).ToList();
-
                 }
-
             }
             return lstHospitals;
         }
 
         public IEnumerable<Hospital> GetHospitalsByCityId(int cityId)
         {
-            return _context.Hospitals.ToList().Where(a => a.CityId == cityId).OrderBy(a=>a.Id).ToList();
+            return _context.Hospitals.ToList().Where(a => a.CityId == cityId).OrderBy(a => a.Id).ToList();
 
         }
 
@@ -323,41 +307,41 @@ namespace Asset.Core.Repositories
                                 .Include(a => a.Organization)
                                 .Include(a => a.SubOrganization)
                                 .Where(a => a.Id == id).Select(item => new DetailHospitalVM
-                            {
-                                Id = item.Id,
-                                Code = item.Code,
-                                Name = item.Name,
-                                NameAr = item.NameAr,
-                                Address = item.Address,
-                                AddressAr = item.AddressAr,
-                                Email = item.Email,
-                                Mobile = item.Mobile,
-                                Latitude = item.Latitude != null ? decimal.Parse(item.Latitude.ToString()):0,
-                                Longtitude = item.Longtitude != null ? decimal.Parse(item.Longtitude.ToString()):0,
-                                ManagerName = item.ManagerName,
-                                ManagerNameAr = item.ManagerNameAr,
-
-
-                                Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList().Count>0? _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList(): null,
-             
-                
-                                EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
                                 {
-                                    DepartmentId = item.DepartmentId,
-                                    IsActive = item.IsActive
-                                }).ToList(),
+                                    Id = item.Id,
+                                    Code = item.Code,
+                                    Name = item.Name,
+                                    NameAr = item.NameAr,
+                                    Address = item.Address,
+                                    AddressAr = item.AddressAr,
+                                    Email = item.Email,
+                                    Mobile = item.Mobile,
+                                    Latitude = item.Latitude != null ? decimal.Parse(item.Latitude.ToString()) : 0,
+                                    Longtitude = item.Longtitude != null ? decimal.Parse(item.Longtitude.ToString()) : 0,
+                                    ManagerName = item.ManagerName,
+                                    ManagerNameAr = item.ManagerNameAr,
 
 
-                                GovernorateName = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.Name : "",
-                                GovernorateNameAr = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.NameAr : "",
-                                CityName = (item.CityId != null || item.CityId != 0) ? item.City.Name : "",
-                                CityNameAr = (item.CityId != null || item.CityId != 0) ? item.City.NameAr : "",
-                                SubOrganizationName = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.Name : "",
-                                SubOrganizationNameAr = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.NameAr : "",
-                                OrganizationName = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.Name : "",
-                                OrganizationNameAr = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.NameAr : ""
+                                    Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList().Count > 0 ? _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList() : null,
 
-                            }).First();
+
+                                    EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
+                                    {
+                                        DepartmentId = item.DepartmentId,
+                                        IsActive = item.IsActive
+                                    }).ToList(),
+
+
+                                    GovernorateName = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.Name : "",
+                                    GovernorateNameAr = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.NameAr : "",
+                                    CityName = (item.CityId != null || item.CityId != 0) ? item.City.Name : "",
+                                    CityNameAr = (item.CityId != null || item.CityId != 0) ? item.City.NameAr : "",
+                                    SubOrganizationName = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.Name : "",
+                                    SubOrganizationNameAr = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.NameAr : "",
+                                    OrganizationName = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.Name : "",
+                                    OrganizationNameAr = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.NameAr : ""
+
+                                }).First();
 
             return HospitalObj;
         }

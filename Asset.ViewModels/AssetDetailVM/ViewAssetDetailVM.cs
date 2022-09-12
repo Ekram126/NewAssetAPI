@@ -5,15 +5,10 @@ namespace Asset.ViewModels.AssetDetailVM
     public class ViewAssetDetailVM
     {
         public int Id { get; set; }
-
         public int MasterAssetId { get; set; }
         public string AssetName { get; set; }
         public string AssetNameAr { get; set; }
-
-
         public string Code { get; set; }
-
-
         public string MasterCode { get; set; }
         public string PurchaseDate { get; set; }
 

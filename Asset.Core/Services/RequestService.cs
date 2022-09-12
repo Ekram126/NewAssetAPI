@@ -208,5 +208,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.GetRequestsCountByStatusIdAndPaging(userId, statusId);
         }
+
+        public IEnumerable<IndexRequestVM.GetData> ExportRequestByStatusId(int? hospitalId, string userId, int statusId)
+        {
+            return _unitOfWork.Request.ExportRequestByStatusId(hospitalId,  userId,  statusId);
+        }
     }
 }

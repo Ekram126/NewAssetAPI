@@ -159,10 +159,13 @@ namespace Asset.API.Controllers
             try
             {
                 int id = MasterAssetVM.Id;
-                var lstCode = _MasterAssetService.GetAllMasterAssets().Where(a => a.Code == MasterAssetVM.Code && a.Id != id).ToList();
-                if (lstCode.Count > 0)
+                if (MasterAssetVM.Code != null)
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "MasterAsset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
+                    var lstCode = _MasterAssetService.GetAllMasterAssets().Where(a => a.Code == MasterAssetVM.Code && a.Id != id).ToList();
+                    if (lstCode.Count > 0)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "MasterAsset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
+                    }
                 }
                 var lstNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Name == MasterAssetVM.Name && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber && a.Id != id).ToList();
                 if (lstNames.Count > 0)
@@ -264,11 +267,32 @@ namespace Asset.API.Controllers
         [Obsolete]
         public ActionResult UploadInFiles(IFormFile file)
         {
-            string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets/" + file.FileName;
-            Stream stream = new FileStream(path, FileMode.Create);
-            file.CopyTo(stream);
-            stream.Close();
+  
+            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets";
+            bool exists = System.IO.Directory.Exists(folderPath);
+            if (!exists)
+                System.IO.Directory.CreateDirectory(folderPath);
+
+            string filePath = folderPath + "/" + file.FileName;
+            if (System.IO.File.Exists(filePath))
+            {
+
+            }
+            else
+            {
+                Stream stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
+
+
             return StatusCode(StatusCodes.Status201Created);
+
+
+
+
+
+
         }
 
 
