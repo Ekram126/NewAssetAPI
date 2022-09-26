@@ -79,6 +79,8 @@ namespace Asset.ViewModels.WorkOrderVM
         public string BrandName { get; set; }
         public string BrandNameAr { get; set; }
 
+
+        public int? DepartmentId { get; set; }
         public string DepartmentName { get; set; }
         public string DepartmentNameAr { get; set; }
 

@@ -11,12 +11,18 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public List<GetData> Results { get; set; }
 
+        public int Count { get; set; }
+
+
+
+
+
 
         public class GetData
         {
             public int Id { get; set; }
             public string UserId { get; set; }
-           public int? MasterAssetId { get; set; }
+            public int? MasterAssetId { get; set; }
             public string Code { get; set; }
             public string Serial { get; set; }
             public string Model { get; set; }
@@ -50,7 +56,7 @@ namespace Asset.ViewModels.AssetDetailVM
             public string SupplierNameAr { get; set; }
 
 
-
+            public int? EmployeeId { get; set; }
             public int? PeriorityId { get; set; }
             public int? OriginId { get; set; }
             public int? BrandId { get; set; }
@@ -80,6 +86,13 @@ namespace Asset.ViewModels.AssetDetailVM
             public string MasterAssetName { get; set; }
             public string MasterAssetNameAr { get; set; }
             public int? AssetStatusId { get; set; }
+
+
+            public DateTime? WarrantyStart { get; set; }
+            public DateTime? WarrantyEnd { get; set; }
+            public string EndWarrantyDate { get; set; }
+
+            public int Count { get; set; }
         }
     }
 }

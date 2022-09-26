@@ -21,8 +21,16 @@ namespace Asset.Domain.Services
         IEnumerable<IndexAssetDetailVM.GetData> GetAll();
         IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByAssetId(int assetId);
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetDetailsByUserId(string userId);
+
+        Task<IndexAssetDetailVM> GetAssetDetailsByUserId2(int pageNumber, int pageSize, string userId);
+
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetsByUserId(string userId);
         IEnumerable<IndexAssetDetailVM.GetData> GetAllAssetsByStatusId(int statusId, string userId);
+
+        IndexAssetDetailVM GetAllAssetsByStatusId(int pageNumber, int pageSize, int statusId, string userId);
+
+
+
         IEnumerable<AssetDetail> GetAllSerialsByMasterAssetIdAndHospitalId(int masterAssetId, int hospitalId);
         IEnumerable<AssetDetail> GetAllAssetDetailsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId);
@@ -30,6 +38,10 @@ namespace Asset.Domain.Services
         IEnumerable<ViewAssetDetailVM> GetSupplierNoneExcludedAssetsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(string barcode, int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId);
+
+        IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes();
+        IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes(int duration);
+
         EditAssetDetailVM GetById(int id);
         int Add(CreateAssetDetailVM assetDetailObj);
         int Update(EditAssetDetailVM assetDetailObj);
@@ -39,7 +51,11 @@ namespace Asset.Domain.Services
         int CreateAssetDetailDocuments(CreateAssetDetailAttachmentVM attachObj);
         IEnumerable<AssetDetailAttachment> GetAttachmentByAssetDetailId(int assetId);
         int DeleteAssetDetailAttachment(int id);
-        IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM searchObj);
+     //   IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
+
+        IndexAssetDetailVM SearchAssetInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
+
+
         IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj);
         IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId);
         List<CountAssetVM> CountAssetsByHospital();

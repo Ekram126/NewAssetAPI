@@ -26,5 +26,7 @@ namespace Asset.ViewModels.RequestVM
         public string HospitalNameAr { get; set; }
 
         public string PrintedBy { get; set; }
+
+        
     }
 }

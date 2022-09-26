@@ -164,29 +164,26 @@ namespace Asset.API.Controllers
 
 
 
-        //[HttpPost]
-        //[Route("SearchAssetDetailsByHospitalId")]
-        //public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetDetailsByHospitalId(SearchMasterAssetVM model)
-        //{
-        //    return _AssetDetailService.SearchAssetInHospitalByHospitalId(model);
-        //}
+        [HttpPost]
+        [Route("GetAllAssetsByStatusId2/{pagenumber}/{pagesize}/{statusId}/{userId}")]
+        public IndexAssetDetailVM GetAllRequestsByStatusId(int pageNumber, int pageSize, int statusId, string userId)
+        {
+            var lstAssets = _AssetDetailService.GetAllAssetsByStatusId(pageNumber, pageSize, statusId, userId);
+            return lstAssets;
+        }
+
+
+
         [HttpPost]
         [Route("SearchAssetDetails/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexAssetDetailVM.GetData> SearchInMasterAssets(int pagenumber, int pagesize, SearchMasterAssetVM searchObj)
+        public IndexAssetDetailVM SearchInMasterAssets(int pagenumber, int pagesize, SearchMasterAssetVM searchObj)
         {
-            PagingParameter pageInfo = new PagingParameter();
-            pageInfo.PageNumber = pagenumber;
-            pageInfo.PageSize = pagesize;
-            var list = _AssetDetailService.SearchAssetInHospital(searchObj).ToList();
-            return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
+            var list = _AssetDetailService.SearchAssetInHospital(pagenumber, pagesize, searchObj);
+            return list;// _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
         }
-        [HttpPost]
-        [Route("SearchAssetDetailsCount")]
-        public int SearchInMasterAssetsCount(SearchMasterAssetVM searchObj)
-        {
-            int count = _AssetDetailService.SearchAssetInHospital(searchObj).ToList().Count();
-            return count;
-        }
+
+
+
         [HttpGet]
         [Route("GetAssetDetailsByAssetId/{assetId}")]
         public IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByAssetId(int assetId)
@@ -205,12 +202,36 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.GetById(id);
         }
+
+
         [HttpGet]
         [Route("ViewAssetDetailByMasterId/{masterId}")]
         public ActionResult<ViewAssetDetailVM> ViewAssetDetailByMasterId(int masterId)
         {
             return _AssetDetailService.ViewAssetDetailByMasterId(masterId);
         }
+
+
+
+
+        [HttpGet]
+        [Route("AlertAssetsBefore3Monthes")]
+        public IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes()
+        {
+            return _AssetDetailService.AlertAssetsBefore3Monthes();
+        }
+
+
+        [HttpGet]
+        [Route("AlertAssetsBefore3MonthesWithDuration/{duration}")]
+        public IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes(int duration)
+        {
+            return _AssetDetailService.AlertAssetsBefore3Monthes(duration);
+        }
+
+
+
+
         [HttpGet]
         [Route("ViewAllAssetDetailByMasterId/{MasterAssetId}")]
         public IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId)
@@ -260,6 +281,19 @@ namespace Asset.API.Controllers
             var AssetDetail = _AssetDetailService.GetAssetDetailsByUserId(userId).Result.ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, AssetDetail);
         }
+
+
+
+        [HttpPost]
+        [Route("GetAssetDetailsByUserIdWithPaging2/{pagenumber}/{pagesize}/{userId}")]
+        public async Task<IndexAssetDetailVM> GetAssetDetailsByUserId2(int pageNumber, int pageSize, string userId)
+        {
+            var lstAssetDetails = await _AssetDetailService.GetAssetDetailsByUserId2(pageNumber, pageSize, userId);
+            return lstAssetDetails;
+        }
+
+
+
         [HttpGet]
         [Route("GetAllPMAssetTaskSchedules/{hospitalId}")]
         public IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId)
@@ -274,14 +308,18 @@ namespace Asset.API.Controllers
             {
                 //a.BarCode == AssetDetailVM.Barcode && a.SerialNumber == AssetDetailVM.SerialNumber
                 int id = AssetDetailVM.Id;
-                var lstCode = _AssetDetailService.GetAll().Where(a => a.Code == AssetDetailVM.Code && a.Id != id).ToList();
-                if (lstCode.Count > 0)
+                if (!string.IsNullOrEmpty(AssetDetailVM.Code))
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Asset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
+                    var lstCode = _AssetDetailService.GetAll().Where(a => a.Code == AssetDetailVM.Code && a.Id != id).ToList();
+                    if (lstCode.Count > 0)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Asset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
+                    }
                 }
                 var lstNames = _AssetDetailService.GetAll().ToList().Where(a => a.BarCode == AssetDetailVM.Barcode && a.SerialNumber == AssetDetailVM.SerialNumber && a.Id != id).ToList();
                 if (lstNames.Count > 0)
                 {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "serial", Message = "Asset serial already exist", MessageAr = "هذا السيريال مسجل سابقاً" });
                 }
 
                 else
@@ -529,7 +567,7 @@ namespace Asset.API.Controllers
             PagingParameter pageInfo = new PagingParameter();
             pageInfo.PageNumber = pagenumber;
             pageInfo.PageSize = pagesize;
-            var list =  _AssetDetailService.SortAssets(sortObj);
+            var list = _AssetDetailService.SortAssets(sortObj);
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list.ToList());
         }
 
@@ -538,8 +576,8 @@ namespace Asset.API.Controllers
         [Route("SortAssetsCount")]
         public int SortAssets(Sort sortObj)
         {
-            var list =_AssetDetailService.SortAssets(sortObj);
-           // var list = await Task.Run(() => _AssetDetailService.SortAssets(sortObj));
+            var list = _AssetDetailService.SortAssets(sortObj);
+            // var list = await Task.Run(() => _AssetDetailService.SortAssets(sortObj));
 
             var count = list.Count();
             return count;

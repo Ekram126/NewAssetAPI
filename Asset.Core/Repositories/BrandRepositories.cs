@@ -108,10 +108,10 @@ namespace Asset.Core.Repositories
                 return _context.AssetDetails.Include(a=>a.MasterAsset.brand).Include(a => a.Hospital).Where(a=>a.HospitalId == hospitalId)
                     .ToList().GroupBy(a => a.MasterAsset.BrandId).Select(item => new IndexBrandVM.GetData
                 {
-                    Id = item.FirstOrDefault().MasterAsset.brand.Id,
-                    Code = item.FirstOrDefault().MasterAsset.brand.Code,
-                    Name = item.FirstOrDefault().MasterAsset.brand.Name,
-                    NameAr = item.FirstOrDefault().MasterAsset.brand.NameAr
+                    Id = item.FirstOrDefault().MasterAsset.brand != null? item.FirstOrDefault().MasterAsset.brand.Id:0,
+                    Code = item.FirstOrDefault().MasterAsset.brand != null ? item.FirstOrDefault().MasterAsset.brand.Code:"",
+                    Name = item.FirstOrDefault().MasterAsset.brand != null ? item.FirstOrDefault().MasterAsset.brand.Name:"",
+                    NameAr = item.FirstOrDefault().MasterAsset.brand != null ? item.FirstOrDefault().MasterAsset.brand.NameAr:""
                 });
             }
             else

@@ -4,6 +4,7 @@ using Asset.ViewModels.WorkOrderAttachmentVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +51,15 @@ namespace Asset.Core.Repositories
             {
                 if (workOrderAttachment != null)
                 {
+                    var folderName = Path.Combine("UploadedAttachments", "WorkOrderFiles");
+                    var folderPathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                    var filePath = folderPathToSave + "/" + workOrderAttachment.FileName;
+                    FileInfo file = new FileInfo(filePath);
+                    if (file.Exists)
+                    {
+                        file.Delete();
+                    }
+
                     _context.WorkOrderAttachments.Remove(workOrderAttachment);
                     _context.SaveChanges();
                 }

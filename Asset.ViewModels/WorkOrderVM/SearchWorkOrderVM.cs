@@ -8,7 +8,7 @@ namespace Asset.ViewModels.WorkOrderVM
 {
     public class SearchWorkOrderVM
     {
-
+        public int? DepartmentId { get; set; }
         public int? StatusId { get; set; }
         public int? PeriorityId { get; set; }
         public int? HospitalId { get; set; }

@@ -89,7 +89,7 @@ namespace Asset.Core.Repositories
                     Description = req.Description,
                     CreatedById = req.CreatedById,
                     UserName = req.User.UserName,
-                    RequestId = req.RequestId != null ? (int)req.RequestId : 0,
+                    RequestId = req.RequestId != 0 ? (int)req.RequestId : 0,
                     RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                     StatusName = req.RequestStatus.Name,
                     StatusNameAr = req.RequestStatus.NameAr,

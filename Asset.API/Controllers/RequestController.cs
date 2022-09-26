@@ -487,8 +487,8 @@ namespace Asset.API.Controllers
             titletable.WidthPercentage = 100;
             titletable.SetWidths(new int[] { 1 });
             titletable.AddCell(new Phrase("وزارة الصحة والسكان", f));
-            //  titletable.AddCell(createTextCell("ffffff"));
-            // titletable.AddCell(createImageCell(imageURL));
+            //titletable.AddCell(new Phrase(" ", f));
+          
 
             titletable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
             document.Add(titletable);
@@ -576,9 +576,16 @@ namespace Asset.API.Controllers
                     //cell.HorizontalAlignment = 2; //0=Left, 1=Centre, 2=Right
                     headertable.AddCell(cell);
                     if (searchRequestDateObj.Lang == "ar")
-                        headertable.AddCell(new PdfPCell(new Phrase("  \t\t\t\t\t\tوزارة الصحة والسكان " + "\n" + searchRequestDateObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+                        headertable.AddCell(new PdfPCell(new Phrase("  \t\t\t\t\t\t وزارة الصحة والسكان " + "\n" + searchRequestDateObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
                     else
                         headertable.AddCell(new PdfPCell(new Phrase("  Ministry of Health and Population" + "\n" + searchRequestDateObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+
+
+
+                    //if (searchRequestDateObj.Lang == "ar")
+                    //    headertable.AddCell(new PdfPCell(new Phrase(" " + searchRequestDateObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+                    //else
+                    //    headertable.AddCell(new PdfPCell(new Phrase(" " + searchRequestDateObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
 
                     headertable.WriteSelectedRows(0, -1, 420, 580, stamper.GetOverContent(i));
 
@@ -822,6 +829,13 @@ namespace Asset.API.Controllers
                         headertable.AddCell(new PdfPCell(new Phrase("وزارة الصحة والسكان" + "\n" + searchRequestDateObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });
                     else
                         headertable.AddCell(new PdfPCell(new Phrase("Ministry of Health and Population" + "\n" + searchRequestDateObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+
+
+
+                    //if (searchRequestDateObj.Lang == "ar")
+                    //    headertable.AddCell(new PdfPCell(new Phrase("  " + searchRequestDateObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });
+                    //else
+                    //    headertable.AddCell(new PdfPCell(new Phrase("  " +  searchRequestDateObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
 
                     headertable.WriteSelectedRows(0, -1, 420, 580, stamper.GetOverContent(i));
 

@@ -485,6 +485,142 @@ namespace Asset.Core.Repositories
             }
             return null;
         }
+
+
+
+
+        public async Task<IndexAssetDetailVM> GetAssetDetailsByUserId2(int pageNumber, int pageSize, string userId)
+        {
+
+            IndexAssetDetailVM mainClass = new IndexAssetDetailVM();
+
+            List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
+
+
+            if (userId != null)
+            {
+                var userObj = await _context.Users.FindAsync(userId);
+                ApplicationRole roleObj = new ApplicationRole();
+                Employee empObj = new Employee();
+                List<string> userRoleNames = new List<string>();
+                var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+                userObj = obj[0];
+
+
+                var roles = (from userRole in _context.UserRoles
+                             join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+                             where userRole.UserId == userObj.Id
+                             select role);
+                foreach (var role in roles)
+                {
+                    userRoleNames.Add(role.Name);
+                }
+
+                var lstEmployees = _context.Employees.Where(a => a.Email == userObj.Email).ToList();
+                if (lstEmployees.Count > 0)
+                {
+                    empObj = lstEmployees[0];
+                }
+
+                List<IndexAssetDetailVM.GetData> lstAssetDetails = _context.AssetOwners.Include(a => a.AssetDetail)
+                    .Include(a => a.Employee)
+                    .Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital)
+                                  .Include(a => a.AssetDetail.Supplier).Include(a => a.AssetDetail.MasterAsset.brand)
+                                .Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City).Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                      .OrderBy(a => a.AssetDetail.Barcode)
+                                // .Where(a => a.EmployeeId == empObj.Id && a.AssetDetail.HospitalId == userObj.HospitalId)
+                                .Select(detail => new IndexAssetDetailVM.GetData
+                                {
+                                    Id = detail.AssetDetail.Id,
+                                    Code = detail.AssetDetail.Code,
+                                    UserId = userObj.Id,
+                                    EmployeeId = detail.EmployeeId,
+                                    Price = detail.AssetDetail.Price,
+                                    BarCode = detail.AssetDetail.Barcode,
+                                    Barcode = detail.AssetDetail.Barcode,
+                                    MasterImg = detail.AssetDetail.MasterAsset.AssetImg,
+                                    Serial = detail.AssetDetail.SerialNumber,
+                                    BrandName = detail.AssetDetail.MasterAsset.brand.Name,
+                                    BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
+                                    Model = detail.AssetDetail.MasterAsset.ModelNumber,
+                                    SerialNumber = detail.AssetDetail.SerialNumber,
+                                    MasterAssetId = detail.AssetDetail.MasterAssetId,
+                                    PurchaseDate = detail.AssetDetail.PurchaseDate,
+                                    HospitalId = detail.AssetDetail.Hospital.Id,
+                                    HospitalName = detail.AssetDetail.Hospital.Name,
+                                    HospitalNameAr = detail.AssetDetail.Hospital.NameAr,
+                                    AssetName = detail.AssetDetail.MasterAsset.Name,
+                                    AssetNameAr = detail.AssetDetail.MasterAsset.NameAr,
+                                    GovernorateId = detail.AssetDetail.Hospital.GovernorateId,
+                                    GovernorateName = detail.AssetDetail.Hospital.Governorate.Name,
+                                    GovernorateNameAr = detail.AssetDetail.Hospital.Governorate.NameAr,
+                                    CityId = detail.AssetDetail.Hospital.CityId,
+                                    CityName = detail.AssetDetail.Hospital.City.Name,
+                                    CityNameAr = detail.AssetDetail.Hospital.City.NameAr,
+                                    OrganizationId = detail.AssetDetail.Hospital.OrganizationId,
+                                    OrgName = detail.AssetDetail.Hospital.Organization.Name,
+                                    OrgNameAr = detail.AssetDetail.Hospital.Organization.NameAr,
+                                    SubOrganizationId = detail.AssetDetail.Hospital.SubOrganizationId,
+                                    SubOrgName = detail.AssetDetail.Hospital.SubOrganization.Name,
+                                    SubOrgNameAr = detail.AssetDetail.Hospital.SubOrganization.NameAr,
+                                    SupplierName = detail.AssetDetail.Supplier.Name,
+                                    SupplierNameAr = detail.AssetDetail.Supplier.NameAr,
+                                    QrFilePath = detail.AssetDetail.QrFilePath
+                                }).ToList();
+
+                if (userRoleNames.Contains("AssetOwner"))
+                {
+                    lstAssetDetails = lstAssetDetails.Where(a => a.EmployeeId == empObj.Id && a.HospitalId == userObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("EngDepManager"))
+                {
+
+                    lstAssetDetails = lstAssetDetails.Where(a => a.HospitalId == userObj.HospitalId).ToList();
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetDetails = lstAssetDetails.ToList();
+                }
+                if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetDetails = lstAssetDetails.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
+                }
+
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetDetails = lstAssetDetails.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
+                }
+
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId > 0)
+                {
+
+                    lstAssetDetails = lstAssetDetails.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId && a.HospitalId == userObj.HospitalId).ToList();
+
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetDetails = lstAssetDetails.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
+                {
+                    lstAssetDetails = lstAssetDetails.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
+                }
+
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
+                {
+                    lstAssetDetails = lstAssetDetails.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.HospitalId == userObj.HospitalId).ToList();
+                }
+
+                var requestsPerPage = lstAssetDetails.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                mainClass.Results = requestsPerPage;
+                mainClass.Count = lstAssetDetails.Count();
+                return mainClass;
+            }
+            return null;
+        }
+
+
+
         public async Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetsByUserId(string userId)
         {
 
@@ -665,11 +801,11 @@ namespace Asset.Core.Repositories
 
 
 
-                item.SupplierName = assetDetailObj.Supplier.Name;
-                item.SupplierNameAr = assetDetailObj.Supplier.NameAr;
+                item.SupplierName = assetDetailObj.Supplier != null? assetDetailObj.Supplier.Name:"";
+                item.SupplierNameAr = assetDetailObj.Supplier != null ? assetDetailObj.Supplier.NameAr:"";
 
-                item.BrandName = assetDetailObj.MasterAsset.brand.Name;
-                item.BrandNameAr = assetDetailObj.MasterAsset.brand.NameAr;
+                item.BrandName = assetDetailObj.MasterAsset.brand != null?assetDetailObj.MasterAsset.brand.Name:"";
+                item.BrandNameAr = assetDetailObj.MasterAsset.brand != null ? assetDetailObj.MasterAsset.brand.NameAr:"";
                 //var lstAssetStatus = _context.AssetStatusTransactions.Include(a => a.AssetStatus).Where(a => a.AssetDetailId == id).ToList().OrderByDescending(a => a.StatusDate).ToList();
 
                 //if (lstAssetStatus.Count > 0)
@@ -810,7 +946,7 @@ namespace Asset.Core.Repositories
                     var dates = new List<DateTime>();
                     var masterObj = _context.MasterAssets.Find(model.MasterAssetId);
 
-                
+
                     var pmtimeId = masterObj.PMTimeId;
                     if (pmtimeId == 1)
                     {
@@ -1064,9 +1200,13 @@ namespace Asset.Core.Repositories
             return model;
         }
 
-        public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM searchObj)
+        public IndexAssetDetailVM SearchAssetInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj)
         {
+            IndexAssetDetailVM mainClass = new IndexAssetDetailVM();
+
             List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
+
+
             Employee empObj = new Employee();
             ApplicationUser userObj = new ApplicationUser();
             ApplicationRole roleObj = new ApplicationRole();
@@ -1092,163 +1232,84 @@ namespace Asset.Core.Repositories
                 empObj = lstEmployees[0];
             }
 
+            list = _context.AssetOwners.Include(a => a.AssetDetail)
+                                       .Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.Supplier)
+                                       .Include(a => a.AssetDetail.MasterAsset.brand).Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City)
+                                       .Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization).Include(a => a.AssetDetail.Department)
+                                       .OrderBy(a => a.AssetDetail.Barcode)
+                                         .Select(detail => new IndexAssetDetailVM.GetData
+                                         {
+                                             Id = detail.AssetDetail.Id,
+                                             Code = detail.AssetDetail.Code,
+                                             BarCode = detail.AssetDetail.Barcode,
+                                             Model = detail.AssetDetail.MasterAsset.ModelNumber,
+                                             Serial = detail.AssetDetail.SerialNumber,
+                                             SerialNumber = detail.AssetDetail.SerialNumber,
+                                             EmployeeId = detail.EmployeeId,
+                                             DepartmentId = detail.AssetDetail.DepartmentId,
+                                             HospitalId = detail.AssetDetail.HospitalId,
+                                             SupplierId = detail.AssetDetail.SupplierId,
+                                             QrFilePath = detail.AssetDetail.QrFilePath,
+                                             BrandName = detail.AssetDetail.MasterAsset.brand.Name,
+                                             BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
+                                             SupplierName = detail.AssetDetail.Supplier.Name,
+                                             SupplierNameAr = detail.AssetDetail.Supplier.NameAr,
+                                             AssetId = detail.AssetDetail.Id,
+                                             MasterAssetId = detail.AssetDetail.MasterAsset.Id,
+                                             AssetName = detail.AssetDetail.MasterAsset.Name,
+                                             AssetNameAr = detail.AssetDetail.MasterAsset.NameAr,
+                                             BrandId = detail.AssetDetail.MasterAsset.BrandId,
+                                             OriginId = detail.AssetDetail.MasterAsset.OriginId,
+                                             HospitalName = detail.AssetDetail.Hospital.Name,
+                                             HospitalNameAr = detail.AssetDetail.Hospital.NameAr,
+                                             GovernorateId = detail.AssetDetail.Hospital.GovernorateId,
+                                             GovernorateName = detail.AssetDetail.Hospital.Governorate.Name,
+                                             GovernorateNameAr = detail.AssetDetail.Hospital.Governorate.NameAr,
+                                             CityName = detail.AssetDetail.Hospital.City.Name,
+                                             CityNameAr = detail.AssetDetail.Hospital.City.NameAr,
+                                             OrgName = detail.AssetDetail.Hospital.Organization.Name,
+                                             OrgNameAr = detail.AssetDetail.Hospital.Organization.NameAr,
+                                             SubOrgName = detail.AssetDetail.Hospital.SubOrganization.Name,
+                                             SubOrgNameAr = detail.AssetDetail.Hospital.SubOrganization.NameAr,
+                                             CityId = detail.AssetDetail.Hospital.CityId,
+                                             OrganizationId = detail.AssetDetail.Hospital.OrganizationId,
+                                             SubOrganizationId = detail.AssetDetail.Hospital.SubOrganizationId,
 
 
-            if (userRoleNames.Contains("AssetOwner"))
+                                         }).ToList();
+
+
+
+
+            if (userRoleNames.Contains("AssetOwner") && userObj.HospitalId > 0)
             {
-                list = _context.AssetOwners.Include(a => a.AssetDetail)
-                                           .Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.Supplier)
-                                           .Include(a => a.AssetDetail.MasterAsset.brand).Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City)
-                                           .Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization)
-                                           .OrderBy(a => a.AssetDetail.Barcode)
-                                           .Where(a => a.AssetDetail.HospitalId == userObj.HospitalId && a.EmployeeId == empObj.Id)
-                     .Select(detail => new IndexAssetDetailVM.GetData
-                     {
-                         Id = detail.AssetDetail.Id,
-                         Code = detail.AssetDetail.Code,
-                         BarCode = detail.AssetDetail.Barcode,
-                         Model = detail.AssetDetail.MasterAsset.ModelNumber,
-                         Serial = detail.AssetDetail.SerialNumber,
-                         SerialNumber = detail.AssetDetail.SerialNumber,
-
-                         HospitalId = detail.AssetDetail.HospitalId,
-                         SupplierId = detail.AssetDetail.SupplierId,
-                         QrFilePath = detail.AssetDetail.QrFilePath,
-                         BrandName = detail.AssetDetail.MasterAsset.brand.Name,
-                         BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
-                         SupplierName = detail.AssetDetail.Supplier.Name,
-                         SupplierNameAr = detail.AssetDetail.Supplier.NameAr,
-                         AssetId = detail.AssetDetail.Id,
-                         MasterAssetId = detail.AssetDetail.MasterAsset.Id,
-                         AssetName = detail.AssetDetail.MasterAsset.Name,
-                         AssetNameAr = detail.AssetDetail.MasterAsset.NameAr,
-                         BrandId = detail.AssetDetail.MasterAsset.BrandId,
-                         OriginId = detail.AssetDetail.MasterAsset.OriginId,
-                         HospitalName = detail.AssetDetail.Hospital.Name,
-                         HospitalNameAr = detail.AssetDetail.Hospital.NameAr,
-                         GovernorateId = detail.AssetDetail.Hospital.GovernorateId,
-                         GovernorateName = detail.AssetDetail.Hospital.Governorate.Name,
-                         GovernorateNameAr = detail.AssetDetail.Hospital.Governorate.NameAr,
-                         CityName = detail.AssetDetail.Hospital.City.Name,
-                         CityNameAr = detail.AssetDetail.Hospital.City.NameAr,
-                         OrgName = detail.AssetDetail.Hospital.Organization.Name,
-                         OrgNameAr = detail.AssetDetail.Hospital.Organization.NameAr,
-                         SubOrgName = detail.AssetDetail.Hospital.SubOrganization.Name,
-                         SubOrgNameAr = detail.AssetDetail.Hospital.SubOrganization.NameAr,
-                         CityId = detail.AssetDetail.Hospital.CityId,
-                         OrganizationId = detail.AssetDetail.Hospital.OrganizationId,
-                         SubOrganizationId = detail.AssetDetail.Hospital.SubOrganizationId
-
-                     }).ToList();
-
-                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    list = list.ToList();
-                }
-                if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    list = list.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
-                }
-                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    list = list.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
-                }
-                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    list = list.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
-                }
-                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
-                {
-                    list = list.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
-                }
-                if (userObj.HospitalId > 0)
-                {
-                    list = list.Where(a => a.HospitalId == userObj.HospitalId).ToList();
-                }
+                list = list.Where(a => a.HospitalId == userObj.HospitalId && a.EmployeeId == empObj.Id).ToList();
             }
-            else
+            if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
             {
-                list = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Include(a => a.MasterAsset.brand)
-                    .Include(a => a.Supplier)
-                    .Include(a => a.Hospital.Governorate).Include(a => a.Hospital.City).Include(a => a.Hospital.Organization)
-                    .Include(a => a.Hospital.SubOrganization)
-                    .Select(item => new IndexAssetDetailVM.GetData
-                    {
-
-                        Id = item.Id,
-                        Code = item.Code,
-                        BarCode = item.Barcode,
-                        Model = item.MasterAsset.ModelNumber,
-                        BrandName = item.MasterAsset.brand.Name,
-                        BrandNameAr = item.MasterAsset.brand.NameAr,
-
-                        SupplierName = item.Supplier.Name,
-                        SupplierNameAr = item.Supplier.NameAr,
-                        Serial = item.SerialNumber,
-                        SerialNumber = item.SerialNumber,
-                        HospitalId = item.HospitalId,
-                        SupplierId = item.SupplierId,
-
-
-                        MasterAssetId = item.MasterAsset.Id,
-                        AssetId = item.Id,
-                        AssetName = item.MasterAsset.Name,
-                        AssetNameAr = item.MasterAsset.NameAr,
-                        BrandId = item.MasterAsset.BrandId,
-                        OriginId = item.MasterAsset.OriginId,
-
-                        HospitalName = item.Hospital.Name,
-                        HospitalNameAr = item.Hospital.NameAr,
-                        GovernorateId = item.Hospital.GovernorateId,
-                        GovernorateName = item.Hospital.Governorate.Name,
-                        GovernorateNameAr = item.Hospital.Governorate.NameAr,
-
-                        CityName = item.Hospital.City.Name,
-                        CityNameAr = item.Hospital.City.NameAr,
-
-
-                        OrgName = item.Hospital.Organization.Name,
-                        OrgNameAr = item.Hospital.Organization.NameAr,
-
-
-
-                        SubOrgName = item.Hospital.SubOrganization.Name,
-                        SubOrgNameAr = item.Hospital.SubOrganization.NameAr,
-
-                        CityId = item.Hospital.CityId,
-                        OrganizationId = item.Hospital.OrganizationId,
-                        SubOrganizationId = item.Hospital.SubOrganizationId
-                    })
-                .ToList();
-
-
-                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    list = list.ToList();
-                }
-                if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    list = list.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
-                }
-                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    list = list.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
-                }
-                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    list = list.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
-                }
-                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
-                {
-                    list = list.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
-                }
-                if (userObj.HospitalId > 0)
-                {
-                    // list = list.Where(a => a.HospitalId == userObj.HospitalId && !userRoleNames.Contains("AssetOwner")).ToList();
-
-                    list = list.Where(a => a.HospitalId == userObj.HospitalId).ToList();
-                }
+                list = list.ToList();
             }
+            if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+            {
+                list = list.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
+            }
+            if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+            {
+                list = list.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
+            }
+            if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+            {
+                list = list.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
+            }
+            if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
+            {
+                list = list.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
+            }
+            if (!userRoleNames.Contains("AssetOwner") && userObj.HospitalId > 0)
+            {
+                list = list.Where(a => a.HospitalId == userObj.HospitalId).ToList();
+            }
+
 
             if (searchObj.GovernorateId != 0)
             {
@@ -1308,385 +1369,48 @@ namespace Asset.Core.Repositories
                 list = list.ToList();
 
 
-            //if (searchObj.AssetId != 0)
-            //{
-            //    list = list.Where(a => a.AssetId == searchObj.AssetId).ToList();
-            //}
-            //else
-            //    list = list.ToList();
+            if (searchObj.DepartmentId != 0)
+            {
+                list = list.Where(a => a.DepartmentId == searchObj.DepartmentId).ToList();
+            }
+            else
+                list = list.ToList();
 
 
             if (searchObj.Serial != "")
             {
                 list = list.Where(b => b.SerialNumber.Contains(searchObj.Serial)).ToList();
             }
-
+            else
+                list = list.ToList();
             if (searchObj.BarCode != "")
             {
                 list = list.Where(b => b.BarCode.Contains(searchObj.BarCode)).ToList();
             }
-
+            else
+                list = list.ToList();
             if (searchObj.Code != "")
             {
                 list = list.Where(b => b.Code.Contains(searchObj.Code)).ToList();
             }
+            else
+                list = list.ToList();
             if (searchObj.Model != "")
             {
                 list = list.Where(b => b.Model == searchObj.Model).ToList();
             }
+            else
+                list = list.ToList();
+
+            //mainClass.Results = list;
 
 
-            return list;
+            var requestsPerPage = list.Skip((pagenumber - 1) * pagesize).Take(pagesize).ToList();
+            mainClass.Results = requestsPerPage;
+            mainClass.Count = list.Count();
+            return mainClass;
+            //  return list;
         }
-
-
-        //public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM searchObj)
-        //{
-        //    List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
-        //    Employee empObj = new Employee();
-        //    ApplicationUser userObj = new ApplicationUser();
-        //    ApplicationRole roleObj = new ApplicationRole();
-        //    List<string> userRoleNames = new List<string>();
-        //    var lstUsers = _context.ApplicationUser.Where(a => a.Id == searchObj.UserId).ToList();
-        //    if (lstUsers.Count > 0)
-        //    {
-        //        userObj = lstUsers[0];
-        //    }
-        //    var roles = (from userRole in _context.UserRoles
-        //                 join role in _context.ApplicationRole on userRole.RoleId equals role.Id
-        //                 where userRole.UserId == searchObj.UserId
-        //                 select role);
-        //    foreach (var role in roles)
-        //    {
-        //        userRoleNames.Add(role.Name);
-        //    }
-
-
-        //    var lstEmployees = _context.Employees.Where(a => a.Email == userObj.Email).ToList();
-        //    if (lstEmployees.Count > 0)
-        //    {
-        //        empObj = lstEmployees[0];
-        //    }
-
-
-
-        //    var listAssets = _context.AssetStatusTransactions
-        //                            .Include(a => a.AssetDetail)
-        //                            .Include(a => a.AssetDetail.MasterAsset)
-        //                            .Include(a => a.Hospital).Include(a => a.AssetDetail.MasterAsset.brand)
-        //                            .Include(a => a.AssetDetail.Supplier)
-        //                            .Include(a => a.AssetDetail.Hospital.Governorate)
-        //                            .Include(a => a.AssetDetail.Hospital.City)
-        //                            .Include(a => a.AssetDetail.Hospital.Organization)
-        //                            .Include(a => a.AssetDetail.Hospital.SubOrganization)
-        //                            .o
-        //                            .ToList();
-
-
-        //    if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //    {
-        //        listAssets = listAssets.ToList();
-        //    }
-        //    if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Hospital.GovernorateId == userObj.GovernorateId).ToList();
-        //    }
-        //    if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Hospital.GovernorateId == userObj.GovernorateId && a.AssetDetail.Hospital.CityId == userObj.CityId).ToList();
-        //    }
-        //    if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Hospital.OrganizationId == userObj.OrganizationId).ToList();
-        //    }
-        //    if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Hospital.OrganizationId == userObj.OrganizationId && a.AssetDetail.Hospital.SubOrganizationId == userObj.SubOrganizationId).ToList();
-        //    }
-        //    if (userObj.HospitalId > 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.HospitalId == userObj.HospitalId).ToList();
-        //    }
-
-
-
-        //    if (searchObj.GovernorateId != 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Hospital.GovernorateId == searchObj.GovernorateId).ToList();
-        //    }
-        //    else
-        //        listAssets = listAssets.ToList();
-        //    if (searchObj.CityId != 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Hospital.CityId == searchObj.CityId).ToList();
-        //    }
-        //    else
-        //        listAssets = listAssets.ToList();
-
-        //    if (searchObj.OrganizationId != 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Hospital.OrganizationId == searchObj.OrganizationId).ToList();
-        //    }
-        //    else
-        //        list = list.ToList();
-        //    if (searchObj.SubOrganizationId != 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Hospital.SubOrganizationId == searchObj.SubOrganizationId).ToList();
-        //    }
-        //    else
-        //        listAssets = listAssets.ToList();
-        //    if (searchObj.SupplierId != 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.SupplierId == searchObj.SupplierId).ToList();
-        //    }
-        //    else
-        //        listAssets = listAssets.ToList();
-        //    if (searchObj.OriginId != 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.MasterAsset.OriginId == searchObj.OriginId).ToList();
-        //    }
-        //    else
-        //        listAssets = listAssets.ToList();
-
-
-        //    if (searchObj.BrandId != 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.MasterAsset.BrandId == searchObj.BrandId).ToList();
-        //    }
-        //    else
-        //        listAssets = listAssets.ToList();
-
-        //    if (searchObj.HospitalId != 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.HospitalId == searchObj.HospitalId).ToList();
-        //    }
-        //    else
-        //        listAssets = listAssets.ToList();
-
-
-        //    if (searchObj.MasterAssetId != 0)
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.MasterAssetId == searchObj.MasterAssetId).ToList();
-        //    }
-        //    else
-        //        listAssets = listAssets.ToList();
-
-        //    if (searchObj.Serial != "")
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.SerialNumber.Contains(searchObj.Serial)).ToList();
-        //    }
-
-        //    if (searchObj.BarCode != "")
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Barcode.Contains(searchObj.BarCode)).ToList();
-        //    }
-
-        //    if (searchObj.Code != "")
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.Code.Contains(searchObj.Code)).ToList();
-        //    }
-        //    if (searchObj.Model != "")
-        //    {
-        //        listAssets = listAssets.Where(a => a.AssetDetail.MasterAsset.ModelNumber == searchObj.Model).ToList();
-        //    }
-
-
-
-        //    if (userRoleNames.Contains("AssetOwner"))
-        //    {
-        //        list = _context.AssetOwners.Include(a => a.AssetDetail)
-        //                                   .Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.Supplier)
-        //                                   .Include(a => a.AssetDetail.MasterAsset.brand).Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City)
-        //                                   .Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization)
-        //                                   .OrderBy(a => a.AssetDetail.Barcode)
-        //                                   .Where(a => a.AssetDetail.HospitalId == userObj.HospitalId && a.EmployeeId == empObj.Id)
-        //             .Select(detail => new IndexAssetDetailVM.GetData
-        //             {
-        //                 Id = detail.AssetDetail.Id,
-        //                 Code = detail.AssetDetail.Code,
-        //                 BarCode = detail.AssetDetail.Barcode,
-        //                 Model = detail.AssetDetail.MasterAsset.ModelNumber,
-        //                 Serial = detail.AssetDetail.SerialNumber,
-        //                 SerialNumber = detail.AssetDetail.SerialNumber,
-
-        //                 HospitalId = detail.AssetDetail.HospitalId,
-        //                 SupplierId = detail.AssetDetail.SupplierId,
-        //                 QrFilePath = detail.AssetDetail.QrFilePath,
-        //                 BrandName = detail.AssetDetail.MasterAsset.brand.Name,
-        //                 BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
-        //                 SupplierName = detail.AssetDetail.Supplier.Name,
-        //                 SupplierNameAr = detail.AssetDetail.Supplier.NameAr,
-        //                 AssetId = detail.AssetDetail.Id,
-        //                 MasterAssetId = detail.AssetDetail.MasterAsset.Id,
-        //                 AssetName = detail.AssetDetail.MasterAsset.Name,
-        //                 AssetNameAr = detail.AssetDetail.MasterAsset.NameAr,
-        //                 BrandId = detail.AssetDetail.MasterAsset.BrandId,
-        //                 OriginId = detail.AssetDetail.MasterAsset.OriginId,
-        //                 HospitalName = detail.AssetDetail.Hospital.Name,
-        //                 HospitalNameAr = detail.AssetDetail.Hospital.NameAr,
-        //                 GovernorateId = detail.AssetDetail.Hospital.GovernorateId,
-        //                 GovernorateName = detail.AssetDetail.Hospital.Governorate.Name,
-        //                 GovernorateNameAr = detail.AssetDetail.Hospital.Governorate.NameAr,
-        //                 CityName = detail.AssetDetail.Hospital.City.Name,
-        //                 CityNameAr = detail.AssetDetail.Hospital.City.NameAr,
-        //                 OrgName = detail.AssetDetail.Hospital.Organization.Name,
-        //                 OrgNameAr = detail.AssetDetail.Hospital.Organization.NameAr,
-        //                 SubOrgName = detail.AssetDetail.Hospital.SubOrganization.Name,
-        //                 SubOrgNameAr = detail.AssetDetail.Hospital.SubOrganization.NameAr,
-        //                 CityId = detail.AssetDetail.Hospital.CityId,
-        //                 OrganizationId = detail.AssetDetail.Hospital.OrganizationId,
-        //                 SubOrganizationId = detail.AssetDetail.Hospital.SubOrganizationId
-
-        //             }).ToList();
-
-        //        if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //        {
-        //            list = list.ToList();
-        //        }
-        //        if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //        {
-        //            list = list.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
-        //        }
-        //        if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //        {
-        //            list = list.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
-        //        }
-        //        if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //        {
-        //            list = list.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
-        //        }
-        //        if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
-        //        {
-        //            list = list.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
-        //        }
-        //        if (userObj.HospitalId > 0)
-        //        {
-        //            list = list.Where(a => a.HospitalId == userObj.HospitalId).ToList();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        list = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Include(a => a.MasterAsset.brand)
-        //            .Include(a => a.Supplier)
-        //            .Include(a => a.Hospital.Governorate).Include(a => a.Hospital.City).Include(a => a.Hospital.Organization)
-        //            .Include(a => a.Hospital.SubOrganization)
-        //            .Select(item => new IndexAssetDetailVM.GetData
-        //            {
-
-        //                Id = item.Id,
-        //                Code = item.Code,
-        //                BarCode = item.Barcode,
-        //                Model = item.MasterAsset.ModelNumber,
-        //                BrandName = item.MasterAsset.brand.Name,
-        //                BrandNameAr = item.MasterAsset.brand.NameAr,
-
-        //                SupplierName = item.Supplier.Name,
-        //                SupplierNameAr = item.Supplier.NameAr,
-        //                Serial = item.SerialNumber,
-        //                SerialNumber = item.SerialNumber,
-        //                HospitalId = item.HospitalId,
-        //                SupplierId = item.SupplierId,
-
-
-        //                MasterAssetId = item.MasterAsset.Id,
-        //                AssetId = item.Id,
-        //                AssetName = item.MasterAsset.Name,
-        //                AssetNameAr = item.MasterAsset.NameAr,
-        //                BrandId = item.MasterAsset.BrandId,
-        //                OriginId = item.MasterAsset.OriginId,
-
-        //                HospitalName = item.Hospital.Name,
-        //                HospitalNameAr = item.Hospital.NameAr,
-        //                GovernorateId = item.Hospital.GovernorateId,
-        //                GovernorateName = item.Hospital.Governorate.Name,
-        //                GovernorateNameAr = item.Hospital.Governorate.NameAr,
-
-        //                CityName = item.Hospital.City.Name,
-        //                CityNameAr = item.Hospital.City.NameAr,
-
-
-        //                OrgName = item.Hospital.Organization.Name,
-        //                OrgNameAr = item.Hospital.Organization.NameAr,
-
-
-
-        //                SubOrgName = item.Hospital.SubOrganization.Name,
-        //                SubOrgNameAr = item.Hospital.SubOrganization.NameAr,
-
-        //                CityId = item.Hospital.CityId,
-        //                OrganizationId = item.Hospital.OrganizationId,
-        //                SubOrganizationId = item.Hospital.SubOrganizationId
-        //            })
-        //        .ToList();
-        //    }
-
-
-        //    if (searchObj.StatusId != 0)
-        //    {
-        //        list = _context.AssetStatusTransactions
-        //                         .Include(a => a.AssetDetail)
-        //                         .Include(a => a.AssetDetail.MasterAsset)
-        //                         .Include(a => a.Hospital).Include(a => a.AssetDetail.MasterAsset.brand)
-        //                         .Include(a => a.AssetDetail.Supplier)
-        //                         .Include(a => a.AssetDetail.Hospital.Governorate)
-        //                         .Include(a => a.AssetDetail.Hospital.City)
-        //                         .Include(a => a.AssetDetail.Hospital.Organization)
-        //                         .Include(a => a.AssetDetail.Hospital.SubOrganization)
-        //                         .Where(a => a.AssetStatusId == searchObj.StatusId)
-        //         .Select(item => new IndexAssetDetailVM.GetData
-        //         {
-
-        //             Id = item.AssetDetail.Id,
-        //             Code = item.AssetDetail.Code,
-        //             BarCode = item.AssetDetail.Barcode,
-        //             Model = item.AssetDetail.MasterAsset.ModelNumber,
-        //             BrandName = item.AssetDetail.MasterAsset.brand.Name,
-        //             BrandNameAr = item.AssetDetail.MasterAsset.brand.NameAr,
-
-        //             SupplierName = item.AssetDetail.Supplier.Name,
-        //             SupplierNameAr = item.AssetDetail.Supplier.NameAr,
-        //             Serial = item.AssetDetail.SerialNumber,
-        //             SerialNumber = item.AssetDetail.SerialNumber,
-        //             HospitalId = item.HospitalId,
-        //             SupplierId = item.AssetDetail.SupplierId,
-
-
-        //             MasterAssetId = item.AssetDetail.MasterAsset.Id,
-        //             AssetId = item.Id,
-        //             AssetName = item.AssetDetail.MasterAsset.Name,
-        //             AssetNameAr = item.AssetDetail.MasterAsset.NameAr,
-        //             BrandId = item.AssetDetail.MasterAsset.BrandId,
-        //             OriginId = item.AssetDetail.MasterAsset.OriginId,
-
-        //             HospitalName = item.AssetDetail.Hospital.Name,
-        //             HospitalNameAr = item.AssetDetail.Hospital.NameAr,
-        //             GovernorateId = item.AssetDetail.Hospital.GovernorateId,
-        //             GovernorateName = item.AssetDetail.Hospital.Governorate.Name,
-        //             GovernorateNameAr = item.AssetDetail.Hospital.Governorate.NameAr,
-
-        //             CityName = item.AssetDetail.Hospital.City.Name,
-        //             CityNameAr = item.AssetDetail.Hospital.City.NameAr,
-
-
-        //             OrgName = item.AssetDetail.Hospital.Organization.Name,
-        //             OrgNameAr = item.AssetDetail.Hospital.Organization.NameAr,
-
-
-
-        //             SubOrgName = item.AssetDetail.Hospital.SubOrganization.Name,
-        //             SubOrgNameAr = item.AssetDetail.Hospital.SubOrganization.NameAr,
-
-        //             CityId = item.AssetDetail.Hospital.CityId,
-        //             OrganizationId = item.AssetDetail.Hospital.OrganizationId,
-        //             SubOrganizationId = item.AssetDetail.Hospital.SubOrganizationId
-        //         })
-        //     .ToList();
-
-        //    }
-
-        //    return list;
-        //}
-
 
         public IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj)
         {
@@ -1766,6 +1490,13 @@ namespace Asset.Core.Repositories
             {
                 list = list.Where(b => b.AssetName.Contains(searchObj.AssetName)).ToList();
             }
+
+            if (searchObj.DepartmentId != 0)
+            {
+                list = list.Where(a => a.DepartmentId == searchObj.DepartmentId).ToList();
+            }
+            else
+                list = list.ToList();
 
 
             if (searchObj.Serial != "")
@@ -2458,2779 +2189,7 @@ namespace Asset.Core.Repositories
             return lstAssetOrganization;
         }
 
-        //public async Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj)
-        //{
-        //    List<IndexAssetDetailVM.GetData> lstAssetData = new List<IndexAssetDetailVM.GetData>();
 
-        //    ApplicationRole roleObj = new ApplicationRole();
-        //    Employee empObj = new Employee();
-        //    List<string> userRoleNames = new List<string>();
-        //    var userObj = await _context.Users.FindAsync(sortObj.UserId);
-
-        //    if (sortObj.UserId != null)
-        //    {
-
-        //        var obj = _context.ApplicationUser.Where(a => a.Id == sortObj.UserId).ToList();
-        //        userObj = obj[0];
-
-        //        var roles = (from userRole in _context.UserRoles
-        //                     join role in _context.ApplicationRole on userRole.RoleId equals role.Id
-        //                     where userRole.UserId == userObj.Id
-        //                     select role);
-        //        foreach (var role in roles)
-        //        {
-        //            userRoleNames.Add(role.Name);
-        //        }
-        //        var lstEmployees = _context.Employees.Where(a => a.Email == userObj.Email).ToList();
-        //        if (lstEmployees.Count > 0)
-        //        {
-        //            empObj = lstEmployees[0];
-        //        }
-        //    }
-        //    var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset)
-        //                                                    .Include(a => a.MasterAsset.brand).Include(a => a.Supplier)
-        //                                                    .Include(a => a.Hospital)
-        //                                                     .Include(a => a.Hospital.Governorate).Include(a => a.Hospital.City)
-        //                                                     .Include(a => a.Hospital.Organization).Include(a => a.Hospital.SubOrganization)
-        //                                                     .OrderBy(a => a.Barcode).ToList();
-        //    foreach (var item in lstAssetDetails)
-        //    {
-        //        IndexAssetDetailVM.GetData Assetobj = new IndexAssetDetailVM.GetData();
-        //        Assetobj.Id = item.Id;
-        //        Assetobj.Code = item.Code;
-        //        Assetobj.BarCode = item.Barcode;
-        //        Assetobj.Model = item.MasterAsset.ModelNumber;
-        //        Assetobj.Serial = item.SerialNumber;
-
-        //        Assetobj.BrandName = item.MasterAsset.BrandId > 0 ? item.MasterAsset.brand.Name : "";
-        //        Assetobj.BrandNameAr = item.MasterAsset.BrandId > 0 ? item.MasterAsset.brand.NameAr : "";
-        //        Assetobj.SupplierName = item.SupplierId > 0 ? item.Supplier.Name : "";
-        //        Assetobj.SupplierNameAr = item.SupplierId > 0 ? item.Supplier.NameAr : "";
-        //        Assetobj.HospitalId = item.HospitalId;
-        //        Assetobj.HospitalName = item.HospitalId > 0 ? item.Hospital.Name : "";
-        //        Assetobj.HospitalNameAr = item.HospitalId > 0 ? item.Hospital.NameAr : "";
-        //        Assetobj.AssetName = item.MasterAssetId > 0 ? item.MasterAsset.Name : "";
-        //        Assetobj.AssetNameAr = item.MasterAssetId > 0 ? item.MasterAsset.NameAr : "";
-        //        Assetobj.GovernorateName = item.HospitalId > 0 ? item.Hospital.Governorate.Name : "";
-        //        Assetobj.GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "";
-
-        //        Assetobj.GovernorateId = item.Hospital.GovernorateId;
-        //        Assetobj.CityId = item.Hospital.CityId;
-        //        Assetobj.OrganizationId = item.Hospital.OrganizationId;
-        //        Assetobj.SubOrganizationId = item.Hospital.SubOrganizationId;
-
-        //        Assetobj.MasterAssetId = item.MasterAssetId;
-        //        Assetobj.GovernorateName = item.Hospital.Governorate.Name;
-        //        Assetobj.GovernorateNameAr = item.Hospital.Governorate.NameAr;
-        //        Assetobj.CityName = item.Hospital.City.Name;
-        //        Assetobj.CityNameAr = item.Hospital.City.NameAr;
-        //        Assetobj.OrgName = item.Hospital.Organization.Name;
-        //        Assetobj.OrgNameAr = item.Hospital.Organization.NameAr;
-        //        Assetobj.SubOrgName = item.Hospital.SubOrganization.Name;
-        //        Assetobj.SubOrgNameAr = item.Hospital.SubOrganization.NameAr;
-        //        Assetobj.QrFilePath = item.QrFilePath;
-
-        //        var lstStatus = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == item.Id).OrderByDescending(a => a.StatusDate.Value.Date).ToList();
-        //        if (lstStatus.Count > 0)
-        //        {
-        //            Assetobj.AssetStatusId = lstStatus.FirstOrDefault().AssetStatusId;
-        //        }
-        //        lstAssetData.Add(Assetobj);
-        //    }
-
-
-
-        //    if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-        //    if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
-        //    }
-
-        //    if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
-        //    }
-
-        //    if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId > 0)
-        //    {
-        //        List<IndexAssetDetailVM.GetData> list2 = new List<IndexAssetDetailVM.GetData>();
-
-        //        if (userRoleNames.Contains("AssetOwner"))
-        //        {
-        //            lstAssetData = new List<IndexAssetDetailVM.GetData>();
-        //            var lstAssetOwners = _context.AssetOwners
-        //                                    .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital)
-        //                                    .Include(a => a.AssetDetail.Supplier).Include(a => a.AssetDetail.MasterAsset.brand)
-        //                                    .Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City).Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization)
-        //                .Where(a => a.EmployeeId == empObj.Id && a.AssetDetail.HospitalId == userObj.HospitalId).ToList();
-
-        //            foreach (var item in lstAssetOwners)
-        //            {
-        //                IndexAssetDetailVM.GetData Assetobj2 = new IndexAssetDetailVM.GetData();
-        //                Assetobj2.Id = item.AssetDetail.Id;
-        //                Assetobj2.Code = item.AssetDetail.Code;
-        //                Assetobj2.BarCode = item.AssetDetail.Barcode;
-        //                Assetobj2.Model = item.AssetDetail.MasterAsset.ModelNumber;
-        //                Assetobj2.Serial = item.AssetDetail.SerialNumber;
-        //                Assetobj2.BrandName = item.AssetDetail.MasterAsset.BrandId > 0 ? item.AssetDetail.MasterAsset.brand.Name : "";
-        //                Assetobj2.BrandNameAr = item.AssetDetail.MasterAsset.BrandId > 0 ? item.AssetDetail.MasterAsset.brand.NameAr : "";
-        //                Assetobj2.SupplierName = item.AssetDetail.SupplierId > 0 ? item.AssetDetail.Supplier.Name : "";
-        //                Assetobj2.SupplierNameAr = item.AssetDetail.SupplierId > 0 ? item.AssetDetail.Supplier.NameAr : "";
-        //                Assetobj2.HospitalId = item.AssetDetail.HospitalId;
-        //                Assetobj2.HospitalName = item.AssetDetail.HospitalId > 0 ? item.AssetDetail.Hospital.Name : "";
-        //                Assetobj2.HospitalNameAr = item.AssetDetail.HospitalId > 0 ? item.AssetDetail.Hospital.NameAr : "";
-        //                Assetobj2.AssetName = item.AssetDetail.MasterAssetId > 0 ? item.AssetDetail.MasterAsset.Name : "";
-        //                Assetobj2.AssetNameAr = item.AssetDetail.MasterAssetId > 0 ? item.AssetDetail.MasterAsset.NameAr : "";
-        //                Assetobj2.GovernorateName = item.HospitalId > 0 ? item.Hospital.Governorate.Name : "";
-        //                Assetobj2.GovernorateNameAr = item.HospitalId > 0 ? item.Hospital.Governorate.NameAr : "";
-        //                Assetobj2.GovernorateId = item.Hospital.GovernorateId;
-        //                Assetobj2.CityId = item.Hospital.CityId;
-        //                Assetobj2.OrganizationId = item.Hospital.OrganizationId;
-        //                Assetobj2.SubOrganizationId = item.Hospital.SubOrganizationId;
-        //                Assetobj2.MasterAssetId = item.AssetDetail.MasterAssetId;
-        //                Assetobj2.GovernorateName = item.Hospital.Governorate.Name;
-        //                Assetobj2.GovernorateNameAr = item.Hospital.Governorate.NameAr;
-        //                Assetobj2.CityName = item.Hospital.City.Name;
-        //                Assetobj2.CityNameAr = item.Hospital.City.NameAr;
-        //                Assetobj2.OrgName = item.Hospital.Organization.Name;
-        //                Assetobj2.OrgNameAr = item.Hospital.Organization.NameAr;
-        //                Assetobj2.SubOrgName = item.Hospital.SubOrganization.Name;
-        //                Assetobj2.SubOrgNameAr = item.Hospital.SubOrganization.NameAr;
-        //                Assetobj2.QrFilePath = item.AssetDetail.QrFilePath;
-        //                var lstStatus = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == item.Id).OrderByDescending(a => a.StatusDate).ToList();
-        //                if (lstStatus.Count > 0)
-        //                {
-        //                    Assetobj2.AssetStatusId = lstStatus.FirstOrDefault().AssetStatusId;
-        //                }
-        //                list2.Add(Assetobj2);
-        //            }
-        //            lstAssetData = list2;
-
-        //        }
-        //        else
-        //        {
-        //            lstAssetData = lstAssetData.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId && a.HospitalId == userObj.HospitalId).ToList();
-        //        }
-        //    }
-
-
-        //    if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
-        //    }
-        //    if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
-        //    }
-
-        //    if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.HospitalId == userObj.HospitalId).ToList();
-        //    }
-        //    if (sortObj.StatusId != 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.AssetStatusId == sortObj.StatusId).ToList();
-        //    }
-        //    else
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-
-        //    if (sortObj.GovernorateId != 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.GovernorateId == sortObj.GovernorateId).ToList();
-        //    }
-        //    else
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-
-        //    if (sortObj.CityId != 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.CityId == sortObj.CityId).ToList();
-        //    }
-        //    else
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-
-        //    if (sortObj.OrganizationId != 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.OrganizationId == sortObj.OrganizationId).ToList();
-        //    }
-        //    else
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-
-        //    if (sortObj.SubOrganizationId != 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.SubOrganizationId == sortObj.SubOrganizationId).ToList();
-        //    }
-        //    else
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-        //    if (sortObj.HospitalId != 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.HospitalId == sortObj.HospitalId).ToList();
-        //    }
-        //    else
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-        //    if (sortObj.MasterAssetId != 0)
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.MasterAssetId == sortObj.MasterAssetId).ToList();
-        //    }
-        //    else
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-
-
-        //    if (sortObj.BarCodeValue != "")
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.BarCode == sortObj.BarCodeValue).ToList();
-        //    }
-        //    else
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-
-
-        //    if (sortObj.SerialValue != "")
-        //    {
-        //        lstAssetData = lstAssetData.Where(a => a.SerialNumber == sortObj.SerialValue).ToList();
-        //    }
-        //    else
-        //    {
-        //        lstAssetData = lstAssetData.ToList();
-        //    }
-
-
-
-
-
-
-
-
-
-
-
-
-        //    if (sortObj.AssetName != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.AssetName).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.AssetName).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.AssetNameAr != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.AssetNameAr).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.AssetNameAr).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.GovernorateName != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.GovernorateNameAr != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateNameAr).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.GovernorateNameAr).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.HospitalName != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalName).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.HospitalName).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.HospitalNameAr != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.HospitalNameAr).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.HospitalNameAr).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.GovernorateName != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateName).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.GovernorateName).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.GovernorateNameAr != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.GovernorateNameAr).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.GovernorateNameAr).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.OrgName != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.OrgName).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.OrgName).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.OrgNameAr != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.OrgNameAr).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.OrgNameAr).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.SubOrgName != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgName).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.SubOrgName).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.SubOrgNameAr != "")
-        //    {
-
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.SubOrgNameAr).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.SubOrgNameAr).ToList();
-        //        }
-        //    }
-        //    else if (sortObj.BarCode != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.BarCode).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.BarCode).ToList();
-        //        }
-        //    }
-
-
-
-        //    if (sortObj.Serial != "")
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.Serial).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.Serial).ToList();
-        //        }
-        //    }
-
-
-
-        //    else if (sortObj.Model != "" && sortObj.Model != null)
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.Model).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.Model).ToList();
-        //        }
-        //    }
-
-        //    else if (sortObj.BrandName != "" && sortObj.BrandName != null)
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.BrandName).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.BrandName).ToList();
-        //        }
-        //    }
-
-
-        //    else if (sortObj.BrandNameAr != "" && sortObj.BrandNameAr != null)
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.BrandNameAr).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.BrandNameAr).ToList();
-        //        }
-        //    }
-
-        //    else if (sortObj.SupplierName != "" && sortObj.SupplierName != null)
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.SupplierName).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.SupplierName).ToList();
-        //        }
-        //    }
-
-        //    else if (sortObj.SupplierNameAr != "" && sortObj.SupplierNameAr != null)
-        //    {
-        //        if (sortObj.BarCodeValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderByDescending(d => d.BarCode).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BarCode.Contains(sortObj.BarCodeValue)).OrderBy(d => d.BarCode).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SerialValue != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderByDescending(d => d.SerialNumber).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SerialNumber.Contains(sortObj.SerialValue)).OrderBy(d => d.SerialNumber).ToList();
-        //            }
-        //        }
-        //        if (sortObj.MasterAssetId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.MasterAssetId == sortObj.MasterAssetId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.GovernorateId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.GovernorateId == sortObj.GovernorateId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.CityId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.CityId == sortObj.CityId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OrganizationId == sortObj.OrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.OriginId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.OriginId == sortObj.OriginId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.BrandId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.BrandId == sortObj.BrandId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SupplierId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SupplierId == sortObj.SupplierId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.SubOrganizationId != 0)
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.SubOrganizationId == sortObj.SubOrganizationId).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        if (sortObj.Model != "")
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderByDescending(d => d.Serial).ToList();
-        //            }
-        //            else
-        //            {
-        //                lstAssetData = lstAssetData.Where(b => b.Model.Contains(sortObj.Model)).OrderBy(d => d.Serial).ToList();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (sortObj.SortStatus == "descending")
-        //                lstAssetData = lstAssetData.OrderByDescending(d => d.SupplierNameAr).ToList();
-        //            else
-        //                lstAssetData = lstAssetData.OrderBy(d => d.SupplierNameAr).ToList();
-        //        }
-        //    }
-
-
-
-
-        //    return lstAssetData;
-
-        //}
 
 
         public IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj)
@@ -8114,6 +5073,8 @@ namespace Asset.Core.Repositories
                              .Include(t => t.MasterAsset)
                              .Include(t => t.MasterAsset.brand).OrderBy(a => a.Barcode).ToList();
 
+
+
             List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
             if (lstAssets.Count > 0)
             {
@@ -8207,6 +5168,170 @@ namespace Asset.Core.Repositories
 
             return list;
         }
+
+
+
+
+        public IndexAssetDetailVM GetAllAssetsByStatusId(int pageNumber, int pageSize, int statusId, string userId)
+        {
+            IndexAssetDetailVM mainClass = new IndexAssetDetailVM();
+            List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
+            if (userId != null)
+            {
+                Employee empObj = new Employee();
+                List<string> userRoleNames = new List<string>();
+                var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+                var userObj = obj[0];
+
+
+                var roles = (from userRole in _context.UserRoles
+                             join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+                             where userRole.UserId == userObj.Id
+                             select role);
+                foreach (var role in roles)
+                {
+                    userRoleNames.Add(role.Name);
+                }
+
+                var lstEmployees = _context.Employees.Where(a => a.Email == userObj.Email).ToList();
+                if (lstEmployees.Count > 0)
+                {
+                    empObj = lstEmployees[0];
+                }
+
+                var lstAllAssets = _context.AssetOwners.Include(a => a.AssetDetail).Include(a => a.Employee).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital)
+                                                        .Include(a => a.AssetDetail.Supplier).Include(a => a.AssetDetail.MasterAsset.brand)
+                                                        .Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City).Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                                        .OrderBy(a => a.AssetDetail.Barcode).ToList();
+
+
+                if (lstAllAssets.Count > 0)
+                {
+                    foreach (var asset in lstAllAssets)
+                    {
+                        IndexAssetDetailVM.GetData detail = new IndexAssetDetailVM.GetData();
+
+                        var lstStatus = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == asset.AssetDetail.Id).OrderByDescending(a => a.StatusDate).ToList();
+                        if (lstStatus.Count > 0)
+                        {
+                            detail.AssetStatusId = lstStatus.FirstOrDefault().AssetStatusId;
+                        }
+                        detail.Id = asset.AssetDetail.Id;
+                        detail.Code = asset.AssetDetail.Code;
+                        detail.UserId = userObj.Id;
+                        detail.EmployeeId = asset.EmployeeId;
+                        detail.Price = asset.AssetDetail.Price;
+                        detail.BarCode = asset.AssetDetail.Barcode;
+                        detail.MasterImg = asset.AssetDetail.MasterAsset.AssetImg;
+                        detail.Serial = asset.AssetDetail.SerialNumber;
+                        detail.BrandName = asset.AssetDetail.MasterAsset.brand != null ? asset.AssetDetail.MasterAsset.brand.Name : "";
+                        detail.BrandNameAr = asset.AssetDetail.MasterAsset.brand != null ? asset.AssetDetail.MasterAsset.brand.NameAr : "";
+                        detail.Model = asset.AssetDetail.MasterAsset.ModelNumber;
+                        detail.SerialNumber = asset.AssetDetail.SerialNumber;
+                        detail.MasterAssetId = asset.AssetDetail.MasterAssetId;
+                        detail.PurchaseDate = asset.AssetDetail.PurchaseDate;
+                        detail.HospitalId = asset.AssetDetail.Hospital.Id;
+                        detail.HospitalName = asset.AssetDetail.Hospital.Name;
+                        detail.HospitalNameAr = asset.AssetDetail.Hospital.NameAr;
+                        detail.AssetName = asset.AssetDetail.MasterAsset.Name;
+                        detail.AssetNameAr = asset.AssetDetail.MasterAsset.NameAr;
+                        detail.GovernorateId = asset.AssetDetail.Hospital.GovernorateId;
+                        detail.GovernorateName = asset.AssetDetail.Hospital.Governorate.Name;
+                        detail.GovernorateNameAr = asset.AssetDetail.Hospital.Governorate.NameAr;
+                        detail.CityId = asset.AssetDetail.Hospital.CityId;
+                        detail.CityName = asset.AssetDetail.Hospital.City.Name;
+                        detail.CityNameAr = asset.AssetDetail.Hospital.City.NameAr;
+                        detail.OrganizationId = asset.AssetDetail.Hospital.OrganizationId;
+                        detail.OrgName = asset.AssetDetail.Hospital.Organization.Name;
+                        detail.OrgNameAr = asset.AssetDetail.Hospital.Organization.NameAr;
+                        detail.SubOrganizationId = asset.AssetDetail.Hospital.SubOrganizationId;
+                        detail.SubOrgName = asset.AssetDetail.Hospital.SubOrganization.Name;
+                        detail.SubOrgNameAr = asset.AssetDetail.Hospital.SubOrganization.NameAr;
+                        detail.SupplierName = asset.AssetDetail.Supplier != null ? asset.AssetDetail.Supplier.Name : "";
+                        detail.SupplierNameAr = asset.AssetDetail.Supplier != null ? asset.AssetDetail.Supplier.NameAr : "";
+                        detail.QrFilePath = asset.AssetDetail.QrFilePath;
+
+                        list.Add(detail);
+                    }
+                }
+
+                if (userRoleNames.Contains("AssetOwner"))
+                {
+                    list = list.Where(a => a.EmployeeId == empObj.Id && a.HospitalId == userObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("EngDepManager"))
+                {
+                    list = list.Where(a => a.HospitalId == userObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("HospitalManager"))
+                {
+                    list = list.Where(a => a.HospitalId == userObj.HospitalId).ToList();
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    list = list.ToList();
+                }
+                if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    list = list.Where(a => a.GovernorateId == userObj.GovernorateId).ToList();
+                }
+
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    list = list.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId).ToList();
+                }
+
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId > 0)
+                {
+
+                    list = list.Where(a => a.GovernorateId == userObj.GovernorateId && a.CityId == userObj.CityId && a.HospitalId == userObj.HospitalId).ToList();
+
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    list = list.Where(a => a.OrganizationId == userObj.OrganizationId).ToList();
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
+                {
+                    list = list.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId).ToList();
+                }
+
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
+                {
+                    list = list.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.HospitalId == userObj.HospitalId).ToList();
+                }
+
+                if (statusId != 0)
+                {
+                    list = list.Where(a => a.AssetStatusId == statusId).ToList();
+                }
+                else
+                {
+                    list = list.ToList();
+                }
+
+                var requestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                mainClass.Results = requestsPerPage;
+                mainClass.Count = list.Count();
+                return mainClass;
+            }
+            return null;
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId)
         {
@@ -8856,12 +5981,13 @@ namespace Asset.Core.Repositories
                 var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).ToList();
                 if (lstAssetDetails.Count > 0)
                 {
-                    var lstGroupMaster = lstAssetDetails.GroupBy(a => a.MasterAssetId).Select(group => new {
+                    var lstGroupMaster = lstAssetDetails.GroupBy(a => a.MasterAssetId).Select(group => new
+                    {
                         masterId = group.Key,
                         CountMasterId = group.Count(),
                         Name = group.FirstOrDefault().MasterAsset.Name,
                         NameAr = group.FirstOrDefault().MasterAsset.NameAr,
-                        AssetPrice = group.FirstOrDefault().Price != null ? group.Sum(a => Convert.ToDecimal(group.FirstOrDefault().Price.ToString())):0
+                        AssetPrice = group.FirstOrDefault().Price != null ? group.Sum(a => Convert.ToDecimal(group.FirstOrDefault().Price.ToString())) : 0
                     }).OrderByDescending(x => x.CountMasterId).ToList().Take(10).ToList();
 
                     if (lstGroupMaster.Count > 0)
@@ -8881,11 +6007,12 @@ namespace Asset.Core.Repositories
             }
             else
             {
-             
-                var lstAssetDetails = _context.AssetDetails.Include(a=>a.MasterAsset).Include(a => a.Hospital).Where(a => a.HospitalId == hospitalId).ToList();
-                if(lstAssetDetails.Count>0)
+
+                var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Where(a => a.HospitalId == hospitalId).ToList();
+                if (lstAssetDetails.Count > 0)
                 {
-                    var lstGroupMaster = lstAssetDetails.GroupBy(a => a.MasterAssetId).Select(group => new {
+                    var lstGroupMaster = lstAssetDetails.GroupBy(a => a.MasterAssetId).Select(group => new
+                    {
                         masterId = group.Key,
                         CountMasterId = group.Count(),
                         Name = group.FirstOrDefault().MasterAsset.Name,
@@ -8893,7 +6020,7 @@ namespace Asset.Core.Repositories
                         AssetPrice = group.FirstOrDefault().Price != null ? group.Sum(a => Convert.ToDecimal(group.FirstOrDefault().Price.ToString())) : 0
                     }).OrderByDescending(x => x.CountMasterId).ToList().Take(10).ToList();
 
-                    if(lstGroupMaster.Count> 0)
+                    if (lstGroupMaster.Count > 0)
                     {
                         foreach (var item in lstGroupMaster)
                         {
@@ -8968,33 +6095,126 @@ namespace Asset.Core.Repositories
 
         public List<CountAssetVM> CountAssetsInHospitalByHospitalId(int hospitalId)
         {
-            List<CountAssetVM> list = new List<CountAssetVM>();       
-                var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Where(a => a.HospitalId == hospitalId).ToList();
-                if (lstAssetDetails.Count > 0)
+            List<CountAssetVM> list = new List<CountAssetVM>();
+            var lstAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital).Where(a => a.HospitalId == hospitalId).ToList();
+            if (lstAssetDetails.Count > 0)
+            {
+                var lstGroupMaster = lstAssetDetails.GroupBy(a => a.MasterAssetId).Select(group => new
                 {
-                    var lstGroupMaster = lstAssetDetails.GroupBy(a => a.MasterAssetId).Select(group => new {
-                        masterId = group.Key,
-                        CountMasterId = group.Count(),
-                        Name = group.FirstOrDefault().MasterAsset.Name,
-                        NameAr = group.FirstOrDefault().MasterAsset.NameAr,
-                        AssetPrice = group.FirstOrDefault().Price != null ? group.Sum(a => Convert.ToDecimal(group.FirstOrDefault().Price.ToString())) : 0
-                    }).OrderByDescending(x => x.CountMasterId).ToList();
+                    masterId = group.Key,
+                    CountMasterId = group.Count(),
+                    Name = group.FirstOrDefault().MasterAsset.Name,
+                    NameAr = group.FirstOrDefault().MasterAsset.NameAr,
+                    AssetPrice = group.FirstOrDefault().Price != null ? group.Sum(a => Convert.ToDecimal(group.FirstOrDefault().Price.ToString())) : 0
+                }).OrderByDescending(x => x.CountMasterId).ToList();
 
-                    if (lstGroupMaster.Count > 0)
+                if (lstGroupMaster.Count > 0)
+                {
+                    foreach (var item in lstGroupMaster)
                     {
-                        foreach (var item in lstGroupMaster)
-                        {
-                            CountAssetVM countAssetObj = new CountAssetVM();
-                            countAssetObj.AssetName = item.Name;
-                            countAssetObj.AssetNameAr = item.NameAr;
-                            countAssetObj.AssetPrice = item.AssetPrice;
-                            countAssetObj.CountAssetsByHospital = item.CountMasterId;
-                            list.Add(countAssetObj);
-                        }
+                        CountAssetVM countAssetObj = new CountAssetVM();
+                        countAssetObj.AssetName = item.Name;
+                        countAssetObj.AssetNameAr = item.NameAr;
+                        countAssetObj.AssetPrice = item.AssetPrice;
+                        countAssetObj.CountAssetsByHospital = item.CountMasterId;
+                        list.Add(countAssetObj);
                     }
                 }
-            
+            }
+
             return list;
+        }
+
+        public IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes()
+        {
+            List<IndexAssetDetailVM.GetData> lstAssetDetails = new List<IndexAssetDetailVM.GetData>();
+            var allAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset)
+                .Include(a => a.Hospital)
+                .Include(a => a.Hospital.Governorate)
+                .Include(a => a.Hospital.City).OrderBy(a => a.Id).ToList();
+
+            if (allAssetDetails.Count > 0)
+            {
+                foreach (var itm in allAssetDetails)
+                {
+
+                    if (itm.WarrantyEnd.HasValue && itm.WarrantyEnd != null)
+                    {
+                        IndexAssetDetailVM.GetData item = new IndexAssetDetailVM.GetData();
+                        item.Id = itm.Id;
+                        item.Code = itm.Code;
+                        item.Model = itm.MasterAsset.ModelNumber;
+                        item.Price = itm.Price;
+                        item.Serial = itm.SerialNumber;
+                        item.BarCode = itm.Barcode;
+                        item.SerialNumber = itm.SerialNumber;
+                        item.PurchaseDate = itm.PurchaseDate;
+                        item.SupplierId = itm.SupplierId;
+                        item.DepartmentId = itm.DepartmentId;
+                        item.AssetName = itm.MasterAssetId > 0 ? itm.MasterAsset.Name : "";
+                        item.AssetNameAr = itm.MasterAssetId > 0 ? itm.MasterAsset.NameAr : "";
+                                           var ValidToDate = itm.WarrantyEnd.Value;
+                        var expiriesInDays = (int)(ValidToDate - DateTime.Now).TotalDays;
+                        if (expiriesInDays <= 90)
+                        {
+                            item.EndWarrantyDate = expiriesInDays.ToString();
+                        }
+                        lstAssetDetails.Add(item);
+                    }
+                }
+            }
+            lstAssetDetails.RemoveAll(s => s.EndWarrantyDate == null);
+            return lstAssetDetails;
+        }
+
+        public IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes(int duration)
+        {
+            if (duration == 1)
+                duration = 30;
+            if (duration == 2)
+                duration = 60;
+            if (duration == 3)
+                duration = 90;
+
+
+            List<IndexAssetDetailVM.GetData> lstAssetDetails = new List<IndexAssetDetailVM.GetData>();
+            var allAssetDetails = _context.AssetDetails.Include(a => a.MasterAsset)
+                .Include(a => a.Hospital)
+                .Include(a => a.Hospital.Governorate)
+                .Include(a => a.Hospital.City).OrderBy(a => a.Id).ToList();
+
+            if (allAssetDetails.Count > 0)
+            {
+                foreach (var itm in allAssetDetails)
+                {
+
+                    if (itm.WarrantyEnd.HasValue && itm.WarrantyEnd != null)
+                    {
+                        IndexAssetDetailVM.GetData item = new IndexAssetDetailVM.GetData();
+                        item.Id = itm.Id;
+                        item.Code = itm.Code;
+                        item.Model = itm.MasterAsset.ModelNumber;
+                        item.Price = itm.Price;
+                        item.Serial = itm.SerialNumber;
+                        item.BarCode = itm.Barcode;
+                        item.SerialNumber = itm.SerialNumber;
+                        item.PurchaseDate = itm.PurchaseDate;
+                        item.SupplierId = itm.SupplierId;
+                        item.DepartmentId = itm.DepartmentId;
+                        item.AssetName = itm.MasterAssetId > 0 ? itm.MasterAsset.Name : "";
+                        item.AssetNameAr = itm.MasterAssetId > 0 ? itm.MasterAsset.NameAr : "";
+                        var ValidToDate = itm.WarrantyEnd.Value;
+                        var expiriesInDays = (int)(ValidToDate - DateTime.Now).TotalDays;
+                        if (expiriesInDays <= duration)
+                        {
+                            item.EndWarrantyDate = expiriesInDays.ToString();
+                        }
+                        lstAssetDetails.Add(item);
+                    }
+                }
+            }
+            lstAssetDetails.RemoveAll(s => s.EndWarrantyDate == null);
+            return lstAssetDetails;
         }
     }
 }

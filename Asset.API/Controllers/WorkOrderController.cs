@@ -401,6 +401,11 @@ namespace Asset.API.Controllers
                     else
                         headertable.AddCell(new PdfPCell(new Phrase("Ministry of Health and Population" + "\n" + searchWorkOrderObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
 
+                    //if (searchWorkOrderObj.Lang == "ar")
+                    //    headertable.AddCell(new PdfPCell(new Phrase(" " + searchWorkOrderObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });
+                    //else
+                    //    headertable.AddCell(new PdfPCell(new Phrase(" " + searchWorkOrderObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+
                     headertable.WriteSelectedRows(0, -1, 420, 580, stamper.GetOverContent(i));
 
                     System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);

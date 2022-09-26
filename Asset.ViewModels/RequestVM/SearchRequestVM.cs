@@ -9,7 +9,7 @@ namespace Asset.ViewModels.RequestVM
 {
     public class SearchRequestVM
     {
-
+        public int? DepartmentId { get; set; }
         public int? StatusId { get; set; }
         public int? PeriorityId { get; set; }
         public int? ModeId { get; set; }

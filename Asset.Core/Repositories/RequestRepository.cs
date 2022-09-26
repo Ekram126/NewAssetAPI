@@ -158,6 +158,9 @@ namespace Asset.Core.Repositories
                 requestDTO.Subject = req.Subject;
                 requestDTO.RequestCode = req.RequestCode;
                 requestDTO.AssetCode = req.AssetDetail.Code;
+
+                requestDTO.AssetDetailId = int.Parse(req.AssetDetailId.ToString());
+
                 requestDTO.Barcode = req.AssetDetail.Barcode;
                 requestDTO.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
                 requestDTO.Description = req.Description;
@@ -1730,6 +1733,7 @@ namespace Asset.Core.Repositories
                             .Include(a => a.RequestMode)
                             .Include(a => a.User)
                             .Include(a => a.AssetDetail)
+                            .Include(a => a.AssetDetail.Department)
                             .Include(a => a.AssetDetail.MasterAsset)
                             .Include(a => a.AssetDetail.Hospital)
                             .ToList();
@@ -1825,6 +1829,12 @@ namespace Asset.Core.Repositories
                     getDataObj.ModeNameAr = item.RequestMode.NameAr;
                 }
 
+                if (item.AssetDetail.DepartmentId != null)
+                {
+                    getDataObj.DepartmentId = item.AssetDetail.Department.Id;
+                    getDataObj.ModeName = item.AssetDetail.Department.Name;
+                    getDataObj.ModeNameAr = item.AssetDetail.Department.NameAr;
+                }
 
                 if (item.RequestPeriorityId != null)
                 {
@@ -1892,6 +1902,13 @@ namespace Asset.Core.Repositories
             if (searchObj.HospitalId != 0)
             {
                 lstData = lstData.Where(a => a.HospitalId == searchObj.HospitalId).ToList();
+            }
+            else
+                lstData = lstData.ToList();
+
+            if (searchObj.DepartmentId != 0)
+            {
+                lstData = lstData.Where(a => a.DepartmentId == searchObj.DepartmentId).ToList();
             }
             else
                 lstData = lstData.ToList();
@@ -1987,7 +2004,7 @@ namespace Asset.Core.Repositories
             }
             if (searchObj.Start != "" && searchObj.End != "")
             {
-                lstData = lstData.Where(a => a.RequestDate >= startingFrom && a.RequestDate <= endingTo).ToList();
+                lstData = lstData.Where(a => a.RequestDate.Date >= startingFrom.Date && a.RequestDate.Date <= endingTo.Date).ToList();
             }
 
             return lstData;
@@ -5492,7 +5509,7 @@ namespace Asset.Core.Repositories
                                         .Include(a => a.RequestPeriority)
                                         .Include(a => a.RequestType)
                                         .Include(a => a.AssetDetail.MasterAsset)
-                                        .OrderByDescending(a => a.RequestDate.Date)
+                                        .OrderByDescending(a => a.RequestDate)
                                         .AsQueryable();
 
             var allrequests = requests.ToList<Request>();

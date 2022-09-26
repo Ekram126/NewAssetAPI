@@ -21,9 +21,21 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexAssetDetailVM.GetData> GetAll();
         IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByAssetId(int assetId);
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetDetailsByUserId(string userId);
+
+        Task<IndexAssetDetailVM> GetAssetDetailsByUserId2(int pageNumber, int pageSize,string userId);
+
+
+
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetsByUserId(string userId);
-        IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(SearchMasterAssetVM searchObj);
+       // IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
+
+        IndexAssetDetailVM SearchAssetInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
+
+
         IEnumerable<IndexAssetDetailVM.GetData> GetAllAssetsByStatusId(int statusId, string userId);
+
+        IndexAssetDetailVM GetAllAssetsByStatusId(int pageNumber, int pageSize, int statusId, string userId);
+
         IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj);
         IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId);
         IEnumerable<AssetDetail> GetAllSerialsByMasterAssetIdAndHospitalId(int masterAssetId, int hospitalId);
@@ -31,6 +43,9 @@ namespace Asset.Domain.Repositories
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetNoneExcludedAssetsByHospitalId(int hospitalId);
 
+
+        IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes();
+        IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes(int duration);
 
 
 

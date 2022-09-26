@@ -1272,8 +1272,10 @@ namespace Asset.Core.Repositories
 
                 if (lstTracks.Count > 0)
                 {
-                    printWorkObj.LastWorkOrder = lstTracks.Where(a => a.WorkOrderStatusId == 11).Last().Notes;
-
+                    if (lstTracks.Where(a => a.WorkOrderStatusId == 11).ToList().Count > 0)
+                    {
+                        printWorkObj.LastWorkOrder = lstTracks.Where(a => a.WorkOrderStatusId == 11).Last().Notes;
+                    }
                     foreach (var item in lstTracks)
                     {
                         LstWorkOrderFromTracking trackObj = new LstWorkOrderFromTracking();
@@ -1360,6 +1362,7 @@ namespace Asset.Core.Repositories
             var list = _context.WorkOrders.Include(w => w.Request).Include(a => a.Request.AssetDetail)
                .Include(a => a.Request.RequestType).Include(a => a.Request.SubProblem).Include(a => a.Request.SubProblem.Problem)
                .Include(a => a.Request.RequestMode)
+                .Include(a => a.Request.AssetDetail.Department)
                  .Include(a => a.Request.AssetDetail)
                .Include(a => a.Request.AssetDetail.Hospital)
                .Include(a => a.Request.AssetDetail.MasterAsset)
@@ -1465,6 +1468,13 @@ namespace Asset.Core.Repositories
                     getDataObj.PeriorityNameAr = item.WorkOrderPeriority.NameAr;
 
                 }
+                if (item.Request.AssetDetail.DepartmentId != null)
+                {
+                    getDataObj.DepartmentId = (int)item.Request.AssetDetail.DepartmentId;
+                    getDataObj.DepartmentName = item.Request.AssetDetail.Department.Name;
+                    getDataObj.DepartmentNameAr = item.Request.AssetDetail.Department.NameAr;
+
+                }
                 lstData.Add(getDataObj);
             }
             if (lstData.Count > 0)
@@ -1475,6 +1485,16 @@ namespace Asset.Core.Repositories
                 }
                 else
                     lstData = lstData.ToList();
+
+
+                if (searchObj.DepartmentId != 0)
+                {
+                    lstData = lstData.Where(a => a.DepartmentId == searchObj.DepartmentId).ToList();
+                }
+                else
+                    lstData = lstData.ToList();
+
+
 
                 if (searchObj.PeriorityId != null)
                 {
@@ -1597,7 +1617,7 @@ namespace Asset.Core.Repositories
 
                 if (searchObj.Start != "" && searchObj.End != "")
                 {
-                    lstData = lstData.Where(a => a.PlannedStartDate >= startingFrom && a.PlannedStartDate <= endingTo).ToList();
+                    lstData = lstData.Where(a => a.PlannedStartDate.Value.Date >= startingFrom.Date && a.PlannedStartDate.Value.Date <= endingTo.Date).ToList();
                 }
             }
 
@@ -2922,6 +2942,7 @@ namespace Asset.Core.Repositories
             documentObj.DocumentName = attachObj.DocumentName;
             documentObj.FileName = attachObj.FileName;
             documentObj.WorkOrderTrackingId = attachObj.WorkOrderTrackingId;
+            documentObj.HospitalId = attachObj.HospitalId;
             _context.WorkOrderAttachments.Add(documentObj);
             _context.SaveChanges();
             return attachObj.Id;

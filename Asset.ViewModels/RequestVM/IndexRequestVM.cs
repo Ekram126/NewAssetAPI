@@ -16,8 +16,9 @@ namespace Asset.ViewModels.RequestVM
         public int Count { get; set; }
         public class GetData
         {
- //public int Count { get; set; }
+            //public int Count { get; set; }
             public int Id { get; set; }
+            public int DepartmentId { get; set; }
             public int RequestId { get; set; }
             public string Subject { get; set; }
             public string RequestCode { get; set; }
