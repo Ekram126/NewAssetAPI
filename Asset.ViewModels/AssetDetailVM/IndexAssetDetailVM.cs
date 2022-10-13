@@ -56,6 +56,9 @@ namespace Asset.ViewModels.AssetDetailVM
             public string SupplierNameAr { get; set; }
 
 
+            public string DepartmentName { get; set; }
+            public string DepartmentNameAr { get; set; }
+
             public int? EmployeeId { get; set; }
             public int? PeriorityId { get; set; }
             public int? OriginId { get; set; }

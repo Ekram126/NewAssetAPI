@@ -22,8 +22,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Asset.API.Helpers;
 using System.Data.Entity;
-
-
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.Globalization;
+using System.Net.Http;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace Asset.API.Controllers
 {
@@ -41,16 +45,18 @@ namespace Asset.API.Controllers
         private IPMAssetTimeService _pMAssetTimeService;
         private IPagingService _pagingService;
         private QrController _qrController;
+        IWebHostEnvironment _webHostingEnvironment;
+        string strInsitute, strInsituteAr, strLogo = "";
+        private readonly ISettingService _settingService;
 
-        [Obsolete]
-        IHostingEnvironment _webHostingEnvironment;
+        //[Obsolete]
+        //IHostingEnvironment _webHostingEnvironment;
         // private object ComponentInfo;
 
         [Obsolete]
         public AssetDetailController(IAssetDetailService AssetDetailService, IAssetOwnerService assetOwnerService,
             IPMAssetTimeService pMAssetTimeService, IPagingService pagingService, IAssetMovementService assetMovementService,
-            QrController qrController, IRequestService requestService,
-            IHostingEnvironment webHostingEnvironment)
+            QrController qrController, IRequestService requestService, IWebHostEnvironment webHostingEnvironment, ISettingService settingService)
         {
             _AssetDetailService = AssetDetailService;
             _assetMovementService = assetMovementService;
@@ -60,6 +66,7 @@ namespace Asset.API.Controllers
             _pMAssetTimeService = pMAssetTimeService;
             _pagingService = pagingService;
             _qrController = qrController;
+            _settingService = settingService;
         }
         [HttpGet]
         [Route("ListAssetDetails")]
@@ -68,28 +75,18 @@ namespace Asset.API.Controllers
             return _AssetDetailService.GetAll();
         }
 
-
-
-
-
         [HttpPost]
         [Route("GetHospitalAssets/{hospitalId}/{statusId}/{userId}/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId, int page, int pageSize, Sort sortObj)
         {
             return _AssetDetailService.GetHospitalAssets(hospitalId, statusId, userId, page, pageSize, sortObj);
         }
-
         [HttpPost]
         [Route("CountHospitalAssets/{hospitalId}/{statusId}/{userId}/{pagenumber}/{pagesize}")]
         public int CountHospitalAssets(int hospitalId, int statusId, string userId, int page, int pageSize, Sort sortObj)
         {
             return _AssetDetailService.GetHospitalAssets(hospitalId, statusId, userId, page, pageSize, sortObj).Count();
         }
-
-
-
-
-
 
         [HttpPut]
         [Route("ListAssetDetailsWithPaging")]
@@ -126,7 +123,12 @@ namespace Asset.API.Controllers
         }
 
 
-
+        [HttpGet]
+        [Route("GetAssetHistoryById/{assetId}")]
+        public ViewAssetDetailVM GetAssetHistoryById(int assetId)
+        {
+            return _AssetDetailService.GetAssetHistoryById(assetId);
+        }
 
 
 
@@ -172,6 +174,13 @@ namespace Asset.API.Controllers
             return lstAssets;
         }
 
+        [HttpPost]
+        [Route("SearchHospitalAssetsByDepartmentId/{departmentId}/{userId}/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM SearchHospitalAssetsByDepartmentId(int departmentId, string userId, int pageNumber, int pageSize)
+        {
+            var lstAssets = _AssetDetailService.SearchHospitalAssetsByDepartmentId(departmentId, userId, pageNumber, pageSize);
+            return lstAssets;
+        }
 
 
         [HttpPost]
@@ -181,7 +190,13 @@ namespace Asset.API.Controllers
             var list = _AssetDetailService.SearchAssetInHospital(pagenumber, pagesize, searchObj);
             return list;// _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
         }
-
+        [HttpPost]
+        [Route("FilterDataByDepartmentBrandSupplierId")]
+        public List<IndexAssetDetailVM.GetData> FilterDataByDepartmentBrandSupplierId(FilterHospitalAsset data)
+        {
+            var list = _AssetDetailService.FilterDataByDepartmentBrandSupplierId(data);
+            return list;
+        }
 
 
         [HttpGet]
@@ -210,28 +225,18 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.ViewAssetDetailByMasterId(masterId);
         }
-
-
-
-
         [HttpGet]
         [Route("AlertAssetsBefore3Monthes")]
         public IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes()
         {
             return _AssetDetailService.AlertAssetsBefore3Monthes();
         }
-
-
         [HttpGet]
         [Route("AlertAssetsBefore3MonthesWithDuration/{duration}")]
         public IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes(int duration)
         {
             return _AssetDetailService.AlertAssetsBefore3Monthes(duration);
         }
-
-
-
-
         [HttpGet]
         [Route("ViewAllAssetDetailByMasterId/{MasterAssetId}")]
         public IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId)
@@ -281,9 +286,6 @@ namespace Asset.API.Controllers
             var AssetDetail = _AssetDetailService.GetAssetDetailsByUserId(userId).Result.ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, AssetDetail);
         }
-
-
-
         [HttpPost]
         [Route("GetAssetDetailsByUserIdWithPaging2/{pagenumber}/{pagesize}/{userId}")]
         public async Task<IndexAssetDetailVM> GetAssetDetailsByUserId2(int pageNumber, int pageSize, string userId)
@@ -415,7 +417,6 @@ namespace Asset.API.Controllers
             }
             return StatusCode(StatusCodes.Status201Created);
         }
-
         [HttpGet]
         [Route("GetOwnersByAssetDetailId/{assetDetailId}")]
         public List<AssetOwner> GetOwnersByAssetDetailId(int assetDetailId)
@@ -429,7 +430,6 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.GetAttachmentByAssetDetailId(assetId);
         }
-
         [HttpDelete]
         [Route("DeleteAssetDetailAttachment/{id}")]
         public int DeleteAssetDetailAttachment(int id)
@@ -442,62 +442,42 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.CountAssetsByHospital();
         }
-
         [HttpGet]
         [Route("ListTopAssetsByHospitalId/{hospitalId}")]
         public IEnumerable<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId)
         {
             return _AssetDetailService.ListTopAssetsByHospitalId(hospitalId);
         }
-
-
-
         [HttpGet]
         [Route("ListAssetsByGovernorateIds")]
         public IEnumerable<CountAssetVM> ListAssetsByGovernorateIds()
         {
             return _AssetDetailService.ListAssetsByGovernorateIds();
         }
-
         [HttpGet]
         [Route("ListAssetsByCityIds")]
         public IEnumerable<CountAssetVM> ListAssetsByCityIds()
         {
             return _AssetDetailService.ListAssetsByCityIds();
         }
-
-
-
-
         [HttpGet]
         [Route("CountAssetsInHospitalByHospitalId/{hospitalId}")]
         public IEnumerable<CountAssetVM> CountAssetsInHospitalByHospitalId(int hospitalId)
         {
             return _AssetDetailService.CountAssetsInHospitalByHospitalId(hospitalId);
         }
-
-
-
-
-
-
-
-
-
         [HttpGet]
         [Route("CountAssetsByHospitalId/{hospitalId}")]
         public int CountAssetsByHospitalId(int hospitalId)
         {
             return _AssetDetailService.CountAssetsByHospitalId(hospitalId);
         }
-
         [HttpGet]
-        [Route("Group/{masterId}")]
-        public IEnumerable<PmDateGroupVM> GetEquimentswithgrouping(int masterId)
+        [Route("Group/{assetId}")]
+        public IEnumerable<PmDateGroupVM> GetEquimentswithgrouping(int assetId)
         {
-            return _AssetDetailService.GetAllwithgrouping(masterId);
+            return _AssetDetailService.GetAllwithgrouping(assetId);
         }
-
         [HttpGet]
         [Route("MonthDiff/{d1}/{d2}")]
         public int MonthDiff(DateTime d1, DateTime d2)
@@ -517,12 +497,17 @@ namespace Asset.API.Controllers
 
             return m1 + m2;
         }
-
         [Route("FilterAsset")]
         [HttpPost]
         public ActionResult<List<IndexAssetDetailVM.GetData>> FilterAsset(filterDto data)
         {
             return _AssetDetailService.FilterAsset(data);
+        }
+        [HttpPost]
+        [Route("GetAssetByDepartment")]
+        public ActionResult<List<DepartmentGroupVM>> GetAssetByDepartment(List<IndexAssetDetailVM.GetData> AssetModel)
+        {
+            return _AssetDetailService.GetAssetByDepartment(AssetModel);
         }
         [HttpPost]
         [Route("GetAssetByBrands")]
@@ -570,8 +555,6 @@ namespace Asset.API.Controllers
             var list = _AssetDetailService.SortAssets(sortObj);
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list.ToList());
         }
-
-
         [HttpPost]
         [Route("SortAssetsCount")]
         public int SortAssets(Sort sortObj)
@@ -582,7 +565,6 @@ namespace Asset.API.Controllers
             var count = list.Count();
             return count;
         }
-
         [HttpGet]
         [Route("GetAssetsByAgeGroup/{hospitalId}")]
         public List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)
@@ -598,13 +580,374 @@ namespace Asset.API.Controllers
             return list;
         }
 
-
-
-
         [Route("GetLastDocumentForAssetDetailId/{assetDetailId}")]
         public AssetDetailAttachment GetLastDocumentForWorkOrderTrackingId(int assetDetailId)
         {
             return _AssetDetailService.GetLastDocumentForAssetDetailId(assetDetailId);
         }
+
+        [HttpPost]
+        [Route("CreateAssetDepartmentBrandSupplierPDF")]
+        public void CreateAssetDepartmentBrandSupplierPDF(FilterHospitalAsset filterHospitalAssetObj)
+        {
+
+            var lstSettings = _settingService.GetAll().ToList();
+            if (lstSettings.Count > 0)
+            {
+                foreach (var item in lstSettings)
+                {
+                    if (item.KeyName == "Institute")
+                    {
+                        strInsitute = item.KeyValue;
+                        strInsituteAr = item.KeyValueAr;
+                    }
+
+                    if (item.KeyName == "Logo")
+                        strLogo = item.KeyValue;
+                }
+            }
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            iTextSharp.text.Document document = new iTextSharp.text.Document();
+            System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
+            PdfWriter writer = PdfWriter.GetInstance(document, memoryStream);
+            document.NewPage();
+            document.Open();
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            string adobearabic = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
+            BaseFont bfUniCode = BaseFont.CreateFont(adobearabic, BaseFont.IDENTITY_H, true);
+            iTextSharp.text.Font font = new iTextSharp.text.Font(bfUniCode, 14);
+
+            Phrase ph = new Phrase(" ", font);
+            document.Add(ph);
+
+            PdfPTable bodytable = AssetDepartmentBrandSupplier(filterHospitalAssetObj);
+            int countnewpages = bodytable.Rows.Count / 25;
+            for (int i = 1; i <= countnewpages; i++)
+            {
+                document.NewPage();
+                writer.PageEmpty = false;
+            }
+
+            document.Close();
+            byte[] bytes = memoryStream.ToArray();
+            System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/AssetDetails/FilterAssetDetails/FilterAssetDetails.pdf", bytes);
+
+
+            memoryStream = new MemoryStream();
+            PdfReader reader = new PdfReader(bytes);
+            using (PdfStamper stamper = new PdfStamper(reader, memoryStream))
+            {
+                int pages = reader.NumberOfPages;
+                //Footer
+                for (int i = 1; i <= pages; i++)
+                {
+                    ColumnText.ShowTextAligned(stamper.GetUnderContent(i), Element.ALIGN_LEFT, new Phrase(ArabicNumeralHelper.toArabicNumber(pages.ToString()) + "/" + ArabicNumeralHelper.toArabicNumber(i.ToString()), font), 800f, 15f, 0);
+                    ColumnText.ShowTextAligned(stamper.GetUnderContent(i), Element.ALIGN_RIGHT, new Phrase("تمت الطباعة بواسطة  " + filterHospitalAssetObj.PrintedBy, font), 150f, 15f, 0, PdfWriter.RUN_DIRECTION_RTL, ColumnText.AR_LIG);
+                }
+                //Header
+                for (int i = 1; i <= pages; i++)
+                {
+                    string imageURL = _webHostingEnvironment.ContentRootPath + "/Images/" + strLogo;
+                    iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(imageURL);
+                    jpg.ScaleAbsolute(70f, 50f);
+                    PdfPTable headertable = new PdfPTable(2);
+                    headertable.SetTotalWidth(new float[] { 250f, 50f });
+                    headertable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                    headertable.WidthPercentage = 100;
+                    PdfPCell cell = new PdfPCell(new PdfPCell(jpg));
+                    //cell.Rowspan = 2;
+                    cell.PaddingTop = 5;
+                    cell.Border = Rectangle.NO_BORDER;
+                    cell.PaddingRight = 10;
+                    //cell.HorizontalAlignment = 2; //0=Left, 1=Centre, 2=Right
+                    headertable.AddCell(cell);
+
+                    if (filterHospitalAssetObj.Lang == "ar")
+                    {
+                        headertable.AddCell(new PdfPCell(new Phrase("\t\t\t\t " + strInsituteAr + "\n" + filterHospitalAssetObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+                    }
+                    else
+                        headertable.AddCell(new PdfPCell(new Phrase(" " + strInsitute + "\n" + filterHospitalAssetObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+                    headertable.WriteSelectedRows(0, -1, 270, 830, stamper.GetOverContent(i));
+
+                    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+                    string adobearabicheaderTitle = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
+                    BaseFont bfUniCodeheaderTitle = BaseFont.CreateFont(adobearabicheaderTitle, BaseFont.IDENTITY_H, true);
+                    iTextSharp.text.Font titlefont = new iTextSharp.text.Font(bfUniCodeheaderTitle, 13);
+                    titlefont.SetStyle("bold");
+
+
+                    PdfPTable titleTable = new PdfPTable(1);
+                    titleTable.SetTotalWidth(new float[] { 600f });
+                    titleTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                    titleTable.WidthPercentage = 100;
+                    titleTable.AddCell(new PdfPCell(new Phrase("تقرير الأجهزة بالأقسام والموردين والماركات", titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+                    if (filterHospitalAssetObj.Start == "")
+                        filterHospitalAssetObj.Start = "01/01/1900";
+
+                    var sDate = DateTime.Parse(filterHospitalAssetObj.Start);
+                    var sday = ArabicNumeralHelper.toArabicNumber(sDate.Day.ToString());
+                    var smonth = ArabicNumeralHelper.toArabicNumber(sDate.Month.ToString());
+                    var syear = ArabicNumeralHelper.toArabicNumber(sDate.Year.ToString());
+                    var strStart = sday + "/" + smonth + "/" + syear;
+
+                    if (filterHospitalAssetObj.End == "")
+                        filterHospitalAssetObj.End = DateTime.Today.Date.ToShortDateString();
+
+                    var eDate = DateTime.Parse(filterHospitalAssetObj.End);
+                    var eday = ArabicNumeralHelper.toArabicNumber(eDate.Day.ToString());
+                    var emonth = ArabicNumeralHelper.toArabicNumber(eDate.Month.ToString());
+                    var eyear = ArabicNumeralHelper.toArabicNumber(eDate.Year.ToString());
+                    var strEnd = eday + "/" + emonth + "/" + eyear;
+
+                    titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من" + strStart + " إلى " + strEnd, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+                    titleTable.WriteSelectedRows(0, -1, 0, 760, stamper.GetOverContent(i));
+                }
+                for (int i = 1; i <= pages; i++)
+                {
+                    PdfPTable bodytable2 = new PdfPTable(8);
+                    bodytable2.SetTotalWidth(new float[] { 70f, 70f, 70f, 70f, 70f, 70f, 70f, 70f });
+                    bodytable2.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                    bodytable2.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    bodytable2.WidthPercentage = 100;
+                    bodytable2.PaddingTop = 200;
+                    bodytable2.HeaderRows = 1;
+
+                    bodytable2.SetWidths(new int[] { 25, 25, 25, 25, 25, 25, 25, 7 });
+                    int countRows = bodytable.Rows.Count;
+                    if (countRows > 25)
+                    {
+                        countRows = 25;
+                    }
+                    bodytable2.Rows.Add(bodytable.Rows[0]);
+                    for (int j = 1; j <= countRows - 1; j++)
+                    {
+                        bodytable2.Rows.Add(bodytable.Rows[j]);
+                    }
+                    for (int k = 1; k <= bodytable2.Rows.Count; k++)
+                    {
+                        bodytable.DeleteRow(1);
+                    }
+                    bodytable2.WriteSelectedRows(0, -1, 10, 700, stamper.GetUnderContent(i));
+                }
+            }
+            bytes = memoryStream.ToArray();
+            System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/AssetDetails/FilterAssetDetails/FilterAssetDetails.pdf", bytes);
+            memoryStream.Close();
+            document.Close();
+
+        }
+        public PdfPTable AssetDepartmentBrandSupplier(FilterHospitalAsset filterHospitalAssetObj)
+        {
+           
+            var lstData = _AssetDetailService.FilterDataByDepartmentBrandSupplierId(filterHospitalAssetObj).ToList();
+            PdfPTable table = new PdfPTable(8);
+            table.SetTotalWidth(new float[] { 70f, 70f, 70f, 70f, 70f, 70f, 70f, 70f });
+            table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+            table.HorizontalAlignment = Element.ALIGN_RIGHT;
+            table.WidthPercentage = 100;
+            table.PaddingTop = 200;
+            table.HeaderRows = 1;
+            table.SetWidths(new int[] { 25, 25, 25, 25, 25, 25, 25, 7 });
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            string ARIALUNI_TFF = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
+            BaseFont bfArialUniCode = BaseFont.CreateFont(ARIALUNI_TFF, BaseFont.IDENTITY_H, true);
+            iTextSharp.text.Font font = new iTextSharp.text.Font(bfArialUniCode, 10);
+
+
+            if (filterHospitalAssetObj.selectedElement == "supplier" || filterHospitalAssetObj.selectedElement == "المورد")
+            {
+                var lstAssetsByBrand = _AssetDetailService.GetAssetBySupplier(lstData).ToList();
+                foreach (var item in lstAssetsByBrand)
+                {
+                   // table.AddCell(new PdfPCell(new Phrase(item.NameAr, font)) { PaddingBottom = 5, Colspan = 8 });
+
+                    PdfPCell c1 = new PdfPCell(new Phrase(item.NameAr, font));
+                    c1.Colspan =8;
+                    table.AddCell(c1);
+
+
+
+                    string[] col = { "المورد", "الماركة", "القسم", "الموديل", "السيريال", "الباركود", "الاسم", "م" };
+                    string[] encol = { "No.", "Name", "Barcode", "Serial", "Model", "Department", "Brand", "Supplier" };
+                    if (filterHospitalAssetObj.Lang == "ar")
+                    {
+                        for (int i = col.Length - 1; i >= 0; i--)
+                        {
+                            PdfPCell cell = new PdfPCell(new Phrase(col[i], font));
+                            cell.BackgroundColor = new iTextSharp.text.BaseColor(153, 204, 255);
+                            cell.PaddingBottom = 10;
+                            table.AddCell(cell);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i <= encol.Length - 1; i++)
+                        {
+                            PdfPCell cell = new PdfPCell(new Phrase(encol[i]));
+                            cell.BackgroundColor = new iTextSharp.text.BaseColor(153, 204, 255);
+                            cell.PaddingBottom = 10;
+                            table.AddCell(cell);
+                        }
+                    }
+                    if (item.AssetList.Count > 0)
+                    {
+                        int index = 0;
+                        foreach (var groupItems in item.AssetList)
+                        {
+                            ++index;
+                            table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font)) { PaddingBottom = 5 });
+                            table.AddCell(new PdfPCell(new Phrase(groupItems.AssetNameAr, font)) { PaddingBottom = 5 });
+                            table.AddCell(new PdfPCell(new Phrase(groupItems.Barcode, font)) { PaddingBottom = 5 });
+                            table.AddCell(new PdfPCell(new Phrase(groupItems.SerialNumber, font)) { PaddingBottom = 5 });
+                            table.AddCell(new PdfPCell(new Phrase(groupItems.Model, font)) { PaddingBottom = 5 });
+                            table.AddCell(new PdfPCell(new Phrase(groupItems.DepartmentNameAr, font)) { PaddingBottom = 5 });
+                            table.AddCell(new PdfPCell(new Phrase(groupItems.BrandNameAr, font)) { PaddingBottom = 5 });
+                            table.AddCell(new PdfPCell(new Phrase(groupItems.SupplierNameAr, font)) { PaddingBottom = 5 });
+                            if (groupItems.PurchaseDate != null)
+                                table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(groupItems.PurchaseDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+                            else
+                                table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+                        }
+                    }
+                }
+            }
+            //if (filterHospitalAssetObj.selectedElement == "brand" || filterHospitalAssetObj.selectedElement == "الصانع")
+            //{
+            //    var lstAssetsByBrand = _AssetDetailService.GetAssetByBrands(lstData).ToList();
+            //    foreach (var item in lstAssetsByBrand)
+            //    {
+            //        // table.AddCell(new PdfPCell(new Phrase(item.NameAr, font)) { PaddingBottom = 5, Colspan = 8 });
+
+            //        PdfPCell c1 = new PdfPCell(new Phrase(item.NameAr, font));
+            //        c1.Colspan = 8;
+            //        table.AddCell(c1);
+
+            //        foreach (var groupItems in item.AssetList)
+            //        {
+            //           // ++index;
+            //           // table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.AssetNameAr, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.Barcode, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.SerialNumber, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.Model, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.DepartmentNameAr, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.BrandNameAr, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.SupplierNameAr, font)) { PaddingBottom = 5 });
+            //            if (groupItems.PurchaseDate != null)
+            //                table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(groupItems.PurchaseDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+            //            else
+            //                table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+            //        }
+            //    }
+            //}
+            //if (filterHospitalAssetObj.selectedElement == "Department" || filterHospitalAssetObj.selectedElement == "القسم")
+            //{
+            //    var lstAssetsByBrand = _AssetDetailService.GetAssetByDepartment(lstData).ToList();
+            //    foreach (var item in lstAssetsByBrand)
+            //    {
+            //        // table.AddCell(new PdfPCell(new Phrase(item.NameAr, font)) { PaddingBottom = 5, Colspan = 8 });
+
+            //        PdfPCell c1 = new PdfPCell(new Phrase(item.NameAr, font));
+            //        c1.Colspan = 8;
+            //        table.AddCell(c1);
+
+            //        foreach (var groupItems in item.AssetList)
+            //        {
+            //            ++index;
+            //            table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.AssetNameAr, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.Barcode, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.SerialNumber, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.Model, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.DepartmentNameAr, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.BrandNameAr, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(groupItems.SupplierNameAr, font)) { PaddingBottom = 5 });
+            //            if (groupItems.PurchaseDate != null)
+            //                table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(groupItems.PurchaseDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+            //            else
+            //                table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+            //        }
+            //    }
+            //}
+            //else
+            //{
+
+            //    foreach (var item in lstData)
+            //    {
+            //        //  table.AddCell(new PdfPCell(new Phrase("R3C1-4")) { Colspan = 8 });
+            //        ++index;
+            //        if (filterHospitalAssetObj.Lang == "ar")
+            //        {
+            //            table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.AssetNameAr, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.Barcode, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.SerialNumber, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.Model, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.DepartmentNameAr, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.BrandNameAr, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.SupplierNameAr, font)) { PaddingBottom = 5 });
+            //            if (item.PurchaseDate != null)
+            //                table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.PurchaseDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+            //            else
+            //                table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+            //        }
+            //        else
+            //        {
+            //            table.AddCell(new PdfPCell(new Phrase(index.ToString(), font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.AssetName, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.Barcode, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.SerialNumber, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.Model, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.DepartmentName, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.BrandName, font)) { PaddingBottom = 5 });
+            //            table.AddCell(new PdfPCell(new Phrase(item.SupplierName, font)) { PaddingBottom = 5 });
+            //            if (item.PurchaseDate != null)
+            //                table.AddCell(new PdfPCell(new Phrase(DateTime.Parse(item.PurchaseDate.ToString()).ToString("g", new CultureInfo("en-US")), font)) { PaddingBottom = 5 });
+            //            else
+            //                table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+            //        }
+            //    }
+            //}
+
+            return table;
+        }
+
+        [HttpGet]
+        [Route("DownloadAssetDepartmentBrandSupplierPDF")]
+        public HttpResponseMessage DownloadFile()
+        {
+            var file = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/AssetDetails/FilterAssetDetails/FilterAssetDetails.pdf";
+
+
+
+
+            HttpResponseMessage response = null;
+            if (!System.IO.File.Exists(file))
+                System.IO.Directory.CreateDirectory(file);
+            //return new HttpResponseMessage(HttpStatusCode.Gone);
+            else
+            {
+                //if file present than read file 
+                var fStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                //compose response and include file as content in it
+                response = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StreamContent(fStream)
+                };
+                response.Content.Headers.ContentDisposition =
+                                            new ContentDispositionHeaderValue("attachment")
+                                            {
+                                                FileName = Path.GetFileName(fStream.Name)
+                                            };
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            }
+            return response;
+        }
+
+
     }
 }

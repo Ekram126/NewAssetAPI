@@ -30,12 +30,17 @@ namespace Asset.API.Controllers
         IWebHostEnvironment _webHostingEnvironment;
         private IWorkOrderTrackingService _workOrderTackingService;
 
-        public WorkOrderController(IWorkOrderService workOrderService, IWorkOrderTrackingService workOrderTackingService, IPagingService pagingService, IWebHostEnvironment webHostingEnvironment)
+        string strInsitute, strInsituteAr, strLogo = "";
+        private readonly ISettingService _settingService;
+
+
+        public WorkOrderController(IWorkOrderService workOrderService, IWorkOrderTrackingService workOrderTackingService, IPagingService pagingService, IWebHostEnvironment webHostingEnvironment, ISettingService settingService)
         {
             _workOrderService = workOrderService;
             _workOrderTackingService = workOrderTackingService;
             _pagingService = pagingService;
             _webHostingEnvironment = webHostingEnvironment;
+            _settingService = settingService;
         }
         // GET: api/<WorkOrderController>
         [HttpGet]
@@ -343,6 +348,21 @@ namespace Asset.API.Controllers
         [Route("CreateWOReportWithinDatePDF")]
         public void CreateWOReportWithinDatePDF(SearchWorkOrderByDateVM searchWorkOrderObj)
         {
+            var lstSettings = _settingService.GetAll().ToList();
+            if (lstSettings.Count > 0)
+            {
+                foreach (var item in lstSettings)
+                {
+                    if (item.KeyName == "Institute")
+                    {
+                        strInsitute = item.KeyValue;
+                        strInsituteAr = item.KeyValueAr;
+                    }
+
+                    if (item.KeyName == "Logo")
+                        strLogo = item.KeyValue;
+                }
+            }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             Document document = new Document(PageSize.A4.Rotate(), 20f, 20f, 30f, 20f);
             System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
@@ -382,7 +402,7 @@ namespace Asset.API.Controllers
                 //Header
                 for (int i = 1; i <= pages; i++)
                 {
-                    string imageURL = _webHostingEnvironment.ContentRootPath + "/Images/MHP.png";
+                    string imageURL = _webHostingEnvironment.ContentRootPath + "/Images/"+strLogo;
                     iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(imageURL);
                     jpg.ScaleAbsolute(70f, 50f);
                     PdfPTable headertable = new PdfPTable(2);
@@ -397,9 +417,9 @@ namespace Asset.API.Controllers
                     cell.HorizontalAlignment = 2; //0=Left, 1=Centre, 2=Right
                     headertable.AddCell(cell);
                     if (searchWorkOrderObj.Lang == "ar")
-                        headertable.AddCell(new PdfPCell(new Phrase("وزارة الصحة والسكان" + "\n" + searchWorkOrderObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });
+                        headertable.AddCell(new PdfPCell(new Phrase(strInsituteAr+ "\n" + searchWorkOrderObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });
                     else
-                        headertable.AddCell(new PdfPCell(new Phrase("Ministry of Health and Population" + "\n" + searchWorkOrderObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+                        headertable.AddCell(new PdfPCell(new Phrase(strInsitute + "\n" + searchWorkOrderObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
 
                     //if (searchWorkOrderObj.Lang == "ar")
                     //    headertable.AddCell(new PdfPCell(new Phrase(" " + searchWorkOrderObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });

@@ -24,7 +24,7 @@ namespace Asset.ViewModels.EngineerVM
         public string Address { get; set; }
 
         public string AddressAr { get; set; }
-        public string? Gender { get; set; }
+        public string Gender { get; set; }
 
       
 

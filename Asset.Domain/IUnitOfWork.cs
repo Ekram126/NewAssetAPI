@@ -58,6 +58,8 @@ namespace Asset.Domain
 
         IPMAssetTimeRepository PMAssetTimeRepository { get; }
 
+        IWNPMAssetTimeRepository WNPMAssetTimeRepository { get; }
+
         IRequestRepository Request { get; }
         IRequestPeriorityRepository RequestPeriority { get; }
         IRequestModeRepository RequestMode { get; }
@@ -89,5 +91,6 @@ namespace Asset.Domain
 
         IEngineerRepository EngineerRepository { get; }
 
+        ISettingRepository SettingRepository { get; }
     }
 }

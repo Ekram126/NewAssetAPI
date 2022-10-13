@@ -21,10 +21,9 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexAssetDetailVM.GetData> GetAll();
         IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByAssetId(int assetId);
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetDetailsByUserId(string userId);
-
         Task<IndexAssetDetailVM> GetAssetDetailsByUserId2(int pageNumber, int pageSize,string userId);
 
-
+        IndexAssetDetailVM SearchHospitalAssetsByDepartmentId(int departmentId,string userId, int pageNumber, int pageSize);
 
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetsByUserId(string userId);
        // IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
@@ -66,19 +65,23 @@ namespace Asset.Domain.Repositories
 
         List<CountAssetVM> ListAssetsByGovernorateIds();
         List<CountAssetVM> ListAssetsByCityIds();
-
         List<CountAssetVM> CountAssetsInHospitalByHospitalId(int hospitalId);
-
-
 
         int CountAssetsByHospitalId(int hospitalId);
 
+        ViewAssetDetailVM GetAssetHistoryById(int assetId);
 
         int CreateAssetDetailDocuments(CreateAssetDetailAttachmentVM attachObj);
         IEnumerable<AssetDetailAttachment> GetAttachmentByAssetDetailId(int assetId);
         int DeleteAssetDetailAttachment(int id);
-        List<PmDateGroupVM> GetAllwithgrouping(int? masterId);
+        List<PmDateGroupVM> GetAllwithgrouping(int assetId);
         List<IndexAssetDetailVM.GetData> FilterAsset(filterDto data);
+
+        List<IndexAssetDetailVM.GetData> FilterDataByDepartmentBrandSupplierId(FilterHospitalAsset data);
+
+
+        List<DepartmentGroupVM> GetAssetByDepartment(List<IndexAssetDetailVM.GetData> AssetModel);
+
         List<BrandGroupVM> GetAssetByBrands(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupHospitalVM> GetAssetByHospital(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupGovernorateVM> GetAssetByGovernorate(List<IndexAssetDetailVM.GetData> AssetModel);

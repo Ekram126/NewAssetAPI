@@ -3,6 +3,7 @@ using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.RequestVM;
 using Asset.ViewModels.UserVM;
+using Itenso.TimePeriod;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -65,6 +66,16 @@ namespace Asset.API.Controllers
             //}
 
 
+       
+
+            //Year year = new Year(DateTime.Today.Year);
+            //ITimePeriodCollection quarters = year.GetQuarters();
+            //Console.WriteLine("Quarters of Year: {0}", year);
+            //// > Quarters of Year: 2012; 01.01.2012 - 31.12.2012 | 365.23:59
+            //foreach (Quarter quarter in quarters)
+            //{
+            //    Console.WriteLine("Quarter: {0}", quarter);
+            //}
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
@@ -73,10 +84,13 @@ namespace Asset.API.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
+
+
+           
         }
 
 
-
+   
         //[HttpPost]
         //[Route("SyncDB")]
         //public void SyncDB()
@@ -87,7 +101,7 @@ namespace Asset.API.Controllers
 
 
         //    SqlConnection con = new SqlConnection(@"Data Source=.;Initial Catalog=NewAssetDB;Integrated Security=true;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;MultipleActiveResultSets=True");
-         
+
         //    SqlConnection con2 = new SqlConnection(@"Data Source=sql5109.site4now.net;user ID=db_a7c3c0_assetdb_admin;Password=P@ssw0rd;Initial Catalog=db_a7c3c0_assetdb;Integrated Security=false;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 
 

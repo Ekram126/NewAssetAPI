@@ -621,11 +621,11 @@ namespace Asset.Core.Repositories
 
 
 
-                work.BrandName = woObj[0].Request.AssetDetail.MasterAsset.brand.Name;
-                work.BrandNameAr = woObj[0].Request.AssetDetail.MasterAsset.brand.NameAr;
+                work.BrandName =  woObj[0].Request.AssetDetail.MasterAsset.brand != null?woObj[0].Request.AssetDetail.MasterAsset.brand.Name:"";
+                work.BrandNameAr = woObj[0].Request.AssetDetail.MasterAsset.brand != null ? woObj[0].Request.AssetDetail.MasterAsset.brand.NameAr:"";
 
-                work.DepartmentName = woObj[0].Request.AssetDetail.Department.Name;
-                work.DepartmentNameAr = woObj[0].Request.AssetDetail.Department.NameAr;
+                work.DepartmentName = woObj[0].Request.AssetDetail.Department != null? woObj[0].Request.AssetDetail.Department.Name:"";
+                work.DepartmentNameAr = woObj[0].Request.AssetDetail.Department != null? woObj[0].Request.AssetDetail.Department.NameAr:"";
 
 
 

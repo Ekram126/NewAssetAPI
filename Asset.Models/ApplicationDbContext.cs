@@ -99,6 +99,8 @@ namespace Asset.Models
         public DbSet<PMAssetTask> PMAssetTasks { get; set; }
         public DbSet<PMTime> PMTimes { get; set; }
 
+        public DbSet<WNPMAssetTime> WNPMAssetTimes { get; set; }
+
         public DbSet<PMAssetTime> PMAssetTimes { get; set; }
         public DbSet<PMAssetTaskSchedule> PMAssetTaskSchedules { get; set; }
 
@@ -122,5 +124,8 @@ namespace Asset.Models
         public DbSet<VisitType> VisitTypes { get; set; }
         public DbSet<HospitalEngineer> HospitalEngineers { get; set; }
         public DbSet<VisitAttachment> VisitAttachments { get; set; }
+
+
+        public DbSet<Setting> Settings { get; set; }
     }
 }

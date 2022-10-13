@@ -111,10 +111,10 @@ namespace Asset.Core.Repositories
                 return _context.AssetDetails.Include(a => a.Supplier).ToList().Where(a => a.HospitalId == hospitalId).ToList().GroupBy(a => a.SupplierId)
                     .Select(item => new IndexSupplierVM.GetData
                 {
-                    Id = item.FirstOrDefault().Supplier.Id,
-                    Code = item.FirstOrDefault().Supplier.Code,
-                    Name = item.FirstOrDefault().Supplier.Name.Trim(),
-                    NameAr = item.FirstOrDefault().Supplier.NameAr.Trim()
+                    Id = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.Id:0,
+                    Code = item.FirstOrDefault().Supplier != null ?item.FirstOrDefault().Supplier.Code:"",
+                    Name = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.Name.Trim():"",
+                    NameAr = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.NameAr.Trim():""
                 });
 
 

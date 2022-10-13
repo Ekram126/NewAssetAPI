@@ -31,6 +31,7 @@
     </PackageReference>
     <PackageReference Include="QRCoder" Version="1.4.1" />
     <PackageReference Include="System.IO" Version="4.3.0" />
+    <PackageReference Include="TimePeriodLibrary.NET" Version="2.1.1" />
     <PackageReference Include="ZXing.Net" Version="0.16.6" />
   </ItemGroup>
 
@@ -43,6 +44,7 @@
 
   <ItemGroup>
     <Folder Include="Reports\" />
+    <Folder Include="UploadedAttachments\AssetDetails\FilterAssetDetails\" />
     <Folder Include="UploadedAttachments\HospitalApplications\" />
     <Folder Include="UploadedAttachments\MasterContractFiles\" />
     <Folder Include="UploadedAttachments\SRWOReports\" />
@@ -51,7 +53,6 @@
     <Folder Include="UploadedAttachments\qrFiles\" />
     <Folder Include="UploadedAttachments\SupplierExecludeAssets\" />
     <Folder Include="wwwroot\" />
-    <Folder Include="UploadedAttachments\AssetDetails\" />
     <Folder Include="UploadedAttachments\MasterAssets\UploadMasterAssetImage\" />
     <Folder Include="UploadedAttachments\RequestDocuments\" />
   </ItemGroup>

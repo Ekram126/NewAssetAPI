@@ -29,7 +29,7 @@ namespace Asset.Domain.Services
 
         IndexAssetDetailVM GetAllAssetsByStatusId(int pageNumber, int pageSize, int statusId, string userId);
 
-
+        IndexAssetDetailVM SearchHospitalAssetsByDepartmentId(int departmentId, string userId, int pageNumber, int pageSize);
 
         IEnumerable<AssetDetail> GetAllSerialsByMasterAssetIdAndHospitalId(int masterAssetId, int hospitalId);
         IEnumerable<AssetDetail> GetAllAssetDetailsByHospitalId(int hospitalId);
@@ -47,6 +47,7 @@ namespace Asset.Domain.Services
         int Update(EditAssetDetailVM assetDetailObj);
         int Delete(int id);
         ViewAssetDetailVM ViewAssetDetailByMasterId(int masterId);
+        ViewAssetDetailVM GetAssetHistoryById(int assetId);
         IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId);
         int CreateAssetDetailDocuments(CreateAssetDetailAttachmentVM attachObj);
         IEnumerable<AssetDetailAttachment> GetAttachmentByAssetDetailId(int assetId);
@@ -67,8 +68,11 @@ namespace Asset.Domain.Services
         List<CountAssetVM> CountAssetsInHospitalByHospitalId(int hospitalId);
 
         int CountAssetsByHospitalId(int hospitalId);
-        List<PmDateGroupVM> GetAllwithgrouping(int? masterId);
+        List<PmDateGroupVM> GetAllwithgrouping(int assetId);
         List<IndexAssetDetailVM.GetData> FilterAsset(filterDto data);
+        List<IndexAssetDetailVM.GetData> FilterDataByDepartmentBrandSupplierId(FilterHospitalAsset data);
+
+        List<DepartmentGroupVM> GetAssetByDepartment(List<IndexAssetDetailVM.GetData> AssetModel);
         List<BrandGroupVM> GetAssetByBrands(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupHospitalVM> GetAssetByHospital(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupGovernorateVM> GetAssetByGovernorate(List<IndexAssetDetailVM.GetData> AssetModel);

@@ -107,6 +107,8 @@ namespace Asset.ViewModels.RequestVM
 
             public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
             public List<IndexWorkOrderVM> ListWorkOrder { get; set; }
+
+            public List<ListWorkOrderVM.GetData> ListWorkOrders { get; set; }
             public List<LstWorkOrderFromTracking> ListWorkOrderTracking { get; set; }
         }
     }

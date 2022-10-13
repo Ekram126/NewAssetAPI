@@ -19,6 +19,7 @@ using System.Net.Sockets;
 using Asset.API.Helpers;
 using Asset.Domain;
 using System.Net.Mail;
+using Asset.Domain.Services;
 
 namespace Asset.API.Controllers
 {
@@ -31,12 +32,19 @@ namespace Asset.API.Controllers
         private readonly IConfiguration _configuration;
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;
-        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IEmailSender emailSender, IConfiguration configuration, ApplicationDbContext context)
+        private readonly ISettingService _settingService;
+
+
+        string strInsitute, strInsituteAr, strLogo="";
+        bool isAgency;
+
+        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IEmailSender emailSender, IConfiguration configuration, ISettingService settingService, ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _emailSender = emailSender;
+            _settingService = settingService;
             _context = context;
         }
 
@@ -145,6 +153,26 @@ namespace Asset.API.Controllers
                     Useremail = user.Email;
                     userName = user.UserName;
                 }
+
+                var lstSettings = _settingService.GetAll().ToList();
+                if (lstSettings.Count > 0)
+                {
+                    foreach (var item in lstSettings)
+                    {
+                        if (item.KeyName == "Institute")
+                        {
+                            strInsitute = item.KeyValue;
+                            strInsituteAr = item.KeyValueAr;
+                        }
+
+                        if (item.KeyName == "Logo")
+                            strLogo = item.KeyValue;
+                        
+                        if (item.KeyName == "PMAgency")
+                            isAgency = Convert.ToBoolean( item.KeyValue);
+                    }
+                }
+
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -172,10 +200,13 @@ namespace Asset.API.Controllers
                     orgNameAr = orgNameAr,
                     subOrgNameAr = subOrgNameAr,
                     hospitalNameAr = hospitalNameAr,
-                    hospitalCode = hospitalCode
+                    hospitalCode = hospitalCode,
+                    strInsitute = strInsitute,
+                    strInsituteAr = strInsituteAr,
+                    strLogo = strLogo,
+                    isAgency= isAgency
 
-
-                });
+                }); ;
             }
             return Unauthorized();
         }
@@ -204,10 +235,10 @@ namespace Asset.API.Controllers
             var callback = QueryHelpers.AddQueryString(forgotPasswordModel.ClientURI, param);
             var hash = callback.Split("#");
             var query = hash[0];
-           replace = query.Replace("/?", "/#/reset?");
+            replace = query.Replace("/?", "/#/reset?");
 
 
-           // replace = query.Replace("ResetPassword?", "#/ResetPassword?");
+            // replace = query.Replace("ResetPassword?", "#/ResetPassword?");
 
 
             StringBuilder strBuild = new StringBuilder();
@@ -260,17 +291,17 @@ namespace Asset.API.Controllers
                 foreach (var error in errors)
                 {
                     lstErrors.Add(error);
-             
-                }
-             //   errormessage = String.Join(",", $"\n\n{lstErrors}\n\n");
 
-              //  errormessage = string.Join($",\n\n", lstErrors);
+                }
+                //   errormessage = String.Join(",", $"\n\n{lstErrors}\n\n");
+
+                //  errormessage = string.Join($",\n\n", lstErrors);
                 errormessage = string.Join("<br />", lstErrors);
 
 
                 return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = errormessage, MessageAr = errormessage });
 
-          //      return BadRequest(new { Errors = errors });
+                //      return BadRequest(new { Errors = errors });
             }
 
             return Ok();

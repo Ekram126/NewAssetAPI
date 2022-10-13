@@ -59,7 +59,8 @@ namespace Asset.ViewModels.AssetDetailVM
         public string RoomName { get; set; }
         public string HospitalNameAr { get; set; }
         public string HospitalName { get; set; }
-
+        public string DepartmentNameAr { get; set; }
+        public string DepartmentName { get; set; }
 
         public int AssetStatusId { get; set; }
         public string AssetStatus { get; set; }

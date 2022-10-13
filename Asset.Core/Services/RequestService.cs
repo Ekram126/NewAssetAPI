@@ -213,5 +213,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.ExportRequestByStatusId(hospitalId,  userId,  statusId);
         }
+
+        public IndexRequestVM GetRequestsByDateAndStatus(SearchRequestDateVM requestDateObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.Request.GetRequestsByDateAndStatus(requestDateObj,pageNumber,pageSize);
+        }
     }
 }

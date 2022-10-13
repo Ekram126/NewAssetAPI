@@ -140,9 +140,9 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetDetailRepository.CountAssetsByHospital();
         }
 
-        public List<PmDateGroupVM> GetAllwithgrouping(int? masterId)
+        public List<PmDateGroupVM> GetAllwithgrouping(int assetId)
         {
-            return _unitOfWork.AssetDetailRepository.GetAllwithgrouping(masterId);
+            return _unitOfWork.AssetDetailRepository.GetAllwithgrouping(assetId);
         }
         public List<IndexAssetDetailVM.GetData> FilterAsset(filterDto data)
         {
@@ -275,6 +275,26 @@ namespace Asset.Core.Services
         public IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes(int duration)
         {
             return _unitOfWork.AssetDetailRepository.AlertAssetsBefore3Monthes(duration);
+        }
+
+        public IndexAssetDetailVM SearchHospitalAssetsByDepartmentId(int departmentId, string userId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.SearchHospitalAssetsByDepartmentId(departmentId, userId, pageNumber, pageSize);
+        }
+
+        public ViewAssetDetailVM GetAssetHistoryById(int assetId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetHistoryById(assetId);
+        }
+
+        public List<IndexAssetDetailVM.GetData> FilterDataByDepartmentBrandSupplierId(FilterHospitalAsset data)
+        {
+            return _unitOfWork.AssetDetailRepository.FilterDataByDepartmentBrandSupplierId(data);
+        }
+
+        public List<DepartmentGroupVM> GetAssetByDepartment(List<IndexAssetDetailVM.GetData> AssetModel)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetByDepartment(AssetModel);
         }
     }
 }

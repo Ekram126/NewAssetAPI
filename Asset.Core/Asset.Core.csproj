@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.12" />
     <PackageReference Include="MimeKit" Version="2.15.1" />
     <PackageReference Include="QRCoder" Version="1.4.1" />
+    <PackageReference Include="TimePeriodLibrary.NET" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -45,6 +45,10 @@ namespace Asset.Domain.Repositories
         Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj, int statusId);
         IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj);
         IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
+
+        IndexRequestVM GetRequestsByDateAndStatus(SearchRequestDateVM requestDateObj, int pageNumber, int pageSize);
+
+
         int CountRequestsByHospitalId(int hospitalId, string userId);
         int CreateRequestAttachments(RequestDocument attachObj);
         Task<List<IndexRequestsVM>> SortRequestsByPaging(SortRequestVM sortObj, int statusId, int pageNumber, int pageSize);

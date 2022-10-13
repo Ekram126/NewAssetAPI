@@ -44,6 +44,10 @@ namespace Asset.API
             //  services.AddControllers();
             services.AddControllers().AddNewtonsoftJson();
 
+            //services.AddDbContext<ApplicationDbContext>(opt =>
+            //{
+            //    opt.EnableSensitiveDataLogging();
+            //});
 
             var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfigurationVM>();
             services.AddSingleton(emailConfig);
@@ -94,7 +98,9 @@ namespace Asset.API
             services.AddScoped<IFloorService, FloorService>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IPMAssetTaskService, PMAssetTaskService>();
-          
+
+            services.AddScoped<IWNPMAssetTimeService, WNPMAssetTimeService>();
+
             services.AddScoped<IPMTimeService, PMTimeService>();
             services.AddScoped<IPMAssetTimeService, PMAssetTimeService>();
             services.AddScoped<IPMAssetTaskScheduleService, PMAssetTaskScheduleService>();
@@ -132,7 +138,7 @@ namespace Asset.API
             services.AddScoped<IEngineerService, EngineerService>();
 
 
-
+            services.AddScoped<ISettingService, SettingService>();
             services.AddScoped<QrController, QrController>();
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()

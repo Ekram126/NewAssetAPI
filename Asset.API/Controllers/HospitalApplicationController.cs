@@ -39,7 +39,7 @@ namespace Asset.API.Controllers
         private IEmployeeService _employeeService;
         private IMasterAssetService _masterAssetService;
         private IAssetDetailService _assetDetailService;
-        private ApplicationUser applicationUser;
+       // private ApplicationUser applicationUser;
 
         private readonly IEmailSender _emailSender;
 

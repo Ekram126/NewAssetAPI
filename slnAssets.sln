@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asset.Models", "Asset.Models\Asset.Models.csproj", "{154DCA40-FC3E-4D3C-A9D0-A07C59AD358D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Asset.Models", "Asset.Models\Asset.Models.csproj", "{154DCA40-FC3E-4D3C-A9D0-A07C59AD358D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asset.Domain", "Asset.Domain\Asset.Domain.csproj", "{5D3D94A7-9E75-4B0E-95D9-5F2A17FD44E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Asset.Domain", "Asset.Domain\Asset.Domain.csproj", "{5D3D94A7-9E75-4B0E-95D9-5F2A17FD44E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asset.Core", "Asset.Core\Asset.Core.csproj", "{88254261-2E25-4AC4-90F0-9307D9905E19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Asset.Core", "Asset.Core\Asset.Core.csproj", "{88254261-2E25-4AC4-90F0-9307D9905E19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asset.ViewModels", "Asset.ViewModels\Asset.ViewModels.csproj", "{D09241CA-E04F-4055-BE39-8B6DB663EB26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Asset.ViewModels", "Asset.ViewModels\Asset.ViewModels.csproj", "{D09241CA-E04F-4055-BE39-8B6DB663EB26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asset.API", "Asset.API\Asset.API.csproj", "{A268CDDD-DBE1-43D9-8B90-EBD7A60C96BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Asset.API", "Asset.API\Asset.API.csproj", "{A268CDDD-DBE1-43D9-8B90-EBD7A60C96BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

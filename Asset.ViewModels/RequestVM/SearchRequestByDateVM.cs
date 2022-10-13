@@ -27,6 +27,6 @@ namespace Asset.ViewModels.RequestVM
 
         public string PrintedBy { get; set; }
 
-        
+        public int StatusId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Asset.ViewModels.AssetDetailVM
 {
@@ -20,7 +21,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public string Price { get; set; }
 
         public string SerialNumber { get; set; }
-
+        public string Serial { get; set; }
         public string Remarks { get; set; }
 
         public string Barcode { get; set; }
@@ -47,16 +48,10 @@ namespace Asset.ViewModels.AssetDetailVM
         public string PONumber { get; set; }
         public string AssetStatus { get; set; }
         public string AssetStatusAr { get; set; }
-
-
-
-
         public string DepartmentName { get; set; }
         public string DepartmentNameAr { get; set; }
 
-
-
-        public string SupplierName { get; set; }
+                public string SupplierName { get; set; }
         public string SupplierNameAr { get; set; }
 
         public string BrandName { get; set; }
@@ -111,5 +106,9 @@ namespace Asset.ViewModels.AssetDetailVM
         public string MasterAssetName { get; set; }
         public string MasterAssetNameAr { get; set; }
 
+        public List<RequestVM.IndexRequestVM.GetData> ListRequests { get; set; }
+        public List<WorkOrderVM.ListWorkOrderVM.GetData> ListWorkOrders { get; set; }
     }
+
+    
 }

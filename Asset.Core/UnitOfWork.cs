@@ -44,6 +44,7 @@ namespace Asset.Core
         private IPMAssetTaskRepository _pmAssetTaskRepository;
         private IPMTimeRepository _pmTimeRepository;    
         private IPMAssetTimeRepository _pmAssetTimeRepository;
+        private IWNPMAssetTimeRepository _wnPMAssetTimeRepository;
         private IRequestRepository _requestRepository;
         private IPagingRepository _pagingRepository;
         private IGroupingRepository _groupingRepository;
@@ -90,6 +91,7 @@ namespace Asset.Core
         private EngineerRepository _engineerRepository;
 
 
+        private ISettingRepository _settingRepository;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -170,6 +172,7 @@ namespace Asset.Core
         public IPMTimeRepository PMTimeRepository => _pmTimeRepository = _pmTimeRepository ?? new PMTimeRepositories(_context);
         public IPMAssetTimeRepository PMAssetTimeRepository => _pmAssetTimeRepository = _pmAssetTimeRepository ?? new PMAssetTimeRepositories(_context);
 
+        public IWNPMAssetTimeRepository WNPMAssetTimeRepository => _wnPMAssetTimeRepository = _wnPMAssetTimeRepository ?? new WNPMAssetTimeRepositories(_context);
 
 
         public IRequestRepository Request => _requestRepository = _requestRepository ?? new RequestRepository(_context);
@@ -255,6 +258,9 @@ namespace Asset.Core
         public IVisitTypeRepository visitTypeRepository => _visitTypeRepository = _visitTypeRepository ?? new VisitTypeRepository(_context);
 
         public IEngineerRepository EngineerRepository => _engineerRepository = _engineerRepository ?? new EngineerRepository(_context);
+
+
+        public ISettingRepository SettingRepository => _settingRepository = _settingRepository ?? new SettingRepositories(_context);
 
     }
 }
