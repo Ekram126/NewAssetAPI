@@ -17,7 +17,7 @@ namespace Asset.ViewModels.EngineerVM
         public string CardId { get; set; }
         public string Phone { get; set; }
         public string WhatsApp { get; set; }
-        public string? Dob { get; set; }
+        public string Dob { get; set; }
         public string EmpImg { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }

@@ -57,6 +57,12 @@ namespace Contract.API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("AlertContractsBefore3Months/{hospitalId}/{duration}")]
+        public IEnumerable<IndexMasterContractVM.GetData> AlertContractsBefore3Months(int hospitalId, int duration)
+        {
+            return _masterContractService.AlertContractsBefore3Months(hospitalId, duration).ToList();
+        }
 
 
         [HttpGet]
@@ -85,25 +91,37 @@ namespace Contract.API.Controllers
 
         [HttpGet]
         [Route("GetMasterContractsByHospitalId/{hospitalId}")]
-        public ActionResult<IEnumerable<IndexMasterContractVM.GetData>> GetMasterContractsByHospitalId(int hospitalId)
+        public ActionResult<IndexMasterContractVM> GetMasterContractsByHospitalId(int hospitalId)
         {
-            return _masterContractService.GetMasterContractsByHospitalId(hospitalId).ToList();
+            return _masterContractService.GetMasterContractsByHospitalId(hospitalId);
         }
+
 
         [HttpPut]
-        [Route("GetMasterContractsByHospitalIdWithPaging/{hospitalId}")]
-        public IEnumerable<IndexMasterContractVM.GetData> GetMasterContractsByHospitalIdWithPaging(int hospitalId, PagingParameter pageInfo)
+        [Route("GetMasterContractsByHospitalIdWithPaging/{hospitalId}/{pageNumber}/{pageSize}")]
+        public IndexMasterContractVM GetMasterContractsByHospitalIdWithPaging(int hospitalId,int pageNumber,int pageSize)
         {
-            var Contracts= _masterContractService.GetMasterContractsByHospitalId(hospitalId).ToList();
-            return _pagingService.GetAll<IndexMasterContractVM.GetData>(pageInfo, Contracts);
+            var lstContracts = _masterContractService.GetMasterContractsByHospitalId(hospitalId,  pageNumber,  pageSize);
+            return lstContracts;
         }
 
-        [HttpGet]
-        [Route("getcount/{hospitalId}")]
-        public int count(int hospitalId)
-        {
-            return _masterContractService.GetMasterContractsByHospitalId(hospitalId).Count();
-        }
+
+
+
+        //[HttpPut]
+        //[Route("GetMasterContractsByHospitalIdWithPaging/{hospitalId}")]
+        //public IndexMasterContractVM GetMasterContractsByHospitalIdWithPaging(int hospitalId, PagingParameter pageInfo)
+        //{
+        //    var lstContracts = _masterContractService.GetMasterContractsByHospitalId(hospitalId);
+        //    return lstContracts;// _pagingService.GetAll<IndexMasterContractVM.GetData>(pageInfo, Contracts);
+        //}
+
+        //[HttpGet]
+        //[Route("getcount/{hospitalId}")]
+        //public int count(int hospitalId)
+        //{
+        //    return _masterContractService.GetMasterContractsByHospitalId(hospitalId).Count();
+        //}
 
         [HttpPut]
         [Route("UpdateMasterContract")]
@@ -167,6 +185,14 @@ namespace Contract.API.Controllers
             try
             {
 
+              var lstContractDetails   = _contractDetailService.GetContractsByMasterContractId(id).ToList();
+                if(lstContractDetails.Count > 0)
+                {
+                    foreach (var item in lstContractDetails)
+                    {
+                        _contractDetailService.Delete(item.Id);
+                    }
+                }
                 int deletedRow = _masterContractService.Delete(id);
             }
             catch (DbUpdateConcurrencyException ex)
@@ -257,7 +283,7 @@ namespace Contract.API.Controllers
         {
             return _masterContractService.GenerateMasterContractSerial();
         }
-     
+
         [HttpGet]
         [Route("GetContractAttachmentByMasterContractId/{masterContractId}")]
         public IEnumerable<ContractAttachment> GetContractAttachmentByMasterContractId(int masterContractId)

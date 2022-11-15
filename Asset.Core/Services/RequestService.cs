@@ -218,5 +218,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.GetRequestsByDateAndStatus(requestDateObj,pageNumber,pageSize);
         }
+
+        public List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId)
+        {
+            return _unitOfWork.Request.AlertOpenedRequestAssetsAndHighPeriority(periorityId,hospitalId);
+        }
     }
 }

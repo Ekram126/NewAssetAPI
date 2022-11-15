@@ -11,7 +11,7 @@ namespace Asset.ViewModels.ContractVM
     {
 
         public int Id { get; set; }
-
+        public int? TotalVisits { get; set; }
         public int? SupplierId { get; set; }
         public int? HospitalId { get; set; }
         public string Serial { get; set; }
@@ -22,6 +22,7 @@ namespace Asset.ViewModels.ContractVM
         public DateTime? To { get; set; }
         public decimal? Cost { get; set; }
 
+        public string Notes { get; set; }
         public List<ContractDetail> lstDetails { get; set; }
 
        

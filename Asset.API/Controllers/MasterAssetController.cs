@@ -87,12 +87,42 @@ namespace Asset.API.Controllers
             return _MasterAssetService.GetAllMasterAssetsByHospitalId(hospitalId, userId);
         }
 
+
+        [HttpGet]
+        [Route("GetListMasterAsset")]
+        public IEnumerable<IndexMasterAssetVM.GetData> GetListMasterAsset()
+        {
+            return _MasterAssetService.GetListMasterAsset();
+        }
+
+
+
         [HttpGet]
         [Route("AutoCompleteMasterAssetName/{name}")]
         public IEnumerable<MasterAsset> AutoCompleteMasterAssetName(string name)
         {
             return _MasterAssetService.AutoCompleteMasterAssetName(name);
         }
+
+
+        [HttpGet]
+        [Route("AutoCompleteMasterAssetName2/{name}")]
+        public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName2(string name)
+        {
+            return _MasterAssetService.AutoCompleteMasterAssetName2(name);
+        }
+
+
+
+        [HttpGet]
+        [Route("AutoCompleteMasterAssetName3/{name}/{hospitalId}")]
+        public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName3(string name, int hospitalId)
+        {
+            return _MasterAssetService.AutoCompleteMasterAssetName3(name, hospitalId);
+        }
+
+
+
 
 
         [HttpPost]
@@ -172,7 +202,7 @@ namespace Asset.API.Controllers
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "MasterAsset name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
                 }
-                var lstArNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.NameAr == MasterAssetVM.NameAr && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber  && a.Id != id).ToList();
+                var lstArNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.NameAr == MasterAssetVM.NameAr && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber && a.Id != id).ToList();
                 if (lstArNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "MasterAsset arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
@@ -267,16 +297,26 @@ namespace Asset.API.Controllers
         [Obsolete]
         public ActionResult UploadInFiles(IFormFile file)
         {
-  
+
+
+
             var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets";
             bool exists = System.IO.Directory.Exists(folderPath);
             if (!exists)
                 System.IO.Directory.CreateDirectory(folderPath);
 
+            //var nameWithOutExtension = Path.GetFileNameWithoutExtension(file.FileName);
+            //var ext = Path.GetExtension(file.FileName);
+            //nameWithOutExtension = nameWithOutExtension + DateTime.Today.Date + DateTime.Today.Month + DateTime.Today.Year + ext;
+            //string filePath = folderPath + "/" + nameWithOutExtension;
+
             string filePath = folderPath + "/" + file.FileName;
             if (System.IO.File.Exists(filePath))
             {
-
+                System.IO.File.Delete(filePath);
+                Stream stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
             }
             else
             {
@@ -307,37 +347,36 @@ namespace Asset.API.Controllers
             if (!exists)
                 System.IO.Directory.CreateDirectory(folderPath);
 
-            string existFile = folderPath + "/" + file.FileName;
+            //var nameWithOutExtension = Path.GetFileNameWithoutExtension(file.FileName);
+            //var ext = Path.GetExtension(file.FileName);
+            //nameWithOutExtension = nameWithOutExtension + DateTime.Now.Day + DateTime.Now.Month + DateTime.Now.Year + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + "." + ext;
+
+
             string filePath = folderPath + "/" + file.FileName;
             if (System.IO.File.Exists(filePath))
             {
-                if (System.IO.File.Exists(existFile) && (System.IO.File.Exists(filePath)))
-                {
-                    //Console.WriteLine("Move the contents of " + originalFile + " into " + fileToReplace + ", delete "
-                    //    + originalFile + ", and create a backup of " + fileToReplace + ".");
-
-                    // Replace the file.    
-                    ReplaceFile(existFile, filePath, filePath + ".bak");
-
-                }
-            }
-            else
-            {
-                //   string path = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets/UploadMasterAssetImage/" + file.FileName;
+                System.IO.File.Delete(filePath);
                 Stream stream = new FileStream(filePath, FileMode.Create);
                 file.CopyTo(stream);
                 stream.Close();
             }
+            else
+            {
+                Stream stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
+
             return StatusCode(StatusCodes.Status201Created);
         }
-        public void ReplaceFile(string fileToMoveAndDelete, string fileToReplace, string backupOfFileToReplace)
-        {
-            // Create a new FileInfo object.    
-            FileInfo fInfo = new FileInfo(fileToMoveAndDelete);
+        //public void ReplaceFile(string fileToMoveAndDelete, string fileToReplace, string backupOfFileToReplace)
+        //{
+        //    // Create a new FileInfo object.    
+        //    FileInfo fInfo = new FileInfo(fileToMoveAndDelete);
 
-            // replace the file.    
-            fInfo.Replace(fileToReplace, backupOfFileToReplace, false);
-        }
+        //    // replace the file.    
+        //    fInfo.Replace(fileToReplace, backupOfFileToReplace, true);
+        //}
 
         [HttpGet]
         [Route("GetAttachmentByMasterAssetId/{assetId}")]

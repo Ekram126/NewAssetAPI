@@ -130,7 +130,7 @@ namespace Asset.API.Controllers
         [Route("ExportWorkOrdersByStatusId/{hospitalId}/{userId}/{statusId}")]
         public List<IndexWorkOrderVM> ExportWorkOrdersByStatusId(int hospitalId, string userId, int statusId)
         {
-            var workOrders = _workOrderService.ExportWorkOrdersByStatusId(hospitalId,userId, statusId).ToList();
+            var workOrders = _workOrderService.ExportWorkOrdersByStatusId(hospitalId, userId, statusId).ToList();
             return workOrders;
         }
 
@@ -138,15 +138,15 @@ namespace Asset.API.Controllers
         [Route("GetAllWorkOrdersByHospitalIdAndPaging/{hospitalId}/{userId}/{statusId}/{pageNumber}/{pageSize}")]
         public List<IndexWorkOrderVM> GetAllWorkOrdersByHospitalIdAndPaging(int hospitalId, string userId, int statusId, int pageNumber, int pageSize)
         {
-            var workOrders = _workOrderService.GetAllWorkOrdersByHospitalIdAndPaging(hospitalId,userId, statusId, pageNumber, pageSize).ToList();
+            var workOrders = _workOrderService.GetAllWorkOrdersByHospitalIdAndPaging(hospitalId, userId, statusId, pageNumber, pageSize).ToList();
             return workOrders;
         }
 
         [HttpGet]
         [Route("GetWorkOrdersCountByStatusIdAndPaging/{hospitalId}/{userId}/{statusId}")]
-        public int GetWorkOrdersCountByStatusIdAndPaging(int hospitalId,string userId, int statusId)
+        public int GetWorkOrdersCountByStatusIdAndPaging(int hospitalId, string userId, int statusId)
         {
-            return _workOrderService.GetWorkOrdersCountByStatusIdAndPaging(hospitalId,userId, statusId);
+            return _workOrderService.GetWorkOrdersCountByStatusIdAndPaging(hospitalId, userId, statusId);
         }
 
 
@@ -164,6 +164,14 @@ namespace Asset.API.Controllers
             var lstRequests = _workOrderService.GetWorkOrdersByDate(woDateObj).ToList();
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, lstRequests);
         }
+
+        [HttpPost]
+        [Route("GetWorkOrdersByDateAndStatus/{pagenumber}/{pagesize}")]
+        public IndexWorkOrderVM2 GetWorkOrdersByDateAndStatus(SearchWorkOrderByDateVM woDateObj, int pageNumber, int pageSize)
+        {
+            return _workOrderService.GetWorkOrdersByDateAndStatus(woDateObj, pageNumber, pageSize);
+        }
+
 
 
         [HttpPost]
@@ -335,9 +343,7 @@ namespace Asset.API.Controllers
         [Route("CountSortWorkOrders/{hosId}/{userId}/{statusId}")]
         public int CountSortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj, int statusId)
         {
-
             return _workOrderService.SortWorkOrders(hosId, userId, sortObj, statusId).ToList().Count;
-
         }
 
 
@@ -402,7 +408,7 @@ namespace Asset.API.Controllers
                 //Header
                 for (int i = 1; i <= pages; i++)
                 {
-                    string imageURL = _webHostingEnvironment.ContentRootPath + "/Images/"+strLogo;
+                    string imageURL = _webHostingEnvironment.ContentRootPath + "/Images/" + strLogo;
                     iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(imageURL);
                     jpg.ScaleAbsolute(70f, 50f);
                     PdfPTable headertable = new PdfPTable(2);
@@ -417,14 +423,9 @@ namespace Asset.API.Controllers
                     cell.HorizontalAlignment = 2; //0=Left, 1=Centre, 2=Right
                     headertable.AddCell(cell);
                     if (searchWorkOrderObj.Lang == "ar")
-                        headertable.AddCell(new PdfPCell(new Phrase(strInsituteAr+ "\n" + searchWorkOrderObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });
+                        headertable.AddCell(new PdfPCell(new Phrase(strInsituteAr + "\n" + searchWorkOrderObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });
                     else
                         headertable.AddCell(new PdfPCell(new Phrase(strInsitute + "\n" + searchWorkOrderObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
-
-                    //if (searchWorkOrderObj.Lang == "ar")
-                    //    headertable.AddCell(new PdfPCell(new Phrase(" " + searchWorkOrderObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });
-                    //else
-                    //    headertable.AddCell(new PdfPCell(new Phrase(" " + searchWorkOrderObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
 
                     headertable.WriteSelectedRows(0, -1, 420, 580, stamper.GetOverContent(i));
 
@@ -441,19 +442,44 @@ namespace Asset.API.Controllers
                     titleTable.WidthPercentage = 100;
                     titleTable.AddCell(new PdfPCell(new Phrase("أوامر الشغل", titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
 
-                    var sDate = DateTime.Parse(searchWorkOrderObj.StrStartDate);
+                    DateTime sDate = new DateTime();
+                    DateTime eDate = new DateTime();
+                    if (searchWorkOrderObj.StrStartDate == "")
+                        sDate = DateTime.Parse("01/01/1900");
+                    else
+                        sDate = DateTime.Parse(searchWorkOrderObj.StrStartDate);
+
+
                     var sday = ArabicNumeralHelper.toArabicNumber(sDate.Day.ToString());
                     var smonth = ArabicNumeralHelper.toArabicNumber(sDate.Month.ToString());
                     var syear = ArabicNumeralHelper.toArabicNumber(sDate.Year.ToString());
                     var strStart = sday + "/" + smonth + "/" + syear;
 
-                    var eDate = DateTime.Parse(searchWorkOrderObj.StrEndDate);
+
+                    if (searchWorkOrderObj.StrEndDate == "")
+                        eDate = DateTime.Today.Date;
+                    else
+                        eDate = DateTime.Parse(searchWorkOrderObj.StrEndDate);
+
+
                     var eday = ArabicNumeralHelper.toArabicNumber(eDate.Day.ToString());
                     var emonth = ArabicNumeralHelper.toArabicNumber(eDate.Month.ToString());
                     var eyear = ArabicNumeralHelper.toArabicNumber(eDate.Year.ToString());
                     var strEnd = eday + "/" + emonth + "/" + eyear;
 
-                    titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من" + strStart + " إلى " + strEnd, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+                    //   titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من" + strStart + " إلى " + strEnd, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+                    titleTable.AddCell(new PdfPCell(new Phrase(searchWorkOrderObj.StatusName, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+
+                    if (sDate == DateTime.Parse("01/01/1900"))
+                        titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من بداية أوامر الشغل إلى  " + strEnd, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+                    else
+                        titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من" + strStart + " إلى " + strEnd, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+
+
+
                     titleTable.WriteSelectedRows(0, -1, 5, 520, stamper.GetOverContent(i));
                 }
 
@@ -483,7 +509,7 @@ namespace Asset.API.Controllers
                     {
                         bodytable.DeleteRow(1);
                     }
-                    bodytable2.WriteSelectedRows(0, -1, 10, 460, stamper.GetUnderContent(i));
+                    bodytable2.WriteSelectedRows(0, -1, 10, 445, stamper.GetUnderContent(i));
 
                 }
             }
@@ -493,13 +519,6 @@ namespace Asset.API.Controllers
 
             memoryStream.Close();
             document.Close();
-            //var processing = new Process();
-            //processing.StartInfo = new ProcessStartInfo(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/WOReports/WOReport.pdf")
-            //{
-            //    UseShellExecute = true
-            //};
-            //processing.Start();
-
         }
 
 
@@ -514,12 +533,12 @@ namespace Asset.API.Controllers
             table.WidthPercentage = 100;
             table.PaddingTop = 200;
             table.HeaderRows = 1;
-            table.SetWidths(new int[] { 15, 12, 12, 12, 8, 10, 12, 10, 20, 12 ,7});
+            table.SetWidths(new int[] { 15, 12, 12, 12, 8, 10, 12, 10, 20, 12, 7 });
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             string ARIALUNI_TFF = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
             BaseFont bfArialUniCode = BaseFont.CreateFont(ARIALUNI_TFF, BaseFont.IDENTITY_H, true);
             iTextSharp.text.Font font = new iTextSharp.text.Font(bfArialUniCode, 12);
-            string[] col = { "ملاحظات", "حالة أمر الشغل", "تاريخ إغلاق أمر الشغل", "تاريخ أمر الشغل", "أنشأ  بواسطة", "الموضوع", "إنشاء أمر الشغل", "الباركود", "اسم الأصل", "رقم أمر الشغل" ,"م"};
+            string[] col = { "ملاحظات", "حالة أمر الشغل", "تاريخ إغلاق أمر الشغل", "تاريخ أمر الشغل", "أنشأ  بواسطة", "الموضوع", "السيريال", "الباركود", "اسم الأصل", "رقم أمر الشغل", "م" };
 
 
 
@@ -597,8 +616,8 @@ namespace Asset.API.Controllers
 
 
 
-                if (item.CreationDate.ToString() != "")
-                    table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.CreationDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+                if (item.TrackCreationDate.ToString() != "")
+                    table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.TrackCreationDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
                 else
                     table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
 

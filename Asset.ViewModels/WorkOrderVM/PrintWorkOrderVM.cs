@@ -61,7 +61,7 @@ namespace Asset.ViewModels.WorkOrderVM
 
         public string FirstRequest { get; set; }
         public string LastWorkOrder { get; set; }
-
+        public string ClosedDate { get; set; }
 
         public List<LstWorkOrderFromTracking> LstWorkOrderTracking{ get; set; }
     }

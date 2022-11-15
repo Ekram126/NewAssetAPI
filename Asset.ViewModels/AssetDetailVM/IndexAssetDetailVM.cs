@@ -36,7 +36,7 @@ namespace Asset.ViewModels.AssetDetailVM
 
             public string GovernorateName { get; set; }
             public string GovernorateNameAr { get; set; }
-
+            public string CreatedBy { get; set; }
 
             public string CityName { get; set; }
             public string CityNameAr { get; set; }
@@ -96,6 +96,14 @@ namespace Asset.ViewModels.AssetDetailVM
             public string EndWarrantyDate { get; set; }
 
             public int Count { get; set; }
+
+
+
+
+
+           
+            public string AssetStatus { get; set; }
+            public string AssetStatusAr{ get; set; }
         }
     }
 }

@@ -27,5 +27,8 @@ namespace Asset.Domain.Repositories
         int Delete(int id);
 
         public int CreateAssetTimes(int year, int hospitalId);
+        int CreateWNPMAssetTimeAttachment(WNPMAssetTimeAttachment attachObj);
+
+        List<WNPMAssetTimeAttachment> GetWNPMAssetTimeAttachmentByWNPMAssetTimeId(int WNPMAssetTimeId);
     }
 }

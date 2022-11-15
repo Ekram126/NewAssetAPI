@@ -30,6 +30,10 @@ namespace Asset.ViewModels.RequestTrackingVM
         public int RequestStatusId { get; set; }
         public string StatusName { get; set; }
         public string StatusNameAr { get; set; }
+        public string StatusColor { get; set; }
+        public string StatusIcon { get; set; }
+
+
 
         public string Barcode { get; set; }
         public string AssetCode { get; set; }

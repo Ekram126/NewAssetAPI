@@ -102,5 +102,10 @@ namespace Asset.Models
         public string CostCenter { get; set; }
         public string QrFilePath { get; set; }
 
+
+        [StringLength(450)]
+        public string CreatedBy { get; set; }
+
+
     }
 }

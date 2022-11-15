@@ -72,10 +72,6 @@ namespace Asset.ViewModels.RequestVM
             public int CountWorkOrder { get; set; }
             public int LatestWorkOrderStatusId { get; set; }
 
-
-
-
-
             public string WorkOrderSubject { get; set; }
             public string WorkOrderNumber { get; set; }
             public DateTime? CreationDate { get; set; }
@@ -94,22 +90,24 @@ namespace Asset.ViewModels.RequestVM
             public string WorkOrderStatusNameAr { get; set; }
             public string WorkOrderStatusIcon { get; set; }
             public string WorkOrderStatusColor { get; set; }
-
             public string ElapsedTime { get; set; }
             public DateTime? DescriptionDate { get; set; }
             public string WOLastTrackDescription { get; set; }
-
             public string BrandName { get; set; }
             public string BrandNameAr { get; set; }
-
             public string DepartmentName { get; set; }
             public string DepartmentNameAr { get; set; }
-
             public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
             public List<IndexWorkOrderVM> ListWorkOrder { get; set; }
 
             public List<ListWorkOrderVM.GetData> ListWorkOrders { get; set; }
             public List<LstWorkOrderFromTracking> ListWorkOrderTracking { get; set; }
+
+
+
+
+
+            public string BGColor { get; set; }
         }
     }
 }

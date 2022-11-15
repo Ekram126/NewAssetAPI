@@ -12,6 +12,7 @@ namespace Asset.Models
     {
         public int Id { get; set; }
 
+        public int? TotalVisits { get; set; }
 
         public int? SupplierId { get; set; }
         [ForeignKey("SupplierId")]
@@ -21,7 +22,7 @@ namespace Asset.Models
 
         [StringLength(50)]
         public string Serial { get; set; }
-
+ 
 
         [StringLength(100)]
         public string Subject { get; set; }
@@ -37,5 +38,7 @@ namespace Asset.Models
         public int? HospitalId { get; set; }
         [ForeignKey("HospitalId")]
         public virtual Hospital Hospital { get; set; }
+
+        public string Notes { get; set; }
     }
 }

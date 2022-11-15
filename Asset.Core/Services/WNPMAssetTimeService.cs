@@ -86,5 +86,16 @@ namespace Asset.Core.Services
             return _unitOfWork.WNPMAssetTimeRepository.GetAllWNPMAssetTime();
            
         }
+
+        public int CreateWNPMAssetTimeAttachment(WNPMAssetTimeAttachment attachObj)
+        {
+            return _unitOfWork.WNPMAssetTimeRepository.CreateWNPMAssetTimeAttachment(attachObj);
+        }
+
+        public List<WNPMAssetTimeAttachment> GetWNPMAssetTimeAttachmentByWNPMAssetTimeId(int WNPMAssetTimeId)
+        {
+            return _unitOfWork.WNPMAssetTimeRepository.GetWNPMAssetTimeAttachmentByWNPMAssetTimeId(WNPMAssetTimeId);
+           
+        }
     }
 }

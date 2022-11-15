@@ -54,7 +54,7 @@ namespace Asset.Core.Repositories
                     masterAssetObj.ElectricRequirement = model.ElectricRequirement;
                     masterAssetObj.PMTimeId = model.PMTimeId;
                     masterAssetObj.AssetImg = model.AssetImg;
-  //     masterAssetObj.HospitalId = model.HospitalId;
+                    //     masterAssetObj.HospitalId = model.HospitalId;
 
                     _context.MasterAssets.Add(masterAssetObj);
                     _context.SaveChanges();
@@ -234,9 +234,9 @@ namespace Asset.Core.Repositories
             }
             var lstMasterAssets = (from asset in _context.MasterAssets
                                    join detail in _context.AssetDetails on asset.Id equals detail.MasterAssetId
-                                   join owner in _context.AssetOwners on detail.Id equals owner.AssetDetailId
+                                   //  join owner in _context.AssetOwners on detail.Id equals owner.AssetDetailId
                                    where detail.HospitalId == hospitalId
-                                  where owner.EmployeeId == employeeId
+                                   // where owner.EmployeeId == employeeId
                                    select asset).ToList().GroupBy(a => a.Id).ToList();
 
             foreach (var item in lstMasterAssets)
@@ -276,7 +276,7 @@ namespace Asset.Core.Repositories
 
         public EditMasterAssetVM GetById(int id)
         {
-            var lstMasterAssets = _context.MasterAssets.Where(a => a.Id == id).ToList();
+            var lstMasterAssets = _context.MasterAssets.Include(a => a.brand).Where(a => a.Id == id).ToList();
 
             if (lstMasterAssets.Count > 0)
             {
@@ -296,6 +296,7 @@ namespace Asset.Core.Repositories
                 masterAssetObj.Height = item.Height;
                 masterAssetObj.Length = item.Length;
                 masterAssetObj.ModelNumber = item.ModelNumber;
+                masterAssetObj.Model = item.ModelNumber;
                 masterAssetObj.VersionNumber = item.VersionNumber;
                 masterAssetObj.Weight = item.Weight;
                 masterAssetObj.Width = item.Width;
@@ -308,8 +309,11 @@ namespace Asset.Core.Repositories
                 masterAssetObj.ElectricRequirement = item.ElectricRequirement;
                 masterAssetObj.PMTimeId = item.PMTimeId;
                 masterAssetObj.AssetImg = item.AssetImg;
-            //    masterAssetObj.HospitalId = item.HospitalId;
-
+                if (item.BrandId != null)
+                {
+                    masterAssetObj.BrandName = item.brand.Name;
+                    masterAssetObj.BrandNameAr = item.brand.NameAr;
+                }
                 return masterAssetObj;
             }
 
@@ -348,7 +352,17 @@ namespace Asset.Core.Repositories
                 masterAssetObj.ElectricRequirement = model.ElectricRequirement;
                 masterAssetObj.PMTimeId = model.PMTimeId;
                 masterAssetObj.AssetImg = model.AssetImg;
-          //      masterAssetObj.HospitalId = model.HospitalId;
+
+               //string[] splitFileName = model.AssetImg.Split('.');
+               // var filenameOnly = splitFileName[0];
+               // var ext = splitFileName[1];
+
+               // var newFileName = filenameOnly + DateTime.Now.Day + DateTime.Now.Month + DateTime.Now.Year + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + "." + ext;
+               // masterAssetObj.AssetImg = newFileName;
+
+
+
+
 
                 _context.Entry(masterAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
@@ -388,7 +402,7 @@ namespace Asset.Core.Repositories
             //  model.PMTimeId = masterAssetObj.PMTimeId;
             model.AssetImg = masterAssetObj.AssetImg;
 
-        //    model.HospitalId = masterAssetObj.HospitalId;
+            //    model.HospitalId = masterAssetObj.HospitalId;
 
 
 
@@ -810,6 +824,61 @@ namespace Asset.Core.Repositories
             _context.Entry(masterObj).State = EntityState.Modified;
             _context.SaveChanges();
             return masterAssetObj.Id;
+        }
+
+        public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName2(string name)
+        {
+            var lst = _context.MasterAssets.Include(a => a.brand).Where(a => a.Name.Contains(name) || a.NameAr.Contains(name)).ToList().Select(item => new IndexMasterAssetVM.GetData
+            {
+                Id = item.Id,
+                Name = item.Name,
+                NameAr = item.NameAr,
+                Model = item.ModelNumber,
+                ModelNumber = item.ModelNumber,
+                BrandName = item.brand.Name,
+                BrandNameAr = item.brand.NameAr
+            }).ToList();
+            return lst;
+        }
+
+
+        public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName3(string name, int hospitalId)
+        {
+
+            var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand).Where(a => a.MasterAsset.Name.Contains(name) || a.MasterAsset.NameAr.Contains(name) && a.HospitalId == hospitalId).ToList().Select(item => new IndexMasterAssetVM.GetData
+            {
+                Id = item.Id,
+                Name = item.MasterAsset.Name,
+                NameAr = item.MasterAsset.NameAr,
+                Model = item.MasterAsset.ModelNumber,
+                ModelNumber = item.MasterAsset.ModelNumber,
+                BrandName = item.MasterAsset.brand.Name,
+                BrandNameAr = item.MasterAsset.brand.NameAr,
+                SerialNumber = item.SerialNumber,
+                BarCode = item.Barcode,
+            }).ToList();
+            return lst;
+        }
+
+        public IEnumerable<IndexMasterAssetVM.GetData> GetListMasterAsset()
+        {
+            List<IndexMasterAssetVM.GetData> list = new List<IndexMasterAssetVM.GetData>();
+            var lstMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand)
+                                   .ToList().GroupBy(a => a.MasterAsset.Id).ToList();
+
+
+            foreach (var item in lstMasterAssets)
+            {
+                IndexMasterAssetVM.GetData masterAssetObj = new IndexMasterAssetVM.GetData();
+                masterAssetObj.Id = item.FirstOrDefault().MasterAsset.Id;
+                masterAssetObj.Model = item.FirstOrDefault().MasterAsset.ModelNumber;
+                masterAssetObj.Name = item.FirstOrDefault().MasterAsset.Name;
+                masterAssetObj.NameAr = item.FirstOrDefault().MasterAsset.NameAr;
+                masterAssetObj.BrandName = item.FirstOrDefault().MasterAsset.brand.Name;
+                masterAssetObj.BrandNameAr = item.FirstOrDefault().MasterAsset.brand.NameAr;
+                list.Add(masterAssetObj);
+            }
+            return list;
         }
     }
 }

@@ -84,6 +84,32 @@ namespace Asset.ViewModels.RequestVM
 
 
 
+
+
+        public string BuildName { get; set; }
+        public string BuildNameAr { get; set; }
+        public string FloorName { get; set; }
+        public string FloorNameAr { get; set; }
+        public string RoomNameAr { get; set; }
+        public string RoomName { get; set; }
+        public string PurchaseDate { get; set; }
+        public string InstallationDate { get; set; }
+        public string WarrantyExpires { get; set; }
+        public string WarrantyStart { get; set; }
+        public string WarrantyEnd { get; set; }
+        public int? BuildingId { get; set; }
+        public int? RoomId { get; set; }
+        public int? FloorId { get; set; }
+
+        public string OperationDate { get; set; }
+        public string ReceivingDate { get; set; }
+        public string PONumber { get; set; }
+        public decimal? DepreciationRate { get; set; }
+        public string CostCenter { get; set; }
+        public string Remarks { get; set; }
+
+
+
         public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
     }
 }

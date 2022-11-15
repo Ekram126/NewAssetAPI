@@ -191,18 +191,23 @@ namespace Asset.Core.Repositories
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    if (lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
-                    {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    }
+                    //if (lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
+                    //{
+                    //    workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    //}
+                    //if (lstRoleNames.Contains("AssetOwner"))
+                    //{
+                    //    workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    //}
+
                     if (lstRoleNames.Contains("AssetOwner"))
                     {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    }
-                    if (lstRoleNames.Contains("EngDepManager"))
-                    {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
+                    //if (lstRoleNames.Contains("EngDepManager"))
+                    //{
+                    //    workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    //}
                     if (lstRoleNames.Contains("Eng") && !lstRoleNames.Contains("EngDepManager"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();

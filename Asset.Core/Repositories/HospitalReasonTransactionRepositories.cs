@@ -69,7 +69,7 @@ namespace Asset.Core.Repositories
             }
             catch (Exception ex)
             {
-                //msg = ex.Message;
+                string msg = ex.Message;
             }
 
             return 0;

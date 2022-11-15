@@ -93,6 +93,10 @@ namespace Asset.Core.Repositories
                     RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                     StatusName = req.RequestStatus.Name,
                     StatusNameAr = req.RequestStatus.NameAr,
+                    StatusColor = req.RequestStatus.Color,
+                    StatusIcon = req.RequestStatus.Icon,
+
+
                     Subject = req.Request.Subject,
                     RequestCode = req.Request.RequestCode,
                     RequestDate = req.Request.RequestDate,
@@ -196,7 +200,7 @@ namespace Asset.Core.Repositories
             var trackings = _context.RequestTracking.Where(r => r.RequestId == requestId).OrderByDescending(a => a.DescriptionDate).Select(req => new RequestTrackingView
             {
                 Id = req.Id,
-                RequestId = req.RequestId != null ? (int)req.RequestId : 0,
+                RequestId = req.RequestId != 0 ? (int)req.RequestId : 0,
                 RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
                 Description = req.Description,
                 DescriptionDate = req.DescriptionDate,
@@ -204,37 +208,41 @@ namespace Asset.Core.Repositories
                 UserName = req.User.UserName,
                 HospitalId = req.HospitalId,
                 StatusName = req.RequestStatus.Name,
-                StatusNameAr = req.RequestStatus.NameAr
+                StatusNameAr = req.RequestStatus.NameAr,
+                StatusColor = req.RequestStatus.Color,
+                StatusIcon = req.RequestStatus.Icon
             }).OrderByDescending(t => t.DescriptionDate).ToList();
 
             return trackings;
         }
         public RequestDetails GetAllTrackingsByRequestId(int RequestId)
         {
-            string wonotes="";
+            string wonotes = "";
             var trackings = _context.RequestTracking.Include(a => a.Request).Include(a => a.Request.AssetDetail).Include(a => a.RequestStatus)
                 .Where(r => r.RequestId == RequestId).Select(req => new RequestTrackingView
-            {
-                Id = req.Id,
+                {
+                    Id = req.Id,
 
-                Barcode = req.Request.AssetDetail.Barcode,
-                Description = req.Description,
-                DescriptionDate = req.DescriptionDate,
-                CreatedById = req.CreatedById,
-                UserName = req.User.UserName,
-                HospitalId = req.HospitalId,
-                RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
-                StatusName = req.RequestStatusId != null ? req.RequestStatus.Name : "",
-                StatusNameAr = req.RequestStatusId != null ? req.RequestStatus.NameAr : ""
-            }).OrderByDescending(t => t.DescriptionDate).ThenBy(a => a.DescriptionDate.Value.TimeOfDay).ToList();
+                    Barcode = req.Request.AssetDetail.Barcode,
+                    Description = req.Description,
+                    DescriptionDate = req.DescriptionDate,
+                    CreatedById = req.CreatedById,
+                    UserName = req.User.UserName,
+                    HospitalId = req.HospitalId,
+                    RequestStatusId = req.RequestStatusId != null ? (int)req.RequestStatusId : 0,
+                    StatusName = req.RequestStatusId != null ? req.RequestStatus.Name : "",
+                    StatusNameAr = req.RequestStatusId != null ? req.RequestStatus.NameAr : "",
+                    StatusColor = req.RequestStatusId != null ? req.RequestStatus.Color : "",
+                    StatusIcon = req.RequestStatusId != null ? req.RequestStatus.Icon : "",
+                }).OrderByDescending(t => t.DescriptionDate).ThenBy(a => a.DescriptionDate.Value.TimeOfDay).ToList();
 
             //listOfA.OrderByDescending(a => a.Start.Date)
             //                   .ThenBy(a => a.Start.TimeOfDay);
 
             var lstWONotes = _context.WorkOrderTrackings.Include(a => a.WorkOrder).Include(a => a.WorkOrder.Request).Where(a => a.WorkOrder.RequestId == RequestId)
-                .OrderByDescending(a =>a.CreationDate).ThenBy(a => a.CreationDate.Value.TimeOfDay).ToList();
+                .OrderByDescending(a => a.CreationDate).ThenBy(a => a.CreationDate.Value.TimeOfDay).ToList();
 
-            
+
             if (lstWONotes.Count > 0)
             {
                 wonotes = lstWONotes[0].Notes;
@@ -280,6 +288,11 @@ namespace Asset.Core.Repositories
 
                 StatusName = req.RequestStatus.Name,
                 StatusNameAr = req.RequestStatus.NameAr,
+
+                StatusColor = req.RequestStatus.Color,
+                StatusIcon = req.RequestStatus.Icon,
+
+
                 AssetName = req.Request.AssetDetail.MasterAsset.Name,
                 AssetNameAr = req.Request.AssetDetail.MasterAsset.NameAr,
                 WONotes = wonotes,

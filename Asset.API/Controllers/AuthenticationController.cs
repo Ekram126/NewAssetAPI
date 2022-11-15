@@ -35,8 +35,8 @@ namespace Asset.API.Controllers
         private readonly ISettingService _settingService;
 
 
-        string strInsitute, strInsituteAr, strLogo="";
-        bool isAgency;
+        string strInsitute, strInsituteAr, strLogo = "";
+        bool isAgency, isScrap;
 
         public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IEmailSender emailSender, IConfiguration configuration, ISettingService settingService, ApplicationDbContext context)
         {
@@ -167,9 +167,13 @@ namespace Asset.API.Controllers
 
                         if (item.KeyName == "Logo")
                             strLogo = item.KeyValue;
-                        
+
                         if (item.KeyName == "PMAgency")
-                            isAgency = Convert.ToBoolean( item.KeyValue);
+                            isAgency = Convert.ToBoolean(item.KeyValue);
+
+                        if (item.KeyName == "IsScrap")
+                            isScrap = Convert.ToBoolean(item.KeyValue);
+
                     }
                 }
 
@@ -204,8 +208,8 @@ namespace Asset.API.Controllers
                     strInsitute = strInsitute,
                     strInsituteAr = strInsituteAr,
                     strLogo = strLogo,
-                    isAgency= isAgency
-
+                    isAgency = isAgency,
+                    isScrap = isScrap
                 }); ;
             }
             return Unauthorized();

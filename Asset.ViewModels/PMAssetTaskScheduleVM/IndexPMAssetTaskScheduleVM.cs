@@ -18,6 +18,8 @@ namespace Asset.ViewModels.PMAssetTaskScheduleVM
             public int Id { get; set; }
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
+            public string DepartmentName { get; set; }
+            public string DepartmentNameAr { get; set; }
             public string Serial { get; set; }
             public int HospitalId { get; set; }
             public List<PMAssetTask> ListTasks { get; set; }

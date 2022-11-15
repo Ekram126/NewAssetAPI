@@ -33,6 +33,7 @@ namespace Asset.ViewModels.MasterAssetVM
             public string ECRIName { get; set; }
             public string ECRINameAr { get; set; }
             public string Model { get; set; }
+            public string ModelNumber { get; set; }
             public int? OriginId { get; set; }
             public string OriginName { get; set; }
             public string OriginNameAr { get; set; }
@@ -50,6 +51,8 @@ namespace Asset.ViewModels.MasterAssetVM
 
 
 
+            public string SerialNumber { get; set; }
+            public string BarCode { get; set; }
 
 
 

@@ -11,6 +11,7 @@
         public int? ExpectedLifeTime { get; set; }
 
         public int? ECRIId { get; set; }
+        public string Model{ get; set; }
         public string ModelNumber { get; set; }
         public string VersionNumber { get; set; }
         public int? PeriorityId { get; set; }
@@ -34,5 +35,9 @@
         public string AssetImg { get; set; }
 
         public int? HospitalId { get; set; }
+
+
+        public string BrandName { get; set; }
+        public string BrandNameAr { get; set; }
     }
 }

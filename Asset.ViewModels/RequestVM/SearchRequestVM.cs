@@ -38,5 +38,20 @@ namespace Asset.ViewModels.RequestVM
 
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+
+
+        public string Lang { get; set; }
+
+
+        public string StrStartDate { get; set; }
+        public string StrEndDate { get; set; }
+
+        public string StatusName { get; set; }
+        public string StatusNameAr { get; set; }
+        public string HospitalName { get; set; }
+        public string HospitalNameAr { get; set; }
+        public string PrintedBy { get; set; }
+
+
     }
 }

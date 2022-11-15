@@ -10,7 +10,7 @@ namespace Asset.ViewModels.ContractVM
     {
 
         public List<GetData> Results { get; set; }
-
+        public int Count { get; set; }
 
         public class GetData
         {
@@ -23,11 +23,14 @@ namespace Asset.ViewModels.ContractVM
             public DateTime? StartDate { get; set; }
             public DateTime? EndDate { get; set; }
 
+            public string StrEndDate { get; set; }
 
             public string Cost { get; set; }
 
             public string SupplierName { get; set; }
             public string SupplierNameAr { get; set; }
+
+    public string Notes { get; set; }
         }
     }
 }

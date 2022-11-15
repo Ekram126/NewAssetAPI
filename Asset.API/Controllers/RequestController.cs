@@ -61,7 +61,12 @@ namespace Asset.API.Controllers
             return requestDTO;
         }
 
-
+        [HttpGet("AlertOpenedRequestAssetsAndHighPeriority/{periorityId}/{hospitalId}")]
+        public List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId)
+        {
+            var lstRequestHighPeriority = _requestService.AlertOpenedRequestAssetsAndHighPeriority(periorityId, hospitalId);
+            return lstRequestHighPeriority;
+        }
 
 
         [HttpGet]
@@ -878,6 +883,10 @@ namespace Asset.API.Controllers
                     titleTable.WidthPercentage = 100;
                     titleTable.AddCell(new PdfPCell(new Phrase("بلاغات الأعطال", titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
 
+
+
+                    titleTable.AddCell(new PdfPCell(new Phrase(searchRequestDateObj.StatusName, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
                     DateTime sDate = new DateTime();
                     DateTime eDate = new DateTime();
                     if (searchRequestDateObj.StrStartDate == "")
@@ -890,7 +899,7 @@ namespace Asset.API.Controllers
                     var syear = ArabicNumeralHelper.toArabicNumber(sDate.Year.ToString());
                     var strStart = sday + "/" + smonth + "/" + syear;
 
-                    if (searchRequestDateObj.StrStartDate == "")
+                    if (searchRequestDateObj.StrEndDate == "")
                         eDate = DateTime.Today.Date;
                     else
                         eDate = DateTime.Parse(searchRequestDateObj.StrEndDate);
@@ -905,8 +914,16 @@ namespace Asset.API.Controllers
                         titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من بداية بلاغات الأعطال إلى  " + strEnd, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
                     else
                         titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من" + strStart + " إلى " + strEnd, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+
                     titleTable.WriteSelectedRows(0, -1, 5, 520, stamper.GetOverContent(i));
                 }
+
+
+
+
+
+
 
 
                 for (int i = 1; i <= pages; i++)
@@ -934,7 +951,7 @@ namespace Asset.API.Controllers
                     {
                         bodytable.DeleteRow(1);
                     }
-                    bodytable2.WriteSelectedRows(0, -1, 10, 460, stamper.GetUnderContent(i));
+                    bodytable2.WriteSelectedRows(0, -1, 10, 445, stamper.GetUnderContent(i));
 
                 }
             }
@@ -1049,9 +1066,6 @@ namespace Asset.API.Controllers
             }
             return table;
         }
-
-
-
         [HttpGet]
         [Route("DownloadCreateSRReportWithinDatePDF/{fileName}")]
         public HttpResponseMessage DownloadFile(string fileName)
@@ -1083,6 +1097,392 @@ namespace Asset.API.Controllers
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost]
+        [Route("CreateServiceRequestPDF")]
+        public void CreateServiceRequestPDF(SearchRequestVM searchRequestObj)
+        {
+
+            var lstSettings = _settingService.GetAll().ToList();
+            if (lstSettings.Count > 0)
+            {
+                foreach (var item in lstSettings)
+                {
+                    if (item.KeyName == "Institute")
+                    {
+                        strInsitute = item.KeyValue;
+                        strInsituteAr = item.KeyValueAr;
+                    }
+
+                    if (item.KeyName == "Logo")
+                        strLogo = item.KeyValue;
+                }
+            }
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            Document document = new Document(PageSize.A4.Rotate(), 20f, 20f, 30f, 20f);
+            System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
+            PdfWriter writer = PdfWriter.GetInstance(document, memoryStream);
+            document.NewPage();
+            document.Open();
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            string adobearabic = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
+            BaseFont bfUniCode = BaseFont.CreateFont(adobearabic, BaseFont.IDENTITY_H, true);
+            iTextSharp.text.Font font = new iTextSharp.text.Font(bfUniCode, 14);
+
+            Phrase ph = new Phrase(" ", font);
+            document.Add(ph);
+
+            PdfPTable bodytable = CreateServiceRequestTable(searchRequestObj);
+            int countnewpages = bodytable.Rows.Count / 20;
+            for (int i = 1; i <= countnewpages; i++)
+            {
+                document.NewPage();
+                writer.PageEmpty = false;
+            }
+
+            document.Close();
+            byte[] bytes = memoryStream.ToArray();
+            System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRReports/CreateSRReport.pdf", bytes);
+            memoryStream = new MemoryStream();
+            PdfReader reader = new PdfReader(bytes);
+            using (PdfStamper stamper = new PdfStamper(reader, memoryStream))
+            {
+                int pages = reader.NumberOfPages;
+                //Footer
+                for (int i = 1; i <= pages; i++)
+                {
+                    ColumnText.ShowTextAligned(stamper.GetUnderContent(i), Element.ALIGN_LEFT, new Phrase(ArabicNumeralHelper.toArabicNumber(pages.ToString()) + "/" + ArabicNumeralHelper.toArabicNumber(i.ToString()), font), 800f, 15f, 0);
+                    ColumnText.ShowTextAligned(stamper.GetUnderContent(i), Element.ALIGN_RIGHT, new Phrase("تمت الطباعة بواسطة  " + searchRequestObj.PrintedBy, font), 150f, 15f, 0, PdfWriter.RUN_DIRECTION_RTL, ColumnText.AR_LIG);
+                }
+                //Header
+                for (int i = 1; i <= pages; i++)
+                {
+                    string imageURL = _webHostingEnvironment.ContentRootPath + "/Images/" + strLogo;
+                    iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(imageURL);
+                    jpg.ScaleAbsolute(70f, 50f);
+                    PdfPTable headertable = new PdfPTable(2);
+                    headertable.SetTotalWidth(new float[] { 350f, 50f });
+                    headertable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                    headertable.WidthPercentage = 100;
+                    PdfPCell cell = new PdfPCell(new PdfPCell(jpg));
+                    //cell.Rowspan = 2;
+                    cell.PaddingTop = 5;
+                    cell.Border = Rectangle.NO_BORDER;
+                    cell.PaddingRight = 15;
+                    //cell.HorizontalAlignment = 2; //0=Left, 1=Centre, 2=Right
+                    headertable.AddCell(cell);
+                    if (searchRequestObj.Lang == "ar")
+                        headertable.AddCell(new PdfPCell(new Phrase(strInsituteAr + "\n" + searchRequestObj.HospitalNameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 15 });
+                    else
+                        headertable.AddCell(new PdfPCell(new Phrase(strInsitute + "\n" + searchRequestObj.HospitalName + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+
+
+                    headertable.WriteSelectedRows(0, -1, 420, 580, stamper.GetOverContent(i));
+
+                    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+                    string adobearabicheaderTitle = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
+                    BaseFont bfUniCodeheaderTitle = BaseFont.CreateFont(adobearabicheaderTitle, BaseFont.IDENTITY_H, true);
+                    iTextSharp.text.Font titlefont = new iTextSharp.text.Font(bfUniCodeheaderTitle, 16);
+                    titlefont.SetStyle("bold");
+
+
+                    PdfPTable titleTable = new PdfPTable(1);
+                    titleTable.SetTotalWidth(new float[] { 800f });
+                    titleTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                    titleTable.WidthPercentage = 100;
+                    titleTable.AddCell(new PdfPCell(new Phrase("بلاغات الأعطال", titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+
+
+                    titleTable.AddCell(new PdfPCell(new Phrase(searchRequestObj.StatusName, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+                    DateTime sDate = new DateTime();
+                    DateTime eDate = new DateTime();
+                    if (searchRequestObj.StrStartDate == "")
+                        sDate = DateTime.Parse("01/01/1900");
+                    else
+                        sDate = DateTime.Parse(searchRequestObj.StrStartDate);
+
+                    var sday = ArabicNumeralHelper.toArabicNumber(sDate.Day.ToString());
+                    var smonth = ArabicNumeralHelper.toArabicNumber(sDate.Month.ToString());
+                    var syear = ArabicNumeralHelper.toArabicNumber(sDate.Year.ToString());
+                    var strStart = sday + "/" + smonth + "/" + syear;
+
+                    if (searchRequestObj.StrEndDate == "")
+                        eDate = DateTime.Today.Date;
+                    else
+                        eDate = DateTime.Parse(searchRequestObj.StrEndDate);
+
+
+                    var eday = ArabicNumeralHelper.toArabicNumber(eDate.Day.ToString());
+                    var emonth = ArabicNumeralHelper.toArabicNumber(eDate.Month.ToString());
+                    var eyear = ArabicNumeralHelper.toArabicNumber(eDate.Year.ToString());
+                    var strEnd = eday + "/" + emonth + "/" + eyear;
+
+                    if (sDate == DateTime.Parse("01/01/1900"))
+                        titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من بداية بلاغات الأعطال إلى  " + strEnd, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+                    else
+                        titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من" + strStart + " إلى " + strEnd, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+
+                    titleTable.WriteSelectedRows(0, -1, 5, 520, stamper.GetOverContent(i));
+                }
+
+                for (int i = 1; i <= pages; i++)
+                {
+                    PdfPTable bodytable2 = new PdfPTable(10);
+                    bodytable2.SetTotalWidth(new float[] { 90f, 80f, 100f, 90f, 90f, 90f, 100f, 90f, 90f, 15f });
+                    bodytable2.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                    bodytable2.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    bodytable2.WidthPercentage = 100;
+                    bodytable2.PaddingTop = 200;
+                    bodytable2.HeaderRows = 1;
+                    bodytable2.SetWidths(new int[] { 20, 20, 48, 20, 20, 20, 35, 25, 20, 7 });
+
+                    int countRows = bodytable.Rows.Count;
+                    if (countRows > 20)
+                    {
+                        countRows = 20;
+                    }
+                    bodytable2.Rows.Add(bodytable.Rows[0]);
+                    for (int j = 1; j <= countRows - 1; j++)
+                    {
+                        bodytable2.Rows.Add(bodytable.Rows[j]);
+                    }
+                    for (int k = 1; k <= bodytable2.Rows.Count; k++)
+                    {
+                        bodytable.DeleteRow(1);
+                    }
+                    bodytable2.WriteSelectedRows(0, -1, 10, 445, stamper.GetUnderContent(i));
+
+                }
+            }
+            bytes = memoryStream.ToArray();
+            System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRReports/CreateSRReport.pdf", bytes);
+
+            memoryStream.Close();
+            document.Close();
+
+        }
+        public PdfPTable CreateServiceRequestTable(SearchRequestVM searchRequestObj)
+        {
+            var lstData = _requestService.SearchRequests(searchRequestObj).ToList();
+
+
+            PdfPTable table = new PdfPTable(10);
+            table.SetTotalWidth(new float[] { 90f, 80f, 90f, 90f, 90f, 90f, 100f, 90f, 90f, 15f });
+            table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+            table.HorizontalAlignment = Element.ALIGN_RIGHT;
+            table.WidthPercentage = 100;
+            table.PaddingTop = 200;
+            table.HeaderRows = 1;
+            table.SetWidths(new int[] { 20, 20, 48, 20, 20, 20, 35, 25, 20, 7 });
+
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            string ARIALUNI_TFF = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
+            BaseFont bfArialUniCode = BaseFont.CreateFont(ARIALUNI_TFF, BaseFont.IDENTITY_H, true);
+            iTextSharp.text.Font font = new iTextSharp.text.Font(bfArialUniCode, 12);
+            if (searchRequestObj.Lang == "ar")
+            {
+                string[] col = { "تاريخ إغلاق بلاغ العطل", "حالة بلاغ العطل", "الوصف", "الوقت", "الرقم المسلسل", "الباركود", "اسم الأصل", "التاريخ", "رقم بلاغ العطل", "م" };
+                for (int i = col.Length - 1; i >= 0; i--)
+                {
+                    PdfPCell cell = new PdfPCell(new Phrase(col[i], font));
+                    cell.BackgroundColor = new iTextSharp.text.BaseColor(153, 204, 255);
+                    cell.PaddingBottom = 10;
+                    table.AddCell(cell);
+                }
+                int index = 0;
+                foreach (var item in lstData)
+                {
+                    ++index;
+                    table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font)) { PaddingBottom = 5 });
+                    if (item.RequestCode != null)
+                        table.AddCell(new PdfPCell(new Phrase(item.RequestCode, font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.RequestDate.ToString() != "")
+                        table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.RequestDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.AssetNameAr != null)
+                        table.AddCell(new PdfPCell(new Phrase(item.AssetNameAr, font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.Barcode != null)
+                        table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.Barcode), font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.SerialNumber != null)
+                    {
+                        table.AddCell(new PdfPCell(new Phrase(item.SerialNumber, font)) { PaddingBottom = 5 });
+                        //table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.SerialNumber), font)) { PaddingBottom = 5 });
+                    }
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    TimeSpan diff = DateTime.Now - item.RequestDate;
+                    var days = diff.Days;
+                    var hours = diff.Hours;
+                    int minutes = diff.Minutes;
+                    int seconds = diff.Seconds;
+
+                    if (searchRequestObj.Lang == "en")
+                    {
+                        var elapsedTime = days + " days " + hours + " hours ";// + minutes + " minutes " + seconds + " seconds";
+                        item.ElapsedTime = elapsedTime;
+                    }
+                    else
+                    {
+                        var elapsedTime = days + " يوم " + hours + " ساعة ";// + minutes + " دقيقة " + seconds + " ثانية";
+                        item.ElapsedTime = elapsedTime;
+                    }
+                    if (item.ElapsedTime != null)
+                        table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.ElapsedTime), font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.Description != null)
+                        table.AddCell(new PdfPCell(new Phrase(item.Description, font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.StatusNameAr != null)
+                        table.AddCell(new PdfPCell(new Phrase(item.StatusNameAr, font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.StatusId == 2)
+                        table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.ClosedDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+                }
+            }
+            else
+            {
+                string[] col = { "No", "Request Number", "Date", "Asset Name", "BarCode", "Serial", "Time", "Notes", "Status", "Closed Date" };
+                for (int i = 0; i <= col.Length - 1; i++)
+                {
+                    PdfPCell cell = new PdfPCell(new Phrase(col[i], font));
+                    cell.BackgroundColor = new iTextSharp.text.BaseColor(153, 204, 255);
+                    cell.PaddingBottom = 10;
+                    table.AddCell(cell);
+                }
+                int index = 0;
+                foreach (var item in lstData)
+                {
+                    ++index;
+                    table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font)) { PaddingBottom = 5 });
+                    if (item.RequestCode != null)
+                        table.AddCell(new PdfPCell(new Phrase(item.RequestCode, font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.RequestDate.ToString() != "")
+                        table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.RequestDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.AssetNameAr != null)
+                        table.AddCell(new PdfPCell(new Phrase(item.AssetNameAr, font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.Barcode != null)
+                        table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.Barcode), font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.SerialNumber != null)
+                    {
+                        table.AddCell(new PdfPCell(new Phrase(item.SerialNumber, font)) { PaddingBottom = 5 });
+                    }
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    TimeSpan diff = DateTime.Now - item.RequestDate;
+                    var days = diff.Days;
+                    var hours = diff.Hours;
+                    int minutes = diff.Minutes;
+                    int seconds = diff.Seconds;
+
+                    if (searchRequestObj.Lang == "en")
+                    {
+                        var elapsedTime = days + " days " + hours + " hours ";// + minutes + " minutes " + seconds + " seconds";
+                        item.ElapsedTime = elapsedTime;
+                    }
+                    else
+                    {
+                        var elapsedTime = days + " يوم " + hours + " ساعة ";// + minutes + " دقيقة " + seconds + " ثانية";
+                        item.ElapsedTime = elapsedTime;
+                    }
+                    if (item.ElapsedTime != null)
+                        table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.ElapsedTime), font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.Description != null)
+                        table.AddCell(new PdfPCell(new Phrase(item.Description, font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.StatusNameAr != null)
+                        table.AddCell(new PdfPCell(new Phrase(item.StatusNameAr, font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                    if (item.StatusId == 2)
+                        table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.ClosedDate.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+                    else
+                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+                }
+            }
+
+            return table;
+        }
+        [HttpGet]
+        [Route("DownloadCreateServiceRequestPDF/{fileName}")]
+        public HttpResponseMessage DownloadCreateServiceRequestPDFF(string fileName)
+        {
+            var file = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SRReports/CreateSRReport.pdf";
+            HttpResponseMessage response = null;
+            if (!System.IO.File.Exists(file))
+                return new HttpResponseMessage(HttpStatusCode.Gone);
+            else
+            {
+                //if file present than read file 
+                var fStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                //compose response and include file as content in it
+                response = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StreamContent(fStream)
+                };
+                response.Content.Headers.ContentDisposition =
+                                            new ContentDispositionHeaderValue("attachment")
+                                            {
+                                                FileName = Path.GetFileName(fStream.Name)
+                                            };
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            }
+            return response;
+        }
 
 
 

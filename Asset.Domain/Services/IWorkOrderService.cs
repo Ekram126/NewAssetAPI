@@ -36,6 +36,11 @@ namespace Asset.Domain.Services
 
         IEnumerable<IndexWorkOrderVM> GetWorkOrdersByDate(SearchWorkOrderByDateVM woDateObj);
 
+
+
+
+        IndexWorkOrderVM2 GetWorkOrdersByDateAndStatus(SearchWorkOrderByDateVM woDateObj, int pageNumber, int pageSize);
+
         int CountWorkOrdersByHospitalId(int hospitalId, string userId);
 
         int CreateWorkOrderAttachments(WorkOrderAttachment attachObj);

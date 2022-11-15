@@ -42,7 +42,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public int? AssetStatusId { get; set; }
         public int? AssetConditionId { get; set; }
 
-        //   public List<AssetOwner> ListOwners{ get; set; }
+        public string CreatedBy { get; set; }
 
         public List<int> ListOwners { get; set; }
 

@@ -59,6 +59,8 @@ namespace Asset.Models
         public DbSet<AssetDetailAttachment> AssetDetailAttachments { get; set; }
 
         public DbSet<AssetMovement> AssetMovements { get; set; }
+        public DbSet<ExternalAssetMovement> ExternalAssetMovements { get; set; }
+        public DbSet<ExternalAssetMovementAttachment> ExternalAssetMovementAttachments { get; set; }
         public DbSet<ECRI> ECRIS { get; set; }
 
         public DbSet<AssetStatu> AssetStatus { get; set; }
@@ -101,6 +103,9 @@ namespace Asset.Models
 
         public DbSet<WNPMAssetTime> WNPMAssetTimes { get; set; }
 
+        public DbSet<WNPMAssetTimeAttachment> WNPMAssetTimeAttachments { get; set; }
+
+
         public DbSet<PMAssetTime> PMAssetTimes { get; set; }
         public DbSet<PMAssetTaskSchedule> PMAssetTaskSchedules { get; set; }
 
@@ -124,7 +129,10 @@ namespace Asset.Models
         public DbSet<VisitType> VisitTypes { get; set; }
         public DbSet<HospitalEngineer> HospitalEngineers { get; set; }
         public DbSet<VisitAttachment> VisitAttachments { get; set; }
-
+        public DbSet<ScrapAttachment> ScrapAttachments { get; set; }
+        public DbSet<Scrap> Scraps { get; set; }
+        public DbSet<ScrapReason> ScrapReasons { get; set; }
+        public DbSet<AssetScrap> AssetScraps { get; set; }
 
         public DbSet<Setting> Settings { get; set; }
     }

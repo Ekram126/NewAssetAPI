@@ -33,6 +33,7 @@ namespace Asset.ViewModels.RequestVM
         public int RequestId { get; set; }
         public string RequestSubject { get; set; }
         public string RequestDate { get; set; }
+        public string LastRequestDate { get; set; }
         public string DescriptionDate { get; set; }
         public string RequestCode { get; set; }
         public string RequestNote { get; set; }
@@ -69,6 +70,11 @@ namespace Asset.ViewModels.RequestVM
         public string RoomName { get; set; }
         public string RoomNameAr { get; set; }
         public string ModelNumber { get; set; }
+
+
+        public string BrandName { get; set; }
+        public string BrandNameAr { get; set; }
+
 
         public List<LstWorkOrderFromTracking> LstWorkOrderTracking { get; set; }
 

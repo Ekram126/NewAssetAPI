@@ -13,9 +13,16 @@ namespace Asset.Domain.Repositories
     {
         IEnumerable<IndexMasterAssetVM.GetData> GetAll();
         IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset(int hospitalId);
+        IEnumerable<IndexMasterAssetVM.GetData> GetListMasterAsset();
+
+
         IEnumerable<IndexMasterAssetVM.GetData> SearchInMasterAssets(SearchMasterAssetVM searchObj);
         IEnumerable<MasterAsset> GetAllMasterAssets();
         IEnumerable<MasterAsset> AutoCompleteMasterAssetName(string name);
+
+        IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName2(string name);
+        IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName3(string name, int hospitalId);
+    
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId, string userId);
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId);
         EditMasterAssetVM GetById(int id);

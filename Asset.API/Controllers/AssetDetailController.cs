@@ -38,8 +38,9 @@ namespace Asset.API.Controllers
 
         private const int PageSize = 10;
         private IAssetDetailService _AssetDetailService;
-
+        private IWorkOrderService _workOrderService;
         private IAssetOwnerService _assetOwnerService;
+        private IAssetStatusTransactionService _assetStatusTransactionService;
         private IAssetMovementService _assetMovementService;
         private IRequestService _requestService;
         private IPMAssetTimeService _pMAssetTimeService;
@@ -54,8 +55,8 @@ namespace Asset.API.Controllers
         // private object ComponentInfo;
 
         [Obsolete]
-        public AssetDetailController(IAssetDetailService AssetDetailService, IAssetOwnerService assetOwnerService,
-            IPMAssetTimeService pMAssetTimeService, IPagingService pagingService, IAssetMovementService assetMovementService,
+        public AssetDetailController(IAssetDetailService AssetDetailService, IAssetOwnerService assetOwnerService, IWorkOrderService workOrderService,
+            IPMAssetTimeService pMAssetTimeService, IPagingService pagingService, IAssetMovementService assetMovementService, IAssetStatusTransactionService assetStatusTransactionService,
             QrController qrController, IRequestService requestService, IWebHostEnvironment webHostingEnvironment, ISettingService settingService)
         {
             _AssetDetailService = AssetDetailService;
@@ -67,6 +68,8 @@ namespace Asset.API.Controllers
             _pagingService = pagingService;
             _qrController = qrController;
             _settingService = settingService;
+            _workOrderService = workOrderService;
+            _assetStatusTransactionService = assetStatusTransactionService;
         }
         [HttpGet]
         [Route("ListAssetDetails")]
@@ -218,6 +221,15 @@ namespace Asset.API.Controllers
             return _AssetDetailService.GetById(id);
         }
 
+        [HttpGet]
+        [Route("GenerateAssetDetailBarcode")]
+        public GeneratedAssetDetailBCVM GenerateAssetDetailBarcode()
+        {
+            return _AssetDetailService.GenerateAssetDetailBarcode();
+        }
+
+
+
 
         [HttpGet]
         [Route("ViewAssetDetailByMasterId/{masterId}")]
@@ -250,6 +262,18 @@ namespace Asset.API.Controllers
             return _AssetDetailService.GetListOfAssetDetailsByHospitalNotInContract(hospitalId);
         }
         [HttpGet]
+        [Route("GetListOfAssetDetailsByHospitalNotInContract2/{barcode}/{hospitalId}")]
+        public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract2(string barcode, int hospitalId)
+        {
+            return _AssetDetailService.GetListOfAssetDetailsByHospitalNotInContract(barcode, hospitalId);
+        }
+        [HttpGet]
+        [Route("GetListOfAssetDetailsByHospitalNotInContractBySerialNumber/{serialNumber}/{hospitalId}")]
+        public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContractBySerialNumber(string serialNumber, int hospitalId)
+        {
+            return _AssetDetailService.GetListOfAssetDetailsByHospitalNotInContractBySerialNumber(serialNumber, hospitalId);
+        }
+        [HttpGet]
         [Route("GetListOfAssetDetailsByHospitalId/{hospitalId}")]
         public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId)
         {
@@ -279,6 +303,17 @@ namespace Asset.API.Controllers
         {
             return await _AssetDetailService.GetAssetsByUserId(userId);
         }
+
+        [HttpPost]
+        [Route("GetAssetsByUserIdAndPaging/{userId}/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM GetAssetsByUserIdAndPaging(string userId, int pageNumber, int pageSize)
+        {
+            return _AssetDetailService.GetAssetsByUserId(userId, pageNumber, pageSize);
+        }
+
+
+
+
         [HttpPut]
         [Route("GetAssetDetailsByUserIdWithPaging/{userId}")]
         public IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByUserId(string userId, PagingParameter pageInfo)
@@ -302,6 +337,18 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.GetAllPMAssetTaskSchedules(hospitalId);
         }
+
+
+
+        [HttpGet]
+        [Route("GetAllPMAssetTaskScheduleByAssetId/{assetId}")]
+        public IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskScheduleByAssetId(int? assetId)
+        {
+            return _AssetDetailService.GetAllPMAssetTaskScheduleByAssetId(assetId);
+        }
+
+
+
         [HttpPut]
         [Route("UpdateAssetDetail")]
         public IActionResult Update(EditAssetDetailVM AssetDetailVM)
@@ -383,8 +430,33 @@ namespace Asset.API.Controllers
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "request", Message = "You cannot delete this asset it has requests", MessageAr = "لا يمكن مسح هذا الأصل لأن له بلاغات صيانة " });
                 }
+                var lstWO = _workOrderService.GetLastRequestAndWorkOrderByAssetId(id).ToList();
+                if (lstWO.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "wo", Message = "You cannot delete this asset it has workorders", MessageAr = "لا يمكن مسح هذا الأصل لأن له  أوامر شغل" });
+                }
                 else
                 {
+
+                    var lstOwners = _assetOwnerService.GetOwnersByAssetDetailId(id).ToList();
+                    if (lstOwners.Count > 0)
+                    {
+                        foreach (var item in lstOwners)
+                        {
+                            _assetOwnerService.Delete(item.Id);
+                        }
+                    }
+
+                    var lstAssetTransactions = _assetStatusTransactionService.GetAssetStatusByAssetDetailId(id).ToList();
+                    if (lstAssetTransactions.Count > 0)
+                    {
+                        foreach (var item in lstAssetTransactions)
+                        {
+                            _assetStatusTransactionService.Delete(item.Id);
+                        }
+                    }
+
+
                     int deletedRow = _AssetDetailService.Delete(id);
                 }
             }
@@ -555,6 +627,22 @@ namespace Asset.API.Controllers
             var list = _AssetDetailService.SortAssets(sortObj);
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list.ToList());
         }
+
+
+
+
+        [HttpPost]
+        [Route("SortAssets2/{statusId}/{userId}")]
+        public IndexAssetDetailVM SortAssets(Sort sortObj, int statusId, string userId)
+        {
+            var assetDetailData = _AssetDetailService.SortAssets(sortObj, statusId, userId);
+            return assetDetailData;
+        }
+
+
+
+
+
         [HttpPost]
         [Route("SortAssetsCount")]
         public int SortAssets(Sort sortObj)
@@ -741,7 +829,7 @@ namespace Asset.API.Controllers
         }
         public PdfPTable AssetDepartmentBrandSupplier(FilterHospitalAsset filterHospitalAssetObj)
         {
-           
+
             var lstData = _AssetDetailService.FilterDataByDepartmentBrandSupplierId(filterHospitalAssetObj).ToList();
             PdfPTable table = new PdfPTable(8);
             table.SetTotalWidth(new float[] { 70f, 70f, 70f, 70f, 70f, 70f, 70f, 70f });
@@ -762,10 +850,10 @@ namespace Asset.API.Controllers
                 var lstAssetsByBrand = _AssetDetailService.GetAssetBySupplier(lstData).ToList();
                 foreach (var item in lstAssetsByBrand)
                 {
-                   // table.AddCell(new PdfPCell(new Phrase(item.NameAr, font)) { PaddingBottom = 5, Colspan = 8 });
+                    // table.AddCell(new PdfPCell(new Phrase(item.NameAr, font)) { PaddingBottom = 5, Colspan = 8 });
 
                     PdfPCell c1 = new PdfPCell(new Phrase(item.NameAr, font));
-                    c1.Colspan =8;
+                    c1.Colspan = 8;
                     table.AddCell(c1);
 
 

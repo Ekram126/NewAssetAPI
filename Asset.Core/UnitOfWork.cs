@@ -93,6 +93,12 @@ namespace Asset.Core
 
         private ISettingRepository _settingRepository;
 
+
+        private ScrapRepository _scrapRepository;
+        private ScrapReasonRepository _scrapReasonRepository;
+
+        private ExternalAssetMovementRepositories _externalAssetMovementRepositories;
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -262,6 +268,14 @@ namespace Asset.Core
 
         public ISettingRepository SettingRepository => _settingRepository = _settingRepository ?? new SettingRepositories(_context);
 
+
+        public IScrapRepository scrapRepository => _scrapRepository = _scrapRepository ?? new ScrapRepository(_context);
+
+        public IScrapReasonRepository scrapReasonRepository => _scrapReasonRepository = _scrapReasonRepository ?? new ScrapReasonRepository(_context);
+
+    //    public IExternalAssetMovementRepository externalAssetMovementRepository => _externalAssetMovementRepositories = _externalAssetMovementRepositories ?? new ExternalAssetMovementRepositories(_context);
+
+        public IExternalAssetMovementRepository ExternalAssetMovementRepository => _externalAssetMovementRepositories = _externalAssetMovementRepositories ?? new ExternalAssetMovementRepositories(_context);
     }
 }
 

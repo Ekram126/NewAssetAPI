@@ -16,8 +16,7 @@ namespace Asset.Core.Repositories
     {
 
         private ApplicationDbContext _context;
-        string msg;
-
+       
         public VisitRepository(ApplicationDbContext context)
         {
             _context = context;

@@ -3,10 +3,12 @@ using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.WNPMAssetTimes;
 using Itenso.TimePeriod;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,12 +22,13 @@ namespace Asset.API.Controllers
     {
         private readonly IWNPMAssetTimeService _wNPMAssetTimeService;
         private readonly IAssetDetailService _assetDetailService;
+        IWebHostEnvironment _webHostingEnvironment;
 
-        public WNAssetTimesController(IWNPMAssetTimeService wNPMAssetTimeService, IAssetDetailService assetDetailService)
+        public WNAssetTimesController(IWNPMAssetTimeService wNPMAssetTimeService, IAssetDetailService assetDetailService, IWebHostEnvironment webHostingEnvironment)
         {
             _wNPMAssetTimeService = wNPMAssetTimeService;
             _assetDetailService = assetDetailService;
-
+            _webHostingEnvironment = webHostingEnvironment;
         }
 
         [HttpPost]
@@ -104,6 +107,55 @@ namespace Asset.API.Controllers
         {
             return _wNPMAssetTimeService.GetAssetTimeById(id);
         }
+
+
+        [HttpGet]
+        [Route("GetWNPMAssetTimeAttachmentByWNPMAssetTimeId/{wnpmAssetTimeId}")]
+        public List<WNPMAssetTimeAttachment> GetWNPMAssetTimeAttachmentByWNPMAssetTimeId(int wnpmAssetTimeId)
+        {
+            return _wNPMAssetTimeService.GetWNPMAssetTimeAttachmentByWNPMAssetTimeId(wnpmAssetTimeId);
+        }
+
+
+
+
+        [HttpPost]
+        [Route("CreateWNPMAssetTimeAttachment")]
+        public int CreateWNPMAssetTimeAttachment(WNPMAssetTimeAttachment attachObj)
+        {
+            return _wNPMAssetTimeService.CreateWNPMAssetTimeAttachment(attachObj);
+        }
+
+        [HttpPost]
+        [Route("UploadWNPMAssetTimeFiles")]
+        public ActionResult UploadWNPMAssetTimeFiles(IFormFile file)
+        {
+            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/WNPMAssetTime";
+            bool exists = System.IO.Directory.Exists(folderPath);
+            if (!exists)
+                System.IO.Directory.CreateDirectory(folderPath);
+
+            string filePath = folderPath + "/" + file.FileName;
+            if (System.IO.File.Exists(filePath))
+            {
+                //System.IO.File.Delete(filePath);
+                //Stream stream = new FileStream(filePath, FileMode.Create);
+                //file.CopyTo(stream);
+                //stream.Close();
+            }
+            else
+            {
+                Stream stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
+            return StatusCode(StatusCodes.Status201Created);
+        }
+
+
+
+
+
         //[HttpGet]
         //[Route("GetYearQuarters")]
         //public ITimePeriodCollection GetYearQuarters()
@@ -159,7 +211,7 @@ namespace Asset.API.Controllers
                 var added = _wNPMAssetTimeService.CreateAssetTimes(year, hospitalId);
                 return Ok();
             }
-            return Ok();
+            //return Ok();
         }
     }
 }

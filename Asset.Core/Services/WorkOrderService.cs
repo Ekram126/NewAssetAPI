@@ -135,5 +135,11 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WorkOrder.ExportWorkOrdersByStatusId(hospitalId, userId, statusId);
         }
+
+        public IndexWorkOrderVM2 GetWorkOrdersByDateAndStatus(SearchWorkOrderByDateVM woDateObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.WorkOrder.GetWorkOrdersByDateAndStatus(woDateObj, pageNumber, pageSize);
+
+        }
     }
 }

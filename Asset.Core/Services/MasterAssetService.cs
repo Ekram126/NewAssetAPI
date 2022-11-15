@@ -30,6 +30,17 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterAssetRepository.AutoCompleteMasterAssetName(name);
         }
 
+        public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName2(string name)
+        {
+            return _unitOfWork.MasterAssetRepository.AutoCompleteMasterAssetName2(name);
+        }
+
+        public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName3(string name, int hospitalId)
+        {
+            return _unitOfWork.MasterAssetRepository.AutoCompleteMasterAssetName3(name,hospitalId);
+        }
+
+
         public int CountMasterAssets()
         {
             return _unitOfWork.MasterAssetRepository.CountMasterAssets();
@@ -93,6 +104,11 @@ namespace Asset.Core.Services
         public EditMasterAssetVM GetById(int id)
         {
             return _unitOfWork.MasterAssetRepository.GetById(id);
+        }
+
+        public IEnumerable<IndexMasterAssetVM.GetData> GetListMasterAsset()
+        {
+            return _unitOfWork.MasterAssetRepository.GetListMasterAsset();
         }
 
         public IEnumerable<IndexMasterAssetVM.GetData> GetTop10MasterAsset(int hospitalId)

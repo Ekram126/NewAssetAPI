@@ -92,5 +92,11 @@ namespace Asset.Domain
         IEngineerRepository EngineerRepository { get; }
 
         ISettingRepository SettingRepository { get; }
+
+
+        IScrapRepository scrapRepository { get; }
+        IScrapReasonRepository scrapReasonRepository { get; }
+
+        IExternalAssetMovementRepository ExternalAssetMovementRepository { get; }
     }
 }

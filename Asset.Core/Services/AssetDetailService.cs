@@ -180,6 +180,17 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.SortAssets(sortObj);
         }
+        //public IndexAssetDetailVM SortAssets(Sort sortObj, int hospitalId, int statusId, string userId, int pageNumber, int pageSize)
+        //{
+        //    return _unitOfWork.AssetDetailRepository.SortAssets(sortObj, hospitalId, statusId, userId, pageNumber, pageSize);
+        //}
+
+
+        public IndexAssetDetailVM SortAssets(Sort sortObj,int statusId, string userId)
+        {
+            return _unitOfWork.AssetDetailRepository.SortAssets(sortObj,  statusId, userId);
+        }
+
 
         public List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId)
         {
@@ -295,6 +306,32 @@ namespace Asset.Core.Services
         public List<DepartmentGroupVM> GetAssetByDepartment(List<IndexAssetDetailVM.GetData> AssetModel)
         {
             return _unitOfWork.AssetDetailRepository.GetAssetByDepartment(AssetModel);
+        }
+
+        public IndexAssetDetailVM GetAssetsByUserId(string userId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetsByUserId(userId, pageNumber, pageSize);
+        }
+
+        public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(string barcode, int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetListOfAssetDetailsByHospitalNotInContract(barcode, hospitalId);
+        }
+
+        public IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContractBySerialNumber(string serialNumber, int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetListOfAssetDetailsByHospitalNotInContractBySerialNumber(serialNumber, hospitalId);
+        }
+
+        public GeneratedAssetDetailBCVM GenerateAssetDetailBarcode()
+        {
+            return _unitOfWork.AssetDetailRepository.GenerateAssetDetailBarcode();
+        }
+
+        public IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskScheduleByAssetId(int? assetId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAllPMAssetTaskScheduleByAssetId(assetId);
+            
         }
     }
 }

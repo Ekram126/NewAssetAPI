@@ -25,6 +25,11 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterContractRepository.Add(masterContractObj);
         }
 
+        public IEnumerable<IndexMasterContractVM.GetData> AlertContractsBefore3Months(int hospitalId, int duration)
+        {
+            return _unitOfWork.MasterContractRepository.AlertContractsBefore3Months(hospitalId, duration);
+        }
+
         public int CreateContractAttachments(ContractAttachment attachObj)
         {
             return _unitOfWork.MasterContractRepository.CreateContractAttachments(attachObj);
@@ -55,7 +60,12 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterContractRepository.GetContractAttachmentByMasterContractId(masterContractId).ToList();
         }
 
-        public IEnumerable<IndexMasterContractVM.GetData> GetMasterContractsByHospitalId(int hospitalId)
+        public IndexMasterContractVM GetMasterContractsByHospitalId(int hospitalId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.MasterContractRepository.GetMasterContractsByHospitalId(hospitalId, pageNumber, pageSize);
+        }
+
+        public IndexMasterContractVM GetMasterContractsByHospitalId(int hospitalId)
         {
             return _unitOfWork.MasterContractRepository.GetMasterContractsByHospitalId(hospitalId);
         }

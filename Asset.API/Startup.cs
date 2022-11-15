@@ -55,7 +55,7 @@ namespace Asset.API
 
 
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("AssetConnStr")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("AssetConnStr")).EnableSensitiveDataLogging());
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("GisConnetion")));
 
             services.AddScoped<IRoleCategoryService, RoleCategoryService>();
@@ -82,7 +82,7 @@ namespace Asset.API
             services.AddScoped<IApplicationTypeService, ApplicationTypeService>();
 
 
-            
+
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IMasterAssetService, MasterAssetService>();
             services.AddScoped<IMasterAssetComponentService, MasterAssetComponentService>();
@@ -136,10 +136,16 @@ namespace Asset.API
             services.AddScoped<IVisitService, VisitService>();
             services.AddScoped<IVisitTypeService, VisitTypeService>();
             services.AddScoped<IEngineerService, EngineerService>();
-
+            services.AddScoped<IScrapService, ScrapService>();
+            services.AddScoped<IScrapReasonService, ScrapReasonService>();
 
             services.AddScoped<ISettingService, SettingService>();
+
+            services.AddScoped<IExternalAssetMovementService, ExternalAssetMovementService>();
             services.AddScoped<QrController, QrController>();
+
+
+
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                  .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -187,11 +193,14 @@ namespace Asset.API
 
             services.AddCors();
 
-                    }
+
+        }
 
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
+
             app.UseCors(
                  options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
                  );

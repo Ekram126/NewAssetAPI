@@ -17,8 +17,6 @@ namespace Asset.Core.Repositories
     public class RequestRepository : IRequestRepository
     {
         private readonly ApplicationDbContext _context;
-
-
         public RequestRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -158,9 +156,7 @@ namespace Asset.Core.Repositories
                 requestDTO.Subject = req.Subject;
                 requestDTO.RequestCode = req.RequestCode;
                 requestDTO.AssetCode = req.AssetDetail.Code;
-
                 requestDTO.AssetDetailId = int.Parse(req.AssetDetailId.ToString());
-
                 requestDTO.Barcode = req.AssetDetail.Barcode;
                 requestDTO.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
                 requestDTO.Description = req.Description;
@@ -185,20 +181,54 @@ namespace Asset.Core.Repositories
                 requestDTO.RequestTypeId = req.RequestTypeId != null ? (int)req.RequestTypeId : 0;
                 requestDTO.RequestTypeName = req.RequestType.Name;
                 requestDTO.RequestTypeNameAr = req.RequestType.NameAr;
-                requestDTO.SupplierName = req.AssetDetail.Supplier.Name;
-                requestDTO.SupplierNameAr = req.AssetDetail.Supplier.NameAr;
 
-                requestDTO.BrandName = req.AssetDetail.MasterAsset.brand.Name;
-                requestDTO.BrandNameAr = req.AssetDetail.MasterAsset.brand.NameAr;
+                if (req.AssetDetail.Supplier != null)
+                {
+                    requestDTO.SupplierName = req.AssetDetail.Supplier.Name;
+                    requestDTO.SupplierNameAr = req.AssetDetail.Supplier.NameAr;
+                }
+                if (req.AssetDetail.MasterAsset.brand != null)
+                {
+                    requestDTO.BrandName = req.AssetDetail.MasterAsset.brand.Name;
+                    requestDTO.BrandNameAr = req.AssetDetail.MasterAsset.brand.NameAr;
+                }
 
                 requestDTO.DepartmentName = req.AssetDetail.Department != null ? req.AssetDetail.Department.Name : "";
                 requestDTO.DepartmentNameAr = req.AssetDetail.Department != null ? req.AssetDetail.Department.NameAr : "";
-
-
                 requestDTO.RequestTrackingId = _context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().Id;
                 requestDTO.RequestStatusId = _context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().RequestStatusId != null ? (int)_context.RequestTracking.Where(t => t.RequestId == id).FirstOrDefault().RequestStatusId : 0;
 
+                requestDTO.PurchaseDate = req.AssetDetail.PurchaseDate != null ? req.AssetDetail.PurchaseDate.Value.ToShortDateString() : "";
+                requestDTO.InstallationDate = req.AssetDetail.InstallationDate != null ? req.AssetDetail.InstallationDate.Value.ToShortDateString() : "";
+                requestDTO.OperationDate = req.AssetDetail.OperationDate != null ? req.AssetDetail.OperationDate.Value.ToShortDateString() : "";
+                requestDTO.ReceivingDate = req.AssetDetail.ReceivingDate != null ? req.AssetDetail.ReceivingDate.Value.ToShortDateString() : "";
+                requestDTO.PONumber = req.AssetDetail.PONumber;
+                requestDTO.WarrantyExpires = req.AssetDetail.WarrantyExpires;
+                requestDTO.Remarks = req.AssetDetail.Remarks;
+                requestDTO.WarrantyStart = req.AssetDetail.WarrantyStart != null ? req.AssetDetail.WarrantyStart.Value.ToShortDateString() : "";
+                requestDTO.WarrantyEnd = req.AssetDetail.WarrantyEnd != null ? req.AssetDetail.WarrantyEnd.Value.ToShortDateString() : "";
+                requestDTO.CostCenter = req.AssetDetail.CostCenter;
+                requestDTO.DepreciationRate = req.AssetDetail.DepreciationRate;
+                if (req.AssetDetail.BuildingId != null)
+                {
+                    requestDTO.BuildingId = req.AssetDetail.BuildingId;
+                    requestDTO.BuildName = req.AssetDetail.Building.Name;
+                    requestDTO.BuildNameAr = req.AssetDetail.Building.NameAr;
+                }
 
+                if (req.AssetDetail.RoomId != null)
+                {
+                    requestDTO.RoomId = req.AssetDetail.RoomId;
+                    requestDTO.RoomName = req.AssetDetail.Room.Name;
+                    requestDTO.RoomNameAr = req.AssetDetail.Room.NameAr;
+                }
+
+                if (req.AssetDetail.FloorId != null)
+                {
+                    requestDTO.FloorId = req.AssetDetail.FloorId;
+                    requestDTO.FloorName = req.AssetDetail.Floor.Name;
+                    requestDTO.FloorNameAr = req.AssetDetail.Floor.NameAr;
+                }
 
                 var lstStatus = _context.RequestTracking
                                .Include(t => t.Request).Include(t => t.RequestStatus)
@@ -212,8 +242,6 @@ namespace Asset.Core.Repositories
                     requestDTO.StatusNameAr = lstStatus[0].RequestStatus.NameAr;
                     requestDTO.StatusColor = lstStatus[0].RequestStatus.Color;
                     requestDTO.StatusIcon = lstStatus[0].RequestStatus.Icon;
-
-
                     if (requestDTO.StatusId == 2)
                     {
                         requestDTO.ClosedDate = lstStatus[0].DescriptionDate.ToString();
@@ -222,7 +250,6 @@ namespace Asset.Core.Repositories
                     {
                         requestDTO.ClosedDate = "";
                     }
-
                 }
 
 
@@ -334,6 +361,9 @@ namespace Asset.Core.Repositories
                             Id = item.Id,
                             StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
                             StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                            StatusColor = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Color,
+                            StatusIcon = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Icon,
+
                             Description = item.Description,
                             Date = item.DescriptionDate,
                             StatusId = item.RequestStatus.Id,
@@ -1226,6 +1256,10 @@ namespace Asset.Core.Repositories
 
                             StatusName = item.RequestStatus.Name,
                             StatusNameAr = item.RequestStatus.NameAr,
+                            StatusColor = item.RequestStatus.Color,
+                            StatusIcon = item.RequestStatus.Icon,
+
+
                             Description = item.Description,
                             Date = item.DescriptionDate,
                             StatusId = item.RequestStatus != null ? (int)item.RequestStatusId : 0,
@@ -1347,6 +1381,10 @@ namespace Asset.Core.Repositories
                                     Id = item.Id,
                                     StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
                                     StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+
+                                    StatusColor = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Color,
+                                    StatusIcon = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Icon,
+
                                     Description = item.Description,
                                     Date = item.DescriptionDate,
                                     StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
@@ -1422,6 +1460,8 @@ namespace Asset.Core.Repositories
                                     Id = item.Id,
                                     StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
                                     StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                                    StatusColor = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Color,
+                                    StatusIcon = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Icon,
                                     Description = item.Description,
                                     Date = item.DescriptionDate,
                                     StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
@@ -1532,6 +1572,8 @@ namespace Asset.Core.Repositories
                                     Id = item.Id,
                                     StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
                                     StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                                    StatusColor = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Color,
+                                    StatusIcon = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Icon,
                                     Description = item.Description,
                                     Date = item.DescriptionDate,
                                     StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
@@ -1641,6 +1683,7 @@ namespace Asset.Core.Repositories
                                     .Include(t => t.Request.AssetDetail)
                                      .Include(t => t.Request.AssetDetail.MasterAsset)
                                     .Include(t => t.User)
+                                      .Include(t => t.Request.User)
                                     .Include(t => t.Request.RequestMode)
                                     .Include(t => t.Request.RequestPeriority).Where(a => a.Id == workOrderId).ToList();
             if (lstRequests.Count > 0)
@@ -1667,9 +1710,26 @@ namespace Asset.Core.Repositories
                 reqObj.SubProblemNameAr = item.Request.SubProblemId != null ? item.Request.SubProblem.NameAr : "";
                 reqObj.Description = item.Request.Description;
 
-
+                reqObj.CreatedBy = item.Request.User.UserName;
                 reqObj.PeriorityName = item.Request.RequestPeriority != null ? item.Request.RequestPeriority.Name : "";
                 reqObj.PeriorityNameAr = item.Request.RequestPeriority != null ? item.Request.RequestPeriority.NameAr : "";
+
+
+                reqObj.ListTracks = _context.RequestTracking.Include(a => a.User).Where(a => a.RequestId == item.RequestId).OrderByDescending(a => a.DescriptionDate)
+                                      .ToList().Select(item => new IndexRequestTrackingVM.GetData
+                                      {
+                                          Id = item.Id,
+                                          StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
+                                          StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                                          StatusColor = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Color,
+                                          StatusIcon = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Icon,
+                                          Description = item.Description,
+                                          Date = item.DescriptionDate,
+                                          StatusId = item.RequestStatus.Id,
+                                          UserName = item.User.UserName,
+                                          ListDocuments = _context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).ToList(),
+                                      }).ToList();
+
 
 
                 reqObj.AssetName = item.Request.AssetDetail.MasterAsset != null ? item.Request.AssetDetail.MasterAsset.Name : "";
@@ -1851,6 +1911,8 @@ namespace Asset.Core.Repositories
                     Id = item.Id,
                     StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
                     StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                    StatusColor = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Color,
+                    StatusIcon = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Icon,
                     Description = item.Description,
                     Date = item.DescriptionDate,
                     StatusId = item.RequestStatus.Id,
@@ -1898,6 +1960,12 @@ namespace Asset.Core.Repositories
                 lstData = lstData.ToList();
 
 
+            if (searchObj.MasterAssetId != 0)
+            {
+                lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
+            }
+            else
+                lstData = lstData.ToList();
 
             if (searchObj.HospitalId != 0)
             {
@@ -2051,6 +2119,7 @@ namespace Asset.Core.Repositories
                     getDataObj.RequestCode = req.RequestCode;
                     getDataObj.AssetHospitalId = int.Parse(req.HospitalId.ToString());
                     getDataObj.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
+                    getDataObj.MasterAssetId = req.AssetDetail.MasterAsset.Id;
                     getDataObj.Description = req.Description;
                     getDataObj.RequestDate = req.RequestDate;
                     getDataObj.RequestModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
@@ -2105,6 +2174,8 @@ namespace Asset.Core.Repositories
                                                 Id = item.Id,
                                                 StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
                                                 StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                                                StatusColor = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Color,
+                                                StatusIcon = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Icon,
                                                 Description = item.Description,
                                                 Date = item.DescriptionDate,
                                                 StatusId = item.RequestStatus.Id,
@@ -3068,9 +3139,6 @@ namespace Asset.Core.Repositories
 
             return request;
         }
-
-
-
         public async Task<List<IndexRequestsVM>> SortRequestsByPaging(SortRequestVM sortObj, int statusId, int pageNumber, int pageSize)
         {
             List<IndexRequestsVM> request = new List<IndexRequestsVM>();
@@ -4106,6 +4174,8 @@ namespace Asset.Core.Repositories
                                                 Id = item.Id,
                                                 StatusName = item.RequestStatus.Name,
                                                 StatusNameAr = item.RequestStatus.NameAr,
+                                                StatusColor = item.RequestStatus.Color,
+                                                StatusIcon = item.RequestStatus.Icon,
                                                 Description = item.Description,
                                                 Date = item.DescriptionDate,
                                                 StatusId = item.RequestStatus.Id,
@@ -4130,9 +4200,6 @@ namespace Asset.Core.Repositories
             }
             return request.ToList();
         }
-
-
-
         public IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj)
         {
             List<IndexRequestsVM> request = new List<IndexRequestsVM>();
@@ -4447,6 +4514,7 @@ namespace Asset.Core.Repositories
             PrintServiceRequestVM printSRObj = new PrintServiceRequestVM();
 
             var lstRequests = _context.Request.Where(a => a.Id == id).Include(a => a.AssetDetail)
+                .Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand)
                  .Include(a => a.RequestType).Include(a => a.SubProblem).Include(a => a.SubProblem.Problem)
                  .Include(a => a.RequestMode)
                  .Include(a => a.AssetDetail.Hospital)
@@ -4492,23 +4560,34 @@ namespace Asset.Core.Repositories
                 printSRObj.RoomNameAr = requestObj.AssetDetail.Room != null ? requestObj.AssetDetail.Room.NameAr : "";
                 printSRObj.ModelNumber = requestObj.AssetDetail.MasterAsset != null ? requestObj.AssetDetail.MasterAsset.ModelNumber : "";
 
+
+                printSRObj.BrandName = requestObj.AssetDetail.MasterAsset.brand != null ? requestObj.AssetDetail.MasterAsset.brand.Name : "";
+                printSRObj.BrandNameAr = requestObj.AssetDetail.MasterAsset.brand != null ? requestObj.AssetDetail.MasterAsset.brand.NameAr : "";
+
+
                 var lstRequestNote = _context.RequestTracking.Where(a => a.RequestId == requestObj.Id && a.RequestStatusId == 1).Include(a => a.Request.AssetDetail).ToList();
                 if (lstRequestNote.Count > 0)
                 {
                     var note = lstRequestNote[0].Description;
                     printSRObj.RequestNote = note;
                     printSRObj.DescriptionDate = lstRequestNote[0].DescriptionDate.ToString();
+
+
                 }
 
 
-
+                var lstRequestLastDate = _context.RequestTracking.Include(a => a.Request.AssetDetail).Where(a => a.RequestId == requestObj.Id).OrderByDescending(a => a.DescriptionDate).ToList();
+                if (lstRequestLastDate.Count > 0)
+                {
+                    printSRObj.LastRequestDate = lstRequestLastDate[0].DescriptionDate.ToString();
+                }
 
                 var lstMainWorkOrders = _context.WorkOrders.Where(a => a.RequestId == requestObj.Id).Include(a => a.Request.AssetDetail)
-                .Include(a => a.Request.RequestType).Include(a => a.Request.SubProblem).Include(a => a.Request.SubProblem.Problem)
-                .Include(a => a.Request.RequestMode)
-                .Include(a => a.Request.AssetDetail.Hospital)
-                .Include(a => a.Request.AssetDetail.MasterAsset)
-                .Include(w => w.WorkOrderType).Include(w => w.WorkOrderPeriority).Include(w => w.User).ToList();
+            .Include(a => a.Request.RequestType).Include(a => a.Request.SubProblem).Include(a => a.Request.SubProblem.Problem)
+            .Include(a => a.Request.RequestMode)
+            .Include(a => a.Request.AssetDetail.Hospital)
+            .Include(a => a.Request.AssetDetail.MasterAsset)
+            .Include(w => w.WorkOrderType).Include(w => w.WorkOrderPeriority).Include(w => w.User).ToList();
                 if (lstMainWorkOrders.Count > 0)
                 {
                     var woObj = lstMainWorkOrders[0];
@@ -4654,6 +4733,7 @@ namespace Asset.Core.Repositories
                 getDataObj.AssetDetailId = req.FirstOrDefault().Request.AssetDetailId != null ? (int)req.FirstOrDefault().Request.AssetDetailId : 0;
                 getDataObj.HospitalId = req.FirstOrDefault().Request.AssetDetail.HospitalId;
                 getDataObj.DescriptionDate = req.FirstOrDefault().DescriptionDate;
+                getDataObj.Description = req.FirstOrDefault().Description;
 
 
                 getDataObj.StatusId = int.Parse(req.FirstOrDefault().RequestStatusId.ToString());
@@ -4666,6 +4746,8 @@ namespace Asset.Core.Repositories
                     getDataObj.ClosedDate = req.FirstOrDefault().DescriptionDate.ToString();
                 else
                     getDataObj.ClosedDate = "";
+
+
 
                 getDataObj.SerialNumber = req.FirstOrDefault().Request.AssetDetail.SerialNumber;
                 getDataObj.ModeId = req.FirstOrDefault().Request.RequestMode.Id;
@@ -4682,12 +4764,14 @@ namespace Asset.Core.Repositories
 
                 getDataObj.AssetName = req.FirstOrDefault().Request.AssetDetail.MasterAsset.Name.Trim();
                 getDataObj.AssetNameAr = req.FirstOrDefault().Request.AssetDetail.MasterAsset.NameAr;
-                //getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
+                //getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.FirstOrDefault().RequestId)
                 //        .ToList().Select(item => new IndexRequestTrackingVM.GetData
                 //        {
                 //            Id = item.Id,
                 //            StatusName = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name,
                 //            StatusNameAr = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr,
+                //            StatusColor = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Color,
+                //            StatusIcon = _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Icon,
                 //            Description = item.Description,
                 //            Date = item.DescriptionDate,
                 //            StatusId = item.RequestStatus.Id,
@@ -4702,8 +4786,7 @@ namespace Asset.Core.Repositories
                 if (lstWOStatus.Count > 0)
                 {
                     getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
-
-
+                  
                     getDataObj.StatusName = lstWOStatus[0].WorkOrderStatus.Name;
                     getDataObj.StatusNameAr = lstWOStatus[0].WorkOrderStatus.NameAr;
                     getDataObj.StatusColor = lstWOStatus[0].WorkOrderStatus.Color;
@@ -4847,10 +4930,6 @@ namespace Asset.Core.Repositories
             return list;
 
         }
-
-
-
-
         public IndexRequestsVM GetByRequestCode(string code)
         {
             var request = _context.Request.Where(a => a.RequestCode == code)
@@ -5679,6 +5758,8 @@ namespace Asset.Core.Repositories
                                        Id = item.Id,
                                        StatusName = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Name : "",
                                        StatusNameAr = item.RequestStatusId != null ? lstTracks[0].RequestStatus.NameAr : "",
+                                       StatusColor = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Color : "",
+                                       StatusIcon = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Icon : "",
                                        Description = item.Description,
                                        Date = item.DescriptionDate,
                                        StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
@@ -5757,6 +5838,8 @@ namespace Asset.Core.Repositories
                                         Id = item.Id,
                                         StatusName = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Name : "",
                                         StatusNameAr = item.RequestStatusId != null ? lstTracks[0].RequestStatus.NameAr : "",
+                                        StatusColor = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Color : "",
+                                        StatusIcon = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Icon : "",
                                         Description = item.Description,
                                         Date = item.DescriptionDate,
                                         StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
@@ -5790,7 +5873,6 @@ namespace Asset.Core.Repositories
 
             return requestsPerPage.ToList();
         }
-
         public IEnumerable<IndexRequestVM.GetData> ExportRequestByStatusId(int? hospitalId, string userId, int statusId)
         {
             List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
@@ -6003,7 +6085,6 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
-
         public IndexRequestVM GetRequestsByDateAndStatus(SearchRequestDateVM requestDateObj, int pageNumber, int pageSize)
         {
             IndexRequestVM mainClass = new IndexRequestVM();
@@ -6074,16 +6155,27 @@ namespace Asset.Core.Repositories
                 getDataObj.RequestDate = req.FirstOrDefault().Request.RequestDate;
                 getDataObj.AssetDetailId = req.FirstOrDefault().Request.AssetDetailId != null ? (int)req.FirstOrDefault().Request.AssetDetailId : 0;
                 getDataObj.HospitalId = req.FirstOrDefault().Request.AssetDetail.HospitalId;
-                getDataObj.DescriptionDate = req.FirstOrDefault().DescriptionDate;
-                getDataObj.StatusId = int.Parse(req.FirstOrDefault().RequestStatusId.ToString());
-                getDataObj.StatusName = req.FirstOrDefault().RequestStatus.Name;
-                getDataObj.StatusNameAr = req.FirstOrDefault().RequestStatus.NameAr;
-                getDataObj.StatusColor = req.FirstOrDefault().RequestStatus.Color;
-                getDataObj.StatusIcon = req.FirstOrDefault().RequestStatus.Icon;
-                if (getDataObj.StatusId == 2)
-                    getDataObj.ClosedDate = req.FirstOrDefault().DescriptionDate.ToString();
-                else
-                    getDataObj.ClosedDate = "";
+                if (req.FirstOrDefault().RequestStatusId != 0)
+                {
+                    getDataObj.StatusId = int.Parse(req.FirstOrDefault().RequestStatusId.ToString());
+                    getDataObj.StatusName = req.FirstOrDefault().RequestStatus.Name;
+                    getDataObj.StatusNameAr = req.FirstOrDefault().RequestStatus.NameAr;
+                    getDataObj.StatusColor = req.FirstOrDefault().RequestStatus.Color;
+                    getDataObj.StatusIcon = req.FirstOrDefault().RequestStatus.Icon;
+                    getDataObj.DescriptionDate = req.FirstOrDefault().DescriptionDate;
+                    getDataObj.DescriptionDate = req.FirstOrDefault().DescriptionDate;
+                    getDataObj.Description = req.FirstOrDefault().Description;
+                    if (getDataObj.StatusId == 2)
+                    {
+                        getDataObj.ClosedDate = req.FirstOrDefault().DescriptionDate.ToString();
+                    }
+                    else
+                    {
+                        getDataObj.ClosedDate = "";
+                    }
+                }
+
+
                 getDataObj.SerialNumber = req.FirstOrDefault().Request.AssetDetail.SerialNumber;
                 getDataObj.ModeId = req.FirstOrDefault().Request.RequestMode.Id;
                 getDataObj.ModeName = req.FirstOrDefault().Request.RequestMode.Name;
@@ -6206,6 +6298,91 @@ namespace Asset.Core.Repositories
             return mainClass;
 
 
+
+        }
+
+        public List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId)
+        {
+            List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
+            ApplicationUser UserObj = new ApplicationUser();
+            ApplicationRole roleObj = new ApplicationRole();
+
+            //List<string> userRoleNames = new List<string>();
+            //var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+            //if (obj.Count > 0)
+            //{
+            //    UserObj = obj[0];
+
+            //    var roles = (from userRole in _context.UserRoles
+            //                 join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+            //                 where userRole.UserId == userId
+            //                 select role);
+            //    foreach (var role in roles)
+            //    {
+            //        userRoleNames.Add(role.Name);
+            //    }
+            //}
+
+
+            var lstRequests = _context.Request
+                        .Include(t => t.AssetDetail).Include(t => t.AssetDetail.Department)
+                        .Include(t => t.AssetDetail.MasterAsset)
+                         .OrderByDescending(a => a.RequestDate)
+                         .Where(a => a.AssetDetail.HospitalId == hospitalId)
+                         .ToList();
+
+            foreach (var req in lstRequests)
+            {
+                var lstStatus = _context.RequestTracking.Include(t => t.Request).Where(a => a.RequestId == req.Id).ToList();
+                if (lstStatus.Count == 1)
+                {
+                    foreach (var item in lstStatus)
+                    {
+                        IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
+                        getDataObj.Id = req.Id;
+                        getDataObj.RequestCode = req.RequestCode;
+                        getDataObj.Barcode = req.AssetDetail.Barcode;
+                        getDataObj.Subject = req.Subject;
+                        getDataObj.RequestDate = req.RequestDate;
+                        getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                        getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                        getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                        getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                        getDataObj.DepartmentName = req.AssetDetail.Department.Name;
+                        getDataObj.DepartmentNameAr = req.AssetDetail.Department.NameAr;
+                        getDataObj.PeriorityId = (int)req.AssetDetail.MasterAsset.PeriorityId;
+
+                        if (req.AssetDetail.MasterAsset.PeriorityId == 1)
+                        {
+                            getDataObj.BGColor = "#f95a5a";
+                        }
+                        if (req.AssetDetail.MasterAsset.PeriorityId == 2)
+                        {
+                            getDataObj.BGColor = "#f7ddae";
+                        }
+                        if (req.AssetDetail.MasterAsset.PeriorityId == 3)
+                        {
+                            getDataObj.BGColor = "#e8f2e2";
+                        }
+                        if (req.AssetDetail.MasterAsset.PeriorityId > 3)
+                        {
+                            getDataObj.BGColor = "#f7f7ae";
+                        }
+                        list.Add(getDataObj);
+                    }
+                }
+            }
+
+
+            if (periorityId != 0)
+            {
+                list = list.Where(a => a.PeriorityId == periorityId).ToList();
+            }
+            else
+            {
+                list = list.ToList();
+            }
+            return list;
 
         }
     }

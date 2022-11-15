@@ -78,7 +78,8 @@ namespace Asset.ViewModels.AssetDetailVM
         public string SupplierNameAr { get; set; }
         public string SupplierName { get; set; }
 
-
+        public string CreatedBy { get; set; }
+        public int? BrandId { get; set; }
         public string BrandNameAr { get; set; }
         public string BrandName
         {

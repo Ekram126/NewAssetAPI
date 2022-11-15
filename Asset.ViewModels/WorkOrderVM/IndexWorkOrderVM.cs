@@ -26,6 +26,7 @@ namespace Asset.ViewModels.WorkOrderVM
         public string CreatedBy { get; set; }
 
 
+        public string TrackCreationDate { get; set; }
         public int WorkOrderPeriorityId { get; set; }
         public string WorkOrderPeriorityName { get; set; }
 
@@ -85,6 +86,38 @@ namespace Asset.ViewModels.WorkOrderVM
         public string DepartmentNameAr { get; set; }
 
         public List<LstWorkOrderFromTracking> ListTracks { get; set; }
+
+
+
+        /// <summary>
+        /// For Excel Sheet
+        /// </summary>
+
+        public string WarrantyStart { get; set; }
+        public string WarrantyEnd { get; set; }
+        public string WarrantyExpires { get; set; }
+
+        public string PurchaseDate { get; set; }
+        public string InstallationDate { get; set; }
+        public string OperationDate { get; set; }
+        public string ReceivingDate { get; set; }
+
+
+        public string BuildingName { get; set; }
+        public string BuildingNameAr { get; set; }
+        public string FloorName { get; set; }
+        public string FloorNameAr { get; set; }
+        public string RoomName { get; set; }
+        public string RoomNameAr { get; set; }
+
+        public string DepreciationRate { get; set; }
+        public string PONumber { get; set; }
+        public string CostCenter { get; set; }
+        public string Price { get; set; }
+        public string Remarks { get; set; }
+
+
+
 
     }
 }

@@ -64,7 +64,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexAssetPeriorityVM.GetData> GetAll()
         {
-            return _context.AssetPeriorities.ToList().Select(item => new IndexAssetPeriorityVM.GetData
+            return _context.AssetPeriorities.Where(a=>a.Id < 4).ToList().Select(item => new IndexAssetPeriorityVM.GetData
             {
                 Id = item.Id,
                 Name = item.Name,
