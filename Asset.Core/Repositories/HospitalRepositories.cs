@@ -290,7 +290,8 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<Hospital> GetHospitalsByCityId(int cityId)
         {
-            return _context.Hospitals.ToList().Where(a => a.CityId == cityId).OrderBy(a => a.Id).ToList();
+            var lstHospitals= _context.Hospitals.ToList().Where(a => a.CityId == cityId).OrderBy(a => a.Id).ToList();
+            return lstHospitals;
 
         }
 

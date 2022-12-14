@@ -144,7 +144,7 @@ namespace Asset.API
             services.AddScoped<IExternalAssetMovementService, ExternalAssetMovementService>();
             services.AddScoped<QrController, QrController>();
 
-
+            services.AddScoped<IExternalFixService, ExternalFixService>();
 
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()

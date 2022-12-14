@@ -223,5 +223,30 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.AlertOpenedRequestAssetsAndHighPeriority(periorityId,hospitalId);
         }
+
+        public List<IndexRequestVM.GetData> PrintListOfRequests(List<ExportRequestVM> requests)
+        {
+          return  _unitOfWork.Request.PrintListOfRequests(requests);
+        }
+
+        public IndexRequestVM SearchInRequests(SearchRequestVM searchObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.Request.SearchInRequests(searchObj, pageNumber, pageSize);
+        }
+
+        public OpenRequestVM ListOpenRequests(SearchOpenRequestVM searchOpenRequestObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.Request.ListOpenRequests(searchOpenRequestObj,pageNumber,pageSize);
+        }
+
+        public List<OpenRequestVM.GetData> ListOpenRequestsPDF(SearchOpenRequestVM searchOpenRequestObj)
+        {
+            return  _unitOfWork.Request.ListOpenRequestsPDF(searchOpenRequestObj);
+        }
+
+        public List<IndexRequestVM.GetData> GetRequestsByDateAndStatus(SearchRequestDateVM requestDateObj)
+        {
+            return _unitOfWork.Request.GetRequestsByDateAndStatus(requestDateObj);
+        }
     }
 }

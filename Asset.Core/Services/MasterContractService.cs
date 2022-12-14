@@ -40,6 +40,11 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterContractRepository.Delete(id);
         }
 
+        public int DeleteContractAttachment(int attachId)
+        {
+            return _unitOfWork.MasterContractRepository.DeleteContractAttachment(attachId);
+        }
+
         public GeneratedMasterContractNumberVM GenerateMasterContractSerial()
         {
             return _unitOfWork.MasterContractRepository.GenerateMasterContractSerial();
@@ -58,6 +63,11 @@ namespace Asset.Core.Services
         public IEnumerable<ContractAttachment> GetContractAttachmentByMasterContractId(int masterContractId)
         {
             return _unitOfWork.MasterContractRepository.GetContractAttachmentByMasterContractId(masterContractId).ToList();
+        }
+
+        public ContractAttachment GetLastDocumentForMasterContractId(int masterContractId)
+        {
+            return _unitOfWork.MasterContractRepository.GetLastDocumentForMasterContractId(masterContractId);
         }
 
         public IndexMasterContractVM GetMasterContractsByHospitalId(int hospitalId, int pageNumber, int pageSize)

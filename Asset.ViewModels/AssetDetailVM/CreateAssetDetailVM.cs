@@ -44,6 +44,11 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public string CreatedBy { get; set; }
 
+
+        public decimal? FixCost { get; set; }
+
+
+
         public List<int> ListOwners { get; set; }
 
     }

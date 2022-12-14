@@ -31,8 +31,15 @@ namespace Asset.Domain.Repositories
         PrintWorkOrderVM PrintWorkOrderById(int id);
         IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj, int statusId);
         IEnumerable<IndexWorkOrderVM> GetWorkOrdersByDate(SearchWorkOrderByDateVM woDateObj);
+
+
         IndexWorkOrderVM2 GetWorkOrdersByDateAndStatus(SearchWorkOrderByDateVM woDateObj, int pageNumber, int pageSize);
+        IndexWorkOrderVM2 GetWorkOrdersByDateAndStatus(SearchWorkOrderByDateVM woDateObj);
+
         int CountWorkOrdersByHospitalId(int hospitalId, string userId);
         int CreateWorkOrderAttachments(WorkOrderAttachment attachObj);
+
+
+        List<IndexWorkOrderVM2.GetData> PrintListOfWorkOrders(List<ExportWorkOrderVM> workOrders);
     }
 }

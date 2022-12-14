@@ -141,5 +141,18 @@ namespace Asset.Core.Services
             return _unitOfWork.WorkOrder.GetWorkOrdersByDateAndStatus(woDateObj, pageNumber, pageSize);
 
         }
+
+        public IndexWorkOrderVM2 GetWorkOrdersByDateAndStatus(SearchWorkOrderByDateVM woDateObj)
+        {
+            return _unitOfWork.WorkOrder.GetWorkOrdersByDateAndStatus(woDateObj);
+
+        }
+
+
+
+        public List<IndexWorkOrderVM2.GetData> PrintListOfWorkOrders(List<ExportWorkOrderVM> workOrders)
+        {
+            return _unitOfWork.WorkOrder.PrintListOfWorkOrders(workOrders);
+        }
     }
 }

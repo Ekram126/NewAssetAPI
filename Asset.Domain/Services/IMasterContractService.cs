@@ -27,5 +27,8 @@ namespace Asset.Domain.Services
 
         IEnumerable<IndexMasterContractVM.GetData> AlertContractsBefore3Months(int hospitalId, int duration);
 
+        ContractAttachment GetLastDocumentForMasterContractId(int masterContractId);
+
+        int DeleteContractAttachment(int attachId);
     }
 }

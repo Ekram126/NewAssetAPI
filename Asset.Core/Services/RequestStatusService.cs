@@ -20,9 +20,17 @@ namespace Asset.Core.Services
         }
         public IEnumerable<IndexRequestStatusVM.GetData> GetAllRequestStatus()
         {
-           return _unitOfWork.RequestStatus.GetAll();
+            return _unitOfWork.RequestStatus.GetAll();
         }
-      
+
+
+        public IndexRequestStatusVM.GetData GetAllForReport()
+        {
+            return _unitOfWork.RequestStatus.GetAllForReport();
+        }
+
+
+
         //public int UpdateRequestStatus(RequestStatus editRequestStatus)
         //{
         //  return  _unitOfWork.RequestStatus.Update(editRequestStatus);
@@ -35,7 +43,7 @@ namespace Asset.Core.Services
 
         public int Add(RequestStatus createRequestVM)
         {
-           return _unitOfWork.RequestStatus.Add(createRequestVM);
+            return _unitOfWork.RequestStatus.Add(createRequestVM);
         }
 
         public int Update(RequestStatus editRequestVM)
@@ -46,7 +54,7 @@ namespace Asset.Core.Services
         public int Delete(int id)
         {
 
-           return _unitOfWork.RequestStatus.Delete(id);
+            return _unitOfWork.RequestStatus.Delete(id);
         }
 
         public IndexRequestStatusVM.GetData GetAll(string userId)

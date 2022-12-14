@@ -36,6 +36,17 @@ namespace Asset.API.Controllers
             return _requestStatusService.GetAllRequestStatus();
         }
 
+
+        [HttpGet]
+        [Route("GetAllForReport")]
+        public IndexRequestStatusVM.GetData GetAllForReport()
+        {
+            return _requestStatusService.GetAllForReport();
+        }
+
+
+
+
         [HttpGet]
         [Route("GetAll/{userId}")]
         public IndexRequestStatusVM.GetData GetAll(string userId)

@@ -25,6 +25,8 @@ namespace Asset.Models
 
             builder.Entity<AssetDetail>().Property(g => g.Price).HasColumnType("decimal(18, 2)");
             builder.Entity<AssetDetail>().Property(g => g.DepreciationRate).HasColumnType("decimal(18, 2)");
+            builder.Entity<AssetDetail>().Property(g => g.FixCost).HasColumnType("decimal(18, 2)");
+
             builder.Entity<MasterContract>().Property(g => g.Cost).HasColumnType("decimal(18, 2)");
 
 
@@ -135,5 +137,8 @@ namespace Asset.Models
         public DbSet<AssetScrap> AssetScraps { get; set; }
 
         public DbSet<Setting> Settings { get; set; }
+
+        public DbSet<ExternalFix> ExternalFixes { get; set; }
+        public DbSet<ExternalFixFile> ExternalFixFiles { get; set; }
     }
 }

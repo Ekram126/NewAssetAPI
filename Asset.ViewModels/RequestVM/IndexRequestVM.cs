@@ -106,8 +106,9 @@ namespace Asset.ViewModels.RequestVM
 
 
 
-
             public string BGColor { get; set; }
+            public string Lang { get; set; }
+            public string PrintedBy { get; set; }
         }
     }
 }

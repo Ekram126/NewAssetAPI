@@ -576,5 +576,34 @@ namespace Contract.Core.Repositories
             mainClass.Count = list.Count();
             return mainClass;
         }
+
+        public ContractAttachment GetLastDocumentForMasterContractId(int masterContractId)
+        {
+            ContractAttachment documentObj = new ContractAttachment();
+            var lstDocuments = _context.ContractAttachments.Where(a => a.MasterContractId == masterContractId).ToList();
+            if (lstDocuments.Count > 0)
+            {
+                documentObj = lstDocuments.Last();
+            }
+            return documentObj;
+        }
+
+        public int DeleteContractAttachment(int attachId)
+        {
+            var contractAttachObj = _context.ContractAttachments.Find(attachId);
+            try
+            {
+                if (contractAttachObj != null)
+                {
+                    _context.ContractAttachments.Remove(contractAttachObj);
+                    return _context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+            }
+            return 0;
+        }
     }
 }

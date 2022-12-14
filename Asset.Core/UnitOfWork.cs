@@ -98,6 +98,7 @@ namespace Asset.Core
         private ScrapReasonRepository _scrapReasonRepository;
 
         private ExternalAssetMovementRepositories _externalAssetMovementRepositories;
+        private IExternalFixRepository _externalFix;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -276,6 +277,9 @@ namespace Asset.Core
     //    public IExternalAssetMovementRepository externalAssetMovementRepository => _externalAssetMovementRepositories = _externalAssetMovementRepositories ?? new ExternalAssetMovementRepositories(_context);
 
         public IExternalAssetMovementRepository ExternalAssetMovementRepository => _externalAssetMovementRepositories = _externalAssetMovementRepositories ?? new ExternalAssetMovementRepositories(_context);
+
+
+        public IExternalFixRepository ExternalFixRepository => _externalFix = _externalFix ?? new ExternalFixRepositories(_context);
     }
 }
 

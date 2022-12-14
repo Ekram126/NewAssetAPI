@@ -18,6 +18,10 @@ namespace Asset.Models
         [Column(TypeName = "decimal(18, 2)")]
         public decimal? Price { get; set; }
 
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal? FixCost { get; set; }
+
+
 
         [StringLength(20)]
         public string SerialNumber { get; set; }

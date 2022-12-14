@@ -74,6 +74,27 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexSupplierVM.GetData>(pageInfo, lstSuppliers);
         }
 
+
+        [HttpPost]
+        [Route("FindSupplier/{strText}/{pagenumber}/{pagesize}")]
+        public IndexSupplierVM FindSupplier(string strText,int pageNumber, int pageSize)
+        {
+            var lstSuppliers = _SupplierService.FindSupplier(strText,pageNumber,pageSize);
+            return lstSuppliers;
+        }
+
+
+
+        [HttpGet]
+        [Route("FindSupplierByText")]
+        public IEnumerable<IndexSupplierVM.GetData> FindSupplierByText(string strText)
+        {
+            var lstSuppliers = _SupplierService.FindSupplierByText(strText);
+            return lstSuppliers;
+        }
+
+
+
         [HttpGet]
         [Route("getcount")]
         public int count()

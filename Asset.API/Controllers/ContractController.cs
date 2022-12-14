@@ -97,11 +97,20 @@ namespace Contract.API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetLastDocumentForMasterContractId/{masterContractId}")]
+        public ContractAttachment GetLastDocumentForMasterContractId(int masterContractId)
+        {
+            return _masterContractService.GetLastDocumentForMasterContractId(masterContractId);
+        }
+
+
+
         [HttpPut]
         [Route("GetMasterContractsByHospitalIdWithPaging/{hospitalId}/{pageNumber}/{pageSize}")]
-        public IndexMasterContractVM GetMasterContractsByHospitalIdWithPaging(int hospitalId,int pageNumber,int pageSize)
+        public IndexMasterContractVM GetMasterContractsByHospitalIdWithPaging(int hospitalId, int pageNumber, int pageSize)
         {
-            var lstContracts = _masterContractService.GetMasterContractsByHospitalId(hospitalId,  pageNumber,  pageSize);
+            var lstContracts = _masterContractService.GetMasterContractsByHospitalId(hospitalId, pageNumber, pageSize);
             return lstContracts;
         }
 
@@ -185,8 +194,8 @@ namespace Contract.API.Controllers
             try
             {
 
-              var lstContractDetails   = _contractDetailService.GetContractsByMasterContractId(id).ToList();
-                if(lstContractDetails.Count > 0)
+                var lstContractDetails = _contractDetailService.GetContractsByMasterContractId(id).ToList();
+                if (lstContractDetails.Count > 0)
                 {
                     foreach (var item in lstContractDetails)
                     {
@@ -252,6 +261,15 @@ namespace Contract.API.Controllers
         {
             return _masterContractService.CreateContractAttachments(attachObj);
         }
+
+        [HttpDelete]
+        [Route("DeleteContractAttachment/{attachId}")]
+        public int DeleteContractAttachment(int attachId)
+        {
+            return _masterContractService.DeleteContractAttachment(attachId);
+        }
+
+
 
         [HttpPost]
         [Route("UploadContractFiles")]

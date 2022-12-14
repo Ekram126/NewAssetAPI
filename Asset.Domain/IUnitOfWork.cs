@@ -98,5 +98,7 @@ namespace Asset.Domain
         IScrapReasonRepository scrapReasonRepository { get; }
 
         IExternalAssetMovementRepository ExternalAssetMovementRepository { get; }
+        IExternalFixRepository ExternalFixRepository { get; }
+
     }
 }

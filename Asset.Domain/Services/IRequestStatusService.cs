@@ -11,6 +11,8 @@ namespace Asset.Domain.Services
     public interface IRequestStatusService
     {
         IEnumerable<IndexRequestStatusVM.GetData> GetAllRequestStatus();
+        IndexRequestStatusVM.GetData GetAllForReport();
+
       //  IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId);
 
         IndexRequestStatusVM.GetData GetAll(string userId);

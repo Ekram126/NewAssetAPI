@@ -20,13 +20,13 @@ namespace Asset.Core.Repositories
         public int Add(CreateScrapVM createScrapVM)
         {
             Scrap scrapObj = new Scrap();
-           scrapObj.AssetDetailId = createScrapVM.AssetDetailId;
-           scrapObj.ScrapDate = createScrapVM.ScrapDate;
-           scrapObj.ScrapDate =DateTime.Parse( createScrapVM.StrScrapDate);
-           scrapObj.SysDate = createScrapVM.SysDate;
-           scrapObj.Comment = createScrapVM.Comment;
-           scrapObj.ScrapNo = createScrapVM.ScrapNo;
-        // scrapObj.ListAttachments = createScrapVM.ListAttachments;
+            scrapObj.AssetDetailId = createScrapVM.AssetDetailId;
+            scrapObj.ScrapDate = createScrapVM.ScrapDate;
+            scrapObj.ScrapDate = DateTime.Parse(createScrapVM.StrScrapDate);
+            scrapObj.SysDate = createScrapVM.SysDate;
+            scrapObj.Comment = createScrapVM.Comment;
+            scrapObj.ScrapNo = createScrapVM.ScrapNo;
+            // scrapObj.ListAttachments = createScrapVM.ListAttachments;
             _context.Scraps.Add(scrapObj);
             _context.SaveChanges();
             int id = scrapObj.Id;
@@ -77,11 +77,31 @@ namespace Asset.Core.Repositories
             var scrapObj = _context.Scraps.Find(id);
             try
             {
-                //if (scrapObj != null)
-                //{
-                    _context.Scraps.Remove(scrapObj);
-                    return _context.SaveChanges();
-                //}
+
+                _context.Scraps.Remove(scrapObj);
+                var isDeleted = _context.SaveChanges();
+                if (isDeleted == 1)
+                {
+                    var lstAssetTrans = _context.AssetStatusTransactions.Include(a => a.AssetDetail).Where(a => a.AssetDetailId == scrapObj.AssetDetailId).ToList();
+                    if (lstAssetTrans.Count > 0)
+                    {
+                        AssetStatusTransaction AssetStatusTransactionsTransactionObj = new AssetStatusTransaction();
+                        AssetStatusTransactionsTransactionObj.AssetDetailId = (int)scrapObj.AssetDetailId;
+                        AssetStatusTransactionsTransactionObj.AssetStatusId = 3;
+                        var lstAssets = _context.AssetDetails.Where(a => a.Id == scrapObj.AssetDetailId).ToList();
+                        if (lstAssets.Count > 0)
+                        {
+                            AssetStatusTransactionsTransactionObj.HospitalId = lstAssets[0].HospitalId;
+                        }
+                        AssetStatusTransactionsTransactionObj.StatusDate = DateTime.Now;
+                        _context.AssetStatusTransactions.Add(AssetStatusTransactionsTransactionObj);
+                        _context.SaveChanges();
+                    }
+                }
+                return 1;
+
+
+
             }
             catch (Exception ex)
             {
@@ -90,20 +110,20 @@ namespace Asset.Core.Repositories
             return 0;
         }
         public List<IndexScrapVM.GetData> GetAll()
-       {
+        {
             List<IndexScrapVM.GetData> list = new List<IndexScrapVM.GetData>();
             var lstScraps = _context.Scraps
                 .Include(a => a.AssetDetail)
+                .Include(a => a.AssetDetail.MasterAsset)
                 .Include(a => a.AssetDetail.Department)
                 .Include(a => a.AssetDetail.MasterAsset.brand)
-               // .Include(a => a.ScrapReason)
-                .Include(a => a.AssetDetail.MasterAsset).ToList();
+               .ToList();
             foreach (var item in lstScraps)
             {
                 IndexScrapVM.GetData scrapObj = new IndexScrapVM.GetData();
                 scrapObj.Id = item.Id;
-                scrapObj.AssetName = item.AssetDetail.MasterAsset.Name;
-                scrapObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
+                scrapObj.AssetName = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.Name : "";
+                scrapObj.AssetNameAr = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.NameAr : "";
                 scrapObj.Barcode = item.AssetDetail.Barcode;
                 scrapObj.SerialNumber = item.AssetDetail.SerialNumber;
                 scrapObj.ScrapDate = item.ScrapDate.ToString();
@@ -118,7 +138,6 @@ namespace Asset.Core.Repositories
                 }
                 scrapObj.Model = item.AssetDetail.MasterAsset.ModelNumber;
 
-               // var ScrapReasons = _context.AssetScraps.Where(a => a.ScrapId == item.Id).ToList();
 
                 list.Add(scrapObj);
             }
@@ -166,10 +185,11 @@ namespace Asset.Core.Repositories
         }
         public List<ViewScrapVM> GetScrapReasonByScrapId(int scrapId)
         {
-            var lstReasons = _context.AssetScraps.Include(a=>a.ScrapReason).Where(a => a.ScrapId == scrapId).ToList()
-                .Select(item=> new ViewScrapVM{
-                ScrapReasonName = item.ScrapReason.Name,
-                 ScrapReasonNameAr = item.ScrapReason.NameAr
+            var lstReasons = _context.AssetScraps.Include(a => a.ScrapReason).Where(a => a.ScrapId == scrapId).ToList()
+                .Select(item => new ViewScrapVM
+                {
+                    ScrapReasonName = item.ScrapReason.Name,
+                    ScrapReasonNameAr = item.ScrapReason.NameAr
                 }).ToList();
             return lstReasons;
         }

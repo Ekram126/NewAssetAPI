@@ -72,6 +72,8 @@ namespace Asset.Core.Repositories
                     assetDetailObj.DepreciationRate = model.DepreciationRate;
                     assetDetailObj.CostCenter = model.CostCenter;
                     assetDetailObj.WarrantyExpires = model.WarrantyExpires;
+                    assetDetailObj.FixCost = model.FixCost;
+
                     _context.AssetDetails.Add(assetDetailObj);
                     _context.SaveChanges();
 
@@ -829,6 +831,8 @@ namespace Asset.Core.Repositories
                 item.PONumber = assetDetailObj.PONumber;
                 item.WarrantyExpires = assetDetailObj.WarrantyExpires;
 
+                item.AssetImg = assetDetailObj.MasterAsset.AssetImg;
+
                 item.BuildingId = assetDetailObj.BuildingId;
                 if (assetDetailObj.BuildingId != null)
                 {
@@ -846,6 +850,15 @@ namespace Asset.Core.Repositories
                 {
                     item.FloorName = assetDetailObj.Floor.Name;
                     item.FloorNameAr = assetDetailObj.Floor.NameAr;
+                }
+
+
+
+                if (assetDetailObj.MasterAsset.brand != null)
+                {
+
+                    item.BrandName = assetDetailObj.MasterAsset.brand.Name;
+                    item.BrandNameAr = assetDetailObj.MasterAsset.brand.NameAr;
                 }
 
                 item.DepartmentId = assetDetailObj.Department != null ? assetDetailObj.DepartmentId : 0;
@@ -924,6 +937,7 @@ namespace Asset.Core.Repositories
                 assetDetailObj.Remarks = model.Remarks;
                 assetDetailObj.Barcode = model.Barcode;
                 assetDetailObj.CreatedBy = model.CreatedBy;
+                assetDetailObj.FixCost = model.FixCost;
                 assetDetailObj.InstallationDate = model.InstallationDate != null ? DateTime.Parse(model.InstallationDate) : null;
 
                 var lstAssetMovements = _context.AssetMovements.Where(a => a.AssetDetailId == model.Id).ToList();
@@ -1446,6 +1460,10 @@ namespace Asset.Core.Repositories
                 list = list.Where(a => a.HospitalId == userObj.HospitalId).ToList();
             }
 
+            if (userObj.HospitalId == 0 && searchObj.HospitalId > 0)
+            {
+                list = list.Where(a => a.HospitalId == searchObj.HospitalId).ToList();
+            }
             if (searchObj.GovernorateId != 0)
             {
                 list = list.Where(a => a.GovernorateId == searchObj.GovernorateId).ToList();
@@ -2291,7 +2309,7 @@ namespace Asset.Core.Repositories
                         Model = Ass.Model,
                         DepartmentName = Ass.DepartmentName,
                         DepartmentNameAr = Ass.DepartmentNameAr,
-                      //  CreatedBy = item.CreatedBy,
+                        //  CreatedBy = item.CreatedBy,
                         AssetNameAr = Ass.AssetNameAr,
                         BrandName = Ass.BrandName,
                         BrandNameAr = Ass.BrandNameAr,
@@ -2342,7 +2360,7 @@ namespace Asset.Core.Repositories
                         Model = Ass.Model,
                         DepartmentName = Ass.DepartmentName,
                         DepartmentNameAr = Ass.DepartmentNameAr,
-                       // CreatedBy = item.CreatedBy,
+                        // CreatedBy = item.CreatedBy,
                         AssetNameAr = Ass.AssetNameAr,
                         BrandName = Ass.BrandName,
                         BrandNameAr = Ass.BrandNameAr,
@@ -10770,27 +10788,78 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId)
         {
-            var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Hospital)
-                .Where(a => a.Barcode.Contains(barcode) && a.HospitalId == hospitalId).OrderBy(a => a.Barcode).ToList().Select(a => new IndexAssetDetailVM.GetData
+            //var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand).Include(a => a.Hospital)
+            //    .Where(a => a.Barcode.Contains(barcode) && a.HospitalId == hospitalId).OrderBy(a => a.Barcode).ToList().Select(a => new IndexAssetDetailVM.GetData
+            //                   {
+            //        Id = a.Id,
+            //        Code = a.Code,
+            //        Price = a.Price,
+            //        MasterAssetName = a.MasterAsset != null ? a.MasterAsset.Name : "",
+            //        MasterAssetNameAr = a.MasterAsset != null ? a.MasterAsset.NameAr : "",
+            //        BrandName = a.MasterAsset.brand != null ? a.MasterAsset.brand.Name : "",
+            //        BrandNameAr = a.MasterAsset.brand != null ? a.MasterAsset.brand.NameAr : "",
+            //        Model = a.MasterAsset != null ? a.MasterAsset.ModelNumber : "",
+            //        AssetBarCode = a.Barcode,
+            //        BarCode = a.Barcode,
+            //        Serial = a.SerialNumber,
+            //        SerialNumber = a.SerialNumber,
+            //        MasterAssetId = a.MasterAssetId,
+            //        PurchaseDate = a.PurchaseDate,
+            //        HospitalId = a.HospitalId,
+            //        HospitalName = a.Hospital.Name,
+            //        HospitalNameAr = a.Hospital.NameAr,
+            //        AssetName = a.MasterAsset.Name,
+            //        AssetNameAr = a.MasterAsset.NameAr
+            //    }).ToList();
+            //return lst;
+
+            List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
+            var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand)
+                .Include(a => a.Hospital).Where(a => a.Barcode.Contains(barcode)).OrderBy(a => a.Barcode).ToList();
+            if (hospitalId == 0)
+            {
+                lst = lst.ToList();
+            }
+            else
+            {
+                lst = lst.Where(a => a.HospitalId == hospitalId).ToList();
+            }
+            if (lst.Count > 0)
+            {
+                foreach (var item in lst)
                 {
-                    Id = a.Id,
-                    Code = a.Code,
-                    Price = a.Price,
-                    MasterAssetName = a.MasterAsset.Name,
-                    MasterAssetNameAr = a.MasterAsset.NameAr,
-                    AssetBarCode = a.Barcode,
-                    BarCode = a.Barcode,
-                    Serial = a.SerialNumber,
-                    SerialNumber = a.SerialNumber,
-                    MasterAssetId = a.MasterAssetId,
-                    PurchaseDate = a.PurchaseDate,
-                    HospitalId = a.HospitalId,
-                    HospitalName = a.Hospital.Name,
-                    HospitalNameAr = a.Hospital.NameAr,
-                    AssetName = a.MasterAsset.Name,
-                    AssetNameAr = a.MasterAsset.NameAr
-                }).ToList();
-            return lst;
+                    IndexAssetDetailVM.GetData getDataObj = new IndexAssetDetailVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.Code = item.Code;
+                    getDataObj.BarCode = item.Barcode;
+                    getDataObj.Price = item.Price;
+                    getDataObj.MasterAssetName = item.MasterAsset != null ? item.MasterAsset.Name : "";
+                    getDataObj.MasterAssetNameAr = item.MasterAsset != null ? item.MasterAsset.NameAr : "";
+                    getDataObj.BrandName = item.MasterAsset.brand != null ? item.MasterAsset.brand.Name : "";
+                    getDataObj.BrandNameAr = item.MasterAsset.brand != null ? item.MasterAsset.brand.NameAr : "";
+                    getDataObj.Model = item.MasterAsset != null ? item.MasterAsset.ModelNumber : "";
+                    getDataObj.AssetBarCode = item.Barcode;
+                    getDataObj.BarCode = item.Barcode;
+                    getDataObj.Serial = item.SerialNumber;
+                    getDataObj.SerialNumber = item.SerialNumber;
+                    getDataObj.MasterAssetId = item.MasterAssetId;
+                    getDataObj.PurchaseDate = item.PurchaseDate;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.HospitalName = item.Hospital.Name;
+                    getDataObj.HospitalNameAr = item.Hospital.NameAr;
+                    getDataObj.AssetName = item.MasterAsset.Name;
+                    getDataObj.AssetNameAr = item.MasterAsset.NameAr;
+                    var lstAssetTransactions = _context.AssetStatusTransactions.Include(a => a.AssetStatus).Where(a => a.AssetDetailId == item.Id).ToList().OrderByDescending(a => a.StatusDate).ToList();
+                    if (lstAssetTransactions.Count > 0)
+                    {
+                        getDataObj.AssetStatusId = lstAssetTransactions[0].AssetStatus.Id;
+                        getDataObj.AssetStatus = lstAssetTransactions[0].AssetStatus.Name;
+                        getDataObj.AssetStatusAr = lstAssetTransactions[0].AssetStatus.NameAr;
+                    }
+                    list.Add(getDataObj);
+                }
+            }
+            return list;
         }
 
         public IEnumerable<IndexAssetDetailVM.GetData> GetAllAssetsByStatusId(int statusId, string userId)
@@ -11139,7 +11208,7 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId)
         {
             List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
-            var lst = _context.AssetDetails.Include(a => a.MasterAsset)
+            var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand)
                 .Include(a => a.Hospital).Where(a => a.SerialNumber.Contains(serial)).OrderBy(a => a.SerialNumber).ToList();
             if (hospitalId == 0)
             {
@@ -11158,8 +11227,11 @@ namespace Asset.Core.Repositories
                     getDataObj.Code = item.Code;
                     getDataObj.BarCode = item.Barcode;
                     getDataObj.Price = item.Price;
-                    getDataObj.MasterAssetName = item.MasterAsset.Name;
-                    getDataObj.MasterAssetNameAr = item.MasterAsset.NameAr;
+                    getDataObj.MasterAssetName = item.MasterAsset != null ? item.MasterAsset.Name : "";
+                    getDataObj.MasterAssetNameAr = item.MasterAsset != null ? item.MasterAsset.NameAr : "";
+                    getDataObj.BrandName = item.MasterAsset.brand != null ? item.MasterAsset.brand.Name : "";
+                    getDataObj.BrandNameAr = item.MasterAsset.brand != null ? item.MasterAsset.brand.NameAr : "";
+                    getDataObj.Model = item.MasterAsset != null ? item.MasterAsset.ModelNumber : "";
                     getDataObj.AssetBarCode = item.Barcode;
                     getDataObj.BarCode = item.Barcode;
                     getDataObj.Serial = item.SerialNumber;
@@ -11314,31 +11386,57 @@ namespace Asset.Core.Repositories
             foreach (var asset in lstRemainIds)
             {
 
-                var lstAssetTransactions = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == asset).ToList();
+                // var lstAssetTransactions = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == asset).ToList();
+                var lstAssetTransactions = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == asset).OrderByDescending(a => a.StatusDate.Value.ToString()).ToList();
                 if (lstAssetTransactions.Count > 0)
                 {
-                    lstAssetTransactions = lstAssetTransactions.OrderByDescending(a => a.StatusDate.Value.ToString()).ToList();
+                    // lstAssetTransactions = lstAssetTransactions.OrderByDescending(a => a.StatusDate.Value.ToString()).ToList();
 
                     var transObj = lstAssetTransactions.FirstOrDefault();
                     if (transObj.AssetStatusId == 3)
                     {
-                        viewAssetDetailList.Add(_context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Supplier)
-                                                   .Where(a => a.HospitalId == hospitalId && a.Id == asset)
-                                                   .Select(item => new ViewAssetDetailVM
-                                                   {
-                                                       //  Id = item.Id,
+                        //viewAssetDetailList.Add(_context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Supplier)
+                        //                           .Where(a => a.HospitalId == hospitalId && a.Id == asset)
+                        //                           .Select(item => new ViewAssetDetailVM
+                        //                           {
+                        //                               //  Id = item.Id,
 
-                                                       Id = item.MasterAsset.Id,
-                                                       AssetName = item.MasterAsset.Name,
-                                                       AssetNameAr = item.MasterAsset.NameAr,
-                                                       SerialNumber = item.SerialNumber,
-                                                       SupplierName = item.Supplier.Name,
-                                                       SupplierNameAr = item.Supplier.NameAr,
-                                                       HospitalId = item.Hospital.Id,
-                                                       HospitalName = item.Hospital.Name,
-                                                       HospitalNameAr = item.Hospital.NameAr,
-                                                       Barcode = item.Barcode,
-                                                   }).FirstOrDefault());
+                        //                               Id = item.MasterAsset.Id,
+                        //                               AssetName = item.MasterAsset.Name,
+                        //                               AssetNameAr = item.MasterAsset.NameAr,
+                        //                               SerialNumber = item.SerialNumber,
+                        //                               SupplierName = item.Supplier.Name,
+                        //                               SupplierNameAr = item.Supplier.NameAr,
+                        //                               HospitalId = item.Hospital.Id,
+                        //                               HospitalName = item.Hospital.Name,
+                        //                               HospitalNameAr = item.Hospital.NameAr,
+                        //                               Barcode = item.Barcode,
+                        //                           }).FirstOrDefault());
+
+
+                        var assetItem = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Supplier).Include(a => a.Hospital)
+                                                  .Where(a => a.HospitalId == hospitalId && a.Id == asset).ToList();
+
+                        foreach (var item in assetItem)
+                        {
+                            ViewAssetDetailVM assetBarCode = new ViewAssetDetailVM();
+
+                            assetBarCode.Id = item.Id;
+                            assetBarCode.AssetName = item.MasterAsset.Name;
+                            assetBarCode.AssetNameAr = item.MasterAsset.NameAr;
+                            assetBarCode.SerialNumber = item.SerialNumber;
+                            assetBarCode.SupplierName = item.Supplier.Name;
+                            assetBarCode.SupplierNameAr = item.Supplier.NameAr;
+                            assetBarCode.HospitalId = item.Hospital.Id;
+                            assetBarCode.HospitalName = item.Hospital.Name;
+                            assetBarCode.HospitalNameAr = item.Hospital.NameAr;
+                            assetBarCode.Barcode = item.Barcode;
+                            assetBarCode.BarCode = item.Barcode;
+                            assetBarCode.MasterAssetId = item.MasterAsset.Id;
+                            assetBarCode.MasterAssetName = item.MasterAsset.Name;
+                            assetBarCode.MasterAssetNameAr = item.MasterAsset.NameAr;
+                            viewAssetDetailList.Add(assetBarCode);
+                        }
                     }
                 }
             }
@@ -11728,35 +11826,36 @@ namespace Asset.Core.Repositories
 
             foreach (var asset in lstRemainIds)
             {
-
-                var lstAssetTransactions = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == asset).ToList();
+                var lstAssetTransactions = _context.AssetStatusTransactions.Where(a => a.AssetDetailId == asset).OrderByDescending(a => a.StatusDate.Value.ToString()).ToList();
                 if (lstAssetTransactions.Count > 0)
                 {
-                    lstAssetTransactions = lstAssetTransactions.OrderByDescending(a => a.StatusDate.Value.ToString()).ToList();
-
                     var transObj = lstAssetTransactions.FirstOrDefault();
                     if (transObj.AssetStatusId == 3)
                     {
-                        viewAssetDetailList.Add(_context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Supplier)
-                                                   .Where(a => a.Barcode.Contains(barcode) && a.HospitalId == hospitalId && a.Id == asset)
-                                                   //.OrderBy(a => a.Barcode)
-                                                   .Select(item => new ViewAssetDetailVM
-                                                   {
-                                                       Id = item.Id,
-                                                       AssetName = item.MasterAsset.Name,
-                                                       AssetNameAr = item.MasterAsset.NameAr,
-                                                       SerialNumber = item.SerialNumber,
-                                                       SupplierName = item.Supplier.Name,
-                                                       SupplierNameAr = item.Supplier.NameAr,
-                                                       HospitalId = item.Hospital.Id,
-                                                       HospitalName = item.Hospital.Name,
-                                                       HospitalNameAr = item.Hospital.NameAr,
-                                                       Barcode = item.Barcode,
-                                                       BarCode = item.Barcode,
-                                                       MasterAssetId = item.MasterAsset.Id,
-                                                       MasterAssetName = item.MasterAsset.Name,
-                                                       MasterAssetNameAr = item.MasterAsset.NameAr
-                                                   }).FirstOrDefault());
+
+                        var assetItem = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.Supplier).Include(a => a.Hospital)
+                                                   .Where(a => a.Barcode.Contains(barcode) && a.Id == asset).ToList();
+
+                        foreach (var item in assetItem)
+                        {
+                            ViewAssetDetailVM assetBarCode = new ViewAssetDetailVM();
+
+                            assetBarCode.Id = item.Id;
+                            assetBarCode.AssetName = item.MasterAsset.Name;
+                            assetBarCode.AssetNameAr = item.MasterAsset.NameAr;
+                            assetBarCode.SerialNumber = item.SerialNumber;
+                            assetBarCode.SupplierName = item.Supplier.Name;
+                            assetBarCode.SupplierNameAr = item.Supplier.NameAr;
+                            assetBarCode.HospitalId = item.Hospital.Id;
+                            assetBarCode.HospitalName = item.Hospital.Name;
+                            assetBarCode.HospitalNameAr = item.Hospital.NameAr;
+                            assetBarCode.Barcode = item.Barcode;
+                            assetBarCode.BarCode = item.Barcode;
+                            assetBarCode.MasterAssetId = item.MasterAsset.Id;
+                            assetBarCode.MasterAssetName = item.MasterAsset.Name;
+                            assetBarCode.MasterAssetNameAr = item.MasterAsset.NameAr;
+                            viewAssetDetailList.Add(assetBarCode);
+                        }
                     }
                 }
             }
@@ -12635,8 +12734,21 @@ namespace Asset.Core.Repositories
             var lastId = _context.AssetDetails.ToList();
             if (lastId.Count > 0)
             {
-                var code = int.Parse(lastId.LastOrDefault().Barcode);
-                numberObj.BarCode = (code + 1).ToString();
+                //var code = int.Parse(lastId.LastOrDefault().Barcode);
+                var code = lastId.Max(a => a.Barcode);
+                if (code.Contains('-'))
+                {
+                    string[] barcodenumber = code.Split("-");
+                    var barcode = (int.Parse(barcodenumber[0]) + 1).ToString();
+                    var lastcode = barcode.ToString().PadLeft(9, '0');
+                    numberObj.BarCode = lastcode;
+                }
+                else
+                {
+                    var barcode = (int.Parse(code) + 1).ToString();
+                    var lastcode = code.ToString().PadLeft(9, '0');
+                    numberObj.BarCode = lastcode;
+                }
             }
             else
             {

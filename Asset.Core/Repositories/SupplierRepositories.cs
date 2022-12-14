@@ -71,9 +71,14 @@ namespace Asset.Core.Repositories
             return _context.Suppliers.ToList().Select(item => new IndexSupplierVM.GetData
             {
                 Id = item.Id,
-                Code=item.Code,
+                Code = item.Code,
                 Name = item.Name,
-                NameAr = item.NameAr
+                NameAr = item.NameAr,
+                Address = item.Address,
+                AddressAr = item.AddressAr,
+                EMail = item.EMail,
+                Mobile = item.Mobile,
+                Website = item.Website
             });
         }
 
@@ -87,9 +92,14 @@ namespace Asset.Core.Repositories
             return _context.Suppliers.Where(a => a.Id == id).Select(item => new EditSupplierVM
             {
                 Id = item.Id,
-                Code = item.Code,
-                Name = item.Name.Trim(),
-                NameAr = item.NameAr.Trim()
+                Code = item.Code != null ? item.Code:"",
+                Name = item.Name,
+                NameAr = item.NameAr,
+                Address= item.Address != null ? item.Address:"",
+                AddressAr= item.AddressAr != null ? item.AddressAr:"",
+                EMail= item.EMail != null ? item.EMail:"",
+                Mobile= item.Mobile != null ? item.Mobile:"",
+                Website= item.Website != null ? item.Website:""
             }).First();
         }
 
@@ -98,9 +108,14 @@ namespace Asset.Core.Repositories
             return _context.Suppliers.Where(a => a.Name == supplierName || a.NameAr == supplierName).ToList().Select(item => new IndexSupplierVM.GetData
             {
                 Id = item.Id,
-                Code = item.Code,
+                Code = item.Code != null ? item.Code : "",
                 Name = item.Name.Trim(),
-                NameAr = item.NameAr.Trim()
+                NameAr = item.NameAr.Trim(),
+                Address = item.Address != null ? item.Address : "",
+                AddressAr = item.AddressAr != null ? item.AddressAr : "",
+                EMail = item.EMail != null ? item.EMail : "",
+                Mobile = item.Mobile != null ? item.Mobile : "",
+                Website = item.Website != null ? item.Website : ""
             });
         }
 
@@ -110,12 +125,12 @@ namespace Asset.Core.Repositories
             {
                 return _context.AssetDetails.Include(a => a.Supplier).ToList().Where(a => a.HospitalId == hospitalId).ToList().GroupBy(a => a.SupplierId)
                     .Select(item => new IndexSupplierVM.GetData
-                {
-                    Id = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.Id:0,
-                    Code = item.FirstOrDefault().Supplier != null ?item.FirstOrDefault().Supplier.Code:"",
-                    Name = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.Name.Trim():"",
-                    NameAr = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.NameAr.Trim():""
-                });
+                    {
+                        Id = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.Id : 0,
+                        Code = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.Code : "",
+                        Name = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.Name.Trim() : "",
+                        NameAr = item.FirstOrDefault().Supplier != null ? item.FirstOrDefault().Supplier.NameAr.Trim() : ""
+                    });
 
 
             }
@@ -126,7 +141,12 @@ namespace Asset.Core.Repositories
                     Id = item.Id,
                     Code = item.Code,
                     Name = item.Name,
-                    NameAr = item.NameAr
+                    NameAr = item.NameAr,
+                    Address = item.Address,
+                    AddressAr = item.AddressAr,
+                    EMail = item.EMail,
+                    Mobile = item.Mobile,
+                    Website = item.Website
                 });
             }
         }
@@ -185,5 +205,61 @@ namespace Asset.Core.Repositories
             return lstBrands;
         }
 
+        public IndexSupplierVM FindSupplier(string strText, int pageNumber, int pageSize)
+        {
+            IndexSupplierVM mainClass = new IndexSupplierVM();
+            List<IndexSupplierVM.GetData> list = new List<IndexSupplierVM.GetData>();
+
+
+            list = _context.Suppliers.Where(a =>
+            a.Name.Contains(strText)
+            || a.NameAr.Contains(strText)
+            || a.Mobile.Contains(strText)
+            || a.Address.Contains(strText)
+            || a.AddressAr.Contains(strText)
+            || a.EMail.Contains(strText)
+
+            ).ToList().Select(item => new IndexSupplierVM.GetData
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name.Trim(),
+                NameAr = item.NameAr.Trim(),
+                Mobile = item.Mobile,
+                Address = item.Address,
+                AddressAr = item.AddressAr,
+                EMail = item.EMail,
+                Website = item.Website
+            }).ToList();
+
+            var supplierPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            mainClass.Results = supplierPerPage;
+            mainClass.Count = list.Count();
+            return mainClass;
+        }
+
+        public IEnumerable<IndexSupplierVM.GetData> FindSupplierByText(string strText)
+        {
+            return _context.Suppliers.Where(a =>
+            a.Name == strText
+            || a.NameAr == strText
+            || a.Mobile.Contains(strText)
+            || a.Address.Contains(strText)
+            || a.AddressAr.Contains(strText)
+            || a.EMail.Contains(strText)
+
+            ).ToList().Select(item => new IndexSupplierVM.GetData
+            {
+                Code = item.Code != null ? item.Code : "",
+                Name = item.Name,
+                NameAr = item.NameAr,
+                Address = item.Address != null ? item.Address : "",
+                AddressAr = item.AddressAr != null ? item.AddressAr : "",
+                EMail = item.EMail != null ? item.EMail : "",
+                Mobile = item.Mobile != null ? item.Mobile : "",
+                Website = item.Website != null ? item.Website : ""
+            }).ToList();
+
+        }
     }
 }

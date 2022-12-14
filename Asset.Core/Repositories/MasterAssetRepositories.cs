@@ -76,21 +76,26 @@ namespace Asset.Core.Repositories
         public List<CountMasterAssetBrands> CountMasterAssetsByBrand(int hospitalId)
         {
             List<CountMasterAssetBrands> list = new List<CountMasterAssetBrands>();
-            var lstBrands = _context.Brands.ToList().Take(10);
+            
             if (hospitalId != 0)
             {
+              var  lstBrands = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand)
+                      .Where(a => a.HospitalId == hospitalId)
+                      .OrderBy(a => a.MasterAsset.brand).Take(10).ToList();
                 foreach (var item in lstBrands)
                 {
                     CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
-                    countHospitalObj.BrandName = item.Name;
-                    countHospitalObj.BrandNameAr = item.NameAr;
+                    countHospitalObj.BrandName = item.MasterAsset.brand.Name;
+                    countHospitalObj.BrandNameAr = item.MasterAsset.brand.NameAr;
                     countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
-                        .Where(a => a.MasterAsset.BrandId == item.Id && a.HospitalId == hospitalId).ToList().Count();
+                        .Where(a => a.MasterAsset.BrandId == item.MasterAsset.BrandId && a.HospitalId == hospitalId).ToList().Count();
                     list.Add(countHospitalObj);
                 }
             }
             else
             {
+
+                var lstBrands = _context.Brands.ToList().Take(10);
                 foreach (var item in lstBrands)
                 {
                     CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
@@ -835,8 +840,8 @@ namespace Asset.Core.Repositories
                 NameAr = item.NameAr,
                 Model = item.ModelNumber,
                 ModelNumber = item.ModelNumber,
-                BrandName = item.brand.Name,
-                BrandNameAr = item.brand.NameAr
+                BrandName = item.brand != null ? item.brand.Name:"",
+                BrandNameAr = item.brand != null ? item.brand.NameAr:""
             }).ToList();
             return lst;
         }
@@ -848,14 +853,14 @@ namespace Asset.Core.Repositories
             var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand).Where(a => a.MasterAsset.Name.Contains(name) || a.MasterAsset.NameAr.Contains(name) && a.HospitalId == hospitalId).ToList().Select(item => new IndexMasterAssetVM.GetData
             {
                 Id = item.Id,
-                Name = item.MasterAsset.Name,
-                NameAr = item.MasterAsset.NameAr,
-                Model = item.MasterAsset.ModelNumber,
-                ModelNumber = item.MasterAsset.ModelNumber,
-                BrandName = item.MasterAsset.brand.Name,
-                BrandNameAr = item.MasterAsset.brand.NameAr,
-                SerialNumber = item.SerialNumber,
-                BarCode = item.Barcode,
+                Name = item.MasterAsset != null? item.MasterAsset.Name:"",
+                NameAr = item.MasterAsset != null ? item.MasterAsset.NameAr:"",
+                Model = item.MasterAsset != null ? item.MasterAsset.ModelNumber:"",
+                ModelNumber = item.MasterAsset != null ? item.MasterAsset.ModelNumber:"",
+                BrandName = item.MasterAsset.brand != null ? item.MasterAsset.brand.Name:"",
+                BrandNameAr = item.MasterAsset.brand != null ?item.MasterAsset.brand.NameAr:"",
+                SerialNumber = item.SerialNumber != null ? item.SerialNumber:"",
+                BarCode = item.Barcode != null ? item.Barcode:"",
             }).ToList();
             return lst;
         }
@@ -871,11 +876,11 @@ namespace Asset.Core.Repositories
             {
                 IndexMasterAssetVM.GetData masterAssetObj = new IndexMasterAssetVM.GetData();
                 masterAssetObj.Id = item.FirstOrDefault().MasterAsset.Id;
-                masterAssetObj.Model = item.FirstOrDefault().MasterAsset.ModelNumber;
-                masterAssetObj.Name = item.FirstOrDefault().MasterAsset.Name;
-                masterAssetObj.NameAr = item.FirstOrDefault().MasterAsset.NameAr;
-                masterAssetObj.BrandName = item.FirstOrDefault().MasterAsset.brand.Name;
-                masterAssetObj.BrandNameAr = item.FirstOrDefault().MasterAsset.brand.NameAr;
+                masterAssetObj.Model = item.FirstOrDefault().MasterAsset != null ? item.FirstOrDefault().MasterAsset.ModelNumber:"";
+                masterAssetObj.Name = item.FirstOrDefault().MasterAsset!= null? item.FirstOrDefault().MasterAsset.Name:"";
+                masterAssetObj.NameAr = item.FirstOrDefault().MasterAsset!= null?item.FirstOrDefault().MasterAsset.NameAr:"";
+                masterAssetObj.BrandName = item.FirstOrDefault().MasterAsset.brand != null ? item.FirstOrDefault().MasterAsset.brand.Name:"";
+                masterAssetObj.BrandNameAr =  item.FirstOrDefault().MasterAsset.brand != null ?item.FirstOrDefault().MasterAsset.brand.NameAr:"";
                 list.Add(masterAssetObj);
             }
             return list;

@@ -40,10 +40,20 @@ namespace Asset.Domain.Services
         GeneratedRequestNumberVM GenerateRequestNumber();
         PrintServiceRequestVM PrintServiceRequestById(int id);
         IEnumerable<IndexRequestVM.GetData> SearchRequests(SearchRequestVM searchObj);
+
+        IndexRequestVM SearchInRequests(SearchRequestVM searchObj, int pageNumber, int pageSize);
+
+
+
+
         Task<IEnumerable<IndexRequestsVM>> SortRequests(SortRequestVM sortObj,int statusId);
         IEnumerable<IndexRequestsVM> SortRequestsByAssetId(SortRequestVM sortObj);
         IEnumerable<IndexRequestVM.GetData> GetRequestsByDate(SearchRequestDateVM requestDateObj);
         IndexRequestVM GetRequestsByDateAndStatus(SearchRequestDateVM requestDateObj,int pageNumber, int pageSize);
+
+
+        List<IndexRequestVM.GetData> GetRequestsByDateAndStatus(SearchRequestDateVM requestDateObj);
+
         int CountRequestsByHospitalId(int hospitalId, string userId);
         int CreateRequestAttachments(RequestDocument attachObj);
         Task<List<IndexRequestsVM>> SortRequestsByPaging(SortRequestVM sortObj, int statusId, int pageNumber, int pageSize);
@@ -52,5 +62,13 @@ namespace Asset.Domain.Services
 
 
         List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId);
+
+
+        List<IndexRequestVM.GetData> PrintListOfRequests(List<ExportRequestVM> requests);
+
+        OpenRequestVM ListOpenRequests(SearchOpenRequestVM searchOpenRequestObj, int pageNumber, int pageSize);
+
+        List<OpenRequestVM.GetData> ListOpenRequestsPDF(SearchOpenRequestVM searchOpenRequestObj);
+
     }
 }

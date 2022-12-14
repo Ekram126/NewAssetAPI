@@ -15,7 +15,7 @@ namespace Asset.Domain.Repositories
 
         IndexRequestStatusVM.GetData GetAll(string userId);
 
-
+        IndexRequestStatusVM.GetData GetAllForReport();
         RequestStatus GetById(int id);
         int Add(RequestStatus createRequestVM);
         int Update(RequestStatus editRequestVM);

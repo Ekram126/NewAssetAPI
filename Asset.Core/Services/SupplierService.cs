@@ -74,5 +74,15 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.SupplierRepository.SortSuppliers(sortObj);
         }
+
+        public IndexSupplierVM FindSupplier(string strText, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.SupplierRepository.FindSupplier(strText,pageNumber,pageSize);
+        }
+
+        public IEnumerable<IndexSupplierVM.GetData> FindSupplierByText(string strText)
+        {
+            return _unitOfWork.SupplierRepository.FindSupplierByText(strText);
+        }
     }
 }
