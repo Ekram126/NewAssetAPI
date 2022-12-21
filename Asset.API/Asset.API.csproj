@@ -24,7 +24,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.17" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.9">
       <PrivateAssets>all</PrivateAssets>
@@ -116,6 +116,18 @@
     <None Include="bin\Debug\net5.0\System.IdentityModel.Tokens.Jwt.dll" />
     <None Include="bin\Debug\net5.0\System.Runtime.Caching.dll" />
     <None Include="bin\Debug\net5.0\System.Security.Cryptography.ProtectedData.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Syncfusion.DocIO.Portable">
+      <HintPath>C:\Users\Public\Documents\Syncfusion\ASP.NET Core - EJ2\20.3.0.56\bin\Debug\netcoreapp3.1\Syncfusion.DocIO.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Licensing">
+      <HintPath>C:\Users\Public\Documents\Syncfusion\ASP.NET Core - EJ2\20.3.0.56\bin\Debug\netcoreapp3.1\Syncfusion.Licensing.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Pdf.Portable">
+      <HintPath>C:\Users\Public\Documents\Syncfusion\ASP.NET Core - EJ2\20.3.0.56\bin\Debug\netcoreapp3.1\Syncfusion.Pdf.Portable.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 

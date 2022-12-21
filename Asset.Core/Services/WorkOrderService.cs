@@ -154,5 +154,20 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WorkOrder.PrintListOfWorkOrders(workOrders);
         }
+
+        public IEnumerable<IndexWorkOrderVM> GetworkOrderByUserAssetId(int assetId, string userId)
+        {
+            return _unitOfWork.WorkOrder.GetworkOrderByUserAssetId(assetId, userId);
+        }
+
+        public IndexWorkOrderVM2 SearchWorkOrders(SearchWorkOrderVM searchObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.WorkOrder.SearchWorkOrders(searchObj, pageNumber, pageSize);
+        }
+
+        public IndexWorkOrderVM2 GetAllWorkOrdersByHospitalIdAndPaging2(int? hospitalId, string userId, int statusId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalIdAndPaging2(hospitalId, userId, statusId, pageNumber, pageSize);
+        }
     }
 }

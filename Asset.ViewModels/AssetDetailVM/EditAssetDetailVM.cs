@@ -11,7 +11,7 @@ namespace Asset.ViewModels.AssetDetailVM
 
 
         public string AssetNameAr { get; set; }
-public string AssetImg { get; set; }
+        public string AssetImg { get; set; }
 
         public string Code { get; set; }
         public string PurchaseDate { get; set; }

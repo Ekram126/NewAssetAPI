@@ -65,6 +65,13 @@ namespace Asset.API.Controllers
         }
 
         [HttpGet]
+        [Route("GetworkOrderByUserAssetId/{assetId}/{userId}")]
+        public IEnumerable<IndexWorkOrderVM> GetworkOrderByUserAssetId(int assetId, string userId)
+        {
+            return _workOrderService.GetworkOrderByUserAssetId(assetId, userId);
+        }
+
+        [HttpGet]
         [Route("CountWorkOrdersByHospitalId/{hospitalId}/{userId}")]
         public int CountWorkOrdersByHospitalId(int hospitalId, string userId)
         {
@@ -142,21 +149,28 @@ namespace Asset.API.Controllers
         }
 
         [HttpPost]
-        [Route("GetAllWorkOrdersByHospitalIdAndPaging/{hospitalId}/{userId}/{statusId}/{pageNumber}/{pageSize}")]
-        public List<IndexWorkOrderVM> GetAllWorkOrdersByHospitalIdAndPaging(int hospitalId, string userId, int statusId, int pageNumber, int pageSize)
+        [Route("GetAllWorkOrdersByHospitalIdAndPaging2/{hospitalId}/{userId}/{statusId}/{pageNumber}/{pageSize}")]
+        public List<IndexWorkOrderVM> GetAllWorkOrdersByHospitalIdAndPaging1(int hospitalId, string userId, int statusId, int pageNumber, int pageSize)
         {
             var workOrders = _workOrderService.GetAllWorkOrdersByHospitalIdAndPaging(hospitalId, userId, statusId, pageNumber, pageSize).ToList();
             return workOrders;
         }
 
         [HttpGet]
-        [Route("GetWorkOrdersCountByStatusIdAndPaging/{hospitalId}/{userId}/{statusId}")]
-        public int GetWorkOrdersCountByStatusIdAndPaging(int hospitalId, string userId, int statusId)
+        [Route("GetWorkOrdersCountByStatusIdAndPaging2/{hospitalId}/{userId}/{statusId}")]
+        public int GetWorkOrdersCountByStatusIdAndPaging1(int hospitalId, string userId, int statusId)
         {
             return _workOrderService.GetWorkOrdersCountByStatusIdAndPaging(hospitalId, userId, statusId);
         }
 
 
+        [HttpPost]
+        [Route("GetAllWorkOrdersByHospitalIdAndPaging/{hospitalId}/{userId}/{statusId}/{pageNumber}/{pageSize}")]
+        public IndexWorkOrderVM2 GetAllWorkOrdersByHospitalIdAndPaging2(int hospitalId, string userId, int statusId, int pageNumber, int pageSize)
+        {
+            var workOrders = _workOrderService.GetAllWorkOrdersByHospitalIdAndPaging2(hospitalId, userId, statusId, pageNumber, pageSize);
+            return workOrders;
+        }
 
 
 
@@ -223,7 +237,7 @@ namespace Asset.API.Controllers
 
 
         [HttpPost]
-        [Route("SearchInWorkOrders/{pagenumber}/{pagesize}")]
+        [Route("SearchInWorkOrders2/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexWorkOrderVM> SearchInWorkOrders(int pagenumber, int pagesize, SearchWorkOrderVM searchObj)
         {
             PagingParameter pageInfo = new PagingParameter();
@@ -232,6 +246,21 @@ namespace Asset.API.Controllers
             var list = _workOrderService.SearchWorkOrders(searchObj).ToList();
             return _pagingService.GetAll<IndexWorkOrderVM>(pageInfo, list);
         }
+
+
+
+        [HttpPost]
+        [Route("SearchInWorkOrders/{pagenumber}/{pagesize}")]
+        public IndexWorkOrderVM2 SearchInWorkOrders2(int pagenumber, int pagesize, SearchWorkOrderVM searchObj)
+        {
+            var WorkOrder = _workOrderService.SearchWorkOrders(searchObj,pagenumber,pagesize);
+            return WorkOrder;
+        }
+
+
+
+
+
 
         [HttpPost]
         [Route("SearchInWorkOrdersCount")]

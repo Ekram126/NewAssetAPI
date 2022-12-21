@@ -1810,28 +1810,62 @@ namespace Asset.Core.Repositories
                 }
                 if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
                 {
-                    list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId && t.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
+                    list = list.Where(t => t.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
                 }
-                //if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
-                //{
-                //    list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                //}
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
                 }
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
                 {
-                    list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId && t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
+                    list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
                 }
-                //if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
-                //{
-                //    list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                //}
-                if (UserObj.HospitalId > 0)
+
+
+
+                if (UserObj.HospitalId > 0 && searchObj.HospitalId > 0)
                 {
-                    list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                    list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
+                else if (searchObj.HospitalId > 0)
+                {
+                    list = list.Where(t => t.AssetDetail.HospitalId == searchObj.HospitalId).ToList();
+                }
+
+
+
+                if (searchObj.PeriorityId != 0)
+                {
+                    list = list.Where(a => a.AssetDetail.MasterAsset.PeriorityId == searchObj.PeriorityId).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+                if (searchObj.MasterAssetId != 0)
+                {
+                    list = list.Where(a => a.AssetDetail.MasterAssetId == searchObj.MasterAssetId).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+
+                if (searchObj.Barcode != "")
+                {
+                    list = list.Where(a => a.AssetDetail.Barcode == searchObj.Barcode).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+
+                if (searchObj.SerialNumber != "")
+                {
+                    list = list.Where(a => a.AssetDetail.SerialNumber.Contains(searchObj.SerialNumber)).ToList();
+                }
+                else
+                    list = list.ToList();
 
             }
 
@@ -1949,13 +1983,6 @@ namespace Asset.Core.Repositories
                 else
                     lstData = lstData.ToList();
 
-                if (searchObj.PeriorityId != 0)
-                {
-                    lstData = lstData.Where(a => a.PeriorityId == searchObj.PeriorityId).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
 
                 if (searchObj.ModeId != 0)
                 {
@@ -1965,19 +1992,9 @@ namespace Asset.Core.Repositories
                     lstData = lstData.ToList();
 
 
-                if (searchObj.MasterAssetId != 0)
-                {
-                    lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
 
-                if (searchObj.HospitalId != 0)
-                {
-                    lstData = lstData.Where(a => a.HospitalId == searchObj.HospitalId).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
+
+
 
                 if (searchObj.DepartmentId != 0)
                 {
@@ -1988,19 +2005,6 @@ namespace Asset.Core.Repositories
 
 
 
-                if (searchObj.Barcode != "")
-                {
-                    lstData = lstData.Where(a => a.Barcode == searchObj.Barcode).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-                if (searchObj.SerialNumber != "")
-                {
-                    lstData = lstData.Where(a => a.SerialNumber.Contains(searchObj.SerialNumber)).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
 
 
                 if (searchObj.ModelNumber != "")
@@ -5643,39 +5647,39 @@ namespace Asset.Core.Repositories
             {
                 allrequests = allrequests.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
-            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
-            {
-                if (lstRoleNames.Contains("Admin"))
-                {
-                    allrequests = allrequests.ToList();
-                }
-                if (lstRoleNames.Contains("TLHospitalManager"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                }
-                if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                }
-                if (!lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                }
+            //if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+            //{
+            //    if (lstRoleNames.Contains("Admin"))
+            //    {
+            //        allrequests = allrequests.ToList();
+            //    }
+            //    if (lstRoleNames.Contains("TLHospitalManager"))
+            //    {
+            //        allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+            //    }
+            //    if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+            //    {
+            //        allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+            //    }
+            //    if (!lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+            //    {
+            //        allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+            //    }
 
-                if (!lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                }
-                if (lstRoleNames.Contains("AssetOwner"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                }
-                if (lstRoleNames.Contains("EngDepManager"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                }
-            }
-            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+            //    if (!lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
+            //    {
+            //        allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+            //    }
+            //    if (lstRoleNames.Contains("AssetOwner"))
+            //    {
+            //        allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+            //    }
+            //    if (lstRoleNames.Contains("EngDepManager"))
+            //    {
+            //        allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+            //    }
+            //}
+            if (UserObj.HospitalId > 0)
             {
                 if (lstRoleNames.Contains("Admin"))
                 {
@@ -6787,35 +6791,140 @@ namespace Asset.Core.Repositories
                             .Include(a => a.AssetDetail)
                             .Include(a => a.AssetDetail.Department)
                             .Include(a => a.AssetDetail.MasterAsset)
+                             .Include(a => a.AssetDetail.MasterAsset.brand)
                             .Include(a => a.AssetDetail.Hospital)
                             .ToList();
 
             if (list.Count > 0)
             {
-                if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
-                {
-                    list = list.ToList();
-                }
-                if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+                //if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+                //{
+                //    list = list.ToList();
+                //}
+
+
+                if (UserObj.GovernorateId > 0)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
                 }
-                if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
+                else if (searchObj.GovernorateId > 0)
                 {
-                    list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId && t.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
+                    list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == searchObj.GovernorateId).ToList();
                 }
-                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
+
+
+                if (UserObj.CityId > 0)
+                {
+                    list = list.Where(t => t.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
+                }
+                else if (searchObj.CityId > 0)
+                {
+                    list = list.Where(t => t.AssetDetail.Hospital.CityId == searchObj.CityId).ToList();
+                }
+
+                if (UserObj.OrganizationId > 0)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
                 }
-                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
+                else if (searchObj.OrganizationId > 0)
+                {
+                    list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == searchObj.OrganizationId).ToList();
+                }
+
+
+                if (UserObj.SubOrganizationId > 0)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId && t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
                 }
-                if (UserObj.HospitalId > 0)
+                else if (searchObj.SubOrganizationId > 0)
+                {
+                    list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == searchObj.SubOrganizationId).ToList();
+                }
+
+
+
+                if (UserObj.HospitalId > 0 && searchObj.HospitalId != 0)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
+                if (searchObj.HospitalId != 0 && UserObj.HospitalId == 0)
+                {
+                    list = list.Where(a => a.AssetDetail.HospitalId == searchObj.HospitalId).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+                if (searchObj.PeriorityId != 0)
+                {
+                    list = list.Where(a => a.AssetDetail.MasterAsset.PeriorityId == searchObj.PeriorityId).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+                if (searchObj.ModeId != 0)
+                {
+                    list = list.Where(a => a.RequestModeId == searchObj.ModeId).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+                if (searchObj.MasterAssetId != 0)
+                {
+                    list = list.Where(a => a.AssetDetail.MasterAssetId == searchObj.MasterAssetId).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+                if (searchObj.DepartmentId != 0)
+                {
+                    list = list.Where(a => a.AssetDetail.DepartmentId == searchObj.DepartmentId).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+
+                if (searchObj.Barcode != "")
+                {
+                    list = list.Where(a => a.AssetDetail.Barcode == searchObj.Barcode).ToList();
+                }
+                else
+                    list = list.ToList();
+
+                if (searchObj.SerialNumber != "")
+                {
+                    list = list.Where(a => a.AssetDetail.SerialNumber.Contains(searchObj.SerialNumber)).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+                if (searchObj.ModelNumber != "")
+                {
+                    list = list.Where(a => a.AssetDetail.MasterAsset.ModelNumber.Contains(searchObj.ModelNumber)).ToList();
+                }
+                else
+                    list = list.ToList();
+
+
+                if (searchObj.Subject != "")
+                {
+                    list = list.Where(a => a.Subject.Contains(searchObj.Subject)).ToList();
+                }
+                else
+                    list = list.ToList();
+
+                if (searchObj.Code != "")
+                {
+                    list = list.Where(b => b.RequestCode == searchObj.Code).ToList();
+                }
+                else
+                    list = list.ToList();
+
 
             }
 
@@ -6933,82 +7042,6 @@ namespace Asset.Core.Repositories
                 else
                     lstData = lstData.ToList();
 
-                if (searchObj.PeriorityId != 0)
-                {
-                    lstData = lstData.Where(a => a.PeriorityId == searchObj.PeriorityId).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-
-                if (searchObj.ModeId != 0)
-                {
-                    lstData = lstData.Where(a => a.ModeId == searchObj.ModeId).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-
-                if (searchObj.MasterAssetId != 0)
-                {
-                    lstData = lstData.Where(a => a.MasterAssetId == searchObj.MasterAssetId).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-                if (searchObj.HospitalId != 0)
-                {
-                    lstData = lstData.Where(a => a.HospitalId == searchObj.HospitalId).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-                if (searchObj.DepartmentId != 0)
-                {
-                    lstData = lstData.Where(a => a.DepartmentId == searchObj.DepartmentId).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-
-
-                if (searchObj.Barcode != "")
-                {
-                    lstData = lstData.Where(a => a.Barcode == searchObj.Barcode).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-                if (searchObj.SerialNumber != "")
-                {
-                    lstData = lstData.Where(a => a.SerialNumber.Contains(searchObj.SerialNumber)).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-
-                if (searchObj.ModelNumber != "")
-                {
-                    lstData = lstData.Where(a => a.ModelNumber.Contains(searchObj.ModelNumber)).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-
-                if (searchObj.Subject != "")
-                {
-                    lstData = lstData.Where(a => a.Subject.Contains(searchObj.Subject)).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
-                if (searchObj.Code != "")
-                {
-                    lstData = lstData.Where(b => b.RequestCode == searchObj.Code).ToList();
-                }
-                else
-                    lstData = lstData.ToList();
-
 
 
                 string setstartday, setstartmonth, setendday, setendmonth = "";
@@ -7063,14 +7096,12 @@ namespace Asset.Core.Repositories
                 {
                     lstData = lstData.Where(a => a.RequestDate.Date >= startingFrom.Date && a.RequestDate.Date <= endingTo.Date).ToList();
                 }
-
-                var requestsPerPage = lstData.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-                mainClass.Results = requestsPerPage;
-                mainClass.Count = lstData.Count();
-                return mainClass;
             }
+            var requestsPerPage = lstData.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            mainClass.Results = requestsPerPage;
+            mainClass.Count = lstData.Count();
+            return mainClass;
 
-            return null;
         }
 
         public OpenRequestVM ListOpenRequests(SearchOpenRequestVM searchOpenRequestObj, int pageNumber, int pageSize)

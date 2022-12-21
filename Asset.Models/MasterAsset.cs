@@ -32,6 +32,8 @@ namespace Asset.Models
 
         [StringLength(20)]
         public string VersionNumber { get; set; }
+
+
         public int? PeriorityId { get; set; }
         [ForeignKey("PeriorityId")]
         public virtual AssetPeriority AssetPeriority { get; set; }

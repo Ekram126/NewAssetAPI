@@ -14,7 +14,7 @@ namespace Asset.Domain.Repositories
 //IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId);
 
         IndexRequestStatusVM.GetData GetAll(string userId);
-
+        IndexRequestStatusVM.GetData GetAllByHospitalId(string userId,int hospitalId);
         IndexRequestStatusVM.GetData GetAllForReport();
         RequestStatus GetById(int id);
         int Add(RequestStatus createRequestVM);

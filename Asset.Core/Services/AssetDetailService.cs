@@ -333,5 +333,15 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetDetailRepository.GetAllPMAssetTaskScheduleByAssetId(assetId);
             
         }
+
+        public MobileAssetDetailVM GetAssetDetailById(string userId, int assetId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetDetailById(userId, assetId);
+        }
+
+        public bool GenerateQrCodeForAllAssets(string domainName)
+        {
+            return _unitOfWork.AssetDetailRepository.GenerateQrCodeForAllAssets(domainName);
+        }
     }
 }

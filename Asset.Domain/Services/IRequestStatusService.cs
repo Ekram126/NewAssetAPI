@@ -13,8 +13,8 @@ namespace Asset.Domain.Services
         IEnumerable<IndexRequestStatusVM.GetData> GetAllRequestStatus();
         IndexRequestStatusVM.GetData GetAllForReport();
 
-      //  IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId);
-
+        //  IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId);
+        IndexRequestStatusVM.GetData GetAllByHospitalId(string userId, int hospitalId);
         IndexRequestStatusVM.GetData GetAll(string userId);
         RequestStatus GetById(int id);
         int Add(RequestStatus createRequestVM);

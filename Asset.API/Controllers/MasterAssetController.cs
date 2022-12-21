@@ -243,7 +243,7 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddMasterAsset")]
-        public ActionResult<MasterAsset> Add(CreateMasterAssetVM MasterAssetVM)
+        public ActionResult Add(CreateMasterAssetVM MasterAssetVM)
         {
             var lstCode = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Code == MasterAssetVM.Code).ToList();
             if (lstCode.Count > 0)
@@ -263,7 +263,7 @@ namespace Asset.API.Controllers
             else
             {
                 var savedId = _MasterAssetService.Add(MasterAssetVM);
-                return Ok(new { MasterAssetId = savedId });
+                return Ok(savedId);
             }
         }
 

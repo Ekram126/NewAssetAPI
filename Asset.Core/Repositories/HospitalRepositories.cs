@@ -379,12 +379,12 @@ namespace Asset.Core.Repositories
 
         public List<IndexHospitalDepartmentVM.GetData> GetHospitalDepartmentByHospitalId2(int hospitalId)
         {
-            var lstHospitalDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == hospitalId).ToList()
+            var lstHospitalDepartments = _context.HospitalDepartments.Include(a=>a.Department).Where(a => a.HospitalId == hospitalId).ToList()
                 .Select(item => new IndexHospitalDepartmentVM.GetData
                 {
                     Id = item.Id,
-                    DepartmentName = _context.Departments.Where(a => a.Id == item.DepartmentId).First().Name,
-                    DepartmentNameAr = _context.Departments.Where(a => a.Id == item.DepartmentId).First().NameAr,
+                    DepartmentName = item.Department !=null? item.Department.Name:"",
+                    DepartmentNameAr = item.Department != null ? item.Department.NameAr:"",
                     IsActive = item.IsActive,
                     HospitalId = item.HospitalId,
                     DepartmentId = item.DepartmentId

@@ -43,9 +43,9 @@ namespace Asset.ViewModels.MasterAssetVM
 
         public string AssetImg { get; set; }
         public int? PMTimeId { get; set; }
-        public int? HospitalId { get; set; }
+        //public int? HospitalId { get; set; }
 
-        public  List<CreateMasterAssetComponentVM> ListComponents { get; set; }
+      //  public   List<CreateMasterAssetComponentVM> ListComponents { get; set; }
 
     }
 }

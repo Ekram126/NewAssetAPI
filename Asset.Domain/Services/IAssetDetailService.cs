@@ -82,5 +82,11 @@ namespace Asset.Domain.Services
         AssetDetailAttachment GetLastDocumentForAssetDetailId(int assetDetailId);
 
         GeneratedAssetDetailBCVM GenerateAssetDetailBarcode();
+
+
+
+
+        MobileAssetDetailVM GetAssetDetailById(string userId,int assetId);
+        bool GenerateQrCodeForAllAssets(string domainName);
     }
 }

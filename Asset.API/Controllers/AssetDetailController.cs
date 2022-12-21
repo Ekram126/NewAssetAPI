@@ -28,6 +28,11 @@ using System.Globalization;
 using System.Net.Http;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Data;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Syncfusion.DocIO.DLS;
+using Syncfusion.DocIO;
 
 namespace Asset.API.Controllers
 {
@@ -1008,10 +1013,6 @@ namespace Asset.API.Controllers
         public HttpResponseMessage DownloadFile()
         {
             var file = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/AssetDetails/FilterAssetDetails/FilterAssetDetails.pdf";
-
-
-
-
             HttpResponseMessage response = null;
             if (!System.IO.File.Exists(file))
                 System.IO.Directory.CreateDirectory(file);
@@ -1036,6 +1037,113 @@ namespace Asset.API.Controllers
             return response;
         }
 
+
+
+
+
+
+        [HttpPost]
+        [Route("GenerateQrCodeForAllAssets")]
+        public bool GenerateQrCodeForAllAssets(string domainName)
+        {
+
+            var path = HttpContext.Request.Path;
+            var pathBase = HttpContext.Request.PathBase;
+            domainName = "http://" + HttpContext.Request.Host.Value;
+            return _AssetDetailService.GenerateQrCodeForAllAssets(domainName);
+        }
+
+
+
+        [Route("GenerateWordForQrCodeForAllAssets")]
+        public ActionResult GenerateWordForQrCodeForAllAssets()
+        {
+
+            using (WordDocument document = new WordDocument())
+            {
+                //Opens the Word template document
+                string strTemplateFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\CardTemplate.dotx";
+
+                Stream docStream = System.IO.File.OpenRead(strTemplateFile);
+                document.Open(docStream, FormatType.Docx);
+                docStream.Dispose();
+
+
+                var allAssets = ListAssets().ToList();
+                document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField_InsertPageBreak);
+                MailMergeDataTable dataTable = new MailMergeDataTable("Asset_QrCode", allAssets);
+                document.MailMerge.ExecuteGroup(dataTable);
+
+
+                //Saves the file in the given path
+                string strExportFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\Cards.docx";
+                docStream = System.IO.File.Create(strExportFile);
+                document.Save(docStream, FormatType.Docx);
+                docStream.Dispose();
+                document.Close();
+
+
+            }
+            return Ok();
+        }
+
+        int i = 1;
+        private void MergeField_InsertPageBreak(object sender, MergeFieldEventArgs args)
+        {
+
+            List<IndexAssetDetailVM.GetData> allAssets = ListAssets();
+
+            if (args.FieldName == "BarCode" && i != allAssets.Count)
+            {
+                //Gets the owner paragraph 
+                WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
+                //Appends the page break 
+                paragraph.AppendBreak(BreakType.PageBreak);
+                i++;
+            }
+
+        }
+
+        private List<IndexAssetDetailVM.GetData> ListAssets()
+        {
+            var allAssets = _AssetDetailService.GetAll().ToList();
+            return allAssets;
+        }
+
+
+
+        private DataTable GetAssetsAsDataTable()
+        {
+
+            var allAssets = _AssetDetailService.GetAll().ToList();
+            DataTable table = new DataTable("Asset_QrCode");
+            // table.TableName = "QrCode";
+            // Add fields to the Product_PriceList table.
+            table.Columns.Add("AssetName");
+            table.Columns.Add("BrandName");
+            table.Columns.Add("SerialNumber");
+            table.Columns.Add("Model");
+            table.Columns.Add("BarCode");
+            table.Columns.Add("QRFilePath");
+            table.Columns.Add("HospitalNameAr");
+            // DataRow row;
+
+            // Inserting values to the tables.
+            foreach (var item in allAssets)
+            {
+                DataRow row = table.NewRow();
+                row["AssetName"] = item.AssetName;
+                row["BrandName"] = item.BrandName;
+                row["SerialNumber"] = item.SerialNumber;
+                row["Model"] = item.Model;
+                row["BarCode"] = item.BarCode;
+                row["QRFilePath"] = item.QrFilePath;
+                row["HospitalNameAr"] = item.QrFilePath;
+                table.Rows.Add(row);
+
+            }
+            return table;
+        }
 
     }
 }

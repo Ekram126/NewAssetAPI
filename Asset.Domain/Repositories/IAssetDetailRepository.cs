@@ -36,6 +36,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<AssetDetail> GetAllSerialsByMasterAssetIdAndHospitalId(int masterAssetId, int hospitalId);
         IEnumerable<AssetDetail> GetAllAssetDetailsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalId(int hospitalId);
+
+     
         IEnumerable<ViewAssetDetailVM> GetNoneExcludedAssetsByHospitalId(int hospitalId);
 
 
@@ -60,25 +62,17 @@ namespace Asset.Domain.Repositories
         int Delete(int id);
         List<CountAssetVM> CountAssetsByHospital();
         List<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId);
-
-
         List<CountAssetVM> ListAssetsByGovernorateIds();
         List<CountAssetVM> ListAssetsByCityIds();
         List<CountAssetVM> CountAssetsInHospitalByHospitalId(int hospitalId);
-
         int CountAssetsByHospitalId(int hospitalId);
-
         ViewAssetDetailVM GetAssetHistoryById(int assetId);
-
         int CreateAssetDetailDocuments(CreateAssetDetailAttachmentVM attachObj);
         IEnumerable<AssetDetailAttachment> GetAttachmentByAssetDetailId(int assetId);
         int DeleteAssetDetailAttachment(int id);
         List<PmDateGroupVM> GetAllwithgrouping(int assetId);
         List<IndexAssetDetailVM.GetData> FilterAsset(filterDto data);
-
         List<IndexAssetDetailVM.GetData> FilterDataByDepartmentBrandSupplierId(FilterHospitalAsset data);
-
-
         List<DepartmentGroupVM> GetAssetByDepartment(List<IndexAssetDetailVM.GetData> AssetModel);
 
         List<BrandGroupVM> GetAssetByBrands(List<IndexAssetDetailVM.GetData> AssetModel);
@@ -87,13 +81,10 @@ namespace Asset.Domain.Repositories
         List<GroupCityVM> GetAssetByCity(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupSupplierVM> GetAssetBySupplier(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupOrganizationVM> GetAssetByOrganization(List<IndexAssetDetailVM.GetData> AssetModel);
-       // Task<IEnumerable<IndexAssetDetailVM.GetData>> SortAssets(Sort sortObj);
 
         IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj);
-    //   IndexAssetDetailVM SortAssets(Sort sortObj, int hospitalId, int statusId, string userId, int pageNumber, int pageSize);
-
+ 
         IndexAssetDetailVM SortAssets(Sort sortObj, int statusId, string userId);
-
         List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId);
         List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge model);
         IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId);
@@ -101,9 +92,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId,int statusId, string userId, int page, int pageSize, Sort sortObj);
         AssetDetailAttachment GetLastDocumentForAssetDetailId(int assetDetailId);
 
-
-
-
         GeneratedAssetDetailBCVM GenerateAssetDetailBarcode();
+        MobileAssetDetailVM GetAssetDetailById(string userId, int assetId);
+        bool GenerateQrCodeForAllAssets(string domainName);
     }
 }

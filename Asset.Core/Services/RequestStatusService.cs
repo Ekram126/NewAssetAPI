@@ -24,6 +24,7 @@ namespace Asset.Core.Services
         }
 
 
+
         public IndexRequestStatusVM.GetData GetAllForReport()
         {
             return _unitOfWork.RequestStatus.GetAllForReport();
@@ -31,10 +32,6 @@ namespace Asset.Core.Services
 
 
 
-        //public int UpdateRequestStatus(RequestStatus editRequestStatus)
-        //{
-        //  return  _unitOfWork.RequestStatus.Update(editRequestStatus);
-        //}
 
         public RequestStatus GetById(int id)
         {
@@ -65,6 +62,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexRequestStatusVM.GetData> SortRequestStatuses(SortRequestStatusVM sortObj)
         {
             return _unitOfWork.RequestStatus.SortRequestStatuses(sortObj);
+        }
+
+        public IndexRequestStatusVM.GetData GetAllByHospitalId(string userId, int hospitalId)
+        {
+            return _unitOfWork.RequestStatus.GetAllByHospitalId(userId, hospitalId);
         }
     }
 }

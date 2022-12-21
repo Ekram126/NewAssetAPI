@@ -88,6 +88,9 @@ namespace Asset.ViewModels.WorkOrderVM
             public int? DepartmentId { get; set; }
             public string DepartmentName { get; set; }
             public string DepartmentNameAr { get; set; }
+
+
+            public List<LstWorkOrderFromTracking> ListTracks { get; set; }
         }
     }
 }
