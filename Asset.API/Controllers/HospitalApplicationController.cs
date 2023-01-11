@@ -39,7 +39,7 @@ namespace Asset.API.Controllers
         private IEmployeeService _employeeService;
         private IMasterAssetService _masterAssetService;
         private IAssetDetailService _assetDetailService;
-       // private ApplicationUser applicationUser;
+        // private ApplicationUser applicationUser;
 
         private readonly IEmailSender _emailSender;
 
@@ -121,6 +121,45 @@ namespace Asset.API.Controllers
         {
             return _hospitalApplicationService.GetHospitalApplicationByDate(searchObj).ToList().Count;
         }
+
+
+        [HttpPost]
+        [Route("GetAllHospitalExecludes/{statusId}/{appTypeId}/{hospitalId}/{pageNumber}/{pageSize}")]
+        public IndexHospitalApplicationVM GetAllHospitalExecludes(SearchHospitalApplicationVM searchObj,int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            var lstExcludes = _hospitalApplicationService.GetAllHospitalExecludes(searchObj,statusId, appTypeId, hospitalId, pageNumber, pageSize);
+            return lstExcludes;
+        }
+
+        [HttpPost]
+        [Route("GetAllHospitalHolds/{statusId}/{appTypeId}/{hospitalId}/{pageNumber}/{pageSize}")]
+        public IndexHospitalApplicationVM GetAllHospitalHolds(SearchHospitalApplicationVM searchObj,int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            var lstHolds = _hospitalApplicationService.GetAllHospitalHolds(searchObj,statusId, appTypeId, hospitalId, pageNumber, pageSize);
+            return lstHolds;
+        }
+
+
+
+        [HttpPost]
+        [Route("PrintAllHospitalExecludes")]
+        public IndexHospitalApplicationVM GetAllHospitalExecludes(SearchHospitalApplicationVM searchObj)
+        {
+            var lstExcludes = _hospitalApplicationService.GetAllHospitalExecludes(searchObj);
+            return lstExcludes;
+        }
+
+        [HttpPost]
+        [Route("PrintAllHospitalHolds")]
+        public IndexHospitalApplicationVM PrintAllHospitalHolds(SearchHospitalApplicationVM searchObj)
+        {
+            var lstHolds = _hospitalApplicationService.GetAllHospitalHolds(searchObj);
+            return lstHolds;
+        }
+
+
+
+
 
 
 
@@ -289,16 +328,16 @@ namespace Asset.API.Controllers
             string phone = "";
             string exchold = "";
             List<string> execludeNames = new List<string>();
-			 List<string> holdNames = new List<string>();
+            List<string> holdNames = new List<string>();
             List<IndexHospitalExecludeReasonVM.GetData> lstExcludes = new List<IndexHospitalExecludeReasonVM.GetData>();
             List<IndexHospitalHoldReasonVM.GetData> lstHolds = new List<IndexHospitalHoldReasonVM.GetData>();
             var userObj = await _userManager.FindByNameAsync("MemberUser");
             var lstEmployees = _employeeService.GetAll().Where(a => a.Email == userObj.Email).ToList();
-            if(lstEmployees.Count > 0)
+            if (lstEmployees.Count > 0)
             {
                 phone = lstEmployees[0].Phone;
             }
-            if(lstEmployees.Count ==0)
+            if (lstEmployees.Count == 0)
             {
                 phone = userObj.PhoneNumber;
             }
@@ -307,7 +346,7 @@ namespace Asset.API.Controllers
 
             var assetObj = _assetDetailService.GetById(int.Parse(applicationObj.AssetId.ToString()));
             var masterObj = _masterAssetService.GetById(int.Parse(assetObj.MasterAssetId.ToString()));
-             var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.HospitalApplicationId == applicationObj.Id).ToList();
+            var lstReasons = _hospitalReasonTransactionService.GetAll().Where(a => a.HospitalApplicationId == applicationObj.Id).ToList();
             if (lstReasons.Count > 0)
             {
                 if (applicationObj.AppTypeId == 1)

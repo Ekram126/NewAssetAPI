@@ -32,6 +32,10 @@ namespace Asset.Models
 
             builder.Entity<Hospital>().Property(g => g.Latitude).HasColumnType("float");
             builder.Entity<Hospital>().Property(g => g.Longtitude).HasColumnType("float");
+
+            builder.Entity<Visit>().Property(g => g.Latitude).HasColumnType("decimal(18, 8)");
+            builder.Entity<Visit>().Property(g => g.Longtitude).HasColumnType("decimal(18, 8)");
+
         }
 
         public DbSet<RoleCategory> RoleCategories { get; set; }
@@ -140,5 +144,10 @@ namespace Asset.Models
 
         public DbSet<ExternalFix> ExternalFixes { get; set; }
         public DbSet<ExternalFixFile> ExternalFixFiles { get; set; }
+
+
+        public DbSet<AssetStockTaking> AssetStockTakings { get; set; }
+        public DbSet<StockTakingSchedule> StockTakingSchedules { get; set; }
+        public DbSet<StockTakingHospital> StockTakingHospitals { get; set; }
     }
 }

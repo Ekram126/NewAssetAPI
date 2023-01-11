@@ -6,17 +6,22 @@ using System.Threading.Tasks;
 
 namespace Asset.ViewModels.HospitalApplicationVM
 {
-   public class IndexHospitalApplicationVM
+    public class IndexHospitalApplicationVM
     {
 
         public List<GetData> Results { get; set; }
-
+        public int Count { get; set; }
         public class GetData
         {
             public int Id { get; set; }
             public int? AssetId { get; set; }
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
+
+            public string BrandName { get; set; }
+            public string BrandNameAr { get; set; }
+
+
             public string BarCode { get; set; }
 
             public string SerialNumber { get; set; }
@@ -52,7 +57,7 @@ namespace Asset.ViewModels.HospitalApplicationVM
             public bool IsMoreThan3Months { get; set; }
             public int? HospitalId { get; set; }
 
-     
+
             public int GovernorateId { get; set; }
             public int CityId { get; set; }
             public int OrganizationId { get; set; }
@@ -66,6 +71,12 @@ namespace Asset.ViewModels.HospitalApplicationVM
             public int? ApproveStatus { get; set; }
             public int? RejectStatus { get; set; }
             public int? SystemRejectStatus { get; set; }
+
+
+            public decimal? FixCost { get; set; }
+            public decimal? TotalCost { get; set; }
+            public decimal? CostPerDay { get; set; }
+            public double? AllDays { get; set; }
         }
     }
 }

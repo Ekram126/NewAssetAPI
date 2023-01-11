@@ -29,6 +29,7 @@ namespace Asset.ViewModels.AssetDetailVM
             public string SerialNumber { get; set; }
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
+            public string AssetImg { get; set; }
             public DateTime? PurchaseDate { get; set; }
             public decimal? Price { get; set; }
             public string HospitalName { get; set; }
@@ -59,6 +60,7 @@ namespace Asset.ViewModels.AssetDetailVM
             public string DepartmentName { get; set; }
             public string DepartmentNameAr { get; set; }
 
+    
             public int? EmployeeId { get; set; }
             public int? PeriorityId { get; set; }
             public int? OriginId { get; set; }

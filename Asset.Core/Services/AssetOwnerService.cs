@@ -27,7 +27,10 @@ namespace Asset.Core.Services
             //_unitOfWork.CommitAsync();
             return 0;
         }
-
+        public IEnumerable<AssetOwner> GetAll()
+        {
+            return _unitOfWork.AssetOwnerRepository.GetAll();
+        }
         public List<AssetOwner> GetOwnersByAssetDetailId(int assetDetailId)
         {
             return _unitOfWork.AssetOwnerRepository.GetOwnersByAssetDetailId(assetDetailId);

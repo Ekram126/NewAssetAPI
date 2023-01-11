@@ -33,6 +33,11 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Syncfusion.DocIO.DLS;
 using Syncfusion.DocIO;
+using Syncfusion.Pdf.Barcode;
+using Syncfusion.Pdf.Graphics;
+using System.Drawing;
+using Rectangle = iTextSharp.text.Rectangle;
+using System.Drawing.Imaging;
 
 namespace Asset.API.Controllers
 {
@@ -378,6 +383,8 @@ namespace Asset.API.Controllers
 
                 else
                 {
+                    var domainName = "http://" + HttpContext.Request.Host.Value;
+                    AssetDetailVM.DomainName = domainName;
                     int updatedRow = _AssetDetailService.Update(AssetDetailVM);
                 }
             }
@@ -1062,7 +1069,7 @@ namespace Asset.API.Controllers
             using (WordDocument document = new WordDocument())
             {
                 //Opens the Word template document
-                string strTemplateFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\CardTemplate.dotx";
+                string strTemplateFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\CardTemplate1.dotx";
 
                 Stream docStream = System.IO.File.OpenRead(strTemplateFile);
                 document.Open(docStream, FormatType.Docx);
@@ -1070,21 +1077,37 @@ namespace Asset.API.Controllers
 
 
                 var allAssets = ListAssets().ToList();
-                document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField_InsertPageBreak);
+               // DataTable dtAssets = GetAssetsAsDataTable();
                 MailMergeDataTable dataTable = new MailMergeDataTable("Asset_QrCode", allAssets);
+                document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField_InsertPageBreak);
+                document.MailMerge.MergeImageField += new MergeImageFieldEventHandler(InsertQRBarcode);
+                document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField_Event);
+                document.MailMerge.RemoveEmptyGroup = true;
+           
                 document.MailMerge.ExecuteGroup(dataTable);
 
 
                 //Saves the file in the given path
-                string strExportFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\Cards.docx";
+                string strExportFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\Cards1.docx";
                 docStream = System.IO.File.Create(strExportFile);
                 document.Save(docStream, FormatType.Docx);
                 docStream.Dispose();
                 document.Close();
 
-
             }
             return Ok();
+        }
+        private static void MergeField_Event(object sender, MergeFieldEventArgs args)
+        {
+            string fieldValue = args.FieldValue.ToString();
+            //When field value is Null or empty, then remove the field owner paragraph.
+            if (string.IsNullOrEmpty(fieldValue))
+            {
+                //Get the merge field owner paragraph and remove it from its owner text body.
+                WParagraph ownerParagraph = args.CurrentMergeField.OwnerParagraph;
+                WTextBody ownerTextBody = ownerParagraph.OwnerTextBody;
+                ownerTextBody.ChildEntities.Remove(ownerParagraph);
+            }
         }
 
         int i = 1;
@@ -1092,58 +1115,89 @@ namespace Asset.API.Controllers
         {
 
             List<IndexAssetDetailVM.GetData> allAssets = ListAssets();
-
-            if (args.FieldName == "BarCode" && i != allAssets.Count)
+            if (allAssets.Count > 0)
             {
-                //Gets the owner paragraph 
-                WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
-                //Appends the page break 
-                paragraph.AppendBreak(BreakType.PageBreak);
-                i++;
+                if (args.FieldName == "BarCode" && i != allAssets.Count)
+                {
+                    //Gets the owner paragraph 
+                    WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
+                    //Appends the page break 
+                    paragraph.AppendBreak(BreakType.PageBreak);
+                    i++;
+                }
             }
-
         }
-
+        private void InsertQRBarcode(object sender, MergeImageFieldEventArgs args)
+        {
+             if (args.FieldName == "QrFilePath")
+            {
+                ////Generates barcode image for field value.
+                System.Drawing.Image barcodeImage = GenerateQRBarcodeImage(args.FieldValue.ToString());
+                var stream = FormatImage.ToStream(barcodeImage, ImageFormat.Png);
+                args.ImageStream = stream;
+            }
+        }
+        private System.Drawing.Image GenerateQRBarcodeImage(string qrBarcodeText)
+        {
+            //Drawing QR Barcode
+            PdfQRBarcode barcode = new PdfQRBarcode();
+            //Set Error Correction Level
+            barcode.ErrorCorrectionLevel = PdfErrorCorrectionLevel.High;
+            //Set XDimension
+            barcode.XDimension = 3;
+            barcode.Text = qrBarcodeText;
+            //Convert the barcode to image
+            System.Drawing.Image barcodeImage = barcode.ToImage(new SizeF(85f, 85f));
+            return barcodeImage;
+        }
         private List<IndexAssetDetailVM.GetData> ListAssets()
         {
             var allAssets = _AssetDetailService.GetAll().ToList();
-            return allAssets;
-        }
-
-
-
-        private DataTable GetAssetsAsDataTable()
-        {
-
-            var allAssets = _AssetDetailService.GetAll().ToList();
-            DataTable table = new DataTable("Asset_QrCode");
-            // table.TableName = "QrCode";
-            // Add fields to the Product_PriceList table.
-            table.Columns.Add("AssetName");
-            table.Columns.Add("BrandName");
-            table.Columns.Add("SerialNumber");
-            table.Columns.Add("Model");
-            table.Columns.Add("BarCode");
-            table.Columns.Add("QRFilePath");
-            table.Columns.Add("HospitalNameAr");
-            // DataRow row;
-
-            // Inserting values to the tables.
-            foreach (var item in allAssets)
+            if (allAssets.Count > 0)
             {
-                DataRow row = table.NewRow();
-                row["AssetName"] = item.AssetName;
-                row["BrandName"] = item.BrandName;
-                row["SerialNumber"] = item.SerialNumber;
-                row["Model"] = item.Model;
-                row["BarCode"] = item.BarCode;
-                row["QRFilePath"] = item.QrFilePath;
-                row["HospitalNameAr"] = item.QrFilePath;
-                table.Rows.Add(row);
-
+                return allAssets;
             }
-            return table;
+            return new List<IndexAssetDetailVM.GetData>();
         }
+
+
+
+
+
+
+
+        //private DataTable GetAssetsAsDataTable()
+        //{
+
+        //    var allAssets = _AssetDetailService.GetAll().ToList();
+        //    DataTable table = new DataTable("Asset_QrCode");
+        //    // table.TableName = "QrCode";
+        //    // Add fields to the Product_PriceList table.
+        //    table.Columns.Add("AssetName");
+        //    table.Columns.Add("BrandName");
+        //    table.Columns.Add("SerialNumber");
+        //    table.Columns.Add("Model");
+        //    table.Columns.Add("BarCode");
+        //    table.Columns.Add("QRFilePath");
+        //    table.Columns.Add("HospitalNameAr");
+        //    // DataRow row;
+
+        //    // Inserting values to the tables.
+        //    foreach (var item in allAssets)
+        //    {
+        //        DataRow row = table.NewRow();
+        //        row["AssetName"] = item.AssetName;
+        //        row["BrandName"] = item.BrandName;
+        //        row["SerialNumber"] = item.SerialNumber;
+        //        row["Model"] = item.Model;
+        //        row["BarCode"] = item.BarCode;
+        //        row["QRFilePath"] = item.QrFilePath;
+        //        row["HospitalNameAr"] = item.QrFilePath;
+        //        table.Rows.Add(row);
+
+        //    }
+        //    return table;
+        //}
 
     }
 }

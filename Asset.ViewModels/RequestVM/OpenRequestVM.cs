@@ -66,6 +66,12 @@ namespace Asset.ViewModels.RequestVM
             public int? CityId { get; set; }
             public int? OrganizationId { get; set; }
             public int? SubOrganizationId { get; set; }
+
+
+
+            public DateTime? AppDate { get; set; }
+
+
         }
 
     }

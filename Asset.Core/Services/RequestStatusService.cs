@@ -2,6 +2,7 @@
 using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.RequestStatusVM;
+using Asset.ViewModels.RequestVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,11 @@ namespace Asset.Core.Services
         public IndexRequestStatusVM.GetData GetAllByHospitalId(string userId, int hospitalId)
         {
             return _unitOfWork.RequestStatus.GetAllByHospitalId(userId, hospitalId);
+        }
+
+        public IndexRequestStatusVM.GetData GetAllForReport(SearchRequestDateVM requestDateObj)
+        {
+            return _unitOfWork.RequestStatus.GetAllForReport(requestDateObj);
         }
     }
 }

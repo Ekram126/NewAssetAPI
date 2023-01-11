@@ -977,7 +977,7 @@ namespace Asset.Core.Repositories
 
                 if (assetDetailObj.QrFilePath == null)
                 {
-                    string url = "http://http://10.10.0.119/#/AssetDetail/" + model.Id;
+                    string url = model.DomainName + "#/dash/hospitalassets/detail/" + model.Id;
                     QRCodeGenerator qrGenerator = new QRCodeGenerator();
                     QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
 
@@ -1379,6 +1379,7 @@ namespace Asset.Core.Repositories
 
                 assetDetailList = _context.AssetDetails
                                     .Include(a => a.MasterAsset)
+                                     .Include(a => a.MasterAsset.AssetPeriority)
                                     .Include(a => a.MasterAsset.brand)
                                     .Include(a => a.Hospital)
                                     .Include(a => a.Hospital.Governorate)
@@ -1493,6 +1494,11 @@ namespace Asset.Core.Repositories
                     assetDetailList = assetDetailList.ToList();
 
 
+                if (searchObj.PeriorityId != 0)
+                {
+                    assetDetailList = assetDetailList.Where(b => b.MasterAsset.PeriorityId == searchObj.PeriorityId).ToList();
+                }
+
 
                 foreach (var detail in assetDetailList)
                 {
@@ -1519,7 +1525,7 @@ namespace Asset.Core.Repositories
                     item.MasterAssetId = detail.MasterAsset.Id;
                     item.AssetName = detail.MasterAsset.Name;
                     item.AssetNameAr = detail.MasterAsset.NameAr;
-
+                    item.AssetImg = detail.MasterAsset.AssetImg;
                     //if (_context.AssetOwners.Where(a => a.AssetDetailId == detail.Id).ToList().Count > 0)
                     //{
                     //    var lstAssetEmployees = _context.AssetOwners.Where(a => a.AssetDetailId == detail.Id).ToList();
@@ -1566,6 +1572,9 @@ namespace Asset.Core.Repositories
                     }
                     list.Add(item);
                 }
+
+
+
             }
 
 
@@ -1573,6 +1582,9 @@ namespace Asset.Core.Repositories
             {
                 list = list.Where(b => b.AssetStatusId == searchObj.StatusId).ToList();
             }
+
+
+
 
             var requestsPerPage = list.Skip((pagenumber - 1) * pagesize).Take(pagesize).ToList();
             mainClass.Results = requestsPerPage;
@@ -10801,7 +10813,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId)
         {
-     
+
 
             List<IndexAssetDetailVM.GetData> list = new List<IndexAssetDetailVM.GetData>();
             var lst = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand)
@@ -12158,8 +12170,9 @@ namespace Asset.Core.Repositories
 
                 var lstAllAssets = _context.AssetOwners.Include(a => a.AssetDetail).Include(a => a.Employee).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.Department)
                                                         .Include(a => a.AssetDetail.Supplier).Include(a => a.AssetDetail.MasterAsset.brand)
-                                                        .Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City).Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization)
-                                                        .OrderBy(a => a.AssetDetail.Barcode).ToList();
+                                                        .Include(a => a.AssetDetail.Hospital.Governorate).Include(a => a.AssetDetail.Hospital.City)
+                                                        .Include(a => a.AssetDetail.Hospital.Organization).Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                                                                                                .OrderBy(a => a.AssetDetail.Barcode).ToList();
                 if (lstAllAssets.Count > 0)
                 {
                     foreach (var asset in lstAllAssets)
@@ -12193,7 +12206,7 @@ namespace Asset.Core.Repositories
                         detail.AssetNameAr = asset.AssetDetail.MasterAsset.NameAr;
 
 
-                        // detail.DepartmentId = asset.AssetDetail.Department != null ? asset.AssetDetail.DepartmentId: 0;
+                        detail.DepartmentId = asset.AssetDetail.Department != null ? asset.AssetDetail.DepartmentId : 0;
                         detail.DepartmentName = asset.AssetDetail.Department != null ? asset.AssetDetail.Department.Name : "";
                         detail.DepartmentNameAr = asset.AssetDetail.Department != null ? asset.AssetDetail.Department.NameAr : "";
 
@@ -12260,15 +12273,6 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(a => a.OrganizationId == userObj.OrganizationId && a.SubOrganizationId == userObj.SubOrganizationId && a.HospitalId == userObj.HospitalId).ToList();
                 }
-
-                //if (statusId != 0)
-                //{
-                //    list = list.Where(a => a.AssetStatusId == statusId).ToList();
-                //}
-                //else
-                //{
-                //    list = list.ToList();
-                //}
 
 
                 if (departmentId != 0)
@@ -13085,18 +13089,8 @@ namespace Asset.Core.Repositories
                         }
                     }
                     item.ListWorkOrders = workOrders;
-
-
-
                 }
                 item.ListRequests = requests;
-
-
-
-
-
-
-
 
                 return item;
 
@@ -13106,12 +13100,12 @@ namespace Asset.Core.Repositories
 
         public bool GenerateQrCodeForAllAssets(string domainName)
         {
-            var lstAssets = _context.AssetDetails.ToList();
+            var lstAssets = _context.AssetDetails.Where(a => a.HospitalId == 10).ToList();
             foreach (var item in lstAssets)
             {
+                //    http://assetsystem-001-site1.htempurl.com/#/dash/hospitalassets/detail
 
-
-                string url = domainName + "/#/AssetDetail/" + item.Id;
+                string url = domainName + "#/dash/hospitalassets/detail/" + item.Id;
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
 
@@ -13124,6 +13118,7 @@ namespace Asset.Core.Repositories
 
                 _context.Entry(assetObj).State = EntityState.Modified;
                 _context.SaveChanges();
+
 
             }
             return true;

@@ -25,7 +25,7 @@ namespace Asset.ViewModels.UserVM
         public int? CommetieeMemberId { get; set; }
 
 
-
+        public string Token { get; set; }
         public List<string> RoleNames { get; set; }
     }
 }

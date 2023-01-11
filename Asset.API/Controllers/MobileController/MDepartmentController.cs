@@ -20,15 +20,22 @@ namespace Asset.API.Controllers.MobileController
 
         public MDepartmentController(IDepartmentService DepartmentService)
         {
-           _DepartmentService = DepartmentService;
-           
+            _DepartmentService = DepartmentService;
+
         }
 
         [HttpGet]
         [Route("ListDepartments")]
-        public IEnumerable<IndexDepartmentVM.GetData> GetAll()
+        public ActionResult GetAll()
         {
-            return _DepartmentService.GetAll();
+
+            var list = _DepartmentService.GetAll();
+            if (list.Count() == 0)
+            {
+                return Ok(new { data = list, msg = "No Data Found", status = '0' });
+            }
+            else
+                return Ok(new { data = list, msg = "Success", status = '1' });
         }
 
     }

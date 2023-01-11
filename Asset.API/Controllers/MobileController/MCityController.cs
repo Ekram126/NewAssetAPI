@@ -22,10 +22,15 @@ namespace Asset.API.Controllers.MobileController
 
         [HttpGet]
         [Route("GetCitiesByGovernorateId/{govId}")]
-        public IEnumerable<IndexCityVM.GetData> GetCitiesByGovernorateId(int govId)
+        public ActionResult GetCitiesByGovernorateId(int govId)
         {
-            return _cityService.GetCitiesByGovernorateId(govId);
+            var lstCities = _cityService.GetCitiesByGovernorateId(govId);
+            if (lstCities.Count() == 0)
+            {
+                return Ok(new { data = lstCities, msg = "No Data", status = '0' });
+            }
+            else
+                return Ok(new { data = lstCities, msg = "Success", status = '1' });
         }
-
     }
 }

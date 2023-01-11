@@ -8,7 +8,7 @@ using Contract.Core.Repositories;
 
 namespace Asset.Core
 {
-    public class UnitOfWork: IUnitOfWork 
+    public class UnitOfWork : IUnitOfWork
     {
 
         private IRoleCategoryRepository _roleCategoryRepository;
@@ -42,7 +42,7 @@ namespace Asset.Core
         private IClassificationRepository _classificationRepository;
         private IAssetOwnerRepository _assetOwnerRepository;
         private IPMAssetTaskRepository _pmAssetTaskRepository;
-        private IPMTimeRepository _pmTimeRepository;    
+        private IPMTimeRepository _pmTimeRepository;
         private IPMAssetTimeRepository _pmAssetTimeRepository;
         private IWNPMAssetTimeRepository _wnPMAssetTimeRepository;
         private IRequestRepository _requestRepository;
@@ -99,6 +99,11 @@ namespace Asset.Core
 
         private ExternalAssetMovementRepositories _externalAssetMovementRepositories;
         private IExternalFixRepository _externalFix;
+
+        private AssetStockTakingRepository _assetStockTakingRepository;
+        private StockTakingScheduleRepository _stockTakingScheduleRepository;
+        private StockTakingHospitalRepository _stockTakingHospitalRepository;
+
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -226,7 +231,7 @@ namespace Asset.Core
 
         public IAssetOwnerRepository AssetOwnerRepository => _assetOwnerRepository = _assetOwnerRepository ?? new AssetOwnerRepositories(_context);
 
-        public IWorkOrderAssignRepository WorkOrderAssignRepository => _workOrderAssignRepository= _workOrderAssignRepository ??new WorkOrderAssignRepositories(_context);
+        public IWorkOrderAssignRepository WorkOrderAssignRepository => _workOrderAssignRepository = _workOrderAssignRepository ?? new WorkOrderAssignRepositories(_context);
 
 
         public IPMAssetTaskScheduleRepository pMAssetTaskScheduleRepository => _pMAssetTaskScheduleRepository = _pMAssetTaskScheduleRepository ?? new PMAssetTaskScheduleRepository(_context);
@@ -255,7 +260,7 @@ namespace Asset.Core
 
         public IHospitalReasonTransactionRepository HospitalReasonTransactionRepository => _hospitalReasonTransactionRepositories = _hospitalReasonTransactionRepositories ?? new HospitalReasonTransactionRepositories(_context);
 
-        public ISupplierExecludeRepository SupplierExecludeRepository => _supplierExecludeRepository= _supplierExecludeRepository ?? new SupplierExecludeRepositories(_context);
+        public ISupplierExecludeRepository SupplierExecludeRepository => _supplierExecludeRepository = _supplierExecludeRepository ?? new SupplierExecludeRepositories(_context);
 
         public IHealthRepository healthRepository => _healthRepository = _healthRepository ?? new HealthRepository(_context);
 
@@ -274,12 +279,18 @@ namespace Asset.Core
 
         public IScrapReasonRepository scrapReasonRepository => _scrapReasonRepository = _scrapReasonRepository ?? new ScrapReasonRepository(_context);
 
-    //    public IExternalAssetMovementRepository externalAssetMovementRepository => _externalAssetMovementRepositories = _externalAssetMovementRepositories ?? new ExternalAssetMovementRepositories(_context);
+        //    public IExternalAssetMovementRepository externalAssetMovementRepository => _externalAssetMovementRepositories = _externalAssetMovementRepositories ?? new ExternalAssetMovementRepositories(_context);
 
         public IExternalAssetMovementRepository ExternalAssetMovementRepository => _externalAssetMovementRepositories = _externalAssetMovementRepositories ?? new ExternalAssetMovementRepositories(_context);
 
 
         public IExternalFixRepository ExternalFixRepository => _externalFix = _externalFix ?? new ExternalFixRepositories(_context);
+
+         public IAssetStockTakingRepository AssetStockTackingRepository => _assetStockTakingRepository = _assetStockTakingRepository ?? new AssetStockTakingRepository(_context);
+        public IStockTakingHospitalRepository StockTakingHospitalRepository => _stockTakingHospitalRepository = _stockTakingHospitalRepository ?? new StockTakingHospitalRepository(_context);
+
+        public IStockTakingScheduleRepository StockTakingScheduleRepository => _stockTakingScheduleRepository = _stockTakingScheduleRepository ?? new StockTakingScheduleRepository(_context);
+      
     }
 }
 

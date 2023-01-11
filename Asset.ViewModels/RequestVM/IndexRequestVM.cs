@@ -13,7 +13,9 @@ namespace Asset.ViewModels.RequestVM
     {
         public List<GetData> Results { get; set; }
 
-        public int Count { get; set; }
+        public int Count { get; set; }  
+        
+
         public class GetData
         {
             //public int Count { get; set; }

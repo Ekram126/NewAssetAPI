@@ -1,6 +1,7 @@
 ﻿using Asset.Domain;
 using Asset.Domain.Services;
 using Asset.ViewModels.WorkOrderStatusVM;
+using Asset.ViewModels.WorkOrderVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexWorkOrderStatusVM> SortWOStatuses(SortWorkOrderStatusVM sortObj)
         {
             return _unitOfWork.WorkOrderStatus.SortWOStatuses(sortObj);
+        }
+
+        public IndexWorkOrderStatusVM GetAllForReport(SearchWorkOrderByDateVM woDateObj)
+        {
+              return _unitOfWork.WorkOrderStatus.GetAllForReport(woDateObj);
         }
     }
 }

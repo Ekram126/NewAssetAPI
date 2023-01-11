@@ -86,7 +86,7 @@ namespace Asset.ViewModels.AssetDetailVM
             get; set;
         }
         public decimal? FixCost { get; set; }
-
+       public string DomainName { get; set; }
 
     }
 }

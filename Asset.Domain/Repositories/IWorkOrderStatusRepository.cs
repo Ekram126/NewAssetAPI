@@ -1,4 +1,5 @@
 ﻿using Asset.ViewModels.WorkOrderStatusVM;
+using Asset.ViewModels.WorkOrderVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,10 @@ namespace Asset.Domain.Repositories
         IndexWorkOrderStatusVM GetAll(string userId);
 
         IEnumerable<IndexWorkOrderStatusVM> GetAll();
+        IndexWorkOrderStatusVM GetAllForReport(SearchWorkOrderByDateVM woDateObj);
+
+
+
         IndexWorkOrderStatusVM GetById(int id);
         void Add(CreateWorkOrderStatusVM createWorkOrderStatusVM);
         void Update(int id, EditWorkOrderStatusVM editWorkOrderStatusVM);

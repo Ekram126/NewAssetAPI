@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Asset.Core.Services
 {
-   public class HospitalApplicationService : IHospitalApplicationService
+    public class HospitalApplicationService : IHospitalApplicationService
     {
         private IUnitOfWork _unitOfWork;
 
@@ -65,8 +65,31 @@ namespace Asset.Core.Services
 
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByAppTypeIdAndStatusId(int statusId, int appTypeId, int hospitalId)
         {
-            return _unitOfWork.HospitalApplicationRepository.GetAllByAppTypeIdAndStatusId(statusId,appTypeId, hospitalId);
+            return _unitOfWork.HospitalApplicationRepository.GetAllByAppTypeIdAndStatusId(statusId, appTypeId, hospitalId);
         }
+
+
+        public IndexHospitalApplicationVM GetAllHospitalExecludes(SearchHospitalApplicationVM searchObj,int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.HospitalApplicationRepository.GetAllHospitalExecludes(searchObj,statusId, appTypeId, hospitalId, pageNumber, pageSize);
+        }
+        public IndexHospitalApplicationVM GetAllHospitalHolds(SearchHospitalApplicationVM searchObj,int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.HospitalApplicationRepository.GetAllHospitalHolds(searchObj,statusId, appTypeId, hospitalId, pageNumber, pageSize);
+        }
+
+
+        public IndexHospitalApplicationVM GetAllHospitalExecludes(SearchHospitalApplicationVM searchObj)
+        {
+            return _unitOfWork.HospitalApplicationRepository.GetAllHospitalExecludes(searchObj);
+        }
+        public IndexHospitalApplicationVM GetAllHospitalHolds(SearchHospitalApplicationVM searchObj)
+        {
+            return _unitOfWork.HospitalApplicationRepository.GetAllHospitalHolds(searchObj);
+        }
+
+
+
 
         public IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByHospitalId(int hospitalId)
         {
@@ -80,7 +103,7 @@ namespace Asset.Core.Services
 
         public int GetAssetHospitalId(int assetId)
         {
-           return _unitOfWork.HospitalApplicationRepository.GetAssetHospitalId(assetId);
+            return _unitOfWork.HospitalApplicationRepository.GetAssetHospitalId(assetId);
         }
 
         public IEnumerable<HospitalApplicationAttachment> GetAttachmentByHospitalApplicationId(int hospitalApplicationId)
@@ -118,7 +141,7 @@ namespace Asset.Core.Services
 
         public int UpdateExcludedDate(EditHospitalApplicationVM hospitalApplicationObj)
         {
-           return _unitOfWork.HospitalApplicationRepository.UpdateExcludedDate(hospitalApplicationObj);
+            return _unitOfWork.HospitalApplicationRepository.UpdateExcludedDate(hospitalApplicationObj);
         }
     }
 }

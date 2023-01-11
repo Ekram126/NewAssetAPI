@@ -15,6 +15,18 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByStatusId(int statusId, int hospitalId);
         IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByAppTypeId(int appTypeId);
         IEnumerable<IndexHospitalApplicationVM.GetData> GetAllByAppTypeIdAndStatusId(int statusId,int appTypeId,int hospitalId);
+
+
+        IndexHospitalApplicationVM GetAllHospitalExecludes(SearchHospitalApplicationVM searchObj,int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize);
+        IndexHospitalApplicationVM GetAllHospitalHolds(SearchHospitalApplicationVM searchObj,int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize);
+
+
+        IndexHospitalApplicationVM GetAllHospitalExecludes(SearchHospitalApplicationVM searchObj);
+        IndexHospitalApplicationVM GetAllHospitalHolds(SearchHospitalApplicationVM searchObj);
+
+
+
+
         EditHospitalApplicationVM GetById(int id);
         ViewHospitalApplicationVM GetHospitalApplicationById(int id);
 

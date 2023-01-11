@@ -22,9 +22,11 @@ namespace Asset.ViewModels.VisitVM
         public string VisitDescr { get; set; }
         public int? StatusId { get; set; }
 
-        public List<VisitAttachment> ListAttachments{ get; set; }
         public string Code { get; set; }
 
         public string UserId { get; set; }
+
+
+        public List<VisitAttachment> ListAttachments { get; set; }
     }
 }

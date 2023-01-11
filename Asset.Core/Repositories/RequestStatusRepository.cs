@@ -1,6 +1,7 @@
 ﻿using Asset.Domain.Repositories;
 using Asset.Models;
 using Asset.ViewModels.RequestStatusVM;
+using Asset.ViewModels.RequestVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -539,7 +540,168 @@ namespace Asset.Core.Repositories
 
 
 
+        public IndexRequestStatusVM.GetData GetAllForReport(SearchRequestDateVM requestDateObj)
+        {
+            ApplicationUser UserObj = new ApplicationUser();
+            ApplicationRole roleObj = new ApplicationRole();
+            List<string> lstRoleNames = new List<string>();
 
+            IndexRequestStatusVM.GetData ItemObj = new IndexRequestStatusVM.GetData();
+            List<RequestTracking> lstOpenTracks = new List<RequestTracking>();
+            List<RequestTracking> lstCloseTracks = new List<RequestTracking>();
+            List<RequestTracking> lstInProgressTracks = new List<RequestTracking>();
+            List<RequestTracking> lstSolvedTracks = new List<RequestTracking>();
+            List<RequestTracking> lstApprovedTracks = new List<RequestTracking>();
+
+
+
+            var lstStatus = _context.RequestStatus.Where(a => a.Id != 5).ToList();
+            ItemObj.ListStatus = lstStatus;
+
+
+            DateTime? start = new DateTime();
+            DateTime? end = new DateTime();
+            if (requestDateObj.StrStartDate != "")
+            {
+                requestDateObj.StartDate = DateTime.Parse(requestDateObj.StrStartDate);
+                start = DateTime.Parse(requestDateObj.StrStartDate);
+                requestDateObj.StartDate = start;
+            }
+            else
+            {
+                requestDateObj.StartDate = DateTime.Parse("01/01/1900");
+                start = DateTime.Parse(requestDateObj.StartDate.ToString());
+            }
+
+
+            if (requestDateObj.StrEndDate != "")
+            {
+                requestDateObj.EndDate = DateTime.Parse(requestDateObj.StrEndDate);
+                end = DateTime.Parse(requestDateObj.StrEndDate);
+                requestDateObj.EndDate = end;
+            }
+            else
+            {
+                requestDateObj.EndDate = DateTime.Today.Date;
+                end = DateTime.Parse(requestDateObj.EndDate.ToString());
+            }
+
+
+
+            var requests = _context.Request.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital)
+                .Include(a => a.AssetDetail.Hospital.Governorate)
+                  .Include(a => a.AssetDetail.Hospital.City)
+                    .Include(a => a.AssetDetail.Hospital.Organization)
+                      .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                .Include(a => a.User).OrderByDescending(a => a.RequestDate.Date).ToList();
+
+
+            if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.ToList();
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
+            }
+            if (UserObj.HospitalId > 0)
+            {
+                if (lstRoleNames.Contains("Admin"))
+                {
+                    requests = requests.ToList();
+                }
+                if (lstRoleNames.Contains("TLHospitalManager"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (!lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+
+                if (!lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("AssetOwner"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("EngDepManager"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+            }
+
+
+            if (start != null || end != null)
+            {
+                requests = requests.Where(a => a.RequestDate >= start.Value && a.RequestDate <= end.Value).ToList();
+            }
+            else
+            {
+                requests = requests.ToList();
+            }
+
+            if (requests.Count > 0)
+            {
+                foreach (var req in requests)
+                {
+                    var trackObj = _context.RequestTracking.OrderByDescending(a => a.DescriptionDate).Where(a => a.RequestId == req.Id).FirstOrDefault();
+
+                    if (trackObj != null)
+                    {
+                        RequestTracking trk = trackObj;
+
+                        if (trk.RequestStatusId == 1)
+                        {
+                            lstOpenTracks.Add(trk);
+                        }
+                        if (trk.RequestStatusId == 2)
+                        {
+                            lstCloseTracks.Add(trk);
+                        }
+                        if (trk.RequestStatusId == 3)
+                        {
+                            lstInProgressTracks.Add(trk);
+                        }
+                        if (trk.RequestStatusId == 4)
+                        {
+                            lstSolvedTracks.Add(trk);
+                        }
+                        if (trk.RequestStatusId == 5)
+                        {
+                            lstApprovedTracks.Add(trk);
+                        }
+                    }
+
+                }
+            }
+
+            ItemObj.CountOpen = lstOpenTracks.Count;
+            ItemObj.CountClosed = lstCloseTracks.Count;
+            ItemObj.CountInProgress = lstInProgressTracks.Count;
+            ItemObj.CountSolved = lstSolvedTracks.Count;
+            ItemObj.CountApproved = lstApprovedTracks.Count;
+            ItemObj.CountAll = requests.Count;
+            return ItemObj;
+        }
 
 
 
@@ -575,13 +737,7 @@ namespace Asset.Core.Repositories
         public IEnumerable<IndexRequestStatusVM.GetData> SortRequestStatuses(SortRequestStatusVM sortObj)
         {
             var lstBrands = GetAll().ToList();
-            //if (sortObj.Code != "")
-            //{
-            //    if (sortObj.SortStatus == "descending")
-            //        lstBrands = lstBrands.OrderByDescending(d => d.Code).ToList();
-            //    else
-            //        lstBrands = lstBrands.OrderBy(d => d.Code).ToList();
-            //}
+
             if (sortObj.Name != "")
             {
                 if (sortObj.SortStatus == "descending")

@@ -21,11 +21,11 @@ namespace Asset.ViewModels.HospitalApplicationVM
         public int? AssetDetailId { get; set; }
         public int? MasterAssetId { get; set; }
 
-
+        public int AppTypeId { get; set; }
 
         public string strStartDate { get; set; }
         public string strEndDate { get; set; }
-
+        public string Lang { get; set; }
 
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

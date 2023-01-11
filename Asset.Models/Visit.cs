@@ -30,5 +30,11 @@ namespace Asset.Models
         [StringLength(20)]
         public string Code { get; set; }
 
+        [Column(TypeName = "decimal(18, 8)")]
+        public decimal? Latitude { get; set; }
+        [Column(TypeName = "decimal(18, 8)")]
+        public decimal? Longtitude { get; set; }
+        public bool? IsMode { get; set; }
+
     }
 }

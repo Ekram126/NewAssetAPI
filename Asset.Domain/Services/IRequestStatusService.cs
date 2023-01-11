@@ -1,5 +1,6 @@
 ﻿using Asset.Models;
 using Asset.ViewModels.RequestStatusVM;
+using Asset.ViewModels.RequestVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,7 @@ namespace Asset.Domain.Services
     {
         IEnumerable<IndexRequestStatusVM.GetData> GetAllRequestStatus();
         IndexRequestStatusVM.GetData GetAllForReport();
-
-        //  IEnumerable<IndexRequestStatusVM.GetData> GetAll(string userId);
+        IndexRequestStatusVM.GetData GetAllForReport(SearchRequestDateVM requestDateObj);
         IndexRequestStatusVM.GetData GetAllByHospitalId(string userId, int hospitalId);
         IndexRequestStatusVM.GetData GetAll(string userId);
         RequestStatus GetById(int id);

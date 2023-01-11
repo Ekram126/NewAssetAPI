@@ -61,14 +61,29 @@ namespace Asset.API.Controllers.MobileController
             var user = await _userManager.FindByNameAsync(userObj.Username);
 
             if (user == null)
-                return StatusCode(StatusCodes.Status404NotFound, new Response { Status = "Error", Message = "User does not exists!", MessageAr = "لا يوجد مستخدم بهذا الاسم" });
+            {
+                if (userObj.Lang == "ar")
+                    return Ok(new { data = "", msg = "لا يوجد مستخدم بهذا الاسم", status = "0" });
+                if (userObj.Lang == "en")
+                    return Ok(new { data = "", msg = "User does not exists!", status = "0" });
+              else
+                    return Ok(new { data = "", msg = "User does not exists!", status = "0" });
+
+            }
+            // return StatusCode(StatusCodes.Status404NotFound, new Response { Status = "Error", Message = "User does not exists!", MessageAr = "لا يوجد مستخدم بهذا الاسم" });
 
 
             var userpass = await _userManager.CheckPasswordAsync(user, userObj.PasswordHash);
             if (userpass == false)
-                return StatusCode(StatusCodes.Status401Unauthorized, new Response { Status = "Error", Message = "Invalid Password!", MessageAr = "كلمة المرور غير صحيحة" });
-
-
+            {
+                if (userObj.Lang == "ar")
+                    return Ok(new { data = "", msg = "كلمة المرور غير صحيحة", status = "0" });
+                if (userObj.Lang == "en")
+                    return Ok(new { data = "", msg = "Invalid Password!", status = "0" });
+                else
+                    return Ok(new { data = "", msg = "Invalid Password!", status = "0" });
+            }
+            
             if (user != null && await _userManager.CheckPasswordAsync(user, userObj.PasswordHash))
             {
 
@@ -95,7 +110,6 @@ namespace Asset.API.Controllers.MobileController
                 var token = new JwtSecurityToken(
                     issuer: _configuration["JWT:ValidIssuer"],
                     audience: _configuration["JWT:ValidAudience"],
-                    //      expires: DateTime.Now.AddHours(3),
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                     );
@@ -174,10 +188,12 @@ namespace Asset.API.Controllers.MobileController
                     }
                 }
 
-                return Ok(new LoggedUserVM
+
+                var userDataObj = new 
                 {
                     UserName = userName,
                     Id = id,
+                    Token = new JwtSecurityTokenHandler().WriteToken(token),
                     RoleNames = userRoleNames,
                     GovernorateId = governorateId,
                     CityId = cityId,
@@ -190,8 +206,17 @@ namespace Asset.API.Controllers.MobileController
                     GovernorateNameAr = govNameAr,
                     CityNameAr = cityNameAr,
                     HospitalNameAr = hospitalNameAr,
-                    HospitalCode = hospitalCode
-                });
+                    HospitalCode = hospitalCode,
+                    strInsitute = strInsitute,
+                    strInsituteAr = strInsituteAr,
+                    strLogo = strLogo,
+                    isAgency = isAgency,
+                    isScrap = isScrap
+                };
+
+
+
+                return Ok( new { data = userDataObj, msg = "Success", status = '1' } );
             }
             return Unauthorized();
         }

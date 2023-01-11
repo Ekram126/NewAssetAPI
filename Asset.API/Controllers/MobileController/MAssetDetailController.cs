@@ -28,39 +28,90 @@ namespace Asset.API.Controllers.MobileController
 
         [HttpGet]
         [Route("AutoCompleteAssetBarCode/{barcode}/{hospitalId}")]
-        public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetBarCode(string barcode, int hospitalId)
+        public ActionResult<IEnumerable<IndexAssetDetailVM.GetData>> AutoCompleteAssetBarCode(string barcode, int hospitalId)
         {
-            return _assetDetailService.AutoCompleteAssetBarCode(barcode, hospitalId);
+            var lstAutoCompleteAssetBarCode = _assetDetailService.AutoCompleteAssetBarCode(barcode, hospitalId);
+            if (lstAutoCompleteAssetBarCode.Count() == 0)
+            {
+                return Ok(new { data = "", msg = "No Data Fount", status = '0' });
+            }
+            else
+                return Ok(new { data = lstAutoCompleteAssetBarCode, msg = "Success", status = '1' });
         }
 
         [HttpGet]
         [Route("AutoCompleteAssetSerial/{serial}/{hospitalId}")]
-        public IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId)
+        public ActionResult<IEnumerable<IndexAssetDetailVM.GetData>> AutoCompleteAssetSerial(string serial, int hospitalId)
         {
-            return _assetDetailService.AutoCompleteAssetSerial(serial, hospitalId);
+            var lstAutoCompleteAssetSerial = _assetDetailService.AutoCompleteAssetSerial(serial, hospitalId);
+            if (lstAutoCompleteAssetSerial.Count() == 0)
+            {
+                return Ok(new { data = lstAutoCompleteAssetSerial, msg = "No Data Found", status = '0' });
+            }
+            else
+                return Ok(new { data = lstAutoCompleteAssetSerial, msg = "Success", status = '1' });
         }
 
 
         [HttpGet]
         [Route("ListAssetDetailByUserId/{userId}")]
-        public async Task<IEnumerable<IndexAssetDetailVM.GetData>> ListAssetDetailByUserId(string userId)
+        public async Task<ActionResult<IEnumerable<IndexAssetDetailVM.GetData>>> ListAssetDetailByUserId(string userId)
         {
-            return await _assetDetailService.GetAssetDetailsByUserId(userId);
+            var lstAssetDetailByUserId = await _assetDetailService.GetAssetDetailsByUserId(userId);
+            if (lstAssetDetailByUserId != null)
+            {
+                return Ok(new { data = lstAssetDetailByUserId, msg = "Success", status = '1' });
+            }
+            else
+                return Ok(new { data = "", msg = "No Data Found", status = '0' });
+
         }
+
 
         [HttpGet]
         [Route("GetById/{id}")]
-        public EditAssetDetailVM GetById(int id)
+        public ActionResult GetById(int id)
         {
-            return _assetDetailService.GetById(id);
+            var assetDetailObj = _assetDetailService.GetById(id);
+            if (assetDetailObj != null)
+            {
+                return Ok(new { data = assetDetailObj, msg = "Success", status = '1' });
+            }
+            else
+                return Ok(new { data = "", msg = "No Data Found", status = '0' });
         }
 
 
         [HttpGet]
         [Route("GetAssetDetailById/{userId}/{assetId}")]
-        public MobileAssetDetailVM GetAssetDetailById(string userId, int assetId)
+        public ActionResult GetAssetDetailById(string userId, int assetId)
         {
-            return _assetDetailService.GetAssetDetailById(userId, assetId);
+
+            var lstAssetDetail = _assetDetailService.GetAssetDetailById(userId, assetId);
+            if (lstAssetDetail != null)
+            {
+                return Ok(new { data = lstAssetDetail, msg = "No Data Found", status = '0' });
+            }
+            else
+                return Ok(new { data = lstAssetDetail, msg = "Success", status = '1' });
         }
+
+
+
+        [HttpPost]
+        [Route("SearchAssetDetails/{pagenumber}/{pagesize}")]
+        public ActionResult SearchInMasterAssets(int pagenumber, int pagesize, SearchMasterAssetVM searchObj)
+        {
+            var list = _assetDetailService.SearchAssetInHospital(pagenumber, pagesize, searchObj);
+            if (list != null)
+            {
+                return Ok(new { data = list, msg = "No Data Found", status = '0' });
+            }
+            else
+                return Ok(new { data = list, msg = "Success", status = '1' });
+        }
+
+
+
     }
 }

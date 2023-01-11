@@ -10,8 +10,9 @@ namespace Asset.Domain.Repositories
 {
    public interface IAssetOwnerRepository
     {
+        IEnumerable<AssetOwner> GetAll();
 
-    
+
         List<AssetOwner> GetOwnersByAssetDetailId(int assetDetailId);
 
         int Delete(int id);

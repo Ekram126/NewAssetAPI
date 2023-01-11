@@ -19,7 +19,10 @@ namespace Asset.Core.Repositories
         {
             _context = context;
         }
-
+        public IEnumerable<AssetOwner> GetAll()
+        {
+            return _context.AssetOwners.ToList();
+        }
         public int Delete(int id)
         {
             var AssetOwnerObj = _context.AssetOwners.Find(id);

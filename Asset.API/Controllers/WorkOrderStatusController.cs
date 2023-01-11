@@ -3,6 +3,7 @@ using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.WorkOrderStatusVM;
+using Asset.ViewModels.WorkOrderVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,14 @@ namespace Asset.API.Controllers
         {
             return _workOrderStatusService.GetAll(userId);
         }
+
+        [HttpPost]
+        [Route("GetAllWOForReportByDate")]
+        public IndexWorkOrderStatusVM GetAllForReportByDate(SearchWorkOrderByDateVM requestDateObj)
+        {
+             return _workOrderStatusService.GetAllForReport(requestDateObj);
+        }
+
 
 
         [HttpPost]

@@ -11,7 +11,8 @@ namespace Asset.Domain.Services
    public interface IAssetOwnerService
     {
 
-    
+
+        IEnumerable<AssetOwner> GetAll();
         List<AssetOwner> GetOwnersByAssetDetailId(int assetDetailId);
 
         int Delete(int id);

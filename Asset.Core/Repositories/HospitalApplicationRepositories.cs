@@ -46,13 +46,13 @@ namespace Asset.Core.Repositories
             if (lstHospitalApps.Count > 0)
             {
                 HospitalApplication item = lstHospitalApps[0];
-               hospitalAppVM = new EditHospitalApplicationVM
+                hospitalAppVM = new EditHospitalApplicationVM
                 {
                     Id = item.Id,
                     AssetId = item.AssetId,
                     StatusId = item.StatusId,
                     AppDate = item.AppDate,
-                    DueDate = item.DueDate != null ? item.DueDate.Value.ToString():null,
+                    DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : null,
                     AppNumber = item.AppNumber,
                     UserId = item.User.UserName,
                     AppTypeId = item.AppTypeId,
@@ -62,7 +62,7 @@ namespace Asset.Core.Repositories
                     assetName = item.AssetDetail.MasterAsset.Name + " - " + item.AssetDetail.SerialNumber,
                     assetNameAr = item.AssetDetail.MasterAsset.NameAr + " - " + item.AssetDetail.SerialNumber
                 };
-              
+
 
             }
 
@@ -982,109 +982,676 @@ namespace Asset.Core.Repositories
                 .OrderByDescending(a => a.AppDate.Value.Date).ToList();
 
 
-
-            if (hospitalId != 0)
-                lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
-
-            if (appTypeId != 0)
-                lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == appTypeId).ToList();
-
-            if (statusId != 0)
-                lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == statusId).ToList();
-
-
-
-            foreach (var item in lstHospitalApplications)
+            if (lstHospitalApplications.Count > 0)
             {
+                if (hospitalId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
 
-                IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
-                getDataObj.Id = item.Id;
-                getDataObj.HospitalId = item.HospitalId;
-                getDataObj.AppNumber = item.AppNumber;
-                getDataObj.Date = item.AppDate.Value.ToString();
-                getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
-                getDataObj.AppTypeId = item.AppTypeId;
-                getDataObj.UserName = item.User.UserName;
-                getDataObj.AssetId = item.AssetDetail.Id;
-                getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
-                getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
-                getDataObj.TypeName = item.ApplicationType.Name;
-                getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+                if (appTypeId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == appTypeId).ToList();
+
+                if (statusId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == statusId).ToList();
 
 
-                getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
-                getDataObj.BarCode = item.AssetDetail.Barcode;
-                getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
 
-
-                getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
-                getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
-
-                getDataObj.StatusId = item.StatusId;
-                getDataObj.StatusName = item.HospitalSupplierStatus.Name;
-                getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
-                getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
-                getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
-
-
-                if (appTypeId == 1)
+                foreach (var item in lstHospitalApplications)
                 {
 
-                    var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
-                                          join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
-                                          where trans.HospitalApplicationId == item.Id
-                                          && item.AppTypeId == 1
-                                          select execlude).ToList();
-                    if (ReasonExTitles.Count > 0)
+                    IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.AppNumber = item.AppNumber;
+                    getDataObj.Date = item.AppDate.Value.ToString();
+                    getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
+                    getDataObj.AppTypeId = item.AppTypeId;
+                    getDataObj.UserName = item.User.UserName;
+                    getDataObj.AssetId = item.AssetDetail.Id;
+                    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
+                    getDataObj.TypeName = item.ApplicationType.Name;
+                    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+
+                    getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                    getDataObj.BarCode = item.AssetDetail.Barcode;
+                    getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
+
+                    getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
+                    getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                    getDataObj.StatusId = item.StatusId;
+                    getDataObj.StatusName = item.HospitalSupplierStatus.Name;
+                    getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                    getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                    getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
+
+
+                    if (appTypeId == 1)
                     {
-                        List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
-                        foreach (var reason in ReasonExTitles)
+
+                        var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
+                                              join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                              where trans.HospitalApplicationId == item.Id
+                                              && item.AppTypeId == 1
+                                              select execlude).ToList();
+                        if (ReasonExTitles.Count > 0)
                         {
-                            execludeNames.Add(reason.Name);
+                            List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNames.Add(reason.Name);
+                            }
+
+                            getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+                            List<string> execludeNamesAr = new List<string>();
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
                         }
-
-                        getDataObj.ReasonExTitles = string.Join(",", execludeNames);
-
-
-                        List<string> execludeNamesAr = new List<string>();
-                        foreach (var reason in ReasonExTitles)
-                        {
-                            execludeNamesAr.Add(reason.NameAr);
-                        }
-                        getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
-
                     }
-                }
-                if (appTypeId == 2)
-                {
-                    var ReasonHoldTitles = (from execlude in _context.HospitalHoldReasons
-                                            join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
-                                            where trans.HospitalApplicationId == item.Id
-                                            && item.AppTypeId == 2
-                                            select execlude).ToList();
-                    if (ReasonHoldTitles.Count > 0)
+                    if (appTypeId == 2)
                     {
-                        List<string> holdNames = new List<string>();
-                        foreach (var reason in ReasonHoldTitles)
+                        var ReasonHoldTitles = (from execlude in _context.HospitalHoldReasons
+                                                join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                                where trans.HospitalApplicationId == item.Id
+                                                && item.AppTypeId == 2
+                                                select execlude).ToList();
+                        if (ReasonHoldTitles.Count > 0)
                         {
-                            holdNames.Add(reason.Name);
-                        }
-                        getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+                            List<string> holdNames = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNames.Add(reason.Name);
+                            }
+                            getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
 
-                        List<string> holdNamesAr = new List<string>();
-                        foreach (var reason in ReasonHoldTitles)
-                        {
-                            holdNamesAr.Add(reason.NameAr);
+                            List<string> holdNamesAr = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
                         }
-                        getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
                     }
-                }
 
-                list.Add(getDataObj);
+                    list.Add(getDataObj);
+                }
             }
-
             return list;
         }
+
+
+
+
+        public IndexHospitalApplicationVM GetAllHospitalExecludes(SearchHospitalApplicationVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+
+            IndexHospitalApplicationVM mainClass = new IndexHospitalApplicationVM();
+            List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
+
+            var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+                .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand).ToList()
+                .OrderByDescending(a => a.AppDate.Value.Date).Where(a => a.StatusId == statusId && a.AppTypeId == appTypeId).ToList();
+
+
+            if (lstHospitalApplications.Count > 0)
+            {
+                if (hospitalId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
+
+                if (appTypeId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == appTypeId).ToList();
+
+                if (statusId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == statusId).ToList();
+
+
+
+                if (searchObj.strStartDate != "")
+                    searchObj.StartDate = DateTime.Parse(searchObj.strStartDate);
+
+
+                if (searchObj.strEndDate != "")
+                    searchObj.EndDate = DateTime.Parse(searchObj.strEndDate);
+
+
+
+
+                if (searchObj.StartDate != null && searchObj.EndDate != null)
+                {
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppDate >= searchObj.StartDate.Value.Date && a.AppDate <= searchObj.EndDate.Value.Date).ToList();
+                }
+                else
+                {
+                    lstHospitalApplications = lstHospitalApplications.ToList();
+                }
+
+
+
+                foreach (var item in lstHospitalApplications)
+                {
+
+                    IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.AppNumber = item.AppNumber;
+                    getDataObj.Date = item.AppDate.Value.ToString();
+                    getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
+                    getDataObj.AppTypeId = item.AppTypeId;
+                    getDataObj.UserName = item.User.UserName;
+                    getDataObj.AssetId = item.AssetDetail.Id;
+                    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;
+                    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
+                    getDataObj.TypeName = item.ApplicationType.Name;
+                    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+                    if (item.AssetDetail.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = item.AssetDetail.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = item.AssetDetail.MasterAsset.brand.NameAr;
+                    }
+
+                    getDataObj.FixCost = item.AssetDetail.FixCost;
+                    getDataObj.CostPerDay = item.AssetDetail.FixCost != null ? Math.Round((((decimal)item.AssetDetail.FixCost) / 365)) : 0;
+                    if (searchObj.EndDate != null)
+                    {
+                        getDataObj.AllDays = Math.Round((DateTime.Parse(searchObj.EndDate.ToString()) - DateTime.Parse(item.AppDate.ToString()).Date).TotalDays);
+                    }
+                    else
+                    {
+                        getDataObj.AllDays = 0;
+                    }
+
+
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != 0)
+                        getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
+                    else
+                        getDataObj.TotalCost = 0;
+
+
+
+
+
+                    getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                    getDataObj.BarCode = item.AssetDetail.Barcode;
+                    getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
+
+                    getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
+                    getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                    getDataObj.StatusId = item.StatusId;
+                    getDataObj.StatusName = item.HospitalSupplierStatus.Name;
+                    getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                    getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                    getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
+
+
+                    if (appTypeId == 1)
+                    {
+
+                        var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
+                                              join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                              where trans.HospitalApplicationId == item.Id
+                                              && item.AppTypeId == 1
+                                              select execlude).ToList();
+                        if (ReasonExTitles.Count > 0)
+                        {
+                            List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNames.Add(reason.Name);
+                            }
+
+                            getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+                            List<string> execludeNamesAr = new List<string>();
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                        }
+                    }
+                    if (appTypeId == 2)
+                    {
+                        var ReasonHoldTitles = (from execlude in _context.HospitalHoldReasons
+                                                join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                                where trans.HospitalApplicationId == item.Id
+                                                && item.AppTypeId == 2
+                                                select execlude).ToList();
+                        if (ReasonHoldTitles.Count > 0)
+                        {
+                            List<string> holdNames = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNames.Add(reason.Name);
+                            }
+                            getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+
+                            List<string> holdNamesAr = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+                        }
+                    }
+
+                    list.Add(getDataObj);
+                }
+
+
+
+
+                var requestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                mainClass.Results = requestsPerPage;
+                mainClass.Count = lstHospitalApplications.Count();
+                //  return mainClass;
+            }
+            return mainClass;
+
+        }
+        public IndexHospitalApplicationVM GetAllHospitalHolds(SearchHospitalApplicationVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            IndexHospitalApplicationVM mainClass = new IndexHospitalApplicationVM();
+            List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
+
+            var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+                .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand).ToList()
+                .OrderByDescending(a => a.AppDate.Value.Date).Where(a => a.StatusId == statusId && a.AppTypeId == appTypeId).ToList();
+
+
+            if (lstHospitalApplications.Count > 0)
+            {
+                if (hospitalId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
+
+                if (appTypeId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == appTypeId).ToList();
+
+                if (statusId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == statusId).ToList();
+
+
+                if (searchObj.strStartDate != "")
+                    searchObj.StartDate = DateTime.Parse(searchObj.strStartDate);
+
+
+                if (searchObj.strEndDate != "")
+                    searchObj.EndDate = DateTime.Parse(searchObj.strEndDate);
+
+
+                if (searchObj.StartDate != null || searchObj.EndDate != null)
+                {
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppDate >= searchObj.StartDate.Value.Date && a.AppDate <= searchObj.EndDate.Value.Date).ToList();
+                }
+                else
+                {
+                    lstHospitalApplications = lstHospitalApplications.ToList();
+                }
+
+
+                foreach (var item in lstHospitalApplications)
+                {
+
+                    IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.AppNumber = item.AppNumber;
+                    getDataObj.Date = item.AppDate.Value.ToString();
+                    getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
+                    getDataObj.AppTypeId = item.AppTypeId;
+                    getDataObj.UserName = item.User.UserName;
+                    getDataObj.AssetId = item.AssetDetail.Id;
+                    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
+                    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
+                    getDataObj.TypeName = item.ApplicationType.Name;
+                    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+
+                    if (item.AssetDetail.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = item.AssetDetail.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = item.AssetDetail.MasterAsset.brand.NameAr;
+                    }
+
+                    getDataObj.FixCost = item.AssetDetail.FixCost;
+                    getDataObj.CostPerDay = item.AssetDetail.FixCost != null ? Math.Round((((decimal)item.AssetDetail.FixCost) / 365)) : 0;
+                    if (searchObj.EndDate != null)
+                    {
+                        getDataObj.AllDays = Math.Round((DateTime.Parse(searchObj.EndDate.ToString()) - DateTime.Parse(item.AppDate.ToString()).Date).TotalDays);
+                    }
+                    else
+                    {
+                        getDataObj.AllDays = 0;
+                    }
+
+
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != 0)
+                        getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
+                    else
+                        getDataObj.TotalCost = 0;
+
+
+                    getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                    getDataObj.BarCode = item.AssetDetail.Barcode;
+                    getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
+
+                    getDataObj.DiffMonths = ((item.AppDate.Value.Year - DateTime.Today.Date.Year) * 12) + item.AppDate.Value.Month - DateTime.Today.Date.Month;
+                    getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                    getDataObj.StatusId = item.StatusId;
+                    getDataObj.StatusName = item.HospitalSupplierStatus.Name;
+                    getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                    getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                    getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
+
+
+                    if (appTypeId == 1)
+                    {
+
+                        var ReasonExTitles = (from execlude in _context.HospitalExecludeReasons
+                                              join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                              where trans.HospitalApplicationId == item.Id
+                                              && item.AppTypeId == 1
+                                              select execlude).ToList();
+                        if (ReasonExTitles.Count > 0)
+                        {
+                            List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNames.Add(reason.Name);
+                            }
+
+                            getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+                            List<string> execludeNamesAr = new List<string>();
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                        }
+                    }
+                    if (appTypeId == 2)
+                    {
+                        var ReasonHoldTitles = (from execlude in _context.HospitalHoldReasons
+                                                join trans in _context.HospitalReasonTransactions on execlude.Id equals trans.ReasonId
+                                                where trans.HospitalApplicationId == item.Id
+                                                && item.AppTypeId == 2
+                                                select execlude).ToList();
+                        if (ReasonHoldTitles.Count > 0)
+                        {
+                            List<string> holdNames = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNames.Add(reason.Name);
+                            }
+                            getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+
+                            List<string> holdNamesAr = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+                        }
+                    }
+
+                    list.Add(getDataObj);
+                }
+
+
+
+
+                var requestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                mainClass.Results = requestsPerPage;
+                mainClass.Count = lstHospitalApplications.Count();
+                //  return mainClass;
+            }
+            return mainClass;
+        }
+
+
+
+
+
+
+
+        public IndexHospitalApplicationVM GetAllHospitalExecludes(SearchHospitalApplicationVM searchObj)
+        {
+
+            IndexHospitalApplicationVM mainClass = new IndexHospitalApplicationVM();
+            List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
+
+            var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+                .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand).ToList()
+                .OrderByDescending(a => a.AppDate.Value.Date).Where(a => a.StatusId == searchObj.StatusId && a.AppTypeId == searchObj.AppTypeId).ToList();
+
+
+            if (lstHospitalApplications.Count > 0)
+            {
+                if (searchObj.HospitalId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == searchObj.HospitalId).ToList();
+
+                if (searchObj.AppTypeId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == searchObj.AppTypeId).ToList();
+
+                if (searchObj.StatusId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == searchObj.StatusId).ToList();
+
+
+
+                if (searchObj.strStartDate != "")
+                    searchObj.StartDate = DateTime.Parse(searchObj.strStartDate);
+
+
+                if (searchObj.strEndDate != "")
+                    searchObj.EndDate = DateTime.Parse(searchObj.strEndDate);
+
+
+
+
+                //if (searchObj.StartDate != null || searchObj.EndDate != null)
+                //{
+                //    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppDate.Value.Date >= searchObj.StartDate.Value.Date && a.AppDate.Value.Date <= searchObj.EndDate.Value.Date).ToList();
+                //}
+                //else
+                //{
+                //    lstHospitalApplications = lstHospitalApplications.ToList();
+                //}
+
+
+
+                foreach (var item in lstHospitalApplications)
+                {
+
+                    IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.AppNumber = item.AppNumber;
+                    getDataObj.Date = item.AppDate.Value.ToString();
+                    getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
+                    getDataObj.AppTypeId = item.AppTypeId;
+                    getDataObj.UserName = item.User.UserName;
+                    getDataObj.AssetId = item.AssetDetail.Id;
+                    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;
+                    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
+                    getDataObj.TypeName = item.ApplicationType.Name;
+                    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+                    if (item.AssetDetail.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = item.AssetDetail.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = item.AssetDetail.MasterAsset.brand.NameAr;
+                    }
+
+                    getDataObj.FixCost = item.AssetDetail.FixCost;
+                    getDataObj.CostPerDay = item.AssetDetail.FixCost != null ? Math.Round((((decimal)item.AssetDetail.FixCost) / 365)) : 0;
+                    if (searchObj.EndDate != null)
+                    {
+                        getDataObj.AllDays = Math.Round((DateTime.Parse(searchObj.EndDate.ToString()) - DateTime.Parse(item.AppDate.ToString()).Date).TotalDays);
+                    }
+                    else
+                    {
+                        getDataObj.AllDays = 0;
+                    }
+
+
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != 0)
+                        getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
+                    else
+                        getDataObj.TotalCost = 0;
+
+                    getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                    getDataObj.BarCode = item.AssetDetail.Barcode;
+                    getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+                    list.Add(getDataObj);
+                }
+
+
+
+                mainClass.Results = list;
+                mainClass.Count = list.Count();
+                return mainClass;
+            }
+            return mainClass;
+
+        }
+        public IndexHospitalApplicationVM GetAllHospitalHolds(SearchHospitalApplicationVM searchObj)
+        {
+            IndexHospitalApplicationVM mainClass = new IndexHospitalApplicationVM();
+            List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
+
+            var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+                .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand).ToList()
+                .OrderByDescending(a => a.AppDate.Value.Date).Where(a => a.StatusId == searchObj.StatusId && a.AppTypeId == searchObj.AppTypeId).ToList();
+
+
+            if (lstHospitalApplications.Count > 0)
+            {
+                if (searchObj.HospitalId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AssetDetail.HospitalId == searchObj.HospitalId).ToList();
+
+                if (searchObj.AppTypeId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == searchObj.AppTypeId).ToList();
+
+                if (searchObj.StatusId != 0)
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == searchObj.StatusId).ToList();
+
+
+
+                if (searchObj.strStartDate != "")
+                    searchObj.StartDate = DateTime.Parse(searchObj.strStartDate);
+
+
+                if (searchObj.strEndDate != "")
+                    searchObj.EndDate = DateTime.Parse(searchObj.strEndDate);
+
+
+
+
+                if (searchObj.StartDate != null || searchObj.EndDate != null)
+                {
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppDate >= searchObj.StartDate.Value.Date && a.AppDate <= searchObj.EndDate.Value.Date).ToList();
+                }
+                else
+                {
+                    lstHospitalApplications = lstHospitalApplications.ToList();
+                }
+
+
+
+                foreach (var item in lstHospitalApplications)
+                {
+
+                    IndexHospitalApplicationVM.GetData getDataObj = new IndexHospitalApplicationVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.AppNumber = item.AppNumber;
+                    getDataObj.Date = item.AppDate.Value.ToString();
+                    getDataObj.DueDate = item.DueDate != null ? item.DueDate.Value.ToString() : "";
+                    getDataObj.AppTypeId = item.AppTypeId;
+                    getDataObj.UserName = item.User.UserName;
+                    getDataObj.AssetId = item.AssetDetail.Id;
+                    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;
+                    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
+                    getDataObj.TypeName = item.ApplicationType.Name;
+                    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+                    if (item.AssetDetail.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = item.AssetDetail.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = item.AssetDetail.MasterAsset.brand.NameAr;
+                    }
+
+                    getDataObj.FixCost = item.AssetDetail.FixCost;
+                    getDataObj.CostPerDay = item.AssetDetail.FixCost != null ? Math.Round((((decimal)item.AssetDetail.FixCost) / 365)) : 0;
+                    if (searchObj.EndDate != null)
+                    {
+                        getDataObj.AllDays = Math.Round((DateTime.Parse(searchObj.EndDate.ToString()) - DateTime.Parse(item.AppDate.ToString()).Date).TotalDays);
+                    }
+                    else
+                    {
+                        getDataObj.AllDays = 0;
+                    }
+
+
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != 0)
+                        getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
+                    else
+                        getDataObj.TotalCost = 0;
+
+                    getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                    getDataObj.BarCode = item.AssetDetail.Barcode;
+                    getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+                    list.Add(getDataObj);
+                }
+
+                mainClass.Results = list;
+                mainClass.Count = list.Count();
+            }
+            return mainClass;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public GeneratedHospitalApplicationNumberVM GenerateHospitalApplicationNumber()
         {

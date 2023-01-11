@@ -140,13 +140,15 @@ namespace Asset.API
             services.AddScoped<IEngineerService, EngineerService>();
             services.AddScoped<IScrapService, ScrapService>();
             services.AddScoped<IScrapReasonService, ScrapReasonService>();
-
             services.AddScoped<ISettingService, SettingService>();
-
             services.AddScoped<IExternalAssetMovementService, ExternalAssetMovementService>();
+            services.AddScoped<IExternalFixService, ExternalFixService>();
             services.AddScoped<QrController, QrController>();
 
-            services.AddScoped<IExternalFixService, ExternalFixService>();
+
+            services.AddScoped<IStockTakingHospitalService, StockTakingHospitalService>();
+            services.AddScoped<IAssetStockTakingService, AssetStockTakingService>();
+            services.AddScoped<IStockTakingScheduleService, StockTakingScheduleService>();
 
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
@@ -207,11 +209,11 @@ namespace Asset.API
             // Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("ORg4AjUWIQA/Gnt2VVhiQlFadVlJXmJWf1FpTGpQdk5yd19DaVZUTX1dQl9hSXlTckVmXHtfcHNVRGM=");
 
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mgo+DSMBMAY9C3t2VVhjQlFac1lJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diUX5dcXxVQmNVUUQ=");
- 
 
-             app.UseCors(
-                 options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
-                 );
+
+            app.UseCors(
+                options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+                );
             app.Use(async (context, next) =>
             {
                 await next();

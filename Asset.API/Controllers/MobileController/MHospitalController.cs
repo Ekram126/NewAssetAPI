@@ -21,18 +21,33 @@ namespace Asset.API.Controllers.MobileController
             _HospitalService = HospitalService;
         }
 
+
         [HttpGet]
         [Route("ListHospitals")]
-        public IEnumerable<IndexHospitalVM.GetData> GetAll()
+        public ActionResult<IEnumerable<IndexHospitalVM.GetData>> GetAll()
         {
-            return _HospitalService.GetAll().ToList();
+            var ListHospitals = _HospitalService.GetAll();
+            if (ListHospitals.Count() == 0)
+            {
+                return Ok(new { data = ListHospitals, msg = "No Data Found", status = '0' });
+            }
+            else
+                return Ok(new { data = ListHospitals, msg = "Success", status = '1' });
         }
 
         [HttpGet]
+
         [Route("GetHospitalsByCityId/{cityId}")]
-        public IEnumerable<Hospital> GetHospitalsByCityId(int cityId)
+
+        public ActionResult GetHospitalsByCityId(int cityId)
         {
-            return _HospitalService.GetHospitalsByCityId(cityId);
+            var lstHospitals = _HospitalService.GetHospitalsByCityId(cityId);
+            if (lstHospitals.Count() == 0)
+            {
+                return Ok(new { data = lstHospitals, msg = "No Data Found", status = '0' });
+            }
+            else
+                return Ok(new { data = lstHospitals, msg = "Success", status = '1' });
         }
     }
 }

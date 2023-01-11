@@ -2,6 +2,7 @@
 using Asset.ViewModels.BrandVM;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,22 +13,43 @@ namespace Asset.API.Controllers.MobileController
     public class MBrandController : ControllerBase
     {
         private IBrandService _brandService;
-
-        public MBrandController(IBrandService brandService)
+        private IMasterAssetService _masterAssetService;
+        public MBrandController(IBrandService brandService, IMasterAssetService masterAssetService)
         {
             _brandService = brandService;
+            _masterAssetService = masterAssetService;
         }
 
 
 
         [HttpGet]
         [Route("ListBrands")]
-        public IEnumerable<IndexBrandVM.GetData> GetAll()
+        public ActionResult GetAll()
         {
-            return _brandService.GetAll();
+            IEnumerable<IndexBrandVM.GetData> list = new List<IndexBrandVM.GetData>();
+
+            list = _brandService.GetAll();
+            if (list.Count() == 0)
+            {
+                return Ok(new { data = list, msg = "No Data", status = '0' });
+            }
+            else
+                return Ok(new { data = list, msg = "Success", status = '1' });
         }
 
 
+        [HttpGet]
+        [Route("CountMasterAssetsByBrand/{hospitalId}")]
+        public ActionResult CountMasterAssetsByBrand(int hospitalId)
+        {
+            var lstMasterAssetBrands = _masterAssetService.CountMasterAssetsByBrand(hospitalId);
+            if (lstMasterAssetBrands.Count() == 0)
+            {
+                return Ok(new { data = lstMasterAssetBrands, msg = "No Data", status = '0' });
+            }
+            else
+                return Ok(new { data = lstMasterAssetBrands, msg = "Success", status = '1' });
+        }
 
     }
 }

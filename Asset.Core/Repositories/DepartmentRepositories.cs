@@ -164,13 +164,26 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<Department> GetDepartmentsByHospitalId(int hospitalId)
         {
-         return  _context.HospitalDepartments.Include(a=>a.Department).Where(a=>a.HospitalId == hospitalId).ToList().Select(item => new Department
-           {
-               Id = item.Department.Id,
-               Code = item.Department.Code,
-               Name = item.Department.Name,
-               NameAr = item.Department.NameAr
-           });
+            if (hospitalId != 0)
+            {
+                return _context.HospitalDepartments.Include(a => a.Department).Where(a => a.HospitalId == hospitalId).ToList().Select(item => new Department
+                {
+                    Id = item.Department.Id,
+                    Code = item.Department.Code,
+                    Name = item.Department.Name,
+                    NameAr = item.Department.NameAr
+                });
+            }
+            else
+            {
+                return _context.HospitalDepartments.Include(a => a.Department).ToList().Select(item => new Department
+                {
+                    Id = item.Department.Id,
+                    Code = item.Department.Code,
+                    Name = item.Department.Name,
+                    NameAr = item.Department.NameAr
+                });
+            }
 
         }
     }

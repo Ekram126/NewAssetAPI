@@ -99,6 +99,8 @@ namespace Asset.Domain
 
         IExternalAssetMovementRepository ExternalAssetMovementRepository { get; }
         IExternalFixRepository ExternalFixRepository { get; }
-
+        IAssetStockTakingRepository AssetStockTackingRepository { get; }
+        IStockTakingScheduleRepository StockTakingScheduleRepository { get; }
+        IStockTakingHospitalRepository StockTakingHospitalRepository { get; }
     }
 }

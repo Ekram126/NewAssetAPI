@@ -1,4 +1,5 @@
 ﻿using Asset.ViewModels.WorkOrderStatusVM;
+using Asset.ViewModels.WorkOrderVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace Asset.Domain.Services
         void DeleteWorkOrderStatus(int id);
 
         IEnumerable<IndexWorkOrderStatusVM> SortWOStatuses(SortWorkOrderStatusVM sortObj);
+        IndexWorkOrderStatusVM GetAllForReport(SearchWorkOrderByDateVM woDateObj);
 
     }
 }

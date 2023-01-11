@@ -4583,8 +4583,6 @@ namespace Asset.Core.Repositories
                     var note = lstRequestNote[0].Description;
                     printSRObj.RequestNote = note;
                     printSRObj.DescriptionDate = lstRequestNote[0].DescriptionDate.ToString();
-
-
                 }
 
 
@@ -5689,18 +5687,18 @@ namespace Asset.Core.Repositories
                 {
                     allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
-                if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                }
-                if (!lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                }
-                if (!lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                }
+                //if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+                //{
+                //    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                //}
+                //if (!lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+                //{
+                //    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                //}
+                //if (!lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
+                //{
+                //    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                //}
                 if (lstRoleNames.Contains("AssetOwner"))
                 {
                     allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
@@ -6133,7 +6131,10 @@ namespace Asset.Core.Repositories
                 requestDateObj.StartDate = start;
             }
             else
+            {
                 requestDateObj.StartDate = DateTime.Parse("01/01/1900");
+                start = DateTime.Parse(requestDateObj.StartDate.ToString());
+            }
 
 
             if (requestDateObj.StrEndDate != "")
@@ -6143,8 +6144,10 @@ namespace Asset.Core.Repositories
                 requestDateObj.EndDate = end;
             }
             else
+            {
                 requestDateObj.EndDate = DateTime.Today.Date;
-
+                end = DateTime.Parse(requestDateObj.EndDate.ToString());
+            }
 
             var lstRequests = _context.RequestTracking
                               .Include(t => t.Request)
@@ -6155,6 +6158,29 @@ namespace Asset.Core.Repositories
                              .Include(t => t.Request.RequestPeriority)
                              .OrderByDescending(a => a.DescriptionDate)
                              .ToList().GroupBy(a => a.Request.Id).ToList();
+
+
+            if (start != null || end != null)
+            {
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.RequestDate >= start.Value && a.FirstOrDefault().Request.RequestDate <= end.Value).ToList();
+            }
+            else
+            {
+                lstRequests = lstRequests.ToList();
+            }
+
+
+            if (requestDateObj.StatusId > 0)
+            {
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().RequestStatusId == requestDateObj.StatusId).ToList();
+
+            }
+            else
+            {
+                lstRequests = lstRequests.ToList();
+            }
+
+
 
 
 
@@ -6214,19 +6240,9 @@ namespace Asset.Core.Repositories
                 list.Add(getDataObj);
             }
 
-            if (requestDateObj.StatusId > 0)
-            {
-                list = list.Where(a => a.StatusId == requestDateObj.StatusId).ToList();
-            }
-            else
-            {
-                list = list.ToList();
-            }
 
-            if (start != null || end != null)
-            {
-                list = list.Where(a => a.RequestDate >= start.Value && a.RequestDate <= end.Value).ToList();
-            }
+
+
 
 
             if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
@@ -6250,7 +6266,7 @@ namespace Asset.Core.Repositories
                 list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
 
-            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+            if (UserObj.HospitalId > 0)
             {
                 if (userRoleNames.Contains("Admin"))
                 {
@@ -6271,38 +6287,9 @@ namespace Asset.Core.Repositories
                 if (userRoleNames.Contains("Eng"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-
                     //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
                 }
                 if (userRoleNames.Contains("AssetOwner"))
-                {
-                    //   list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-            }
-            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
-            {
-                if (userRoleNames.Contains("Admin"))
-                {
-                    list = list.ToList();
-                }
-                if (userRoleNames.Contains("TLHospitalManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("EngDepManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("EngManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("AssetOwner"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("Eng"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
@@ -6349,7 +6336,10 @@ namespace Asset.Core.Repositories
                 start = DateTime.Parse(requestDateObj.StrStartDate);
             }
             else
+            {
                 requestDateObj.StartDate = DateTime.Parse("01/01/1900");
+                start = DateTime.Parse(requestDateObj.StartDate.ToString());
+            }
 
 
             if (requestDateObj.StrEndDate != "")
@@ -6358,7 +6348,10 @@ namespace Asset.Core.Repositories
                 end = DateTime.Parse(requestDateObj.StrEndDate);
             }
             else
+            {
                 requestDateObj.EndDate = DateTime.Today.Date;
+                end = DateTime.Parse(requestDateObj.EndDate.ToString());
+            }
 
 
             var lstRequests = _context.RequestTracking
@@ -6371,6 +6364,25 @@ namespace Asset.Core.Repositories
                              .OrderByDescending(a => a.DescriptionDate)
                              .ToList().GroupBy(a => a.Request.Id).ToList();
 
+            if (start != null || end != null)
+            {
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.RequestDate >= start.Value && a.FirstOrDefault().Request.RequestDate <= end.Value).ToList();
+            }
+            else
+            {
+                lstRequests = lstRequests.ToList();
+            }
+
+
+            if (requestDateObj.StatusId > 0)
+            {
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().RequestStatusId == requestDateObj.StatusId).ToList();
+
+            }
+            else
+            {
+                lstRequests = lstRequests.ToList();
+            }
 
 
             foreach (var req in lstRequests)
@@ -6443,19 +6455,6 @@ namespace Asset.Core.Repositories
                 list.Add(getDataObj);
             }
 
-            if (requestDateObj.StatusId > 0)
-            {
-                list = list.Where(a => a.StatusId == requestDateObj.StatusId).ToList();
-            }
-            else
-            {
-                list = list.ToList();
-            }
-
-            if (start != null || end != null)
-            {
-                list = list.Where(a => a.RequestDate.Date >= start.Value.Date && a.RequestDate.Date <= end.Value.Date).ToList();
-            }
 
 
             if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
@@ -7139,6 +7138,36 @@ namespace Asset.Core.Repositories
                                .OrderByDescending(a => a.DescriptionDate).ToList().GroupBy(a => a.RequestId).ToList();
 
 
+
+
+            if (searchOpenRequestObj.HospitalId != 0)
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.HospitalId == searchOpenRequestObj.HospitalId).ToList();
+            else
+                lstRequests = lstRequests.ToList();
+
+
+
+            if (searchOpenRequestObj.StrStartDate != "")
+                searchOpenRequestObj.StartDate = DateTime.Parse(searchOpenRequestObj.StrStartDate);
+
+
+            if (searchOpenRequestObj.StrEndDate != "")
+                searchOpenRequestObj.EndDate = DateTime.Parse(searchOpenRequestObj.StrEndDate);
+
+
+
+
+            if (searchOpenRequestObj.StartDate != null || searchOpenRequestObj.EndDate != null)
+            {
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.RequestDate.Date >= searchOpenRequestObj.StartDate.Value.Date && a.FirstOrDefault().Request.RequestDate.Date <= searchOpenRequestObj.EndDate.Value.Date).ToList();
+            }
+            else
+            {
+                lstRequests = lstRequests.ToList();
+            }
+
+
+
             foreach (var req in lstRequests)
             {
 
@@ -7171,44 +7200,38 @@ namespace Asset.Core.Repositories
 
                     if (lstWOStatus.Count > 0)
                     {
-                        //if (lstWOStatus[0].WorkOrderStatusId == 11)
-                        //{
-                        //    getDataObj.WorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
-                        //    getDataObj.WorkOrderStatusName = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Name : "";
-                        //    getDataObj.WorkOrderStatusNameAr = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.NameAr : "";
-                        //    getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Color : "";
-                        //    getDataObj.LastWOFixedDate = lstWOStatus[0].CreationDate;
-                        //    getDataObj.AllDays = Math.Round((DateTime.Now.Date - req.FirstOrDefault().Request.RequestDate).TotalDays);
-                        //  //  getDataObj.BGColor = "#f7c2c2";
-                        //}
-                        //else if (lstWOStatus[0].WorkOrderStatusId < 11 && lstWOStatus[0].WorkOrderStatusId != 12)
-                        //{
-                        //    getDataObj.WorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
-                        //    getDataObj.WorkOrderStatusName = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Name : "";
-                        //    getDataObj.WorkOrderStatusNameAr = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.NameAr : "";
-                        //    getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Color : "";
-                        //   // getDataObj.LastWOFixedDate = lstWOStatus[0].CreationDate;
-                        //    getDataObj.AllDays = Math.Round((DateTime.Now.Date - req.FirstOrDefault().Request.RequestDate).TotalDays);
-                        //}
-
-
                         if (lstWOStatus[0].WorkOrderStatusId < 11)
                         {
                             getDataObj.WorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
                             getDataObj.WorkOrderStatusName = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Name : "";
                             getDataObj.WorkOrderStatusNameAr = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.NameAr : "";
                             getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Color : "";
-                            // getDataObj.LastWOFixedDate = lstWOStatus[0].CreationDate;
-                            getDataObj.AllDays = Math.Round((DateTime.Now.Date - req.FirstOrDefault().Request.RequestDate).TotalDays);
+                            if (searchOpenRequestObj.EndDate != null)
+                            {
+                                getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.EndDate.ToString()) - req.FirstOrDefault().Request.RequestDate.Date).TotalDays);
+                            }
+                            else
+                            {
+                                getDataObj.AllDays = 0;
+                            }
                         }
                     }
                     else
                     {
-                        getDataObj.AllDays = Math.Round((DateTime.Now.Date - req.FirstOrDefault().Request.RequestDate).TotalDays);
+                        if (searchOpenRequestObj.EndDate != null)
+                        {
 
+                                getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.EndDate.ToString()) - req.FirstOrDefault().Request.RequestDate.Date).TotalDays);
+                         
+                        }
+                        else
+                        {
+                            getDataObj.AllDays = 0;
+                        }
                     }
 
-                    if (getDataObj.CostPerDay != 0)
+                    getDataObj.BGColor = "";
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != null)
                         getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
                     else
                         getDataObj.TotalCost = 0;
@@ -7217,12 +7240,28 @@ namespace Asset.Core.Repositories
                     getDataObj.CityId = req.FirstOrDefault().Request.User != null ? req.FirstOrDefault().Request.User.CityId : 0;
                     getDataObj.OrganizationId = req.FirstOrDefault().Request.User != null ? req.FirstOrDefault().Request.User.OrganizationId : 0;
                     getDataObj.SubOrganizationId = req.FirstOrDefault().Request.User != null ? req.FirstOrDefault().Request.User.SubOrganizationId : 0;
+
+
+                    //var lstTransactions = _context.AssetStatusTransactions.Include(a => a.AssetDetail)
+                    //                           .Include(a => a.AssetDetail.Hospital)
+                    //                           .Where(a => (a.AssetStatusId == 8 || a.AssetStatusId == 9) && (a.AssetDetailId == req.FirstOrDefault().Request.AssetDetailId))
+                    //                           .OrderByDescending(a => a.StatusDate).ToList().GroupBy(a => a.AssetDetailId).ToList();
+                    //if (lstTransactions.Count > 0)
+                    //{
+                    //    getDataObj.BGColor = "#f7c2c2";
+                    //}
+                    //else
+                    //{
+                    //    getDataObj.BGColor = "";
+                    //}
+
+
+
                     list.Add(getDataObj);
                 }
 
 
             }
-
 
             if (searchOpenRequestObj.HospitalId != 0)
                 list = list.Where(a => a.HospitalId == searchOpenRequestObj.HospitalId).ToList();
@@ -7251,7 +7290,7 @@ namespace Asset.Core.Repositories
                 list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
 
-            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+            if (UserObj.HospitalId > 0)
             {
                 if (userRoleNames.Contains("Admin"))
                 {
@@ -7275,77 +7314,36 @@ namespace Asset.Core.Repositories
                 }
                 if (userRoleNames.Contains("AssetOwner"))
                 {
-                    // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == searchOpenRequestObj.UserId).ToList();
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-
-            }
-            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
-            {
-                if (userRoleNames.Contains("Admin"))
-                {
-                    list = list.ToList();
-                }
-                if (userRoleNames.Contains("TLHospitalManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("Eng"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == searchOpenRequestObj.UserId).ToList();
-                }
-                if (userRoleNames.Contains("EngManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("AssetOwner"))
-                {
-                    //list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == searchOpenRequestObj.UserId).ToList();
-
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
 
             }
 
+            //if (searchOpenRequestObj.StrStartDate != "")
+            //    searchOpenRequestObj.StartDate = DateTime.Parse(searchOpenRequestObj.StrStartDate);
+            //if (searchOpenRequestObj.StrEndDate != "")
+            //    searchOpenRequestObj.EndDate = DateTime.Parse(searchOpenRequestObj.StrEndDate);
 
-
-
-
-
-
-
-            if (searchOpenRequestObj.StrStartDate != "")
-                searchOpenRequestObj.StartDate = DateTime.Parse(searchOpenRequestObj.StrStartDate);
-            else
-                searchOpenRequestObj.StartDate = DateTime.Today.Date;
-
-
-            if (searchOpenRequestObj.StrEndDate != "")
-                searchOpenRequestObj.EndDate = DateTime.Parse(searchOpenRequestObj.StrEndDate);
-            else
-                searchOpenRequestObj.EndDate = DateTime.Today.Date;
-
-
-
-
-            if (searchOpenRequestObj.StartDate != null || searchOpenRequestObj.EndDate != null)
-            {
-                list = list.Where(a => a.RequestDate.Date >= searchOpenRequestObj.StartDate.Value.Date && a.RequestDate.Date <= searchOpenRequestObj.EndDate.Value.Date).ToList();
-            }
+            //if (searchOpenRequestObj.StartDate != null || searchOpenRequestObj.EndDate != null)
+            //{
+            //    list = list.Where(a => a.RequestDate.Date >= searchOpenRequestObj.StartDate.Value.Date && a.RequestDate.Date <= searchOpenRequestObj.EndDate.Value.Date).ToList();
+            //}
+            //else
+            //{
+            //    list = list.ToList();
+            //}
 
             var requestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             mainClass.Results = requestsPerPage;
             mainClass.Count = list.Count();
             return mainClass;
         }
+
+
+
+
+
+
         public List<OpenRequestVM.GetData> ListOpenRequestsPDF(SearchOpenRequestVM searchOpenRequestObj)
         {
             List<OpenRequestVM.GetData> list = new List<OpenRequestVM.GetData>();
@@ -7361,6 +7359,14 @@ namespace Asset.Core.Repositories
                                .Include(t => t.Request.RequestMode)
                                .Include(t => t.Request.RequestPeriority)
                                .OrderByDescending(a => a.DescriptionDate).ToList().GroupBy(a => a.RequestId).ToList();
+
+
+            if (searchOpenRequestObj.HospitalId != 0)
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.HospitalId == searchOpenRequestObj.HospitalId).ToList();
+            else
+                lstRequests = lstRequests.ToList();
+
+
 
 
             foreach (var req in lstRequests)
@@ -7395,27 +7401,6 @@ namespace Asset.Core.Repositories
 
                     if (lstWOStatus.Count > 0)
                     {
-                        //if (lstWOStatus[0].WorkOrderStatusId == 11)
-                        //{
-                        //    //Engineer Finished Fixing Asset
-                        //    getDataObj.WorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
-                        //    getDataObj.WorkOrderStatusName = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Name : "";
-                        //    getDataObj.WorkOrderStatusNameAr = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.NameAr : "";
-                        //    getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Color : "";
-                        //    getDataObj.LastWOFixedDate = lstWOStatus[0].CreationDate;
-                        //    getDataObj.AllDays = Math.Round((DateTime.Now.Date - req.FirstOrDefault().Request.RequestDate).TotalDays);
-                        //  //  getDataObj.BGColor = "#f7c2c2";
-                        //}
-                        //else if (lstWOStatus[0].WorkOrderStatusId < 11 && lstWOStatus[0].WorkOrderStatusId != 12)
-                        //{
-                        //    getDataObj.WorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
-                        //    getDataObj.WorkOrderStatusName = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Name : "";
-                        //    getDataObj.WorkOrderStatusNameAr = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.NameAr : "";
-                        //    getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Color : "";
-                        //    getDataObj.LastWOFixedDate = lstWOStatus[0].CreationDate;
-                        //    getDataObj.AllDays = Math.Round((DateTime.Now.Date - req.FirstOrDefault().Request.RequestDate).TotalDays);
-                        //}
-
 
                         if (lstWOStatus[0].WorkOrderStatusId < 11)
                         {
@@ -7424,20 +7409,40 @@ namespace Asset.Core.Repositories
                             getDataObj.WorkOrderStatusNameAr = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.NameAr : "";
                             getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus != null ? lstWOStatus[0].WorkOrderStatus.Color : "";
                             getDataObj.LastWOFixedDate = lstWOStatus[0].CreationDate;
-                            getDataObj.AllDays = Math.Round((DateTime.Now.Date - req.FirstOrDefault().Request.RequestDate).TotalDays);
+
+                            if (searchOpenRequestObj.EndDate != null)
+                            {
+                                getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - req.FirstOrDefault().Request.RequestDate).TotalDays);
+                            }
+                            else
+                            {
+                                getDataObj.AllDays = 0;
+                            }
                         }
                         else
                         {
-                            getDataObj.AllDays = Math.Round((DateTime.Now.Date - req.FirstOrDefault().Request.RequestDate).TotalDays);
+                            if (searchOpenRequestObj.EndDate != null)
+                            {
+                                getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - req.FirstOrDefault().Request.RequestDate).TotalDays);
+                            }
+                            else
+                            {
+                                getDataObj.AllDays = 0;
+                            }
                         }
                     }
-
-                    //if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != null)
-                    //    getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
-                    //else
-                    //    getDataObj.TotalCost = 0;
-
-                    if (getDataObj.CostPerDay != 0)
+                    else
+                    {
+                        if (searchOpenRequestObj.EndDate != null)
+                        {
+                            getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - req.FirstOrDefault().Request.RequestDate).TotalDays);
+                        }
+                        else
+                        {
+                            getDataObj.AllDays = 0;
+                        }
+                    }
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != null)
                         getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
                     else
                         getDataObj.TotalCost = 0;
@@ -7446,19 +7451,114 @@ namespace Asset.Core.Repositories
                     getDataObj.CityId = req.FirstOrDefault().Request.User != null ? req.FirstOrDefault().Request.User.CityId : 0;
                     getDataObj.OrganizationId = req.FirstOrDefault().Request.User != null ? req.FirstOrDefault().Request.User.OrganizationId : 0;
                     getDataObj.SubOrganizationId = req.FirstOrDefault().Request.User != null ? req.FirstOrDefault().Request.User.SubOrganizationId : 0;
+
+
+
+                    var lstTransactions = _context.AssetStatusTransactions.Include(a => a.AssetDetail)
+                                                 .Include(a => a.AssetDetail.Hospital)
+                                                .Where(a => (a.AssetStatusId == 8 || a.AssetStatusId == 9) && (a.AssetDetailId == req.FirstOrDefault().Request.AssetDetailId))
+                                                 .OrderByDescending(a => a.StatusDate).ToList().GroupBy(a => a.AssetDetailId).ToList();
+                    if (lstTransactions.Count > 0)
+                    {
+                        getDataObj.BGColor = "#f7c2c2";
+                    }
                     list.Add(getDataObj);
                 }
-
-
             }
 
 
+            //var lstTransactions = _context.AssetStatusTransactions.Include(a => a.AssetDetail)
+            // .Include(a => a.AssetDetail.Hospital)
+            //  .Include(a => a.AssetDetail.Hospital.Governorate)
+            //   .Include(a => a.AssetDetail.Hospital.City)
+            //    .Include(a => a.AssetDetail.Hospital.Organization)
+            //     .Include(a => a.AssetDetail.Hospital.SubOrganization)
+            // .Include(a => a.AssetDetail.MasterAsset)
+            // .Where(a => a.AssetStatusId == 8 || a.AssetStatusId == 9)
+            // .OrderByDescending(a => a.StatusDate).ToList().GroupBy(a => a.AssetDetailId).ToList();
+            //if (lstTransactions.Count > 0)
+            //{
+            //    foreach (var trans in lstTransactions)
+            //    {
+
+            //        OpenRequestVM.GetData getDataObj = new OpenRequestVM.GetData();
+            //        getDataObj.Id = trans.FirstOrDefault().Id;
+
+            //        getDataObj.FixCost = trans.FirstOrDefault().AssetDetail.FixCost;
+            //        getDataObj.CostPerDay = trans.FirstOrDefault().AssetDetail.FixCost != null ? Math.Round((((decimal)trans.FirstOrDefault().AssetDetail.FixCost) / 365)) : 0;
+            //        getDataObj.Barcode = trans.FirstOrDefault().AssetDetail.Barcode;
+            //        getDataObj.ModelNumber = trans.FirstOrDefault().AssetDetail.MasterAsset.ModelNumber;
+            //        getDataObj.SerialNumber = trans.FirstOrDefault().AssetDetail.SerialNumber;
+            //        getDataObj.AssetName = trans.FirstOrDefault().AssetDetail.MasterAsset.Name;
+            //        getDataObj.AssetNameAr = trans.FirstOrDefault().AssetDetail.MasterAsset.NameAr;
+            //        getDataObj.BrandName = trans.FirstOrDefault().AssetDetail.MasterAsset.brand != null ? trans.FirstOrDefault().AssetDetail.MasterAsset.brand.Name : "";
+            //        getDataObj.BrandNameAr = trans.FirstOrDefault().AssetDetail.MasterAsset.brand != null ? trans.FirstOrDefault().AssetDetail.MasterAsset.brand.NameAr : "";
+            //        getDataObj.AssetDetailId = trans.FirstOrDefault().AssetDetailId != 0 ? (int)trans.FirstOrDefault().AssetDetailId : 0;
+            //        getDataObj.HospitalId = trans.FirstOrDefault().AssetDetail.HospitalId;
 
 
-            if (searchOpenRequestObj.HospitalId != 0)
-                list = list.Where(a => a.HospitalId == searchOpenRequestObj.HospitalId).ToList();
+            //        var lstExcludes = _context.HospitalApplications.Where(a => a.AssetId == trans.FirstOrDefault().AssetDetailId).ToList().OrderByDescending(a => a.AppDate).GroupBy(a => a.AssetId).ToList();
+            //        if (lstExcludes.Count > 0)
+            //        {
+            //            foreach (var exclude in lstExcludes)
+            //            {
+            //                getDataObj.RequestDate = DateTime.Parse(exclude.FirstOrDefault().AppDate.ToString());
+            //                getDataObj.AppDate = DateTime.Parse(exclude.FirstOrDefault().AppDate.ToString());
+            //                if (searchOpenRequestObj.EndDate != null)
+            //                {
+            //                    getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - DateTime.Parse(exclude.FirstOrDefault().AppDate.ToString())).TotalDays);
+            //                }
+            //                else
+            //                {
+            //                    getDataObj.AllDays = 0;
+            //                }
+            //            }
+            //        }
+            //        //else
+            //        //{
+            //        //    if (searchOpenRequestObj.EndDate != null)
+            //        //    {
+            //        //        getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.EndDate.ToString()) - DateTime.Parse(exclude.FirstOrDefault().AppDate.ToString())).TotalDays);
+            //        //    }
+            //        //    else
+            //        //    {
+            //        //        getDataObj.AllDays = 0;
+            //        //    }
+            //        //}
+            //        if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != null)
+            //            getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
+            //        else
+            //            getDataObj.TotalCost = 0;
+
+            //        getDataObj.BGColor = "#f7c2c2";
+            //        getDataObj.GovernorateId = trans.FirstOrDefault().AssetDetail.Hospital.Governorate != null ? trans.FirstOrDefault().AssetDetail.Hospital.GovernorateId : 0;
+            //        getDataObj.CityId = trans.FirstOrDefault().AssetDetail.Hospital.City != null ? trans.FirstOrDefault().AssetDetail.Hospital.CityId : 0;
+            //        getDataObj.OrganizationId = trans.FirstOrDefault().AssetDetail.Hospital.Organization != null ? trans.FirstOrDefault().AssetDetail.Hospital.OrganizationId : 0;
+            //        getDataObj.SubOrganizationId = trans.FirstOrDefault().AssetDetail.Hospital.SubOrganization != null ? trans.FirstOrDefault().AssetDetail.Hospital.SubOrganizationId : 0;
+            //        list.Add(getDataObj);
+
+            //    }
+            //}
+
+
+            if (searchOpenRequestObj.StrStartDate != "")
+                searchOpenRequestObj.StartDate = DateTime.Parse(searchOpenRequestObj.StrStartDate);
+
+
+            if (searchOpenRequestObj.StrEndDate != "")
+                searchOpenRequestObj.EndDate = DateTime.Parse(searchOpenRequestObj.StrEndDate);
+
+
+
+
+            if (searchOpenRequestObj.StartDate != null || searchOpenRequestObj.EndDate != null)
+            {
+                list = list.Where(a => a.RequestDate.Date >= searchOpenRequestObj.StartDate.Value.Date && a.RequestDate.Date <= searchOpenRequestObj.EndDate.Value.Date).ToList();
+            }
             else
+            {
                 list = list.ToList();
+            }
 
             return list;
         }

@@ -3,6 +3,7 @@ using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.RequestStatusVM;
+using Asset.ViewModels.RequestVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,15 @@ namespace Asset.API.Controllers
             return _requestStatusService.GetAllForReport();
         }
 
+
+
+
+        [HttpPost]
+        [Route("GetAllForReportByDate")]
+        public IndexRequestStatusVM.GetData GetAllForReportByDate(SearchRequestDateVM requestDateObj)
+        {
+            return _requestStatusService.GetAllForReport(requestDateObj);
+        }
 
 
 
