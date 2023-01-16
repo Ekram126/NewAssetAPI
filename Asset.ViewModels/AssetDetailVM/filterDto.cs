@@ -15,6 +15,10 @@ namespace Asset.ViewModels.AssetDetailVM
         public string hosName { get; set; }
         public string govName { get; set; }
         public string SupplierName { get; set; }
+
+        public string CategoryName { get; set; }
+        public string AssetPeriorityName { get; set; }
+
         public DateTime? purchaseDate { get; set; }
     }
 }

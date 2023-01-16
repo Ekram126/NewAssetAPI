@@ -1152,7 +1152,7 @@ namespace Asset.API.Controllers
         }
         private List<IndexAssetDetailVM.GetData> ListAssets()
         {
-            var allAssets = _AssetDetailService.GetAll().ToList();
+            var allAssets = _AssetDetailService.GetAll().OrderBy(a=>a.Barcode).ToList();
             if (allAssets.Count > 0)
             {
                 return allAssets;

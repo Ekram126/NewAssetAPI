@@ -4182,7 +4182,7 @@ namespace Asset.Core.Repositories
                   .Include(w => w.WorkOrder.Request.AssetDetail)
                   .Include(w => w.WorkOrder.Request.AssetDetail.MasterAsset)
                   .Include(w => w.User)
-                  .ToList().OrderByDescending(a => a.WorkOrder.CreationDate).ToList().GroupBy(a => a.WorkOrderId).ToList();
+                  .ToList().OrderByDescending(a => a.CreationDate).ToList().GroupBy(a => a.WorkOrderId).ToList();
 
 
 
@@ -4344,7 +4344,7 @@ namespace Asset.Core.Repositories
                   .Include(w => w.WorkOrder.Request.AssetDetail)
                   .Include(w => w.WorkOrder.Request.AssetDetail.MasterAsset)
                   .Include(w => w.User)
-                  .ToList().OrderByDescending(a => a.WorkOrder.CreationDate).ToList().GroupBy(a => a.WorkOrderId).ToList();
+                  .ToList().OrderByDescending(a => a.CreationDate).ToList().GroupBy(a => a.WorkOrderId).ToList();
 
 
 
@@ -4509,7 +4509,7 @@ namespace Asset.Core.Repositories
                 getDataObj.Note = item.Note;
                 var lstStatus = _context.WorkOrderTrackings
                             .Include(t => t.WorkOrder).Include(t => t.WorkOrderStatus)
-                            .Where(a => a.WorkOrderId == item.Id).ToList().OrderByDescending(a => a.Id).ToList();
+                            .Where(a => a.WorkOrderId == item.Id).ToList().OrderByDescending(a => a.WorkOrderDate).ToList();
                 if (lstStatus.Count > 0)
                 {
 

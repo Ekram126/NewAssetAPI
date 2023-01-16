@@ -1127,7 +1127,7 @@ namespace Asset.Core.Repositories
 
                 if (searchObj.StartDate != null && searchObj.EndDate != null)
                 {
-                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppDate >= searchObj.StartDate.Value.Date && a.AppDate <= searchObj.EndDate.Value.Date).ToList();
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.AppDate.Value.Date >= searchObj.StartDate.Value.Date && a.AppDate.Value.Date <= searchObj.EndDate.Value.Date).ToList();
                 }
                 else
                 {

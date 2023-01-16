@@ -1122,20 +1122,6 @@ namespace Asset.API.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         [HttpPost]
         [Route("CreateSRReportWithinDateAndStatusPDF")]
         public void CreateSRReportWithinDateAndStatusPDF(SearchRequestDateVM searchRequestDateObj)
@@ -1511,13 +1497,6 @@ namespace Asset.API.Controllers
             }
             return response;
         }
-
-
-
-
-
-
-
 
 
         [HttpPost]
@@ -1903,9 +1882,6 @@ namespace Asset.API.Controllers
             }
             return response;
         }
-
-
-
 
 
         [HttpPost]
@@ -2393,6 +2369,19 @@ namespace Asset.API.Controllers
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpPost]
         [Route("CreateOpenServiceRequestPDF")]
         public void CreateOpenServiceRequestPDF(SearchOpenRequestVM searchOpenRequestObj)
@@ -2427,6 +2416,35 @@ namespace Asset.API.Controllers
 
             Phrase ph = new Phrase(" ", font);
             document.Add(ph);
+
+
+
+
+
+
+            DateTime sDate1 = new DateTime();
+            DateTime eDate1 = new DateTime();
+            if (searchOpenRequestObj.StrStartDate == "")
+                sDate1 = DateTime.Parse("01/01/1900");
+            else
+                sDate1 = DateTime.Parse(searchOpenRequestObj.StrStartDate);
+
+            var sday1 = ArabicNumeralHelper.toArabicNumber(sDate1.Day.ToString());
+            var smonth1 = ArabicNumeralHelper.toArabicNumber(sDate1.Month.ToString());
+            var syear1 = ArabicNumeralHelper.toArabicNumber(sDate1.Year.ToString());
+            var strStart1 = sday1 + "/" + smonth1 + "/" + syear1;
+
+            if (searchOpenRequestObj.StrEndDate == "")
+                eDate1 = DateTime.Today.Date;
+            else
+                eDate1 = DateTime.Parse(searchOpenRequestObj.StrEndDate);
+            var eday1 = ArabicNumeralHelper.toArabicNumber(eDate1.Day.ToString());
+            var emonth1 = ArabicNumeralHelper.toArabicNumber(eDate1.Month.ToString());
+            var eyear1 = ArabicNumeralHelper.toArabicNumber(eDate1.Year.ToString());
+            var strEnd1 = eday1 + "/" + emonth1 + "/" + eyear1;
+
+
+
 
             PdfPTable bodytable = CreateOpenServiceRequestGenerateTable(searchOpenRequestObj);
             int countnewpages = bodytable.Rows.Count / 12;
@@ -2488,28 +2506,6 @@ namespace Asset.API.Controllers
 
 
 
-                    DateTime sDate1 = new DateTime();
-                    DateTime eDate1 = new DateTime();
-                    if (searchOpenRequestObj.StrStartDate == "")
-                        sDate1 = DateTime.Parse("01/01/1900");
-                    else
-                        sDate1 = DateTime.Parse(searchOpenRequestObj.StrStartDate);
-
-                    var sday1 = ArabicNumeralHelper.toArabicNumber(sDate1.Day.ToString());
-                    var smonth1 = ArabicNumeralHelper.toArabicNumber(sDate1.Month.ToString());
-                    var syear1 = ArabicNumeralHelper.toArabicNumber(sDate1.Year.ToString());
-                    var strStart1 = sday1 + "/" + smonth1 + "/" + syear1;
-
-                    if (searchOpenRequestObj.StrEndDate == "")
-                        eDate1 = DateTime.Today.Date;
-                    else
-                        eDate1 = DateTime.Parse(searchOpenRequestObj.StrEndDate);
-                    var eday1 = ArabicNumeralHelper.toArabicNumber(eDate1.Day.ToString());
-                    var emonth1 = ArabicNumeralHelper.toArabicNumber(eDate1.Month.ToString());
-                    var eyear1 = ArabicNumeralHelper.toArabicNumber(eDate1.Year.ToString());
-                    var strEnd1 = eday1 + "/" + emonth1 + "/" + eyear1;
-
-
                     if (sDate1 == DateTime.Parse("01/01/1900"))
                         titleTable.AddCell(new PdfPCell(new Phrase("خلال الفترة من البداية إلى  " + strEnd1, titlefont)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
                     else
@@ -2547,57 +2543,30 @@ namespace Asset.API.Controllers
                     }
                     bodytable2.WriteSelectedRows(0, -1, 10, 460, stamper.GetUnderContent(i));
 
+
+
+
+                 //   bodytable2.
                 }
 
 
-
-
-
-
-
-
-
                 SearchHospitalApplicationVM searchExecludeObj = new SearchHospitalApplicationVM();
-
                 searchExecludeObj.AppTypeId = 1;
                 searchExecludeObj.StatusId = 2;
                 searchExecludeObj.strStartDate = searchOpenRequestObj.StrStartDate;
                 searchExecludeObj.strEndDate = searchOpenRequestObj.StrEndDate;
                 searchExecludeObj.HospitalId = searchOpenRequestObj.HospitalId;
                 searchExecludeObj.Lang = searchOpenRequestObj.Lang;
+                searchExecludeObj.StartDate = sDate1;
+                searchExecludeObj.EndDate = eDate1;
 
-
-                DateTime sDate = new DateTime();
-                DateTime eDate = new DateTime();
-                if (searchExecludeObj.strStartDate == "")
-                    sDate = DateTime.Parse("01/01/1900");
-                else
-                    sDate = DateTime.Parse(searchExecludeObj.strStartDate);
-
-                var sday = ArabicNumeralHelper.toArabicNumber(sDate.Day.ToString());
-                var smonth = ArabicNumeralHelper.toArabicNumber(sDate.Month.ToString());
-                var syear = ArabicNumeralHelper.toArabicNumber(sDate.Year.ToString());
-                var strStart = sday + "/" + smonth + "/" + syear;
-
-                if (searchExecludeObj.strEndDate == "")
-                    eDate = DateTime.Today.Date;
-                else
-                    eDate = DateTime.Parse(searchExecludeObj.strEndDate);
-                var eday = ArabicNumeralHelper.toArabicNumber(eDate.Day.ToString());
-                var emonth = ArabicNumeralHelper.toArabicNumber(eDate.Month.ToString());
-                var eyear = ArabicNumeralHelper.toArabicNumber(eDate.Year.ToString());
-                var strEnd = eday + "/" + emonth + "/" + eyear;
-
-                searchExecludeObj.StartDate = sDate;
-                searchExecludeObj.EndDate = eDate;
-
-                PdfPTable execludebodytable = CreateHospitalExecludesGenerateTable(searchExecludeObj);
-                int countnewpages2 = execludebodytable.Rows.Count / 12;
-                for (int i = 1; i <= countnewpages2; i++)
-                {
-                    document.NewPage();
-                    writer.PageEmpty = false;
-                }
+                PdfPTable execludebodytabledata = CreateHospitalExecludesGenerateTable(searchExecludeObj);
+                //int countnewpages2 = execludebodytabledata.Rows.Count / 12;
+                //for (int i = 1; i <= countnewpages2; i++)
+                //{
+                //    document.NewPage();
+                //    writer.PageEmpty = false;
+                //}
 
 
                 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -2608,44 +2577,41 @@ namespace Asset.API.Controllers
                 for (int i = 1; i <= pages; i++)
                 {
 
+                    PdfPTable execludetitleTable = new PdfPTable(1);
+                    execludetitleTable.SetTotalWidth(new float[] { 800f });
+                    execludetitleTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                    execludetitleTable.WidthPercentage = 100;
+                    execludetitleTable.AddCell(new PdfPCell(new Phrase("استبعاد من مستشفى", titlefont2)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_LEFT });
+                    execludetitleTable.WriteSelectedRows(0, -1, 0, 420, stamper.GetUnderContent(1));
 
 
-                    PdfPTable titleTable2 = new PdfPTable(1);
-                    titleTable2.SetTotalWidth(new float[] { 800f });
-                    titleTable2.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
-                    titleTable2.WidthPercentage = 100;
-                    titleTable2.AddCell(new PdfPCell(new Phrase("استبعاد من مستشفى", titlefont2)) { PaddingBottom = 5, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_LEFT });
-                    titleTable2.WriteSelectedRows(0, -1, 5, 420, stamper.GetOverContent(i));
+                    PdfPTable execludebodytable = new PdfPTable(11);
+                    execludebodytable.SetTotalWidth(new float[] { 10f, 10f, 40f, 50f, 50f, 60f, 70f, 120f, 120f, 200f, 90f });
+                    execludebodytable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                    execludebodytable.HorizontalAlignment = Element.ALIGN_CENTER;
+                    execludebodytable.WidthPercentage = 200;
+                    execludebodytable.PaddingTop = 200;
+                    execludebodytable.HeaderRows = 1;
+                    execludebodytable.SetWidths(new int[] { 200, 200, 200, 200, 200, 200, 200, 200, 200, 300, 25 });
 
-
-
-
-                    PdfPTable bodytable2 = new PdfPTable(11);
-                    bodytable2.SetTotalWidth(new float[] { 10f, 10f, 40f, 50f, 50f, 60f, 70f, 120f, 120f, 200f, 90f });
-                    bodytable2.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
-                    bodytable2.HorizontalAlignment = Element.ALIGN_CENTER;
-                    bodytable2.WidthPercentage = 200;
-                    bodytable2.PaddingTop = 200;
-                    bodytable2.HeaderRows = 1;
-                    bodytable2.SetWidths(new int[] { 200, 200, 200, 200, 200, 200, 200, 200, 200, 300, 25 });
-
-                    int countRows = execludebodytable.Rows.Count;
+                    int countRows = execludebodytabledata.Rows.Count;
                     if (countRows > 0)
                     {
                         if (countRows > 12)
                         {
                             countRows = 12;
                         }
-                        bodytable2.Rows.Insert(0, execludebodytable.Rows[0]);
+                        execludebodytable.Rows.Insert(0, execludebodytabledata.Rows[0]);
                         for (int j = 1; j <= countRows - 1; j++)
                         {
-                            bodytable2.Rows.Add(execludebodytable.Rows[j]);
+                            execludebodytable.Rows.Add(execludebodytabledata.Rows[j]);
                         }
-                        for (int k = 1; k <= bodytable2.Rows.Count - 1; k++)
+                        for (int k = 1; k <= execludebodytable.Rows.Count - 1; k++)
                         {
-                            execludebodytable.DeleteRow(1);
+                            execludebodytabledata.DeleteRow(1);
                         }
-                        bodytable2.WriteSelectedRows(0, -1, 10, 400, stamper.GetUnderContent(i));
+                        //  execludebodytable.WriteSelectedRows(0, -1, 10, 390, stamper.GetUnderContent(i));
+                        execludebodytable.WriteSelectedRows(0, -1, document.Left, document.Top, stamper.GetUnderContent(i));
                     }
                 }
 
@@ -2989,21 +2955,10 @@ namespace Asset.API.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
-
         public PdfPTable CreateHospitalExecludesGenerateTable(SearchHospitalApplicationVM searchOpenRequestObj)
         {
-            var lstData1 = _hospitalApplicationService.GetAllHospitalExecludes(searchOpenRequestObj);
-            var lstData = lstData1.Results.ToList();
             PdfPTable table = new PdfPTable(11);
+
             table.SetTotalWidth(new float[] { 10f, 10f, 40f, 50f, 50f, 60f, 70f, 120f, 120f, 200f, 90f });
             table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
             table.HorizontalAlignment = Element.ALIGN_CENTER;
@@ -3011,7 +2966,6 @@ namespace Asset.API.Controllers
             table.PaddingTop = 200;
             table.HeaderRows = 1;
             table.SetWidths(new int[] { 200, 200, 200, 200, 200, 200, 200, 200, 200, 300, 25 });
-
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             string ARIALUNI_TFF = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
@@ -3029,268 +2983,110 @@ namespace Asset.API.Controllers
                     table.AddCell(cell);
                 }
                 int index = 0;
-                foreach (var item in lstData)
+                var lstData = _hospitalApplicationService.GetAllHospitalExecludes(searchOpenRequestObj).Results.ToList();
+                if (lstData.Count > 0)
                 {
-                    ++index;
-
-
-                    PdfPCell indexCell = new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font));
-                    indexCell.PaddingBottom = 5;
-                    table.AddCell(indexCell);
-
-
-                    if (item.AssetNameAr != null)
+                    foreach (var item in lstData)
                     {
-                        PdfPCell nameCell = new PdfPCell(new Phrase(item.AssetNameAr, font));
-                        nameCell.PaddingBottom = 5;
-                        table.AddCell(nameCell);
+                        ++index;
+
+
+                        PdfPCell indexCell = new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(index.ToString()), font));
+                        indexCell.PaddingBottom = 5;
+                        table.AddCell(indexCell);
+
+
+                        if (item.AssetNameAr != null)
+                        {
+                            PdfPCell nameCell = new PdfPCell(new Phrase(item.AssetNameAr, font));
+                            nameCell.PaddingBottom = 5;
+                            table.AddCell(nameCell);
+                        }
+                        else
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+                        }
+
+                        if (item.BrandNameAr != null)
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(item.BrandNameAr, font)) { PaddingBottom = 5 });
+                        }
+                        else
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                        if (item.ModelNumber != null)
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(item.ModelNumber, font)) { PaddingBottom = 5 });
+                        }
+                        else
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+
+                        if (item.BarCode != null)
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(item.BarCode, font)) { PaddingBottom = 5 });
+                        }
+                        else
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                        if (item.SerialNumber != null)
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(item.SerialNumber, font)) { PaddingBottom = 5 });
+                        }
+                        else
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+
+                        if (item.Date.ToString() != "")
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.Date.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
+                        }
+                        else
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                        if (item.FixCost != null)
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.FixCost.ToString()), font)) { PaddingBottom = 5 });
+                        }
+                        else
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+                        if (item.CostPerDay != null)
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.CostPerDay.ToString()), font)) { PaddingBottom = 5 });
+                        }
+                        else
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+
+                        if (item.AllDays != null)
+                        {
+
+                            table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.AllDays.ToString()), font)) { PaddingBottom = 5 });
+                        }
+                        else
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+
+
+                        if (item.TotalCost != null)
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.TotalCost.ToString()), font)) { PaddingBottom = 5 });
+                        }
+                        else
+                            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
                     }
-                    else
-                    {
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-                    }
-
-                    if (item.BrandNameAr != null)
-                    {
-                        table.AddCell(new PdfPCell(new Phrase(item.BrandNameAr, font)) { PaddingBottom = 5 });
-                    }
-                    else
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-                    if (item.ModelNumber != null)
-                    {
-                        table.AddCell(new PdfPCell(new Phrase(item.ModelNumber, font)) { PaddingBottom = 5 });
-                    }
-                    else
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-                    if (item.BarCode != null)
-                    {
-                        table.AddCell(new PdfPCell(new Phrase(item.BarCode, font)) { PaddingBottom = 5 });
-                    }
-                    else
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-                    if (item.SerialNumber != null)
-                    {
-                        table.AddCell(new PdfPCell(new Phrase(item.SerialNumber, font)) { PaddingBottom = 5 });
-                    }
-                    else
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-                    if (item.Date.ToString() != "")
-                    {
-                        table.AddCell(new PdfPCell(new Phrase(ConvertDateTimeToArabicNumerals.ConvertToArabicNumerals(DateTime.Parse(item.Date.ToString()).ToString("g", new CultureInfo("ar-AE"))), font)) { PaddingBottom = 5 });
-                    }
-                    else
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-                    if (item.FixCost != null)
-                    {
-                        table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.FixCost.ToString()), font)) { PaddingBottom = 5 });
-                    }
-                    else
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-                    if (item.CostPerDay != null)
-                    {
-                        table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.CostPerDay.ToString()), font)) { PaddingBottom = 5 });
-                    }
-                    else
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-                    if (item.AllDays != null)
-                    {
-
-                        table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.AllDays.ToString()), font)) { PaddingBottom = 5 });
-                    }
-                    else
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
 
 
 
-                    if (item.TotalCost != null)
-                    {
-                        table.AddCell(new PdfPCell(new Phrase(ArabicNumeralHelper.toArabicNumber(item.TotalCost.ToString()), font)) { PaddingBottom = 5 });
-                    }
-                    else
-                        table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
+                    return table;
                 }
+
+
             }
-            //else
-            //{
-
-            //    string[] col = { "No", "Asset Name", "Brand", "Model", "BarCode", "Serial", "Date", "Last fix date", "Fix cost", "Fix cost / Day", "Total Days", "TOtal Cost" };
-            //    for (int i = 0; i <= col.Length - 1; i++)
-            //    {
-            //        PdfPCell cell = new PdfPCell(new Phrase(col[i], font));
-            //        cell.BackgroundColor = new iTextSharp.text.BaseColor(153, 204, 255);
-            //        cell.PaddingBottom = 10;
-            //        table.AddCell(cell);
-            //    }
-            //    int index = 0;
-            //    foreach (var item in lstData)
-            //    {
-            //        ++index;
-
-
-            //        if (item.BGColor == "#f7c2c2")
-            //        {
-            //            PdfPCell indexCell = new PdfPCell(new Phrase(index.ToString(), font));
-            //            indexCell.PaddingBottom = 5;
-            //            indexCell.BackgroundColor = new iTextSharp.text.BaseColor(247, 194, 194);
-            //            table.AddCell(indexCell);
-            //        }
-            //        else
-            //        {
-            //            table.AddCell(new PdfPCell(new Phrase(index.ToString(), font)) { PaddingBottom = 5 });
-            //        }
-
-            //        if (item.AssetName != null)
-            //        {
-            //            PdfPCell nameCell = new PdfPCell(new Phrase(new Phrase(item.AssetName, font)));
-            //            nameCell.PaddingBottom = 5;
-            //            if (item.BGColor == "#f7c2c2")
-            //            {
-            //                nameCell.BackgroundColor = new iTextSharp.text.BaseColor(247, 194, 194);
-            //            }
-            //            table.AddCell(nameCell);
-            //        }
-            //        else
-            //        {
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-            //        }
-
-
-            //        if (item.BrandNameAr != null)
-            //        {
-            //            PdfPCell brandCell = new PdfPCell(new Phrase(new Phrase(item.BrandName, font)));
-            //            brandCell.PaddingBottom = 5;
-            //            if (item.BGColor == "#f7c2c2")
-            //            {
-            //                brandCell.BackgroundColor = new iTextSharp.text.BaseColor(247, 194, 194);
-            //            }
-            //            table.AddCell(brandCell);
-            //        }
-            //        else
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-            //        if (item.ModelNumber != null)
-            //        {
-
-            //            PdfPCell modelCell = new PdfPCell(new Phrase(new Phrase(item.ModelNumber, font)));
-            //            modelCell.PaddingBottom = 5;
-            //            if (item.BGColor == "#f7c2c2")
-            //            {
-            //                modelCell.BackgroundColor = new iTextSharp.text.BaseColor(247, 194, 194);
-            //            }
-            //            table.AddCell(modelCell);
-            //        }
-            //        else
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-            //        if (item.Barcode != null)
-            //        {
-            //            PdfPCell barcodeCell = new PdfPCell(new Phrase(new Phrase(item.Barcode, font)));
-            //            barcodeCell.PaddingBottom = 5;
-            //            if (item.BGColor == "#f7c2c2")
-            //            {
-            //                barcodeCell.BackgroundColor = new iTextSharp.text.BaseColor(247, 194, 194);
-            //            }
-            //            table.AddCell(barcodeCell);
-            //        }
-            //        else
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-            //        if (item.SerialNumber != null)
-            //        {
-            //            PdfPCell serialCell = new PdfPCell(new Phrase(new Phrase(item.SerialNumber, font)));
-            //            serialCell.PaddingBottom = 5;
-            //            if (item.BGColor == "#f7c2c2")
-            //            {
-            //                serialCell.BackgroundColor = new iTextSharp.text.BaseColor(247, 194, 194);
-            //            }
-            //            table.AddCell(serialCell);
-            //        }
-            //        else
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-            //        if (item.RequestDate.ToString() != "")
-            //        {
-
-            //            PdfPCell requestDateCell = new PdfPCell(new Phrase(item.RequestDate.ToString(), font));
-            //            requestDateCell.PaddingBottom = 5;
-            //            if (item.BGColor == "#f7c2c2")
-            //            {
-            //                requestDateCell.BackgroundColor = new iTextSharp.text.BaseColor(247, 194, 194);
-            //            }
-            //            table.AddCell(requestDateCell);
-
-            //        }
-            //        else
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-            //        if (item.FixCost != null)
-            //        {
-
-            //            PdfPCell fixCostCell = new PdfPCell(new Phrase(new Phrase(item.FixCost.ToString(), font)));
-            //            fixCostCell.PaddingBottom = 5;
-            //            if (item.BGColor == "#f7c2c2")
-            //            {
-            //                fixCostCell.BackgroundColor = new iTextSharp.text.BaseColor(247, 194, 194);
-            //            }
-            //            table.AddCell(fixCostCell);
-            //        }
-            //        else
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-            //        if (item.CostPerDay != null)
-            //        {
-
-            //            PdfPCell costPerDayCell = new PdfPCell(new Phrase(new Phrase(item.CostPerDay.ToString(), font)));
-            //            costPerDayCell.PaddingBottom = 5;
-            //            if (item.BGColor == "#f7c2c2")
-            //            {
-            //                costPerDayCell.BackgroundColor = new iTextSharp.text.BaseColor(247, 194, 194);
-            //            }
-            //            table.AddCell(costPerDayCell);
-            //        }
-            //        else
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-            //        if (item.AllDays != null)
-            //        {
-
-            //            PdfPCell allDaysCell = new PdfPCell(new Phrase(new Phrase(item.AllDays.ToString(), font)));
-            //            allDaysCell.PaddingBottom = 5;
-            //            table.AddCell(allDaysCell);
-            //        }
-            //        else
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-
-
-
-            //        if (item.TotalCost != null)
-            //        {
-            //            PdfPCell totalCostCell = new PdfPCell(new Phrase(new Phrase(item.TotalCost.ToString(), font)));
-            //            totalCostCell.PaddingBottom = 5;
-            //            table.AddCell(totalCostCell);
-            //        }
-            //        else
-            //            table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
-            //    }
-            //}
-
             return table;
+
         }
 
 

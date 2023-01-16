@@ -60,7 +60,24 @@ namespace Asset.ViewModels.AssetDetailVM
             public string DepartmentName { get; set; }
             public string DepartmentNameAr { get; set; }
 
-    
+
+
+
+
+
+            public string CategoryName { get; set; }
+            public string CategoryNameAr { get; set; }
+
+
+
+            public string AssetPeriorityName { get; set; }
+            public string AssetPeriorityNameAr { get; set; }
+
+
+
+
+
+
             public int? EmployeeId { get; set; }
             public int? PeriorityId { get; set; }
             public int? OriginId { get; set; }
@@ -76,15 +93,15 @@ namespace Asset.ViewModels.AssetDetailVM
             public int? SubOrganizationId { get; set; }
             public int? AssetId { get; set; }
             public string QrFilePath { get; set; }
-
-            public List<int> ListAssetIds { get; set; }
-
             public string MasterImg { get; set; }
 
 
+            public List<int> ListAssetIds { get; set; }
+
+
+
+
             public DateTime? InstallationDate { get; set; }
-
-
             public string BarCode { get; set; }
             public string Barcode { get; set; }
             public string AssetBarCode { get; set; }
@@ -103,9 +120,8 @@ namespace Asset.ViewModels.AssetDetailVM
 
 
 
-           
             public string AssetStatus { get; set; }
-            public string AssetStatusAr{ get; set; }
+            public string AssetStatusAr { get; set; }
         }
     }
 }

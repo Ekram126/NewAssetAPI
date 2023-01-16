@@ -177,6 +177,7 @@ namespace Asset.API.Controllers
         {
             Year year = new Year(DateTime.Today.Year);
             ITimePeriodCollection quarters = year.GetQuarters();
+           
             List<Quarter> list = new List<Quarter>();
             foreach (Quarter quarter in quarters)
             {

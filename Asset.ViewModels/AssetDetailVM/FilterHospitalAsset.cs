@@ -29,6 +29,9 @@ namespace Asset.ViewModels.AssetDetailVM
         public string PrintedBy { get; set; }
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }
-      public string  selectedElement { get; set; }
+        public string selectedElement { get; set; }
+
+        public int? CategoryId { get; set; }
+        public int? PeriorityId { get; set; }
     }
 }

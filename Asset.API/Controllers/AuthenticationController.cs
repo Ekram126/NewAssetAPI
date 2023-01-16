@@ -36,7 +36,7 @@ namespace Asset.API.Controllers
 
 
         string strInsitute, strInsituteAr, strLogo = "";
-        bool isAgency, isScrap;
+        bool isAgency, isScrap, isVisit,isExternalFix,isOpenRequest;
 
         public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IEmailSender emailSender, IConfiguration configuration, ISettingService settingService, ApplicationDbContext context)
         {
@@ -174,6 +174,18 @@ namespace Asset.API.Controllers
                         if (item.KeyName == "IsScrap")
                             isScrap = Convert.ToBoolean(item.KeyValue);
 
+
+
+                        if (item.KeyName == "IsVisit")
+                            isVisit = Convert.ToBoolean(item.KeyValue);
+
+
+                        if (item.KeyName == "IsExternalFix")
+                            isExternalFix = Convert.ToBoolean(item.KeyValue);
+
+
+                        if (item.KeyName == "IsOpenRequest")
+                            isOpenRequest = Convert.ToBoolean(item.KeyValue);
                     }
                 }
 
@@ -209,7 +221,10 @@ namespace Asset.API.Controllers
                     strInsituteAr = strInsituteAr,
                     strLogo = strLogo,
                     isAgency = isAgency,
-                    isScrap = isScrap
+                    isScrap = isScrap,
+                    isVisit= isVisit,
+                    isOpenRequest= isOpenRequest,
+                    isExternalFix= isExternalFix
                 }); ;
             }
             return Unauthorized();
