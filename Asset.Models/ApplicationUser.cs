@@ -23,5 +23,8 @@ namespace Asset.Models
 
         [NotMapped]
         public List<string> RoleIds { get; set; }
+
+        [NotMapped]
+        public List<ApplicationRole> userRoleIds { get; set; }
     }
 }

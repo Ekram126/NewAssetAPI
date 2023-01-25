@@ -343,5 +343,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.GenerateQrCodeForAllAssets(domainName);
         }
+
+        public IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj)
+        {
+            return _unitOfWork.AssetDetailRepository.MobSearchAssetInHospital(searchObj);
+        }
     }
 }

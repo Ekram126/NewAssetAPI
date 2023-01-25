@@ -339,6 +339,12 @@ namespace Asset.API.Controllers
                     var roleName = _context.ApplicationRole.Where(a => a.Id == role).FirstOrDefault().Name;
                     await _applicationUser.AddToRoleAsync(user, roleName);
                 }
+
+                //foreach (var role in userObj.userRoleIds)
+                //{
+                //    var roleName = _context.ApplicationRole.Where(a => a.Id == role.Id).FirstOrDefault().Name;
+                //    await _applicationUser.AddToRoleAsync(user, roleName);
+                //}
             }
             return Ok();
         }

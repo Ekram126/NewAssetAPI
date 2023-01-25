@@ -1098,8 +1098,10 @@ namespace Asset.Core.Repositories
 
             var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
                 .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
-                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand).ToList()
-                .OrderByDescending(a => a.AppDate.Value.Date).Where(a => a.StatusId == statusId && a.AppTypeId == appTypeId).ToList();
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset)
+                .Include(a => a.AssetDetail.MasterAsset.brand).ToList()
+                .OrderByDescending(a => a.AppDate.Value.Date)
+                .Where(a => a.StatusId == statusId && a.AppTypeId == appTypeId).ToList();
 
 
             if (lstHospitalApplications.Count > 0)

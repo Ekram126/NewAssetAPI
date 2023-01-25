@@ -180,7 +180,7 @@ namespace Asset.Core.Repositories
                     else
                         supplierExecludeAssetObj.ActionDate = DateTime.Now;
 
-                  supplierExecludeAssetObj.ExNumber = model.ExNumber;
+                    supplierExecludeAssetObj.ExNumber = model.ExNumber;
                     supplierExecludeAssetObj.UserId = model.UserId;
                     _context.SupplierExecludeAssets.Add(supplierExecludeAssetObj);
                     _context.SaveChanges();
@@ -359,7 +359,7 @@ namespace Asset.Core.Repositories
 
                 supplierExecludeAssetObj.UserId = model.UserId;
                 supplierExecludeAssetObj.Comment = model.Comment;
-               // supplierExecludeAssetObj.HospitalId = model.HospitalId;
+                // supplierExecludeAssetObj.HospitalId = model.HospitalId;
                 _context.Entry(supplierExecludeAssetObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -966,6 +966,678 @@ namespace Asset.Core.Repositories
             }
 
             return list;
+        }
+
+        public IndexSupplierExecludeAssetVM GetAllSupplierExecludes(SearchSupplierExecludeAssetVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            IndexSupplierExecludeAssetVM mainClass = new IndexSupplierExecludeAssetVM();
+            List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
+
+
+            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
+                 .Include(a => a.ApplicationType)
+            .Include(a => a.HospitalSupplierStatus)
+            .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand).ToList().OrderByDescending(a => a.Date.Value.Date).ToList();
+
+            if (lstSupplierExecludeAssets.Count > 0)
+            {
+                if (hospitalId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
+
+                if (appTypeId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.AppTypeId == appTypeId).ToList();
+
+                if (statusId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.StatusId == statusId).ToList();
+
+
+
+                if (searchObj.strStartDate != "")
+                    searchObj.StartDate = DateTime.Parse(searchObj.strStartDate);
+
+
+                if (searchObj.strEndDate != "")
+                    searchObj.EndDate = DateTime.Parse(searchObj.strEndDate);
+
+
+
+
+                if (searchObj.StartDate != null && searchObj.EndDate != null)
+                {
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.Date.Value.Date >= searchObj.StartDate.Value.Date && a.Date.Value.Date <= searchObj.EndDate.Value.Date).ToList();
+                }
+                else
+                {
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.ToList();
+                }
+
+
+
+                foreach (var item in lstSupplierExecludeAssets)
+                {
+
+                    IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.ExNumber = item.ExNumber;
+                    getDataObj.Date = item.Date.Value.ToString();
+                    getDataObj.AppTypeId = item.AppTypeId;
+                    getDataObj.UserName = item.User.UserName;
+                    getDataObj.AssetId = item.AssetDetail.Id;
+                    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;
+                    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
+                    getDataObj.TypeName = item.ApplicationType.Name;
+                    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+                    if (item.AssetDetail.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = item.AssetDetail.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = item.AssetDetail.MasterAsset.brand.NameAr;
+                    }
+
+                    getDataObj.FixCost = item.AssetDetail.FixCost;
+                    getDataObj.CostPerDay = item.AssetDetail.FixCost != null ? Math.Round((((decimal)item.AssetDetail.FixCost) / 365)) : 0;
+                    if (searchObj.EndDate != null)
+                    {
+                        getDataObj.AllDays = Math.Round((DateTime.Parse(searchObj.EndDate.ToString()) - DateTime.Parse(item.Date.ToString()).Date).TotalDays);
+                    }
+                    else
+                    {
+                        getDataObj.AllDays = 0;
+                    }
+
+
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != 0)
+                        getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
+                    else
+                        getDataObj.TotalCost = 0;
+
+
+
+
+
+                    getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                    getDataObj.BarCode = item.AssetDetail.Barcode;
+                    getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
+
+                    getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
+                    getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                    getDataObj.StatusId = item.StatusId;
+                    getDataObj.StatusName = item.HospitalSupplierStatus.Name;
+                    getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                    getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                    getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
+
+
+                    if (appTypeId == 1)
+                    {
+
+                        var ReasonExTitles = (from execlude in _context.SupplierExecludeReasons
+                                              join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                                              where trans.SupplierExecludeAssetId == item.Id
+                                              && item.AppTypeId == 1
+                                              select execlude).ToList();
+                        if (ReasonExTitles.Count > 0)
+                        {
+                            List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNames.Add(reason.Name);
+                            }
+
+                            getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+                            List<string> execludeNamesAr = new List<string>();
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                        }
+                    }
+                    if (appTypeId == 2)
+                    {
+                        var ReasonHoldTitles = (from execlude in _context.SupplierExecludeReasons
+                                                join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                                                where trans.SupplierExecludeAssetId == item.Id
+                                                  && item.AppTypeId == 2
+                                                select execlude).ToList();
+                        if (ReasonHoldTitles.Count > 0)
+                        {
+                            List<string> holdNames = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNames.Add(reason.Name);
+                            }
+                            getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+
+                            List<string> holdNamesAr = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+                        }
+                    }
+
+                    list.Add(getDataObj);
+                }
+
+
+
+
+                var requestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                mainClass.Results = requestsPerPage;
+                mainClass.Count = list.Count();
+
+            }
+            return mainClass;
+        }
+
+        public IndexSupplierExecludeAssetVM GetAllSupplierHoldes(SearchSupplierExecludeAssetVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            IndexSupplierExecludeAssetVM mainClass = new IndexSupplierExecludeAssetVM();
+            List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
+
+            //var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+            //    .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
+            //    .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand).ToList()
+            //    .OrderByDescending(a => a.AppDate.Value.Date).Where(a => a.StatusId == statusId && a.AppTypeId == appTypeId).ToList();
+
+
+            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
+                 .Include(a => a.ApplicationType)
+            .Include(a => a.HospitalSupplierStatus)
+            .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand).ToList().OrderByDescending(a => a.Date.Value.Date).ToList();
+
+            if (lstSupplierExecludeAssets.Count > 0)
+            {
+                if (hospitalId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.AssetDetail.HospitalId == hospitalId).ToList();
+
+                if (appTypeId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.AppTypeId == appTypeId).ToList();
+
+                if (statusId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.StatusId == statusId).ToList();
+
+
+
+                if (searchObj.strStartDate != "")
+                    searchObj.StartDate = DateTime.Parse(searchObj.strStartDate);
+
+
+                if (searchObj.strEndDate != "")
+                    searchObj.EndDate = DateTime.Parse(searchObj.strEndDate);
+
+
+
+
+                if (searchObj.StartDate != null && searchObj.EndDate != null)
+                {
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.Date.Value.Date >= searchObj.StartDate.Value.Date && a.Date.Value.Date <= searchObj.EndDate.Value.Date).ToList();
+                }
+                else
+                {
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.ToList();
+                }
+
+
+
+                foreach (var item in lstSupplierExecludeAssets)
+                {
+
+                    IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.ExNumber = item.ExNumber;
+                    getDataObj.Date = item.Date.Value.ToString();
+                    getDataObj.AppTypeId = item.AppTypeId;
+                    getDataObj.UserName = item.User.UserName;
+                    getDataObj.AssetId = item.AssetDetail.Id;
+                    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;
+                    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
+                    getDataObj.TypeName = item.ApplicationType.Name;
+                    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+                    if (item.AssetDetail.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = item.AssetDetail.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = item.AssetDetail.MasterAsset.brand.NameAr;
+                    }
+
+                    getDataObj.FixCost = item.AssetDetail.FixCost;
+                    getDataObj.CostPerDay = item.AssetDetail.FixCost != null ? Math.Round((((decimal)item.AssetDetail.FixCost) / 365)) : 0;
+                    if (searchObj.EndDate != null)
+                    {
+                        getDataObj.AllDays = Math.Round((DateTime.Parse(searchObj.EndDate.ToString()) - DateTime.Parse(item.Date.ToString()).Date).TotalDays);
+                    }
+                    else
+                    {
+                        getDataObj.AllDays = 0;
+                    }
+
+
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != 0)
+                        getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
+                    else
+                        getDataObj.TotalCost = 0;
+
+
+
+
+
+                    getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                    getDataObj.BarCode = item.AssetDetail.Barcode;
+                    getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
+
+                    getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
+                    getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                    getDataObj.StatusId = item.StatusId;
+                    getDataObj.StatusName = item.HospitalSupplierStatus.Name;
+                    getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                    getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                    getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
+
+
+                    if (appTypeId == 1)
+                    {
+
+                        var ReasonExTitles = (from execlude in _context.SupplierExecludeReasons
+                                              join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                                              where trans.SupplierExecludeAssetId == item.Id
+                                              && item.AppTypeId == 1
+                                              select execlude).ToList();
+                        if (ReasonExTitles.Count > 0)
+                        {
+                            List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNames.Add(reason.Name);
+                            }
+
+                            getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+                            List<string> execludeNamesAr = new List<string>();
+                            foreach (var reason in ReasonExTitles)
+                            {
+                                execludeNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                        }
+                    }
+                    if (appTypeId == 2)
+                    {
+                        var ReasonHoldTitles = (from execlude in _context.SupplierExecludeReasons
+                                                join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                                                where trans.SupplierExecludeAssetId == item.Id
+                                                  && item.AppTypeId == 2
+                                                select execlude).ToList();
+                        if (ReasonHoldTitles.Count > 0)
+                        {
+                            List<string> holdNames = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNames.Add(reason.Name);
+                            }
+                            getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+
+                            List<string> holdNamesAr = new List<string>();
+                            foreach (var reason in ReasonHoldTitles)
+                            {
+                                holdNamesAr.Add(reason.NameAr);
+                            }
+                            getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+                        }
+                    }
+
+                    list.Add(getDataObj);
+                }
+
+
+
+
+                var requestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                mainClass.Results = requestsPerPage;
+                mainClass.Count = list.Count();
+
+            }
+            return mainClass;
+        }
+
+
+
+
+
+
+        public IndexSupplierExecludeAssetVM GetAllSupplierExecludes(SearchSupplierExecludeAssetVM searchObj)
+        {
+            IndexSupplierExecludeAssetVM mainClass = new IndexSupplierExecludeAssetVM();
+            List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
+
+
+            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
+                .Include(a => a.ApplicationType)
+           .Include(a => a.HospitalSupplierStatus)
+           .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset)
+           .Include(a => a.AssetDetail.MasterAsset.brand).Where(t => t.AppTypeId == 1).ToList().OrderByDescending(a => a.Date.Value.Date).ToList();
+
+            if (lstSupplierExecludeAssets.Count > 0)
+            {
+                if (searchObj.HospitalId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.AssetDetail.HospitalId == searchObj.HospitalId).ToList();
+
+                if (searchObj.AppTypeId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.AppTypeId == searchObj.AppTypeId).ToList();
+
+                if (searchObj.StatusId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.StatusId == searchObj.StatusId).ToList();
+
+
+
+                if (searchObj.strStartDate != "")
+                    searchObj.StartDate = DateTime.Parse(searchObj.strStartDate);
+
+
+                if (searchObj.strEndDate != "")
+                    searchObj.EndDate = DateTime.Parse(searchObj.strEndDate);
+
+
+
+
+                if (searchObj.StartDate != null && searchObj.EndDate != null)
+                {
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.Date.Value.Date >= searchObj.StartDate.Value.Date && a.Date.Value.Date <= searchObj.EndDate.Value.Date).ToList();
+                }
+                else
+                {
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.ToList();
+                }
+
+
+
+                foreach (var item in lstSupplierExecludeAssets)
+                {
+
+                    IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.ExNumber = item.ExNumber;
+                    getDataObj.Date = item.Date.Value.ToString();
+                    getDataObj.AppTypeId = item.AppTypeId;
+                    getDataObj.UserName = item.User.UserName;
+                    getDataObj.AssetId = item.AssetDetail.Id;
+                    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;
+                    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
+                    getDataObj.TypeName = item.ApplicationType.Name;
+                    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+                    if (item.AssetDetail.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = item.AssetDetail.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = item.AssetDetail.MasterAsset.brand.NameAr;
+                    }
+
+                    getDataObj.FixCost = item.AssetDetail.FixCost;
+                    getDataObj.CostPerDay = item.AssetDetail.FixCost != null ? Math.Round((((decimal)item.AssetDetail.FixCost) / 365)) : 0;
+                    if (searchObj.EndDate != null)
+                    {
+                        getDataObj.AllDays = Math.Round((DateTime.Parse(searchObj.EndDate.ToString()) - DateTime.Parse(item.Date.ToString()).Date).TotalDays);
+                    }
+                    else
+                    {
+                        getDataObj.AllDays = 0;
+                    }
+
+
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != 0)
+                        getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
+                    else
+                        getDataObj.TotalCost = 0;
+
+
+
+
+
+                    getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                    getDataObj.BarCode = item.AssetDetail.Barcode;
+                    getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+
+
+                    getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
+                    getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+
+                    getDataObj.StatusId = item.StatusId;
+                    getDataObj.StatusName = item.HospitalSupplierStatus.Name;
+                    getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                    getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                    getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
+
+
+                    //if (searchObj.AppTypeId == 1)
+                    //{
+
+                    //    var ReasonExTitles = (from execlude in _context.SupplierExecludeReasons
+                    //                          join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                    //                          where trans.SupplierExecludeAssetId == item.Id
+                    //                          && item.AppTypeId == 1
+                    //                          select execlude).ToList();
+                    //    if (ReasonExTitles.Count > 0)
+                    //    {
+                    //        List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                    //        foreach (var reason in ReasonExTitles)
+                    //        {
+                    //            execludeNames.Add(reason.Name);
+                    //        }
+
+                    //        getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+
+
+                    //        List<string> execludeNamesAr = new List<string>();
+                    //        foreach (var reason in ReasonExTitles)
+                    //        {
+                    //            execludeNamesAr.Add(reason.NameAr);
+                    //        }
+                    //        getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+
+                    //    }
+                    //}
+                    //if (searchObj.AppTypeId == 2)
+                    //{
+                    //    var ReasonHoldTitles = (from execlude in _context.SupplierExecludeReasons
+                    //                            join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                    //                            where trans.SupplierExecludeAssetId == item.Id
+                    //                              && item.AppTypeId == 2
+                    //                            select execlude).ToList();
+                    //    if (ReasonHoldTitles.Count > 0)
+                    //    {
+                    //        List<string> holdNames = new List<string>();
+                    //        foreach (var reason in ReasonHoldTitles)
+                    //        {
+                    //            holdNames.Add(reason.Name);
+                    //        }
+                    //        getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+
+                    //        List<string> holdNamesAr = new List<string>();
+                    //        foreach (var reason in ReasonHoldTitles)
+                    //        {
+                    //            holdNamesAr.Add(reason.NameAr);
+                    //        }
+                    //        getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+                    //    }
+                    //}
+
+                    list.Add(getDataObj);
+                }
+
+
+
+
+
+                mainClass.Results = list;
+                mainClass.Count = list.Count();
+
+            }
+            return mainClass;
+        }
+
+        public IndexSupplierExecludeAssetVM GetAllSupplierHoldes(SearchSupplierExecludeAssetVM searchObj)
+        {
+            IndexSupplierExecludeAssetVM mainClass = new IndexSupplierExecludeAssetVM();
+            List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
+
+            var lstSupplierExecludeAssets = _context.SupplierExecludeAssets
+                                                    .Include(a => a.User)
+                                                    .Include(a => a.ApplicationType)
+                                                    .Include(a => a.HospitalSupplierStatus)
+                                                    .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset)
+                                                    .Include(a => a.AssetDetail.MasterAsset.brand)
+                                                    .Where(t => t.AppTypeId == 2).ToList().OrderByDescending(a => a.Date.Value.Date).ToList();
+
+            if (lstSupplierExecludeAssets.Count > 0)
+            {
+                if (searchObj.HospitalId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.AssetDetail.HospitalId == searchObj.HospitalId).ToList();
+
+                if (searchObj.AppTypeId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.AppTypeId == searchObj.AppTypeId).ToList();
+
+                if (searchObj.StatusId != 0)
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.StatusId == searchObj.StatusId).ToList();
+
+
+
+                if (searchObj.strStartDate != "")
+                    searchObj.StartDate = DateTime.Parse(searchObj.strStartDate);
+
+
+                if (searchObj.strEndDate != "")
+                    searchObj.EndDate = DateTime.Parse(searchObj.strEndDate);
+
+
+
+
+                if (searchObj.StartDate != null && searchObj.EndDate != null)
+                {
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.Where(a => a.Date.Value.Date >= searchObj.StartDate.Value.Date && a.Date.Value.Date <= searchObj.EndDate.Value.Date).ToList();
+                }
+                else
+                {
+                    lstSupplierExecludeAssets = lstSupplierExecludeAssets.ToList();
+                }
+
+
+
+                foreach (var item in lstSupplierExecludeAssets)
+                {
+
+                    IndexSupplierExecludeAssetVM.GetData getDataObj = new IndexSupplierExecludeAssetVM.GetData();
+                    getDataObj.Id = item.Id;
+                    getDataObj.HospitalId = item.HospitalId;
+                    getDataObj.ExNumber = item.ExNumber;
+                    getDataObj.Date = item.Date.Value.ToString();
+                    getDataObj.AppTypeId = item.AppTypeId;
+                    getDataObj.UserName = item.User.UserName;
+                    getDataObj.AssetId = item.AssetDetail.Id;
+                    getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;
+                    getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
+                    getDataObj.TypeName = item.ApplicationType.Name;
+                    getDataObj.TypeNameAr = item.ApplicationType.NameAr;
+
+                    if (item.AssetDetail.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = item.AssetDetail.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = item.AssetDetail.MasterAsset.brand.NameAr;
+                    }
+
+                    getDataObj.FixCost = item.AssetDetail.FixCost;
+                    getDataObj.CostPerDay = item.AssetDetail.FixCost != null ? Math.Round((((decimal)item.AssetDetail.FixCost) / 365)) : 0;
+                    if (searchObj.EndDate != null)
+                    {
+                        getDataObj.AllDays = Math.Round((DateTime.Parse(searchObj.EndDate.ToString()) - DateTime.Parse(item.Date.ToString()).Date).TotalDays);
+                    }
+                    else
+                    {
+                        getDataObj.AllDays = 0;
+                    }
+                    if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != 0)
+                        getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
+                    else
+                        getDataObj.TotalCost = 0;
+
+                    getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
+                    getDataObj.BarCode = item.AssetDetail.Barcode;
+                    getDataObj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+                    getDataObj.DiffMonths = ((item.Date.Value.Year - DateTime.Today.Date.Year) * 12) + item.Date.Value.Month - DateTime.Today.Date.Month;
+                    getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
+                    getDataObj.StatusId = item.StatusId;
+                    getDataObj.StatusName = item.HospitalSupplierStatus.Name;
+                    getDataObj.StatusNameAr = item.HospitalSupplierStatus.NameAr;
+                    getDataObj.StatusColor = item.HospitalSupplierStatus.Color;
+                    getDataObj.StatusIcon = item.HospitalSupplierStatus.Icon;
+
+
+                    //if (searchObj.AppTypeId == 1)
+                    //{
+                    //    var ReasonExTitles = (from execlude in _context.SupplierExecludeReasons
+                    //                          join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                    //                          where trans.SupplierExecludeAssetId == item.Id
+                    //                          && item.AppTypeId == 1
+                    //                          select execlude).ToList();
+                    //    if (ReasonExTitles.Count > 0)
+                    //    {
+                    //        List<string> execludeNames = new List<string>();// { "John", "Anna", "Monica" };
+                    //        foreach (var reason in ReasonExTitles)
+                    //        {
+                    //            execludeNames.Add(reason.Name);
+                    //        }
+                    //        getDataObj.ReasonExTitles = string.Join(",", execludeNames);
+                    //        List<string> execludeNamesAr = new List<string>();
+                    //        foreach (var reason in ReasonExTitles)
+                    //        {
+                    //            execludeNamesAr.Add(reason.NameAr);
+                    //        }
+                    //        getDataObj.ReasonExTitlesAr = string.Join(",", execludeNamesAr);
+                    //    }
+                    //}
+                    //if (searchObj.AppTypeId == 2)
+                    //{
+                    //    var ReasonHoldTitles = (from execlude in _context.SupplierExecludeReasons
+                    //                            join trans in _context.SupplierExecludes on execlude.Id equals trans.ReasonId
+                    //                            where trans.SupplierExecludeAssetId == item.Id
+                    //                              && item.AppTypeId == 2
+                    //                            select execlude).ToList();
+                    //    if (ReasonHoldTitles.Count > 0)
+                    //    {
+                    //        List<string> holdNames = new List<string>();
+                    //        foreach (var reason in ReasonHoldTitles)
+                    //        {
+                    //            holdNames.Add(reason.Name);
+                    //        }
+                    //        getDataObj.ReasonHoldTitles = string.Join(",", holdNames);
+                    //        List<string> holdNamesAr = new List<string>();
+                    //        foreach (var reason in ReasonHoldTitles)
+                    //        {
+                    //            holdNamesAr.Add(reason.NameAr);
+                    //        }
+                    //        getDataObj.ReasonHoldTitlesAr = string.Join(",", holdNamesAr);
+                    //    }
+                    //}
+
+                    list.Add(getDataObj);
+                }
+                mainClass.Results = list;
+                mainClass.Count = list.Count();
+            }
+            return mainClass;
         }
     }
 }

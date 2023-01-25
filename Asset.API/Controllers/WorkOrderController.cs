@@ -38,6 +38,7 @@ namespace Asset.API.Controllers
         private IWorkOrderTrackingService _workOrderTackingService;
 
         string strInsitute, strInsituteAr, strLogo = "";
+        bool isAgency, isScrap, isVisit, isExternalFix, isOpenRequest;
         private readonly ISettingService _settingService;
 
 
@@ -405,6 +406,25 @@ namespace Asset.API.Controllers
 
                     if (item.KeyName == "Logo")
                         strLogo = item.KeyValue;
+
+
+                    if (item.KeyName == "PMAgency")
+                        isAgency = Convert.ToBoolean(item.KeyValue);
+
+                    if (item.KeyName == "IsScrap")
+                        isScrap = Convert.ToBoolean(item.KeyValue);
+
+
+                    if (item.KeyName == "IsVisit")
+                        isVisit = Convert.ToBoolean(item.KeyValue);
+
+
+                    if (item.KeyName == "IsExternalFix")
+                        isExternalFix = Convert.ToBoolean(item.KeyValue);
+
+
+                    if (item.KeyName == "IsOpenRequest")
+                        isOpenRequest = Convert.ToBoolean(item.KeyValue);
                 }
             }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -721,9 +741,23 @@ namespace Asset.API.Controllers
                         strInsitute = item.KeyValue;
                         strInsituteAr = item.KeyValueAr;
                     }
-
                     if (item.KeyName == "Logo")
                         strLogo = item.KeyValue;
+
+                    if (item.KeyName == "PMAgency")
+                        isAgency = Convert.ToBoolean(item.KeyValue);
+
+                    if (item.KeyName == "IsScrap")
+                        isScrap = Convert.ToBoolean(item.KeyValue);
+
+                    if (item.KeyName == "IsVisit")
+                        isVisit = Convert.ToBoolean(item.KeyValue);
+
+                    if (item.KeyName == "IsExternalFix")
+                        isExternalFix = Convert.ToBoolean(item.KeyValue);
+
+                    if (item.KeyName == "IsOpenRequest")
+                        isOpenRequest = Convert.ToBoolean(item.KeyValue);
                 }
             }
 

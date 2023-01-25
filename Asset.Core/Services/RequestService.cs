@@ -248,5 +248,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.GetRequestsByDateAndStatus(requestDateObj);
         }
+
+        public IndexRequestVM GetAllRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.Request.GetAllRequestsByStatusIdAndPaging(userId, statusId, pageNumber, pageSize);
+        }
     }
 }

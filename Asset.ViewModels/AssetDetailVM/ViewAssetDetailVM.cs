@@ -57,6 +57,11 @@ namespace Asset.ViewModels.AssetDetailVM
         public string BrandName { get; set; }
         public string BrandNameAr { get; set; }
 
+        public string PeriorityName { get; set; }
+        public string PeriorityNameAr { get; set; }
+
+
+
         public int HospitalId { get; set; }
         public string HospitalName { get; set; }
         public string HospitalNameAr { get; set; }

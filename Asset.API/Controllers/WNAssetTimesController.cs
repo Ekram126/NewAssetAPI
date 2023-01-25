@@ -186,6 +186,35 @@ namespace Asset.API.Controllers
             return list;
         }
 
+
+
+
+        //[HttpGet]
+        //[Route("GetYearQuarters")]
+        //public List<Quarter> GetFiscalQuarters()
+        //{
+
+        //    TimeCalendar calendar = new TimeCalendar();
+        //    calendar.FiscalQuarterGrouping();
+
+
+        //    Year year = new Year(DateTime.Today.Year);
+        //    ITimePeriodCollection quarters = year.GetQuarters();
+           
+
+
+
+        //    List<Quarter> list = new List<Quarter>();
+        //    foreach (Quarter quarter in quarters)
+        //    {
+        //        list.Add(quarter);
+        //    }
+        //    return list;
+        //}
+
+
+
+
         [HttpPost]
         [Route("CreateAssetTimes/{year}/{hospitalId}")]
         public IActionResult CreateAssetTimes(int year, int hospitalId)

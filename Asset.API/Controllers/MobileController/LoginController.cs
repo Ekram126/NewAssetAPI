@@ -182,8 +182,13 @@ namespace Asset.API.Controllers.MobileController
                         if (item.KeyName == "Logo")
                             strLogo = item.KeyValue;
 
+
                         if (item.KeyName == "PMAgency")
                             isAgency = Convert.ToBoolean(item.KeyValue);
+
+                        if (item.KeyName == "IsScrap")
+                            isScrap = Convert.ToBoolean(item.KeyValue);
+
 
                         if (item.KeyName == "IsVisit")
                             isVisit = Convert.ToBoolean(item.KeyValue);

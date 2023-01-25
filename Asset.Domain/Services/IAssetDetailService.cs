@@ -88,5 +88,7 @@ namespace Asset.Domain.Services
 
         MobileAssetDetailVM GetAssetDetailById(string userId,int assetId);
         bool GenerateQrCodeForAllAssets(string domainName);
+
+        IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj);
     }
 }

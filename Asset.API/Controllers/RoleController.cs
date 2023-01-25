@@ -98,6 +98,18 @@ namespace Asset.API.Controllers
             return lstRoles;
         }
 
+        [HttpGet]
+        [Route("AddRoleToListById/{id}")]
+        public async Task<IActionResult> AddRoleToListById(string id)
+        {
+           
+            var updateObj = await _applicationRole.FindByIdAsync(id);
+            return Ok(updateObj);
+        }
+
+
+
+
         [HttpPost]
         [Route("AddRole")]
         public async Task<IActionResult> Create(ApplicationRole role)

@@ -72,6 +72,26 @@ namespace Asset.Core.Services
             return _unitOfWork.SupplierExecludeAssetRepository.GetAllByStatusIdAndAppTypeId(statusId, appTypeId);
         }
 
+        public IndexSupplierExecludeAssetVM GetAllSupplierExecludes(SearchSupplierExecludeAssetVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.GetAllSupplierExecludes(searchObj, statusId, appTypeId, hospitalId, pageNumber, pageSize);
+        }
+
+        public IndexSupplierExecludeAssetVM GetAllSupplierExecludes(SearchSupplierExecludeAssetVM searchObj)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.GetAllSupplierExecludes(searchObj);
+        }
+
+        public IndexSupplierExecludeAssetVM GetAllSupplierHoldes(SearchSupplierExecludeAssetVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.GetAllSupplierHoldes(searchObj, statusId, appTypeId, hospitalId, pageNumber, pageSize);
+        }
+
+        public IndexSupplierExecludeAssetVM GetAllSupplierHoldes(SearchSupplierExecludeAssetVM searchObj)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.GetAllSupplierHoldes(searchObj);
+        }
+
         public IEnumerable<SupplierExecludeAttachment> GetAttachmentBySupplierExecludeAssetId(int assetId)
         {
             return _unitOfWork.SupplierExecludeAssetRepository.GetAttachmentBySupplierExecludeAssetId(assetId);

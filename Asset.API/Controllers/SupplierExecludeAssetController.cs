@@ -92,6 +92,32 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpPost]
+        [Route("GetAllSupplierExecludes/{statusId}/{appTypeId}/{hospitalId}/{pageNumber}/{pageSize}")]
+        public IndexSupplierExecludeAssetVM GetAllSupplierExecludes(SearchSupplierExecludeAssetVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            var lstExcludes = _supplierExecludeAssetService.GetAllSupplierExecludes(searchObj, statusId, appTypeId, hospitalId, pageNumber, pageSize);
+            return lstExcludes;
+        }
+
+
+
+        [HttpPost]
+        [Route("GetAllSupplierHolds/{statusId}/{appTypeId}/{hospitalId}/{pageNumber}/{pageSize}")]
+        public IndexSupplierExecludeAssetVM GetAllSupplierHolds(SearchSupplierExecludeAssetVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize)
+        {
+            var lstHolds = _supplierExecludeAssetService.GetAllSupplierHoldes(searchObj, statusId, appTypeId, hospitalId, pageNumber, pageSize);
+            return lstHolds;
+        }
+
+
+
+
+
+
+
+
+
 
         [HttpPost]
         [Route("SearchSupplierExecludeAssetByDate/{pagenumber}/{pagesize}")]

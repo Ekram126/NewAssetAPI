@@ -95,5 +95,10 @@ namespace Asset.Domain.Repositories
         GeneratedAssetDetailBCVM GenerateAssetDetailBarcode();
         MobileAssetDetailVM GetAssetDetailById(string userId, int assetId);
         bool GenerateQrCodeForAllAssets(string domainName);
+
+
+
+        IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj);
+
     }
 }

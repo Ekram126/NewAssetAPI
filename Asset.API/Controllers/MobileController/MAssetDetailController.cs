@@ -111,7 +111,13 @@ namespace Asset.API.Controllers.MobileController
                 return Ok(new { data = list, msg = "Success", status = '1' });
         }
 
-
+        [HttpPost]
+        [Route("SearchAssetDetails")]
+        public IndexAssetDetailVM SearchInMasterAssets(SearchMasterAssetVM searchObj)
+        {
+            var list = _assetDetailService.MobSearchAssetInHospital(searchObj);
+            return list;
+        }
 
     }
 }
