@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,5 +20,8 @@ namespace Asset.Models
         public string FileName { get; set; }
         [StringLength(100)]
         public string Title { get; set; }
+
+        [NotMapped]
+        public IFormFile FileToUpload { get; set; }
     }
 }

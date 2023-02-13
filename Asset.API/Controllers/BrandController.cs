@@ -140,8 +140,13 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddBrand")]
-        public ActionResult<Brand> Add(CreateBrandVM BrandVM)
+        public ActionResult Add(CreateBrandVM BrandVM)
         {
+            if (BrandVM.Code.Length > 5)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "codelen", Message = "code must not be over 99999", MessageAr = "هذا الكود  لابد ألا يزيد عن خمس حروف أو أرقام" });
+
+            }
             var lstbrandsCode = _BrandService.GetAllBrands().ToList().Where(a => a.Code == BrandVM.Code).ToList();
             if (lstbrandsCode.Count > 0)
             {
@@ -160,7 +165,8 @@ namespace Asset.API.Controllers
             else
             {
                 var savedId = _BrandService.Add(BrandVM);
-                return CreatedAtAction("GetById", new { id = savedId }, BrandVM);
+                var brandObj = _BrandService.GetById(savedId);
+                return Ok(savedId);
             }
         }
 

@@ -21,8 +21,8 @@ namespace Asset.Core.Services
 
         public int Add(CreateSupplierVM supplierObj)
         {
-            _unitOfWork.SupplierRepository.Add(supplierObj);
-            return _unitOfWork.CommitAsync();
+            return _unitOfWork.SupplierRepository.Add(supplierObj);
+           // return _unitOfWork.CommitAsync();
         }
 
         public int CountSuppliers()
@@ -83,6 +83,11 @@ namespace Asset.Core.Services
         public IEnumerable<IndexSupplierVM.GetData> FindSupplierByText(string strText)
         {
             return _unitOfWork.SupplierRepository.FindSupplierByText(strText);
+        }
+
+        public IndexSupplierVM GetAllSuppliersWithPaging(int pageNumber, int pageSize)
+        {
+            return _unitOfWork.SupplierRepository.GetAllSuppliersWithPaging(pageNumber, pageSize);
         }
     }
 }

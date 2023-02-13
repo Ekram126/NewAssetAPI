@@ -1089,17 +1089,16 @@ namespace Asset.Core.Repositories
 
 
 
-                //  getDataObj.ListTracks = _context.orderuestTracking.Where(a => a.orderuestId == order.Id)
-                //          .ToList().Select(item => new IndexorderuestTrackingVM.GetData
-                //          {
-                //              Id = item.Id,
-                //              StatusName = _context.orderuestStatus.Where(a => a.Id == item.orderuestStatusId).First().StatusName,
-                //              Description = item.Description,
-                //              Date = item.DescriptionDate,
-                //              StatusId = item.orderuestStatusId,
-                //              isExpanded = (_context.orderuestDocument.Where(a => a.orderuestTrackingId == item.Id).Count()) > 0 ? true : false,
-                //              ListDocuments = _context.orderuestDocument.Where(a => a.orderuestTrackingId == item.Id).ToList(),
-                //          }).ToList();
+                //getDataObj.ListTracks = _context.orderuestTracking.Where(a => a.orderuestId == order.Id)
+                //        .ToList().Select(item => new IndexorderuestTrackingVM.GetData
+                //        {
+                //            Id = item.Id,
+                //            StatusName = _context.WorkOrderStatuses.Where(a => a.Id == item.orderuestStatusId).First().StatusName,
+                //            Description = item.Description,
+                //            Date = item.DescriptionDate,
+                //            StatusId = item.orderuestStatusId,
+                //            ListDocuments = _context.orderuestDocument.Where(a => a.orderuestTrackingId == item.Id).ToList(),
+                //        }).ToList();
                 list.Add(getDataObj);
             }
 
@@ -1189,15 +1188,6 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
-
-
-
-
-
-
-
-
-
 
         public IEnumerable<IndexWorkOrderVM> GetworkOrderByUserAssetId(int assetId, string userId)
         {
@@ -1378,13 +1368,6 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
-
-
-
-
-
-
-
 
         public PrintWorkOrderVM PrintWorkOrderById(int id)
         {
@@ -1848,12 +1831,6 @@ namespace Asset.Core.Repositories
             return lstData;
         }
 
-
-
-
-
-
-
         public IndexWorkOrderVM2 SearchWorkOrders(SearchWorkOrderVM searchObj, int pageNumber, int pageSize)
         {
             IndexWorkOrderVM2 mainClass = new IndexWorkOrderVM2();
@@ -2146,18 +2123,6 @@ namespace Asset.Core.Repositories
             mainClass.Count = lstData.Count();
             return mainClass;
         }
-
-
-
-
-
-
-
-
-
-
-
-
 
         public IEnumerable<IndexWorkOrderVM> SortWorkOrders(int hosId, string userId, SortWorkOrderVM sortObj, int statusId)
         {
@@ -3779,13 +3744,6 @@ namespace Asset.Core.Repositories
 
         }
 
-
-
-
-
-
-
-
         public IndexWorkOrderVM2 GetAllWorkOrdersByHospitalIdAndPaging2(int? hospitalId, string userId, int statusId, int pageNumber, int pageSize)
         {
             IndexWorkOrderVM2 mainClass = new IndexWorkOrderVM2();
@@ -4037,13 +3995,6 @@ namespace Asset.Core.Repositories
 
         }
 
-
-
-
-
-
-
-
         public int GetWorkOrdersCountByStatusIdAndPaging(int? hospitalId, string userId, int statusId)
         {
             IQueryable<WorkOrder> lstWorkOrders = _context.WorkOrders
@@ -4284,8 +4235,6 @@ namespace Asset.Core.Repositories
             return mainClass;
         }
 
-
-
         public IndexWorkOrderVM2 GetWorkOrdersByDateAndStatus(SearchWorkOrderByDateVM woDateObj)
         {
             IndexWorkOrderVM2 mainClass = new IndexWorkOrderVM2();
@@ -4358,7 +4307,7 @@ namespace Asset.Core.Repositories
                 lstWorkOrders = lstWorkOrders.ToList();
             }
 
-  
+
             if (start != null && end != null)
             {
                 lstWorkOrders = lstWorkOrders.Where(a => a.FirstOrDefault().WorkOrder.CreationDate >= start.Value && a.FirstOrDefault().WorkOrder.CreationDate <= end.Value).ToList();
@@ -4413,7 +4362,7 @@ namespace Asset.Core.Repositories
 
                     work.Note = item.FirstOrDefault().Notes;
                     if (work.WorkOrderStatusId == 12)
-                    {                           
+                    {
                         work.ClosedDate = item.FirstOrDefault().CreationDate;
                     }
                     else
@@ -4454,9 +4403,6 @@ namespace Asset.Core.Repositories
 
 
         }
-
-
-
 
         public List<IndexWorkOrderVM2.GetData> PrintListOfWorkOrders(List<ExportWorkOrderVM> workOrders)
         {
@@ -4544,6 +4490,65 @@ namespace Asset.Core.Repositories
                 lstData.Add(getDataObj);
             }
             return lstData;
+        }
+
+        public IndexWorkOrderVM GetMobileWorkOrderByRequestUserId(int requestId, string userId)
+        {
+
+            IndexWorkOrderVM workOrderVM = new IndexWorkOrderVM();
+
+            ApplicationUser UserObj = new ApplicationUser();
+            ApplicationRole roleObj = new ApplicationRole();
+            string userRoleName = "";
+            var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+            if (obj.Count > 0)
+            {
+                UserObj = obj[0];
+
+                var lstRoles = _context.ApplicationRole.Where(a => a.Id == UserObj.RoleId).ToList();
+                if (lstRoles.Count > 0)
+                {
+                    roleObj = lstRoles[0];
+                    userRoleName = roleObj.Name;
+                }
+            }
+
+            var lstWorkOrders = _context.WorkOrders
+                                .Include(w => w.Request)
+                                .Include(w => w.WorkOrderType)
+                                .Include(w => w.WorkOrderPeriority)
+                                .Include(w => w.User)
+                                .Where(a => a.RequestId == requestId).ToList();
+
+            if (lstWorkOrders.Count > 0)
+            {
+                var workOrderDBObj = lstWorkOrders[0];
+                workOrderVM.Id = workOrderDBObj.Id;
+                workOrderVM.Subject = workOrderDBObj.Subject;
+                workOrderVM.UserName = workOrderDBObj.User.UserName;
+                workOrderVM.WorkOrderNumber = workOrderDBObj.WorkOrderNumber;
+                workOrderVM.CreationDate = workOrderDBObj.CreationDate;
+                workOrderVM.Note = workOrderDBObj.Note;
+                workOrderVM.WorkOrderPeriorityName = workOrderDBObj.WorkOrderPeriority.Name;
+                workOrderVM.WorkOrderTypeName = workOrderDBObj.WorkOrderType.Name;
+                workOrderVM.RequestId = workOrderDBObj.RequestId != null ? (int)workOrderDBObj.RequestId : 0;
+                workOrderVM.RequestSubject = workOrderDBObj.Request.Subject;
+                workOrderVM.HospitalId = workOrderDBObj.HospitalId;
+
+                workOrderVM.ListTracks = _context.WorkOrderTrackings.Include(a => a.WorkOrderStatus).Where(a => a.WorkOrderId == workOrderDBObj.Id)
+                      .ToList().Select(item => new LstWorkOrderFromTracking
+                      {
+                          Id = item.Id,
+                          StatusName = item.WorkOrderStatus.Name,
+                          StatusNameAr = item.WorkOrderStatus.NameAr,
+                          Notes = item.Notes,
+                          WorkOrderDate = DateTime.Parse(item.WorkOrderDate.ToString()),
+                          WorkOrderStatusId = item.WorkOrderStatusId,
+                          WorkOrderStatusColor = item.WorkOrderStatus.Color
+                      }).ToList();
+                return workOrderVM;
+            }
+            return workOrderVM;
         }
     }
 }

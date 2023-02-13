@@ -104,7 +104,7 @@ namespace Asset.Core
         private StockTakingScheduleRepository _stockTakingScheduleRepository;
         private StockTakingHospitalRepository _stockTakingHospitalRepository;
 
-
+        
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -290,7 +290,8 @@ namespace Asset.Core
         public IStockTakingHospitalRepository StockTakingHospitalRepository => _stockTakingHospitalRepository = _stockTakingHospitalRepository ?? new StockTakingHospitalRepository(_context);
 
         public IStockTakingScheduleRepository StockTakingScheduleRepository => _stockTakingScheduleRepository = _stockTakingScheduleRepository ?? new StockTakingScheduleRepository(_context);
-      
+
+
     }
 }
 

@@ -50,6 +50,8 @@ namespace Asset.Models
         public int? BrandId { get; set; }
         [ForeignKey("BrandId")]
         public virtual Brand brand { get; set; }
+
+
         public int? PMTimeId { get; set; }
 
         public int? CategoryId { get; set; }

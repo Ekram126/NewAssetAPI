@@ -36,7 +36,7 @@ namespace Asset.API.Controllers.MobileController
         private readonly ISettingService _settingService;
 
         string strInsitute, strInsituteAr, strLogo = "";
-        bool isAgency, isScrap, isVisit, isExternalFix, isOpenRequest;
+        bool isAgency, isScrap, isVisit, isExternalFix, isOpenRequest, canAdd;
 
         public LoginController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IEmailSender emailSender, IConfiguration configuration, ISettingService settingService, ApplicationDbContext context)
         {
@@ -200,6 +200,8 @@ namespace Asset.API.Controllers.MobileController
 
                         if (item.KeyName == "IsOpenRequest")
                             isOpenRequest = Convert.ToBoolean(item.KeyValue);
+                        if (item.KeyName == "CanAdd")
+                            canAdd = Convert.ToBoolean(item.KeyValue);
                     }
                 }
 
@@ -229,7 +231,8 @@ namespace Asset.API.Controllers.MobileController
                     isScrap = isScrap,
                     isVisit = isVisit,
                     isOpenRequest = isOpenRequest,
-                    isExternalFix = isExternalFix
+                    isExternalFix = isExternalFix,
+                    canAdd= canAdd
                 };
 
 

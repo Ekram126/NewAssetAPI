@@ -13,11 +13,6 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public int Count { get; set; }
 
-
-
-
-
-
         public class GetData
         {
             public int Id { get; set; }

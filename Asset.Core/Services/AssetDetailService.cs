@@ -180,15 +180,11 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.SortAssets(sortObj);
         }
-        //public IndexAssetDetailVM SortAssets(Sort sortObj, int hospitalId, int statusId, string userId, int pageNumber, int pageSize)
-        //{
-        //    return _unitOfWork.AssetDetailRepository.SortAssets(sortObj, hospitalId, statusId, userId, pageNumber, pageSize);
-        //}
 
 
-        public IndexAssetDetailVM SortAssets(Sort sortObj,int statusId, string userId)
+        public IndexAssetDetailVM SortAssets(Sort sortObj, int statusId, string userId)
         {
-            return _unitOfWork.AssetDetailRepository.SortAssets(sortObj,  statusId, userId);
+            return _unitOfWork.AssetDetailRepository.SortAssets(sortObj, statusId, userId);
         }
 
 
@@ -331,7 +327,7 @@ namespace Asset.Core.Services
         public IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskScheduleByAssetId(int? assetId)
         {
             return _unitOfWork.AssetDetailRepository.GetAllPMAssetTaskScheduleByAssetId(assetId);
-            
+
         }
 
         public MobileAssetDetailVM GetAssetDetailById(string userId, int assetId)
@@ -347,6 +343,16 @@ namespace Asset.Core.Services
         public IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj)
         {
             return _unitOfWork.AssetDetailRepository.MobSearchAssetInHospital(searchObj);
+        }
+
+        public IndexAssetDetailVM AlertAssetsBefore3Monthes(int duration, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.AlertAssetsBefore3Monthes(duration, pageNumber, pageSize);
+        }
+
+        public IndexAssetDetailVM SearchHospitalAssetsByHospitalId(SearchMasterAssetVM searchObj)
+        {
+            return _unitOfWork.AssetDetailRepository.SearchHospitalAssetsByHospitalId(searchObj);
         }
     }
 }

@@ -82,7 +82,7 @@ namespace Asset.API.Controllers
         [HttpPut]
         [Route("UpdateDepartment/{id}")]
         public IActionResult Update(EditDepartmentVM DepartmentVM)
-        { 
+        {
             try
             {
                 int id = DepartmentVM.Id;
@@ -113,8 +113,13 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddDepartment")]
-        public ActionResult<Department> Add(CreateDepartmentVM DepartmentVM)
+        public ActionResult Add(CreateDepartmentVM DepartmentVM)
         {
+            if (DepartmentVM.Code.Length > 5)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "codelen", Message = "Department code should not exceed 5 characters", MessageAr = "هذا الكود لا يزيد عن 5 حروف وأرقام " });
+
+            }
             var lstDepartmentCode = _DepartmentService.GetAllDepartments().ToList().Where(a => a.Code == DepartmentVM.Code).ToList();
             if (lstDepartmentCode.Count > 0)
             {
@@ -128,9 +133,45 @@ namespace Asset.API.Controllers
             else
             {
                 var savedId = _DepartmentService.Add(DepartmentVM);
-                return CreatedAtAction("GetById", new { id = savedId }, DepartmentVM);
+                return Ok(savedId);// CreatedAtAction("GetById", new { id = savedId }, DepartmentVM);
             }
         }
+
+
+
+
+
+        [HttpPost]
+        [Route("AddDepartmentToHospital")]
+        public ActionResult AddDepartmentToHospital(CreateDepartmentVM DepartmentVM)
+        {
+            if (DepartmentVM.Code.Length > 5)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "codelen", Message = "Department code should not exceed 5 characters", MessageAr = "هذا الكود لا يزيد عن 5 حروف وأرقام " });
+
+            }
+            var lstDepartmentCode = _DepartmentService.GetAllDepartments().ToList().Where(a => a.Code == DepartmentVM.Code).ToList();
+            if (lstDepartmentCode.Count > 0)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "Department code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
+            }
+            var lstDepartmentNames = _DepartmentService.GetAllDepartments().ToList().Where(a => a.Name == DepartmentVM.Name).ToList();
+            if (lstDepartmentNames.Count > 0)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Department name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+            }
+            else
+            {
+                var savedId = _DepartmentService.AddDepartmentToHospital(DepartmentVM);
+                return Ok(savedId);
+            }
+        }
+
+
+
+
+
+
 
         [HttpDelete]
         [Route("DeleteDepartment/{id}")]

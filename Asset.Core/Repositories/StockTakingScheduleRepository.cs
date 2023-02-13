@@ -5,6 +5,7 @@ using Asset.ViewModels.StockTakingScheduleVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,24 +32,7 @@ namespace Asset.Core.Repositories
         //            return _context.SaveChanges();
         //        }
         //    }
-        public IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll()
-        {
-            return _context.StockTakingSchedules
-                .Include(a => a.ApplicationUser)
-                .ToList().Select(item => new IndexStockTakingScheduleVM.GetData
-                {
-                    Id = item.Id,
-                    STCode = item.STCode,
-                    StartDate = item.StartDate,
-                    EndDate = item.EndDate,
-                    CreationDate = item.CreationDate,
-                    UserName = item.ApplicationUser.UserName,
 
-
-                });
-
-
-        }
 
         //public IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll()
         //{
@@ -76,6 +60,7 @@ namespace Asset.Core.Repositories
         //{
         //    throw new NotImplementedException();
         //}
+        //  Guid guid { get; set; }
         public int Add(CreateStockTakingScheduleVM model)
         {
 
@@ -94,13 +79,16 @@ namespace Asset.Core.Repositories
                     _context.StockTakingSchedules.Add(stockTakingScheduleObj);
                     _context.SaveChanges();
                     var stscheduleId = stockTakingScheduleObj.Id;
-                    foreach (var hospitalId in model.ListHospitalIds)
+                    if (model.ListHospitalIds.Count > 0)
                     {
-                        StockTakingHospital stockTakingHospitalObj = new StockTakingHospital();
-                        stockTakingHospitalObj.HospitalId = hospitalId;
-                        stockTakingHospitalObj.STSchedulesId = stscheduleId;
-                        _context.StockTakingSchedules.Add(stockTakingScheduleObj);
-                        _context.SaveChanges();
+                        foreach (var hospitalId in model.ListHospitalIds)
+                        {
+                            StockTakingHospital stockTakingHospitalObj = new StockTakingHospital();
+                            stockTakingHospitalObj.HospitalId = hospitalId;
+                            stockTakingHospitalObj.STSchedulesId = stscheduleId;
+                            _context.StockTakingHospitals.Add(stockTakingHospitalObj);
+                            _context.SaveChanges();
+                        }
                     }
                     return stockTakingScheduleObj.Id;
                 }
@@ -145,17 +133,19 @@ namespace Asset.Core.Repositories
             return _context.SaveChanges();
         }
 
+
+
         public IndexStockTakingScheduleVM GetAllWithPaging(int pageNumber, int pageSize)
         {
             IndexStockTakingScheduleVM mainClass = new IndexStockTakingScheduleVM();
             List<IndexStockTakingScheduleVM.GetData> list = new List<IndexStockTakingScheduleVM.GetData>();
-            var lsStockTakingSchedules = _context.StockTakingSchedules.Include(a=>a.ApplicationUser).ToList();
-            
+            var lsStockTakingSchedules = _context.StockTakingSchedules.Include(a => a.ApplicationUser).ToList();
+
 
 
             foreach (var schdule in lsStockTakingSchedules)
             {
-                var lsStockTakingHospitals = _context.StockTakingHospitals.Include(a=>a.Hospital)
+                var lsStockTakingHospitals = _context.StockTakingHospitals.Include(a => a.Hospital)
                     .Where(a => a.STSchedulesId == schdule.Id).ToList();
 
                 IndexStockTakingScheduleVM.GetData item = new IndexStockTakingScheduleVM.GetData();
@@ -165,8 +155,17 @@ namespace Asset.Core.Repositories
                 item.EndDate = schdule.EndDate;
                 item.CreationDate = schdule.CreationDate;
                 item.UserName = schdule.ApplicationUser.UserName;
-                item.HospitalName = lsStockTakingHospitals[0].Hospital.Name;
-                item.HospitalNameAr = lsStockTakingHospitals[0].Hospital.NameAr;
+
+                item.RelatedHospitals = _context.StockTakingHospitals.Include(a => a.Hospital)
+                    .Where(a => a.STSchedulesId == schdule.Id).ToList().Select(hospital => new RelatedHospital()
+                    {
+                        Name = hospital.Hospital.Name,
+                        NameAr = hospital.Hospital.NameAr,
+                    }).ToList();
+
+
+                //item.HospitalName = lsStockTakingHospitals[0].Hospital.Name;
+                //item.HospitalNameAr = lsStockTakingHospitals[0].Hospital.NameAr;
                 list.Add(item);
             }
 
@@ -176,9 +175,111 @@ namespace Asset.Core.Repositories
             return mainClass;
         }
 
-        public object GetById(int id)
+        public IndexStockTakingScheduleVM.GetData GetById(int id)
+
         {
-            throw new NotImplementedException();
+            var result = new IndexStockTakingScheduleVM.GetData (); 
+            List<IndexStockTakingScheduleVM.GetData> list = new List<IndexStockTakingScheduleVM.GetData>();
+            var lsStockTakingSchedules = _context.StockTakingSchedules.Include(a => a.ApplicationUser).ToList();
+
+
+
+            foreach (var schdule in lsStockTakingSchedules)
+            {
+                var lsStockTakingHospitals = _context.StockTakingHospitals.Include(a => a.Hospital)
+                    .Where(a => a.STSchedulesId == schdule.Id).ToList();
+
+                IndexStockTakingScheduleVM.GetData item = new IndexStockTakingScheduleVM.GetData();
+                item.Id = schdule.Id;
+                item.STCode = schdule.STCode;
+                item.StartDate = schdule.StartDate;
+                item.EndDate = schdule.EndDate;
+                item.CreationDate = schdule.CreationDate;
+                item.UserName = schdule.ApplicationUser.UserName;
+
+                item.RelatedHospitals = _context.StockTakingHospitals.Include(a => a.Hospital)
+                    .Where(a => a.STSchedulesId == schdule.Id).ToList().Select(hospital => new RelatedHospital()
+                    {
+                        Name = hospital.Hospital.Name,
+                        NameAr = hospital.Hospital.NameAr,
+                    }).ToList();
+
+
+                //item.HospitalName = lsStockTakingHospitals[0].Hospital.Name;
+                //item.HospitalNameAr = lsStockTakingHospitals[0].Hospital.NameAr;
+                list.Add(item);
+            }
+            if(list.Count> 0)
+            {
+                result = list.Where(a => a.Id == id).ToList().FirstOrDefault();
+                result.RelatedHospitals = _context.StockTakingHospitals.Include(a => a.Hospital)
+                    .Where(a => a.STSchedulesId == result.Id).ToList().Select(hospital => new RelatedHospital()
+                    {
+                        Name = hospital.Hospital.Name,
+                        NameAr = hospital.Hospital.NameAr,
+                    }).ToList();
+            }
+
+            return result;
+
+
+        }
+
+
+        /*
+         *  GenerateExternalFixNumberVM numberObj = new GenerateExternalFixNumberVM();
+            string str = "ExtrnlFix";
+
+            var lstIds = _context.ExternalFixes.ToList();
+            if (lstIds.Count > 0)
+            {
+                var code = lstIds.LastOrDefault().Id;
+                numberObj.OutNumber = str + (code + 1);
+            }
+            else
+            {
+                numberObj.OutNumber = str + 1;
+            }
+
+            return numberObj;
+         * *
+         */
+
+
+        public GenerateStockScheduleTakingNumberVM GenerateStockScheduleTakingNumber()
+        {
+            GenerateStockScheduleTakingNumberVM generatedNumber = new GenerateStockScheduleTakingNumberVM();
+            string str = "ST";
+            var lstIds = _context.StockTakingSchedules.ToList();
+            if (lstIds.Count > 0)
+            {
+                var code = lstIds.LastOrDefault().Id;
+                generatedNumber.OutNumber = str + (code + 1);
+
+            }
+            else
+            {
+                generatedNumber.OutNumber = str + 1;
+            }
+            return generatedNumber;
+        }
+
+        public IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll()
+        {
+            return _context.StockTakingSchedules
+                 .Include(a => a.ApplicationUser)
+                 .ToList().Select(item => new IndexStockTakingScheduleVM.GetData
+                 {
+                     Id = item.Id,
+                     STCode = item.STCode,
+                     StartDate = item.StartDate,
+                     EndDate = item.EndDate,
+                     CreationDate = item.CreationDate,
+                     UserName = item.ApplicationUser.UserName,
+
+
+                 });
+
         }
     }
 

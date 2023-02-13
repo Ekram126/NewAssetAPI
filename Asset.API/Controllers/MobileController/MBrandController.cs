@@ -51,5 +51,14 @@ namespace Asset.API.Controllers.MobileController
                 return Ok(new { data = lstMasterAssetBrands, msg = "Success", status = '1' });
         }
 
+        [HttpGet]
+        [Route("GetTop10BrandsCount/{hospitalId}")]
+        public ActionResult GetTop10BrandsCount(int hospitalId)
+        {
+            var total = _brandService.GetTop10Brands(hospitalId).ToList().Count;
+
+            return Ok(new { data = total.ToString(), msg = "Success", status = '1' });
+        }
+
     }
 }

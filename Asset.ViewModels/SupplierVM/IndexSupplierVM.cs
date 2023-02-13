@@ -23,6 +23,9 @@ namespace Asset.ViewModels.SupplierVM
             public string EMail { get; set; }
             public string Address { get; set; }
             public string AddressAr { get; set; }
+            public string ContactPerson { get; set; }
+            public string Fax { get; set; }
+            public string Notes { get; set; }
         }
     }
 }

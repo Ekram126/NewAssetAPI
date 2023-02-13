@@ -50,7 +50,7 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public List<int?> ListOwners { get; set; }
         public string QrFilePath { get; set; }
-
+        public string QrData { get; set; }
         public string BuildName { get; set; }
         public string BuildNameAr { get; set; }
         public string FloorName { get; set; }

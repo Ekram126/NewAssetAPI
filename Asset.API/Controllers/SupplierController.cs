@@ -41,6 +41,13 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpPost]
+        [Route("GetAllSuppliersWithPaging/{pagenumber}/{pagesize}")]
+        public IndexSupplierVM GetAllSuppliersWithPaging(int pagenumber, int pagesize)
+        {
+            return _SupplierService.GetAllSuppliersWithPaging(pagenumber, pagesize);
+        }
+
         [HttpGet]
         [Route("GetTop10Suppliers/{hospitalId}")]
         public IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers(int hospitalId)
@@ -77,9 +84,9 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("FindSupplier/{strText}/{pagenumber}/{pagesize}")]
-        public IndexSupplierVM FindSupplier(string strText,int pageNumber, int pageSize)
+        public IndexSupplierVM FindSupplier(string strText, int pageNumber, int pageSize)
         {
-            var lstSuppliers = _SupplierService.FindSupplier(strText,pageNumber,pageSize);
+            var lstSuppliers = _SupplierService.FindSupplier(strText, pageNumber, pageSize);
             return lstSuppliers;
         }
 
@@ -149,7 +156,7 @@ namespace Asset.API.Controllers
                 else
                 {
                     int updatedRow = _SupplierService.Update(SupplierVM);
-               }
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -163,8 +170,13 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddSupplier")]
-        public ActionResult<Supplier> Add(CreateSupplierVM SupplierVM)
+        public ActionResult Add(CreateSupplierVM SupplierVM)
         {
+            if (SupplierVM.Code.Length > 5)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "codelen", Message = "Supplier code must not exceed 5 characters", MessageAr = "هذا الكود لا يتعدي 5 حروف وأرقام" });
+
+            }
             var lstOrgCode = _SupplierService.GetAllSuppliers().ToList().Where(a => a.Code == SupplierVM.Code).ToList();
             if (lstOrgCode.Count > 0)
             {
@@ -183,7 +195,7 @@ namespace Asset.API.Controllers
             else
             {
                 var savedId = _SupplierService.Add(SupplierVM);
-                return CreatedAtAction("GetById", new { id = savedId }, SupplierVM);
+                return Ok(savedId);// CreatedAtAction("GetById", new { id = savedId }, SupplierVM);
             }
         }
 
@@ -193,20 +205,20 @@ namespace Asset.API.Controllers
         {
             try
             {
-               var supplierObj = _SupplierService.GetById(id);
+                var supplierObj = _SupplierService.GetById(id);
                 var lstHospitalAssets = _assetDetailService.GetAll().Where(a => a.SupplierId == supplierObj.Id).ToList();
                 if (lstHospitalAssets.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "hostassets", Message = "Hospital Assets has this supplier", MessageAr = "أصول المستشفى بها منتجات من هذا المورد" });
                 }
-                var lstMasterContracts= _masterContractService.GetAll().Where(a => a.SupplierId == supplierObj.Id).ToList();
+                var lstMasterContracts = _masterContractService.GetAll().Where(a => a.SupplierId == supplierObj.Id).ToList();
                 if (lstMasterContracts.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "contract", Message = "Contract has this supplier", MessageAr = "العقد به هذا المورد" });
                 }
                 else
                 {
-                   int deletedRow = _SupplierService.Delete(id);
+                    int deletedRow = _SupplierService.Delete(id);
                 }
             }
             catch (DbUpdateConcurrencyException ex)

@@ -17,11 +17,12 @@ namespace Asset.API.Controllers.MobileController
     public class MDepartmentController : ControllerBase
     {
         private IDepartmentService _DepartmentService;
+        private IHospitalService _hospitalService;
 
-        public MDepartmentController(IDepartmentService DepartmentService)
+        public MDepartmentController(IDepartmentService DepartmentService, IHospitalService hospitalService)
         {
             _DepartmentService = DepartmentService;
-
+            _hospitalService = hospitalService;
         }
 
         [HttpGet]
@@ -37,6 +38,16 @@ namespace Asset.API.Controllers.MobileController
             else
                 return Ok(new { data = list, msg = "Success", status = '1' });
         }
+
+
+        [HttpGet]
+        [Route("CountDepartments/{hospitalId}")]
+        public ActionResult CountDepartments(int hospitalId)
+        {
+            var total= _hospitalService.CountDepartmentsByHospitalId(hospitalId);
+            return Ok(new { data = total.ToString(), msg = "Success", status = '1' });
+        }
+
 
     }
 }

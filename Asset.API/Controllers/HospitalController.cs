@@ -141,6 +141,14 @@ namespace Asset.API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetSelectedHospitalDepartmentByDepartmentId/{hospitalId}/{departmentId}")]
+        public IndexHospitalDepartmentVM.GetData GetSelectedHospitalDepartmentByDepartmentId(int hospitalId,int departmentId)
+        {
+            return _HospitalService.GetSelectedHospitalDepartmentByDepartmentId(hospitalId,departmentId);
+        }
+
+
 
         [HttpPost]
         [Route("SearchInHospitals/{pagenumber}/{pagesize}")]

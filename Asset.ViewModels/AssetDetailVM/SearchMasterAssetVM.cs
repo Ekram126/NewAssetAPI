@@ -25,12 +25,17 @@ namespace Asset.ViewModels.AssetDetailVM
         public int? MasterAssetId { get; set; }
         public string UserId { get; set; }
         public string AssetName { get; set; }
+        public string AssetNameAr { get; set; }
         public string Serial { get; set; }
 
         public string Code { get; set; }
         public string BarCode { get; set; }
         public string Model { get; set; }
 
+        public string StrSearch { get; set; }
+        public decimal? Price { get; set; }
+
+        public DateTime? PurchaseDate { get; set; }
 
     }
 }

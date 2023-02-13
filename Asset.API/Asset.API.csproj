@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="UploadedAttachments\QrTemplates\~WRL0003.tmp" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="bin\Debug\net5.0\appsettings.Development.json" />
     <Content Include="bin\Debug\net5.0\appsettings.json" />
     <Content Include="bin\Debug\net5.0\Asset.API.deps.json" />
@@ -53,7 +57,6 @@
     <Folder Include="UploadedAttachments\UploadScrapFiles\" />
     <Folder Include="UploadedAttachments\SRWOReports\" />
     <Folder Include="UploadedAttachments\WOReports\" />
-    <Folder Include="UploadedAttachments\SRReports\" />
     <Folder Include="UploadedAttachments\qrFiles\" />
     <Folder Include="UploadedAttachments\SupplierExecludeAssets\" />
     <Folder Include="wwwroot\" />

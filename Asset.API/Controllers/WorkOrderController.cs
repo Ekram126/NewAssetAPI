@@ -38,7 +38,7 @@ namespace Asset.API.Controllers
         private IWorkOrderTrackingService _workOrderTackingService;
 
         string strInsitute, strInsituteAr, strLogo = "";
-        bool isAgency, isScrap, isVisit, isExternalFix, isOpenRequest;
+        bool isAgency, isScrap, isVisit, isExternalFix, isOpenRequest, canAdd;
         private readonly ISettingService _settingService;
 
 
@@ -425,6 +425,9 @@ namespace Asset.API.Controllers
 
                     if (item.KeyName == "IsOpenRequest")
                         isOpenRequest = Convert.ToBoolean(item.KeyValue);
+
+                    if (item.KeyName == "CanAdd")
+                        canAdd = Convert.ToBoolean(item.KeyValue);
                 }
             }
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -758,6 +761,9 @@ namespace Asset.API.Controllers
 
                     if (item.KeyName == "IsOpenRequest")
                         isOpenRequest = Convert.ToBoolean(item.KeyValue);
+
+                    if (item.KeyName == "CanAdd")
+                        canAdd = Convert.ToBoolean(item.KeyValue);
                 }
             }
 

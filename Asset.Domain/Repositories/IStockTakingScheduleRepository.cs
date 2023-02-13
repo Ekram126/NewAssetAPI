@@ -13,15 +13,13 @@ namespace Asset.Domain.Repositories
     {
         IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll();
 
-        IndexStockTakingScheduleVM GetAllWithPaging(int pageNumber,int pageSize);
+        IndexStockTakingScheduleVM GetAllWithPaging(int pageNumber, int pageSize);
 
         // EditStockTakingScheduleVM GetById(int id);
         int Add(CreateStockTakingScheduleVM createStockTakingScheduleObj);
         int Delete(int id);
-        object GetById(int id);
-
-
-
-        
+        // object GetById(int id);
+        IndexStockTakingScheduleVM.GetData GetById(int id);
+        GenerateStockScheduleTakingNumberVM GenerateStockScheduleTakingNumber();
     }
 }

@@ -132,5 +132,11 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.HospitalRepository.CountDepartmentsByHospitalId(hospitalId);
         }
+
+        public IndexHospitalDepartmentVM.GetData GetSelectedHospitalDepartmentByDepartmentId(int hospitalId, int departmentId)
+        {
+            return _unitOfWork.HospitalRepository.GetSelectedHospitalDepartmentByDepartmentId(hospitalId, departmentId);
+            
+        }
     }
 }

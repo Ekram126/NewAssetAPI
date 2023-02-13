@@ -23,15 +23,6 @@ namespace Asset.Core.Repositories
 
         public EditDepartmentVM GetById(int id)
         {
-            //var DepartmentObj = _context.Departments.Where(a => a.Id == id).Select(item => new EditDepartmentVM
-            //{
-            //    Id = item.Id,
-            //    Code = item.Code,
-            //    Name = item.Name,
-            //    NameAr = item.NameAr,
-
-            //}).First();
-
             EditDepartmentVM departmentObj = new EditDepartmentVM();
             var lstDepartments = _context.Departments.Where(a => a.Id == id).ToList();
             if (lstDepartments.Count > 0)
@@ -185,6 +176,36 @@ namespace Asset.Core.Repositories
                 });
             }
 
+        }
+
+        public int AddDepartmentToHospital(CreateDepartmentVM departmentObj)
+        {
+            Department DepartmentObj = new Department();
+            try
+            {
+                if (departmentObj != null)
+                {
+
+                    DepartmentObj.Code = departmentObj.Code;
+                    DepartmentObj.Name = departmentObj.Name;
+                    DepartmentObj.NameAr = departmentObj.NameAr;
+                    _context.Departments.Add(DepartmentObj);
+                   _context.SaveChanges();
+                    var departId = DepartmentObj.Id;
+
+                   HospitalDepartment hospitalDepartmentObj = new HospitalDepartment();
+                    hospitalDepartmentObj.HospitalId = departmentObj.HospitalId;
+                    hospitalDepartmentObj.DepartmentId = departId;
+                    hospitalDepartmentObj.IsActive = true;
+                    _context.HospitalDepartments.Add(hospitalDepartmentObj);
+                    _context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+            return DepartmentObj.Id;
         }
     }
 }

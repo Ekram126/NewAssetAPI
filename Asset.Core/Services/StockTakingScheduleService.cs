@@ -4,6 +4,7 @@ using Asset.Models;
 using Asset.ViewModels.StockTakingScheduleVM;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,12 +30,12 @@ namespace Asset.Core.Services
             return 1;
         }
 
-   
-        public IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll()
-        {
-            return _unitOfWork.StockTakingScheduleRepository.GetAll();
-        }
+        //public IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll()
+        //{
+        //    return _unitOfWork.StockTakingScheduleRepository.GetAll();
+        //}
 
+       
         public int Add(CreateStockTakingScheduleVM stockTakingScheduleObj)
         {
             return _unitOfWork.StockTakingScheduleRepository.Add(stockTakingScheduleObj);
@@ -43,13 +44,23 @@ namespace Asset.Core.Services
 
 
 
-        public object GetById(int id)
+        public IndexStockTakingScheduleVM.GetData GetById(int id)
         {
-            throw new NotImplementedException();
+            return _unitOfWork.StockTakingScheduleRepository.GetById(id);
         }
         public IndexStockTakingScheduleVM GetAllWithPaging(int pageNumber, int pageSize)
         {
             return _unitOfWork.StockTakingScheduleRepository.GetAllWithPaging( pageNumber, pageSize);
+        }
+
+        public GenerateStockScheduleTakingNumberVM GenerateStockScheduleTakingNumber()
+        {
+            return _unitOfWork.StockTakingScheduleRepository.GenerateStockScheduleTakingNumber();
+        }
+
+        public IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll()
+        {
+            return _unitOfWork.StockTakingScheduleRepository.GetAll();
         }
     }
 }

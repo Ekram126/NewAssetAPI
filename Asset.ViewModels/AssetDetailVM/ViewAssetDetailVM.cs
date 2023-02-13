@@ -31,6 +31,12 @@ namespace Asset.ViewModels.AssetDetailVM
         public string InstallationDate { get; set; }
 
         public string WarrantyExpires { get; set; }
+        public string RemainWarrantyExpires { get; set; }
+
+        public string WarrantyExpiresAr { get; set; }
+        public string RemainWarrantyExpiresAr { get; set; }
+
+
 
         public int BuildId { get; set; }
         public string BuildName { get; set; }

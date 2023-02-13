@@ -22,5 +22,6 @@ namespace Asset.Domain.Services
         IndexSupplierVM FindSupplier(string strText, int pageNumber, int pageSize);
         IEnumerable<IndexSupplierVM.GetData> SortSuppliers(SortSupplierVM sortObj);
         IEnumerable<IndexSupplierVM.GetData> FindSupplierByText(string strText);
+        IndexSupplierVM GetAllSuppliersWithPaging(int pageNumber, int pageSize);
     }
 }

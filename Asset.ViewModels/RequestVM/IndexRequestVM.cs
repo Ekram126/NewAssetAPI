@@ -82,6 +82,7 @@ namespace Asset.ViewModels.RequestVM
             public DateTime? ActualStartDate { get; set; }
             public DateTime? ActualEndDate { get; set; }
             public string WorkOrderNote { get; set; }
+            public DateTime? WorkOrderDate { get; set; }
             public string AssignedTo { get; set; }
             public string WOCreatedBy { get; set; }
             public string WOPeriorityName { get; set; }

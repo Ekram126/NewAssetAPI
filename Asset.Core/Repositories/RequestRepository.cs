@@ -1827,9 +1827,6 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
                 }
-
-
-
                 if (UserObj.HospitalId > 0 && searchObj.HospitalId > 0)
                 {
                     list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
@@ -1906,6 +1903,7 @@ namespace Asset.Core.Repositories
                     getDataObj.StatusColor = lstStatus[0].RequestStatus.Color;
                     getDataObj.StatusIcon = lstStatus[0].RequestStatus.Icon;
                     getDataObj.Description = lstStatus[0].Description;
+                    getDataObj.DescriptionDate = lstStatus[0].DescriptionDate;
                     if (getDataObj.StatusId == 2)
                     {
                         getDataObj.ClosedDate = lstStatus[0].DescriptionDate.ToString();
@@ -5852,13 +5850,6 @@ namespace Asset.Core.Repositories
             return requestsPerPage.ToList();
         }
 
-
-
-
-
-
-
-
         public IndexRequestVM GetAllRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize)
         {
 
@@ -5951,7 +5942,7 @@ namespace Asset.Core.Repositories
                     //}
                     //allrequests = lstRequests;
 
-                  //  allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    //  allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
 
 
@@ -6137,25 +6128,6 @@ namespace Asset.Core.Repositories
             mainClass.Count = lstModel.Count;
             return mainClass;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         public IEnumerable<IndexRequestVM.GetData> ExportRequestByStatusId(int? hospitalId, string userId, int statusId)
         {
             List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
@@ -6368,9 +6340,9 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
-
-
-
+       
+        
+        
         public IndexRequestVM GetRequestsByDateAndStatus(SearchRequestDateVM requestDateObj, int pageNumber, int pageSize)
         {
             IndexRequestVM mainClass = new IndexRequestVM();
@@ -6393,8 +6365,6 @@ namespace Asset.Core.Repositories
 
             DateTime? start = new DateTime();
             DateTime? end = new DateTime();
-
-
 
             if (requestDateObj.StrStartDate != "")
             {
@@ -6434,14 +6404,12 @@ namespace Asset.Core.Repositories
 
             if (start != null || end != null)
             {
-                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.RequestDate >= start.Value && a.FirstOrDefault().Request.RequestDate <= end.Value).ToList();
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.RequestDate.Date >= start.Value.Date && a.FirstOrDefault().Request.RequestDate.Date <= end.Value.Date).ToList();
             }
             else
             {
                 lstRequests = lstRequests.ToList();
             }
-
-
             if (requestDateObj.StatusId > 0)
             {
                 lstRequests = lstRequests.Where(a => a.FirstOrDefault().RequestStatusId == requestDateObj.StatusId).ToList();
@@ -6451,9 +6419,6 @@ namespace Asset.Core.Repositories
             {
                 lstRequests = lstRequests.ToList();
             }
-
-
-
 
 
             foreach (var req in lstRequests)
@@ -6479,7 +6444,6 @@ namespace Asset.Core.Repositories
                     getDataObj.StatusColor = req.FirstOrDefault().RequestStatus.Color;
                     getDataObj.StatusIcon = req.FirstOrDefault().RequestStatus.Icon;
                     getDataObj.DescriptionDate = req.FirstOrDefault().DescriptionDate;
-                    //getDataObj.DescriptionDate = req.FirstOrDefault().DescriptionDate;
                     getDataObj.Description = req.FirstOrDefault().Description;
                     if (getDataObj.StatusId == 2)
                     {
@@ -6509,6 +6473,39 @@ namespace Asset.Core.Repositories
                 getDataObj.CityId = req.FirstOrDefault().User.CityId;
                 getDataObj.OrganizationId = req.FirstOrDefault().User.OrganizationId;
                 getDataObj.SubOrganizationId = req.FirstOrDefault().User.SubOrganizationId;
+
+                var lstWOStatus = _context.WorkOrderTrackings
+                                             .Include(o => o.WorkOrder)
+                                             .Include(o => o.WorkOrderStatus)
+                                             .Where(a => a.WorkOrder.RequestId == req.FirstOrDefault().RequestId)
+                                             .OrderByDescending(a => a.CreationDate.Value).ToList();
+
+                if (lstWOStatus.Count > 0)
+                {
+                    getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                    getDataObj.WorkOrderStatusName = lstWOStatus[0].WorkOrderStatus.Name;
+                    getDataObj.WorkOrderStatusNameAr = lstWOStatus[0].WorkOrderStatus.NameAr;
+                    getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus.Color;
+                    getDataObj.WorkOrderStatusIcon = lstWOStatus[0].WorkOrderStatus.Icon;
+
+
+
+                    if (getDataObj.StatusId == 3 && (getDataObj.LatestWorkOrderStatusId == 2 && (lstWOStatus.Count > 2)))
+                    {
+                        getDataObj.WorkOrderNote = lstWOStatus[0].Notes;
+                        getDataObj.WorkOrderDate = DateTime.Parse(lstWOStatus[0].WorkOrderDate.ToString());
+                    }
+                    else if (getDataObj.StatusId == 3 && (getDataObj.LatestWorkOrderStatusId == 2 && (lstWOStatus.Count == 2)))
+                    {
+                        foreach (var item in lstWOStatus.Where(a=>a.WorkOrderStatusId == 1))
+                        {                            
+                            getDataObj.WorkOrderNote = item.Notes;
+                            getDataObj.WorkOrderDate = DateTime.Parse(item.WorkOrderDate.ToString());
+                        }
+                    }
+
+
+                }
                 list.Add(getDataObj);
             }
 
@@ -6680,7 +6677,6 @@ namespace Asset.Core.Repositories
                     getDataObj.StatusColor = req.FirstOrDefault().RequestStatus.Color;
                     getDataObj.StatusIcon = req.FirstOrDefault().RequestStatus.Icon;
                     getDataObj.DescriptionDate = req.FirstOrDefault().DescriptionDate;
-                    getDataObj.DescriptionDate = req.FirstOrDefault().DescriptionDate;
                     getDataObj.Description = req.FirstOrDefault().Description;
                     if (getDataObj.StatusId == 2)
                     {
@@ -6711,19 +6707,42 @@ namespace Asset.Core.Repositories
                 getDataObj.OrganizationId = req.FirstOrDefault().User.OrganizationId;
                 getDataObj.SubOrganizationId = req.FirstOrDefault().User.SubOrganizationId;
 
-                //var lstWOStatus = _context.WorkOrderTrackings
-                //       .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.FirstOrDefault().Id)
-                //       .OrderByDescending(a => a.CreationDate).ToList();
 
-                //if (lstWOStatus.Count > 0)
-                //{
-                //    getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
 
-                //    getDataObj.WorkOrderStatusName = lstWOStatus[0].WorkOrderStatus.Name;
-                //    getDataObj.WorkOrderStatusNameAr = lstWOStatus[0].WorkOrderStatus.NameAr;
-                //    getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus.Color;
-                //    getDataObj.WorkOrderStatusIcon = lstWOStatus[0].WorkOrderStatus.Icon;
-                //}
+                var lstWOStatus = _context.WorkOrderTrackings
+                       .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.FirstOrDefault().RequestId)
+                       .OrderByDescending(a => a.CreationDate.Value).ToList();
+
+                if (lstWOStatus.Count > 0)
+                {
+                    getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                    getDataObj.WorkOrderStatusName = lstWOStatus[0].WorkOrderStatus.Name;
+                    getDataObj.WorkOrderStatusNameAr = lstWOStatus[0].WorkOrderStatus.NameAr;
+                    getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus.Color;
+                    getDataObj.WorkOrderStatusIcon = lstWOStatus[0].WorkOrderStatus.Icon;
+
+
+
+                    //getDataObj.WorkOrderNote = lstWOStatus[0].Notes;
+                    //getDataObj.WorkOrderDate = DateTime.Parse(lstWOStatus[0].WorkOrderDate.ToString());
+
+
+                    if (getDataObj.StatusId == 3 && (getDataObj.LatestWorkOrderStatusId == 2 && (lstWOStatus.Count > 2)))
+                    {
+                        getDataObj.WorkOrderNote = lstWOStatus[0].Notes;
+                        getDataObj.WorkOrderDate = DateTime.Parse(lstWOStatus[0].WorkOrderDate.ToString());
+                    }
+                    else if (getDataObj.StatusId == 3 && (getDataObj.LatestWorkOrderStatusId == 2 && (lstWOStatus.Count == 2)))
+                    {
+                        foreach (var item in lstWOStatus.Where(a => a.WorkOrderStatusId == 1))
+                        {
+                            getDataObj.WorkOrderNote = item.Notes;
+                            getDataObj.WorkOrderDate = DateTime.Parse(item.WorkOrderDate.ToString());
+                        }
+                    }
+
+
+                }
                 list.Add(getDataObj);
             }
 
@@ -6816,11 +6835,6 @@ namespace Asset.Core.Repositories
 
 
         }
-
-
-
-
-
         public List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId)
         {
             List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
@@ -6905,7 +6919,6 @@ namespace Asset.Core.Repositories
             return list;
 
         }
-
         public List<IndexRequestVM.GetData> PrintListOfRequests(List<ExportRequestVM> requests)
         {
             List<IndexRequestVM.GetData> lstData = new List<IndexRequestVM.GetData>();
@@ -7033,7 +7046,6 @@ namespace Asset.Core.Repositories
 
             return lstData;
         }
-
         public IndexRequestVM SearchInRequests(SearchRequestVM searchObj, int pageNumber, int pageSize)
         {
 
@@ -7379,7 +7391,6 @@ namespace Asset.Core.Repositories
             return mainClass;
 
         }
-
         public OpenRequestVM ListOpenRequests(SearchOpenRequestVM searchOpenRequestObj, int pageNumber, int pageSize)
         {
             OpenRequestVM mainClass = new OpenRequestVM();
@@ -7615,12 +7626,6 @@ namespace Asset.Core.Repositories
             mainClass.Count = list.Count();
             return mainClass;
         }
-
-
-
-
-
-
         public List<OpenRequestVM.GetData> ListOpenRequestsPDF(SearchOpenRequestVM searchOpenRequestObj)
         {
             List<OpenRequestVM.GetData> list = new List<OpenRequestVM.GetData>();
@@ -7689,7 +7694,7 @@ namespace Asset.Core.Repositories
 
                             if (searchOpenRequestObj.EndDate != null)
                             {
-                                getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - req.FirstOrDefault().Request.RequestDate).TotalDays);
+                                getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - req.FirstOrDefault().Request.RequestDate.Date).TotalDays);
                             }
                             else
                             {
@@ -7700,7 +7705,7 @@ namespace Asset.Core.Repositories
                         {
                             if (searchOpenRequestObj.EndDate != null)
                             {
-                                getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - req.FirstOrDefault().Request.RequestDate).TotalDays);
+                                getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - req.FirstOrDefault().Request.RequestDate.Date).TotalDays);
                             }
                             else
                             {
@@ -7712,7 +7717,7 @@ namespace Asset.Core.Repositories
                     {
                         if (searchOpenRequestObj.EndDate != null)
                         {
-                            getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - req.FirstOrDefault().Request.RequestDate).TotalDays);
+                            getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - req.FirstOrDefault().Request.RequestDate.Date).TotalDays);
                         }
                         else
                         {

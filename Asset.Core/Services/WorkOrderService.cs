@@ -169,5 +169,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WorkOrder.GetAllWorkOrdersByHospitalIdAndPaging2(hospitalId, userId, statusId, pageNumber, pageSize);
         }
+
+        public IndexWorkOrderVM GetMobileWorkOrderByRequestUserId(int requestId, string userId)
+        {
+            return _unitOfWork.WorkOrder.GetMobileWorkOrderByRequestUserId(requestId, userId);
+        }
     }
 }

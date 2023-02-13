@@ -456,7 +456,9 @@ namespace Asset.API.Controllers
             var json = JsonConvert.SerializeObject(SMSobj);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var UrlSMS = "https://smsmisr.com/api/v2";
+           // var UrlSMS = "https://smsmisr.com/api/v2";
+            var UrlSMS = "https://smsmisr.com/api/SMS/?";
+
             using var client = new HttpClient();
             var response = await client.PostAsync(UrlSMS, data);
             string resultS = response.Content.ReadAsStringAsync().Result;

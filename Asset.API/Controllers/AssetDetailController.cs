@@ -58,9 +58,10 @@ namespace Asset.API.Controllers
         private QrController _qrController;
         IWebHostEnvironment _webHostingEnvironment;
         string strInsitute, strInsituteAr, strLogo = "";
-        bool isAgency, isScrap, isVisit, isExternalFix, isOpenRequest;
+        bool isAgency, isScrap, isVisit, isExternalFix, isOpenRequest, canAdd;
         private readonly ISettingService _settingService;
-
+        IHttpContextAccessor _httpContextAccessor;
+        int i = 1;
         //[Obsolete]
         //IHostingEnvironment _webHostingEnvironment;
         // private object ComponentInfo;
@@ -68,7 +69,7 @@ namespace Asset.API.Controllers
         [Obsolete]
         public AssetDetailController(IAssetDetailService AssetDetailService, IAssetOwnerService assetOwnerService, IWorkOrderService workOrderService,
             IPMAssetTimeService pMAssetTimeService, IPagingService pagingService, IAssetMovementService assetMovementService, IAssetStatusTransactionService assetStatusTransactionService,
-            QrController qrController, IRequestService requestService, IWebHostEnvironment webHostingEnvironment, ISettingService settingService)
+            QrController qrController, IRequestService requestService, IWebHostEnvironment webHostingEnvironment, ISettingService settingService, IHttpContextAccessor httpContextAccessor)
         {
             _AssetDetailService = AssetDetailService;
             _assetMovementService = assetMovementService;
@@ -81,6 +82,7 @@ namespace Asset.API.Controllers
             _settingService = settingService;
             _workOrderService = workOrderService;
             _assetStatusTransactionService = assetStatusTransactionService;
+            _httpContextAccessor = httpContextAccessor;
         }
         [HttpGet]
         [Route("ListAssetDetails")]
@@ -260,6 +262,19 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.AlertAssetsBefore3Monthes(duration);
         }
+
+        [HttpPost]
+        [Route("AlertAssetsBefore3MonthesWithDuration2/{duration}/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM AlertAssetsBefore3Monthes2(int duration, int pageNumber, int pageSize)
+        {
+            return _AssetDetailService.AlertAssetsBefore3Monthes(duration,pageNumber,pageSize);
+        }
+
+
+
+
+
+
         [HttpGet]
         [Route("ViewAllAssetDetailByMasterId/{MasterAssetId}")]
         public IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId)
@@ -384,7 +399,8 @@ namespace Asset.API.Controllers
 
                 else
                 {
-                    var domainName = "http://" + HttpContext.Request.Host.Value;
+                   // var domainName = "http://" + HttpContext.Request.Host.Value;
+                  var  domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
                     AssetDetailVM.DomainName = domainName;
                     int updatedRow = _AssetDetailService.Update(AssetDetailVM);
                 }
@@ -641,9 +657,6 @@ namespace Asset.API.Controllers
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list.ToList());
         }
 
-
-
-
         [HttpPost]
         [Route("SortAssets2/{statusId}/{userId}")]
         public IndexAssetDetailVM SortAssets(Sort sortObj, int statusId, string userId)
@@ -651,10 +664,6 @@ namespace Asset.API.Controllers
             var assetDetailData = _AssetDetailService.SortAssets(sortObj, statusId, userId);
             return assetDetailData;
         }
-
-
-
-
 
         [HttpPost]
         [Route("SortAssetsCount")]
@@ -723,6 +732,8 @@ namespace Asset.API.Controllers
 
                     if (item.KeyName == "IsOpenRequest")
                         isOpenRequest = Convert.ToBoolean(item.KeyValue);
+                    if (item.KeyName == "CanAdd")
+                        canAdd = Convert.ToBoolean(item.KeyValue);
                 }
             }
 
@@ -1072,15 +1083,13 @@ namespace Asset.API.Controllers
         [Route("GenerateQrCodeForAllAssets")]
         public bool GenerateQrCodeForAllAssets(string domainName)
         {
+            //var path = HttpContext.Request.Path;
+            //var pathBase = HttpContext.Request.PathBase;
+            //domainName = "http://" + HttpContext.Request.Host.Value;
+             domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
 
-            var path = HttpContext.Request.Path;
-            var pathBase = HttpContext.Request.PathBase;
-            domainName = "http://" + HttpContext.Request.Host.Value;
             return _AssetDetailService.GenerateQrCodeForAllAssets(domainName);
         }
-
-
-
         [Route("GenerateWordForQrCodeForAllAssets")]
         public ActionResult GenerateWordForQrCodeForAllAssets()
         {
@@ -1127,9 +1136,7 @@ namespace Asset.API.Controllers
                 WTextBody ownerTextBody = ownerParagraph.OwnerTextBody;
                 ownerTextBody.ChildEntities.Remove(ownerParagraph);
             }
-        }
-
-        int i = 1;
+        }             
         private void MergeField_InsertPageBreak(object sender, MergeFieldEventArgs args)
         {
 
@@ -1180,11 +1187,6 @@ namespace Asset.API.Controllers
         }
 
 
-
-
-
-
-
         //private DataTable GetAssetsAsDataTable()
         //{
 
@@ -1217,6 +1219,164 @@ namespace Asset.API.Controllers
         //    }
         //    return table;
         //}
+
+
+
+        [HttpPost]
+        [Route("GenerateQrCodeForUniversityAssets")]
+        public bool GenerateQrCodeForUniversityAssets(string domainName)
+        {
+           // domainName = "http://" + HttpContext.Request.Host.Value;
+            domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
+
+            return _AssetDetailService.GenerateQrCodeForAllAssets(domainName);
+        }
+        [Route("GenerateWordForQrCodeForUniversityAssets")]
+        public ActionResult GenerateWordForQrCodeForUniversityAssets()
+        {
+
+            using (WordDocument document = new WordDocument())
+            {
+                //Opens the Word template document
+                string strTemplateFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\UniversityCardTemplate.dotx";
+
+                Stream docStream = System.IO.File.OpenRead(strTemplateFile);
+                document.Open(docStream, FormatType.Docx);
+                docStream.Dispose();
+
+
+                var allAssets = ListAssets().ToList();
+                MailMergeDataTable dataTable = new MailMergeDataTable("Asset_QrCode", allAssets);
+                document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField1_InsertPageBreak);
+                document.MailMerge.MergeImageField += new MergeImageFieldEventHandler(InsertQRBarcode);
+                document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField1_Event);
+                document.MailMerge.RemoveEmptyGroup = true;
+
+                document.MailMerge.ExecuteGroup(dataTable);
+
+
+                //Saves the file in the given path
+                string strExportFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\UniversityCards.docx";
+                docStream = System.IO.File.Create(strExportFile);
+                document.Save(docStream, FormatType.Docx);
+                docStream.Dispose();
+                document.Close();
+
+            }
+            return Ok();
+        }
+        private static void MergeField1_Event(object sender, MergeFieldEventArgs args)
+        {
+            string fieldValue = args.FieldValue.ToString();
+            //When field value is Null or empty, then remove the field owner paragraph.
+            if (string.IsNullOrEmpty(fieldValue))
+            {
+                //Get the merge field owner paragraph and remove it from its owner text body.
+                WParagraph ownerParagraph = args.CurrentMergeField.OwnerParagraph;
+                WTextBody ownerTextBody = ownerParagraph.OwnerTextBody;
+                ownerTextBody.ChildEntities.Remove(ownerParagraph);
+            }
+        }
+        private void MergeField1_InsertPageBreak(object sender, MergeFieldEventArgs args)
+        {
+
+            List<IndexAssetDetailVM.GetData> allAssets = ListAssets();
+            if (allAssets.Count > 0)
+            {
+                if (args.FieldName == "DepartmentName" && i != allAssets.Count)
+                {
+                    //Gets the owner paragraph 
+                    WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
+                    //Appends the page break 
+                    paragraph.AppendBreak(BreakType.PageBreak);
+                    i++;
+                }
+            }
+        }
+       
+        
+        
+        
+        /////////////////////////////////////////////////////
+        /// HospitalQr
+        /////////////////////////////////////////
+
+        [HttpPost]
+        [Route("GenerateQrCodeForHospitalAssets")]
+        public bool GenerateQrCodeForHospitalAssets(string domainName)
+        {
+            // domainName = "http://" + HttpContext.Request.Host.Value;
+            domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
+            return _AssetDetailService.GenerateQrCodeForAllAssets(domainName);
+        }
+        [Route("GenerateWordForQrCodeForHospitalAssets")]
+        public ActionResult GenerateWordForQrCodeForHospitalAssets()
+        {
+
+            using (WordDocument document = new WordDocument())
+            {
+                //Opens the Word template document
+                string strTemplateFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\HospitalCardTemplate.dotx";
+
+                Stream docStream = System.IO.File.OpenRead(strTemplateFile);
+                document.Open(docStream, FormatType.Docx);
+                docStream.Dispose();
+
+
+                var allAssets = ListAssets().Take(10).ToList();
+                MailMergeDataTable dataTable = new MailMergeDataTable("Asset_QrCode", allAssets);
+                document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField2_InsertPageBreak);
+                document.MailMerge.MergeImageField += new MergeImageFieldEventHandler(InsertQRBarcode);
+                document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField2_Event);
+                document.MailMerge.RemoveEmptyGroup = true;
+
+                document.MailMerge.ExecuteGroup(dataTable);
+
+
+                //Saves the file in the given path
+                string strExportFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\HospitalCards.docx";
+                docStream = System.IO.File.Create(strExportFile);
+                document.Save(docStream, FormatType.Docx);
+                docStream.Dispose();
+                document.Close();
+
+            }
+            return Ok();
+        }
+        private static void MergeField2_Event(object sender, MergeFieldEventArgs args)
+        {
+            string fieldValue = args.FieldValue.ToString();
+            //When field value is Null or empty, then remove the field owner paragraph.
+            if (string.IsNullOrEmpty(fieldValue))
+            {
+                //Get the merge field owner paragraph and remove it from its owner text body.
+                WParagraph ownerParagraph = args.CurrentMergeField.OwnerParagraph;
+                WTextBody ownerTextBody = ownerParagraph.OwnerTextBody;
+                ownerTextBody.ChildEntities.Remove(ownerParagraph);
+            }
+        }
+        private void MergeField2_InsertPageBreak(object sender, MergeFieldEventArgs args)
+        {
+
+            List<IndexAssetDetailVM.GetData> allAssets = ListAssets();
+            if (allAssets.Count > 0)
+            {
+                if (args.FieldName == "DepartmentName" && i != allAssets.Count)
+                {
+                    //Gets the owner paragraph 
+                    WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
+                    //Appends the page break 
+                    paragraph.AppendBreak(BreakType.PageBreak);
+                    i++;
+                }
+            }
+        }
+
+
+
+
+
+
 
     }
 }

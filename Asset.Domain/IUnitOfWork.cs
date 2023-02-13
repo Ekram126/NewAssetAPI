@@ -102,5 +102,7 @@ namespace Asset.Domain
         IAssetStockTakingRepository AssetStockTackingRepository { get; }
         IStockTakingScheduleRepository StockTakingScheduleRepository { get; }
         IStockTakingHospitalRepository StockTakingHospitalRepository { get; }
+
+
     }
 }

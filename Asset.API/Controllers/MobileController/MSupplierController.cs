@@ -35,7 +35,7 @@ namespace Asset.API.Controllers
 
         [HttpGet]
         [Route("ListSuppliers")]
-      
+
         public ActionResult<IEnumerable<IndexSupplierVM.GetData>> GetAll()
         {
             var ListSuppliers = _SupplierService.GetAll();
@@ -47,9 +47,17 @@ namespace Asset.API.Controllers
                 return Ok(new { data = ListSuppliers, msg = "Success", status = '1' });
         }
 
-     
+
+        [HttpGet]
+        [Route("GetTop10SuppliersCount/{hospitalId}")]
+        public ActionResult GetTop10SuppliersCount(int hospitalId)
+        {
+            var total= _SupplierService.GetTop10Suppliers(hospitalId).ToList().Count;
+            return Ok(new { data = total.ToString(), msg = "Success", status = '1' });
         }
 
-
     }
+
+
+}
 

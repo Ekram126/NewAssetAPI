@@ -11,6 +11,8 @@ namespace Asset.Domain.Services
         IEnumerable<IndexDepartmentVM.GetData> GetAll();
         IEnumerable<Department> GetDepartmentsByHospitalId(int hospitalId);
         EditDepartmentVM GetById(int id);
+
+        int AddDepartmentToHospital(CreateDepartmentVM departmentObj);
         int Add(CreateDepartmentVM Department); 
         int Update(EditDepartmentVM Department);
         int Delete(int id);

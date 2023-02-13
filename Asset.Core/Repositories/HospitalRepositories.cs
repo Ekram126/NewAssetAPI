@@ -290,7 +290,7 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<Hospital> GetHospitalsByCityId(int cityId)
         {
-            var lstHospitals= _context.Hospitals.ToList().Where(a => a.CityId == cityId).OrderBy(a => a.Id).ToList();
+            var lstHospitals = _context.Hospitals.ToList().Where(a => a.CityId == cityId).OrderBy(a => a.Id).ToList();
             return lstHospitals;
 
         }
@@ -379,12 +379,12 @@ namespace Asset.Core.Repositories
 
         public List<IndexHospitalDepartmentVM.GetData> GetHospitalDepartmentByHospitalId2(int hospitalId)
         {
-            var lstHospitalDepartments = _context.HospitalDepartments.Include(a=>a.Department).Where(a => a.HospitalId == hospitalId).ToList()
+            var lstHospitalDepartments = _context.HospitalDepartments.Include(a => a.Department).Where(a => a.HospitalId == hospitalId).ToList()
                 .Select(item => new IndexHospitalDepartmentVM.GetData
                 {
                     Id = item.Id,
-                    DepartmentName = item.Department !=null? item.Department.Name:"",
-                    DepartmentNameAr = item.Department != null ? item.Department.NameAr:"",
+                    DepartmentName = item.Department != null ? item.Department.Name : "",
+                    DepartmentNameAr = item.Department != null ? item.Department.NameAr : "",
                     IsActive = item.IsActive,
                     HospitalId = item.HospitalId,
                     DepartmentId = item.DepartmentId
@@ -766,6 +766,28 @@ namespace Asset.Core.Repositories
         public int CountDepartmentsByHospitalId(int hospitalId)
         {
             return _context.HospitalDepartments.Include(a => a.Hospital).Where(a => a.HospitalId == hospitalId).ToList().Count;
+        }
+
+        public IndexHospitalDepartmentVM.GetData GetSelectedHospitalDepartmentByDepartmentId(int hospitalId, int departmentId)
+        {
+            IndexHospitalDepartmentVM.GetData getDataObj = new IndexHospitalDepartmentVM.GetData();
+
+            var lstHospitalDepartments = _context.HospitalDepartments
+                .Include(a => a.Department)
+                .Where(a => a.HospitalId == hospitalId && a.DepartmentId == departmentId).ToList();
+            if (lstHospitalDepartments.Count > 0)
+            {
+                var hospitalDepartmentObj = lstHospitalDepartments[0];
+                getDataObj.Id = hospitalDepartmentObj.Id;
+                getDataObj.DepartmentName = hospitalDepartmentObj.Department != null ? hospitalDepartmentObj.Department.Name : "";
+                getDataObj.DepartmentNameAr = hospitalDepartmentObj.Department != null ? hospitalDepartmentObj.Department.NameAr : "";
+                getDataObj.IsActive = hospitalDepartmentObj.IsActive;
+                getDataObj.HospitalId = hospitalDepartmentObj.HospitalId;
+                getDataObj.DepartmentId = hospitalDepartmentObj.DepartmentId;
+                return getDataObj;
+
+            }
+            return getDataObj;
         }
     }
 }

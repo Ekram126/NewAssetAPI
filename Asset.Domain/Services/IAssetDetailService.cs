@@ -42,6 +42,10 @@ namespace Asset.Domain.Services
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContractBySerialNumber(string serialNumber, int hospitalId);
         IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes();
         IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes(int duration);
+
+
+        IndexAssetDetailVM AlertAssetsBefore3Monthes(int duration, int pageNumber, int pageSize);
+
         ViewAssetDetailVM ViewAssetDetailByMasterId(int masterId);
         ViewAssetDetailVM GetAssetHistoryById(int assetId);
         IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId);
@@ -50,6 +54,11 @@ namespace Asset.Domain.Services
         int DeleteAssetDetailAttachment(int id);
         IndexAssetDetailVM SearchAssetInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
         IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj);
+
+
+
+        IndexAssetDetailVM SearchHospitalAssetsByHospitalId(SearchMasterAssetVM searchObj);
+
         IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId);
         IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskScheduleByAssetId(int? assetId);
         List<CountAssetVM> CountAssetsByHospital();

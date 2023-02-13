@@ -47,7 +47,9 @@ namespace Asset.Core.Repositories
                     masterAssetObj.VersionNumber = model.VersionNumber;
                     masterAssetObj.Weight = model.Weight;
                     masterAssetObj.Width = model.Width;
-                    masterAssetObj.ECRIId = model.ECRIId;
+                    if (model.ECRIId != null)
+                        masterAssetObj.ECRIId = model.ECRIId;
+
                     if (model.PeriorityId != null)
                         masterAssetObj.PeriorityId = model.PeriorityId;
                     if (model.OriginId != null)

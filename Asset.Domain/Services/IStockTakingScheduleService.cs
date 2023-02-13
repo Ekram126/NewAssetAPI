@@ -11,7 +11,7 @@ namespace Asset.Domain.Services
 {
   public  interface IStockTakingScheduleService
     {
-        IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll();
+       IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll();
         IndexStockTakingScheduleVM GetAllWithPaging( int pageNumber, int pageSize);
 
 
@@ -19,8 +19,9 @@ namespace Asset.Domain.Services
         int Add(CreateStockTakingScheduleVM StockTakingScheduleObj);
 
         int Delete(int id);
-        object GetById(int id);
+        IndexStockTakingScheduleVM.GetData GetById(int id);
 
+        GenerateStockScheduleTakingNumberVM GenerateStockScheduleTakingNumber();
 
 
     }

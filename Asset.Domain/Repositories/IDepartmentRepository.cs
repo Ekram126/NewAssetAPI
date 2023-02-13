@@ -12,7 +12,7 @@ namespace Asset.Domain.Repositories
         IEnumerable<Department> GetDepartmentsByHospitalId(int hospitalId);
         EditDepartmentVM GetById(int id);
 
-
+        int AddDepartmentToHospital(CreateDepartmentVM departmentObj);
         int Add(CreateDepartmentVM Department); 
         int Update(EditDepartmentVM Department);
         int Delete(int id);

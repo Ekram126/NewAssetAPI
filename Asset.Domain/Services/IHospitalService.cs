@@ -23,6 +23,9 @@ namespace Asset.Domain.Services
         int UpdateHospitalDepartment(EditHospitalDepartmentVM hospitalDepartmentVM);
         List<HospitalDepartment> GetHospitalDepartmentByHospitalId(int hospitalId);
         List<IndexHospitalDepartmentVM.GetData> GetHospitalDepartmentByHospitalId2(int hospitalId);
+
+        IndexHospitalDepartmentVM.GetData GetSelectedHospitalDepartmentByDepartmentId(int hospitalId,int departmentId);
+
         List<CountHospitalVM> CountHospitalsByCities();
         int CountHospitals();
         int Delete(int id);

@@ -21,8 +21,13 @@ namespace Asset.Core.Services
 
         public int Add(CreateDepartmentVM DepartmentVM)
         {
-            _unitOfWork.DepartmentRepository.Add(DepartmentVM);
-            return _unitOfWork.CommitAsync();
+            return _unitOfWork.DepartmentRepository.Add(DepartmentVM);
+           // return _unitOfWork.CommitAsync();
+        }
+
+        public int AddDepartmentToHospital(CreateDepartmentVM departmentObj)
+        {
+            return _unitOfWork.DepartmentRepository.AddDepartmentToHospital(departmentObj);
         }
 
         public int Delete(int id)

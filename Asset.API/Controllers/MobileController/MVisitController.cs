@@ -52,6 +52,36 @@ namespace Asset.API.Controllers
             if (createVisitVM != null)
             {
                 var visitId = _visitService.Add(createVisitVM);
+
+                if (createVisitVM.ListAttachments.Count > 0)
+                {
+                    foreach (var item in createVisitVM.ListAttachments)
+                    {
+                        VisitAttachment attachmentObj = new VisitAttachment();
+                        attachmentObj.VisitId = visitId;
+                        attachmentObj.FileName = item.FileName;
+                        attachmentObj.Title = item.Title;
+
+                        var attachId = _visitService.CreateVisitAttachments(attachmentObj);
+
+                        var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/VisitFiles/";
+                        bool exists = System.IO.Directory.Exists(folderPath);
+                        if (!exists)
+                            System.IO.Directory.CreateDirectory(folderPath);
+
+                        string filePath = folderPath + "/" + attachmentObj.FileName;
+                        if (System.IO.File.Exists(filePath))
+                        {
+
+                        }
+                        else
+                        {
+                            Stream stream = new FileStream(filePath, FileMode.Create);
+                            attachmentObj.FileToUpload.CopyTo(stream);
+                            stream.Close();
+                        }
+                    }
+                }
                 return Ok(new { data = visitId, msg = "Success", status = '1' });
             }
             else
@@ -59,48 +89,48 @@ namespace Asset.API.Controllers
         }
 
 
-        [HttpPost]
-        [Route("CreateVisitAttachments")]
-        public ActionResult CreateVisitAttachments(VisitAttachment visitAttachment)
-        {
-            if (visitAttachment != null)
-            {
-                var createVisitAttachmentObj = _visitService.CreateVisitAttachments(visitAttachment);
-                return Ok(new { data = createVisitAttachmentObj, msg = "Success", status = '1' });
-            }
-            else
-                return Ok(new { data = "", msg = "No Data", status = '0' });
-        }
+        //[HttpPost]
+        //[Route("CreateVisitAttachments")]
+        //public ActionResult CreateVisitAttachments(VisitAttachment visitAttachment)
+        //{
+        //    if (visitAttachment != null)
+        //    {
+        //        var createVisitAttachmentObj = _visitService.CreateVisitAttachments(visitAttachment);
+        //        return Ok(new { data = createVisitAttachmentObj, msg = "Success", status = '1' });
+        //    }
+        //    else
+        //        return Ok(new { data = "", msg = "No Data", status = '0' });
+        //}
 
 
-        [HttpPost]
-        [Route("UploadVisitFiles")]
-        public ActionResult UploadVisitFiles(IFormFile file)
-        {
-            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/VisitFiles/";
-            bool exists = System.IO.Directory.Exists(folderPath);
-            if (!exists)
-                System.IO.Directory.CreateDirectory(folderPath);
+        //[HttpPost]
+        //[Route("UploadVisitFiles")]
+        //public ActionResult UploadVisitFiles(IFormFile file)
+        //{
+        //    var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/VisitFiles/";
+        //    bool exists = System.IO.Directory.Exists(folderPath);
+        //    if (!exists)
+        //        System.IO.Directory.CreateDirectory(folderPath);
 
-            string filePath = folderPath + "/" + file.FileName;
-            if (System.IO.File.Exists(filePath))
-            {
+        //    string filePath = folderPath + "/" + file.FileName;
+        //    if (System.IO.File.Exists(filePath))
+        //    {
 
-            }
-            else
-            {
-                Stream stream = new FileStream(filePath, FileMode.Create);
-                file.CopyTo(stream);
-                stream.Close();
-            }
-            var lstUploadVisitFiles = StatusCode(StatusCodes.Status201Created);
-            if (lstUploadVisitFiles != null)
-            {
-                return Ok(new { data = lstUploadVisitFiles, msg = "Success", status = '1' });
-            }
-            else
-                return Ok(new { data = lstUploadVisitFiles, msg = "No Data", status = '0' });
-        }
+        //    }
+        //    else
+        //    {
+        //        Stream stream = new FileStream(filePath, FileMode.Create);
+        //        file.CopyTo(stream);
+        //        stream.Close();
+        //    }
+        //    var lstUploadVisitFiles = StatusCode(StatusCodes.Status201Created);
+        //    if (lstUploadVisitFiles != null)
+        //    {
+        //        return Ok(new { data = lstUploadVisitFiles, msg = "Success", status = '1' });
+        //    }
+        //    else
+        //        return Ok(new { data = lstUploadVisitFiles, msg = "No Data", status = '0' });
+        //}
 
     }
 }

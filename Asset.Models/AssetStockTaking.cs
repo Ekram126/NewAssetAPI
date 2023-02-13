@@ -25,7 +25,7 @@ namespace Asset.Models
         public int? STSchedulesId { get; set; }
         [ForeignKey("STSchedulesId")]
         public virtual StockTakingSchedule StockTakingSchedule { get; set; }
-
+        public string STCode { get; set; }
         [Column(TypeName = "decimal(18, 8)")]
         public decimal? Latitude { get; set; }
         [Column(TypeName = "decimal(18, 8)")]

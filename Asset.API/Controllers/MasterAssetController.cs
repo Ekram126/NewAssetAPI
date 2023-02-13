@@ -23,6 +23,7 @@ namespace Asset.API.Controllers
         private IPagingService _pagingService;
         private IMasterAssetService _MasterAssetService;
         private IMasterAssetComponentService _masterAssetComponentService;
+        IWebHostEnvironment _webHostEnvironment;
         [Obsolete]
         IHostingEnvironment _webHostingEnvironment;
 
@@ -30,11 +31,13 @@ namespace Asset.API.Controllers
         public MasterAssetController(IMasterAssetService MasterAssetService,
             IMasterAssetComponentService masterAssetComponentService,
             IHostingEnvironment webHostingEnvironment,
+             IWebHostEnvironment webHostEnvironment,
             IPagingService pagingService)
         {
             _MasterAssetService = MasterAssetService;
             _masterAssetComponentService = masterAssetComponentService;
             _webHostingEnvironment = webHostingEnvironment;
+            _webHostEnvironment = webHostEnvironment;
             _pagingService = pagingService;
         }
 
@@ -245,6 +248,7 @@ namespace Asset.API.Controllers
         [Route("AddMasterAsset")]
         public ActionResult Add(CreateMasterAssetVM MasterAssetVM)
         {
+
             var lstCode = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Code == MasterAssetVM.Code).ToList();
             if (lstCode.Count > 0)
             {
@@ -417,5 +421,21 @@ namespace Asset.API.Controllers
             return _MasterAssetService.CountMasterAssetsBySupplier(hospitalId);
         }
 
+
+        [HttpDelete]
+        [Route("DeleteMasterAssetImage/{id}")]
+        public ActionResult DeleteMasterAssetImage(int id)
+        {
+            var masterAssetObj = _MasterAssetService.GetById(id);
+            var folderPath = _webHostEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets/UploadMasterAssetImage/" + masterAssetObj.AssetImg;
+            bool exists = System.IO.File.Exists(folderPath);
+            if (exists)
+            {
+                System.IO.File.Delete(folderPath);
+                masterAssetObj.AssetImg = "";
+                _MasterAssetService.Update(masterAssetObj);
+            }
+            return Ok();
+        }
     }
 }

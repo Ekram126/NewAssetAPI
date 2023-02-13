@@ -47,9 +47,15 @@ namespace Asset.API.Controllers
 
         [HttpGet]
         [Route("ListTopAssetsByHospitalId/{hospitalId}")]
-        public IEnumerable<CountAssetVM> ListTopAssetsByHospitalId(int hospitalId)
+        public ActionResult ListTopAssetsByHospitalId(int hospitalId)
         {
-            return _assetDetailService.ListTopAssetsByHospitalId(hospitalId);
+            var lstAssets= _assetDetailService.ListTopAssetsByHospitalId(hospitalId);
+            if (lstAssets.Count() == 0)
+            {
+                return Ok(new { data = lstAssets, msg = "No Data Found", status = '0' });
+            }
+            else
+                return Ok(new { data = lstAssets, msg = "Success", status = '1' });
         }
 
     }

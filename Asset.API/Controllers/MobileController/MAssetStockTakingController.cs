@@ -48,10 +48,10 @@ namespace Asset.API.Controllers
 
 
             int assetId = int.Parse(createAssetStockTakingVM.URL.Split('/').Last());
-          if (assetId == 0)
+            if (assetId == 0)
             {
 
-                return Ok(new { data = "", msg = "error this is asset id not exisit", status = "400" });
+                return Ok(new { data = assetId, msg = "error this is asset id not exisit", status = "400" });
             }
 
             var userManagerObject = await _userManager.FindByIdAsync(createAssetStockTakingVM.UserId);
@@ -84,11 +84,12 @@ namespace Asset.API.Controllers
                                     if (stockTakingScheduleList.Count() > 0)
                                     {
                                         var stockTakingScheduleObj = stockTakingScheduleList[0];
-                                        if (DateTime.Now >= stockTakingScheduleObj.StartDate && DateTime.Now <= stockTakingScheduleObj.EndDate)
+                                        
+                                        if (createAssetStockTakingVM.CaptureDate.Value.Date >= stockTakingScheduleObj.StartDate && createAssetStockTakingVM.CaptureDate.Value.Date <= stockTakingScheduleObj.EndDate)
                                         {
                                             if (_assetStockTakingService.GetAll().Where(ww => ww.AssetDetailId == assetId).Count() > 0)
                                             {
-                                                return Ok(new { data = "", msg = "Exisit", status = "1" });
+                                                return Ok(new { data = "", msg = "Exist", status = "1" });
 
                                             }
                                             else
@@ -103,6 +104,10 @@ namespace Asset.API.Controllers
                                                 return Ok(new { data = createAssetStockTakingVM, msg = "success", status = "200" });
                                             }
 
+                                        }
+                                        if (createAssetStockTakingVM.CaptureDate.Value.Date <= stockTakingScheduleObj.StartDate || createAssetStockTakingVM.CaptureDate.Value.Date >= stockTakingScheduleObj.EndDate)
+                                        {
+                                            return Ok(new { data = "", msg = "Capture Date is not in range", status = "6" });
                                         }
                                     }
 
@@ -136,16 +141,6 @@ namespace Asset.API.Controllers
 
 
         }
-
-        [HttpGet]
-        [Route("GetAllWithPaging/{pageNumber}/{pageSize}")]
-        public IndexAssetStockTakingVM GetAllWithPaging(int pageNumber, int pageSize)
-        {
-            return _assetStockTakingService.GetAllWithPaging(pageNumber, pageSize);
-        }
-
-
-
 
         [HttpPost]
         [Route("GetAssetDetailIdByQrCode")]

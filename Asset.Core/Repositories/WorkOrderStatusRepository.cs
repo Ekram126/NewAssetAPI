@@ -129,9 +129,8 @@ namespace Asset.Core.Repositories
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
                 {
                     workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
-                }
-
-                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+                }                
+                if (UserObj.HospitalId > 0)
                 {
                     if (lstRoleNames.Contains("Admin"))
                     {
@@ -145,75 +144,9 @@ namespace Asset.Core.Repositories
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    if (lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
-                    {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    }
-                    if (lstRoleNames.Contains("Eng") && !lstRoleNames.Contains("EngDepManager"))
-                    {
-                        List<WorkOrder> list = new List<WorkOrder>();
-                        var lstEngWorkorders = _context.WorkOrderTrackings.Include(a => a.WorkOrder)
-                            .Where(t => t.AssignedTo == userId && t.WorkOrder.Request.AssetDetail.Hospital.Id == UserObj.HospitalId)
-                            .Select(a => a.WorkOrder).ToList().GroupBy(a => a.Id).ToList();
-                        foreach (var item in lstEngWorkorders)
-                        {
-                            WorkOrder workOrderObj = new WorkOrder();
-                            workOrderObj.Id = item.Key;
-
-                            list.Add(workOrderObj);
-                        }
-                        workorders = list.ToList();
-                    }
-                    if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
-                    {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    }
-
-
                     if (lstRoleNames.Contains("AssetOwner"))
                     {
                         workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    }
-                }
-                if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
-                {
-                    if (lstRoleNames.Contains("Admin"))
-                    {
-                        workorders = workorders.ToList();
-                    }
-                    if (lstRoleNames.Contains("TLHospitalManager"))
-                    {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    }
-                    if (lstRoleNames.Contains("EngDepManager"))
-                    {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
-                    }
-                    //if (lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
-                    //{
-                    //    workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    //}
-                    //if (lstRoleNames.Contains("AssetOwner"))
-                    //{
-                    //    workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    //}
-
-                    if (lstRoleNames.Contains("AssetOwner"))
-                    {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    }
-                    //if (lstRoleNames.Contains("EngDepManager"))
-                    //{
-                    //    workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    //}
-                    if (lstRoleNames.Contains("Eng") && !lstRoleNames.Contains("EngDepManager"))
-                    {
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    }
-                    if (lstRoleNames.Contains("Eng") && lstRoleNames.Contains("EngDepManager"))
-                    {
-                        //  workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                        workorders = workorders.Where(t => t.Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                     }
                 }
 

@@ -35,6 +35,9 @@ namespace Asset.Core.Repositories
                     supplierObj.EMail = model.EMail;
                     supplierObj.Address = model.Address;
                     supplierObj.AddressAr = model.AddressAr;
+                    supplierObj.ContactPerson = model.ContactPerson;
+                    supplierObj.Notes = model.Notes;
+                    supplierObj.Fax = model.Fax;
                     _context.Suppliers.Add(supplierObj);
                     _context.SaveChanges();
                 }
@@ -78,7 +81,10 @@ namespace Asset.Core.Repositories
                 AddressAr = item.AddressAr,
                 EMail = item.EMail,
                 Mobile = item.Mobile,
-                Website = item.Website
+                Website = item.Website,
+                ContactPerson = item.ContactPerson,
+                //Notes = item.Notes,
+                //Fax = item.Fax
             });
         }
 
@@ -89,18 +95,25 @@ namespace Asset.Core.Repositories
 
         public EditSupplierVM GetById(int id)
         {
-            return _context.Suppliers.Where(a => a.Id == id).Select(item => new EditSupplierVM
+            EditSupplierVM item = new EditSupplierVM();
+            var lstSuppliers = _context.Suppliers.Where(a => a.Id == id).ToList();
+            if (lstSuppliers.Count > 0)
             {
-                Id = item.Id,
-                Code = item.Code != null ? item.Code:"",
-                Name = item.Name,
-                NameAr = item.NameAr,
-                Address= item.Address != null ? item.Address:"",
-                AddressAr= item.AddressAr != null ? item.AddressAr:"",
-                EMail= item.EMail != null ? item.EMail:"",
-                Mobile= item.Mobile != null ? item.Mobile:"",
-                Website= item.Website != null ? item.Website:""
-            }).First();
+                var supplierObj = lstSuppliers[0];
+                item.Id = supplierObj.Id;
+                item.Code = supplierObj.Code;
+                item.Name = supplierObj.Name;
+                item.NameAr = supplierObj.NameAr;
+                item.Address = supplierObj.Address;
+                item.AddressAr = supplierObj.AddressAr;
+                item.EMail = supplierObj.EMail;
+                item.Mobile = supplierObj.Mobile;
+                item.Website = supplierObj.Website;
+                item.ContactPerson = supplierObj.ContactPerson;
+                item.Fax = supplierObj.Fax;
+                item.Notes = supplierObj.Notes;
+            }
+            return item;
         }
 
         public IEnumerable<IndexSupplierVM.GetData> GetSupplierByName(string supplierName)
@@ -115,7 +128,10 @@ namespace Asset.Core.Repositories
                 AddressAr = item.AddressAr != null ? item.AddressAr : "",
                 EMail = item.EMail != null ? item.EMail : "",
                 Mobile = item.Mobile != null ? item.Mobile : "",
-                Website = item.Website != null ? item.Website : ""
+                Website = item.Website != null ? item.Website : "",
+                ContactPerson = item.ContactPerson,
+                Fax = item.Fax,
+                Notes = item.Notes
             });
         }
 
@@ -146,7 +162,10 @@ namespace Asset.Core.Repositories
                     AddressAr = item.AddressAr,
                     EMail = item.EMail,
                     Mobile = item.Mobile,
-                    Website = item.Website
+                    Website = item.Website,
+                    ContactPerson = item.ContactPerson,
+                    Fax = item.Fax,
+                    Notes = item.Notes
                 });
             }
         }
@@ -165,6 +184,9 @@ namespace Asset.Core.Repositories
                 supplierObj.EMail = model.EMail;
                 supplierObj.Address = model.Address;
                 supplierObj.AddressAr = model.AddressAr;
+                supplierObj.ContactPerson = model.ContactPerson;
+                supplierObj.Notes = model.Notes;
+                supplierObj.Fax = model.Fax;
                 _context.Entry(supplierObj).State = EntityState.Modified;
                 _context.SaveChanges();
                 return supplierObj.Id;
@@ -178,31 +200,64 @@ namespace Asset.Core.Repositories
 
         public IEnumerable<IndexSupplierVM.GetData> SortSuppliers(SortSupplierVM sortObj)
         {
-            var lstBrands = GetAll().ToList();
+            var lstSuppliers = GetAll().ToList();
             if (sortObj.Code != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstBrands = lstBrands.OrderByDescending(d => d.Code).ToList();
+                    lstSuppliers = lstSuppliers.OrderByDescending(d => d.Code).ToList();
                 else
-                    lstBrands = lstBrands.OrderBy(d => d.Code).ToList();
+                    lstSuppliers = lstSuppliers.OrderBy(d => d.Code).ToList();
             }
             else if (sortObj.Name != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstBrands = lstBrands.OrderByDescending(d => d.Name).ToList();
+                    lstSuppliers = lstSuppliers.OrderByDescending(d => d.Name).ToList();
                 else
-                    lstBrands = lstBrands.OrderBy(d => d.Name).ToList();
+                    lstSuppliers = lstSuppliers.OrderBy(d => d.Name).ToList();
             }
 
             else if (sortObj.NameAr != "")
             {
                 if (sortObj.SortStatus == "descending")
-                    lstBrands = lstBrands.OrderByDescending(d => d.NameAr).ToList();
+                    lstSuppliers = lstSuppliers.OrderByDescending(d => d.NameAr).ToList();
                 else
-                    lstBrands = lstBrands.OrderBy(d => d.NameAr).ToList();
+                    lstSuppliers = lstSuppliers.OrderBy(d => d.NameAr).ToList();
             }
 
-            return lstBrands;
+            else if (sortObj.Email != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstSuppliers = lstSuppliers.OrderByDescending(d => d.EMail).ToList();
+                else
+                    lstSuppliers = lstSuppliers.OrderBy(d => d.EMail).ToList();
+            }
+            else if (sortObj.ContactPerson != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstSuppliers = lstSuppliers.OrderByDescending(d => d.ContactPerson).ToList();
+                else
+                    lstSuppliers = lstSuppliers.OrderBy(d => d.ContactPerson).ToList();
+            }
+
+            else if (sortObj.Address != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstSuppliers = lstSuppliers.OrderByDescending(d => d.Address).ToList();
+                else
+                    lstSuppliers = lstSuppliers.OrderBy(d => d.Address).ToList();
+            }
+
+
+            else if (sortObj.AddressAr != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    lstSuppliers = lstSuppliers.OrderByDescending(d => d.AddressAr).ToList();
+                else
+                    lstSuppliers = lstSuppliers.OrderBy(d => d.AddressAr).ToList();
+            }
+
+
+            return lstSuppliers;
         }
 
         public IndexSupplierVM FindSupplier(string strText, int pageNumber, int pageSize)
@@ -218,7 +273,7 @@ namespace Asset.Core.Repositories
             || a.Address.Contains(strText)
             || a.AddressAr.Contains(strText)
             || a.EMail.Contains(strText)
-
+            || a.ContactPerson.Contains(strText)
             ).ToList().Select(item => new IndexSupplierVM.GetData
             {
                 Id = item.Id,
@@ -229,7 +284,8 @@ namespace Asset.Core.Repositories
                 Address = item.Address,
                 AddressAr = item.AddressAr,
                 EMail = item.EMail,
-                Website = item.Website
+                Website = item.Website,
+                ContactPerson = item.ContactPerson
             }).ToList();
 
             var supplierPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
@@ -247,7 +303,8 @@ namespace Asset.Core.Repositories
             || a.Address.Contains(strText)
             || a.AddressAr.Contains(strText)
             || a.EMail.Contains(strText)
-
+            || a.Website.Contains(strText)
+ || a.ContactPerson.Contains(strText)
             ).ToList().Select(item => new IndexSupplierVM.GetData
             {
                 Code = item.Code != null ? item.Code : "",
@@ -257,9 +314,40 @@ namespace Asset.Core.Repositories
                 AddressAr = item.AddressAr != null ? item.AddressAr : "",
                 EMail = item.EMail != null ? item.EMail : "",
                 Mobile = item.Mobile != null ? item.Mobile : "",
-                Website = item.Website != null ? item.Website : ""
+                Website = item.Website != null ? item.Website : "",
+                ContactPerson = item.ContactPerson,
             }).ToList();
 
+        }
+
+        public IndexSupplierVM GetAllSuppliersWithPaging(int pageNumber, int pageSize)
+        {
+            IndexSupplierVM mainClass = new IndexSupplierVM();
+            List<IndexSupplierVM.GetData> list = new List<IndexSupplierVM.GetData>();
+            var lstSuppliers = _context.Suppliers.ToList();
+            if (lstSuppliers.Count > 0)
+            {
+                foreach (var item in lstSuppliers)
+                {
+                    IndexSupplierVM.GetData supplierObj = new IndexSupplierVM.GetData();
+                    supplierObj.Id = item.Id;
+                    supplierObj.Code = item.Code != null ? item.Code : "";
+                    supplierObj.Name = item.Name;
+                    supplierObj.NameAr = item.NameAr;
+                    supplierObj.Address = item.Address != null ? item.Address : "";
+                    supplierObj.AddressAr = item.AddressAr != null ? item.AddressAr : "";
+                    supplierObj.EMail = item.EMail != null ? item.EMail : "";
+                    supplierObj.Mobile = item.Mobile != null ? item.Mobile : "";
+                    supplierObj.Website = item.Website != null ? item.Website : "";
+                    supplierObj.ContactPerson = item.ContactPerson;
+                    list.Add(supplierObj);
+                }
+                var suppliersPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                mainClass.Results = suppliersPerPage;
+                mainClass.Count = list.Count();
+                return mainClass;
+            }
+            return null;
         }
     }
 }
