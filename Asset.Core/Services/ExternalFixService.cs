@@ -20,12 +20,12 @@ namespace Asset.Core.Services
             _unitOfWork = unitOfWork;
         }
 
-        
+
 
         public int Delete(int id)
         {
             _unitOfWork.ExternalFixRepository.Delete(id);
-    
+
 
             return 1;
         }
@@ -71,6 +71,21 @@ namespace Asset.Core.Services
         public void Update(EditExternalFixVM editExternalFixVMObj)
         {
             _unitOfWork.ExternalFixRepository.Update(editExternalFixVMObj);
+        }
+
+        public IndexExternalFixVM GetAssetsExceed72HoursInExternalFix(int hospitalId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.ExternalFixRepository.GetAssetsExceed72HoursInExternalFix(hospitalId, pageNumber, pageSize);
+        }
+
+        public IndexExternalFixVM SearchInExternalFix(SearchExternalFixVM searchObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.ExternalFixRepository.SearchInExternalFix(searchObj, pageNumber, pageSize);
+        }
+
+        public IndexExternalFixVM SortExternalFix(SortExternalFixVM sortObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.ExternalFixRepository.SortExternalFix(sortObj, pageNumber, pageSize);
         }
     }
 }

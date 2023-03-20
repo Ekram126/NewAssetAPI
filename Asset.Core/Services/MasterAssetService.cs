@@ -106,6 +106,11 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterAssetRepository.GetById(id);
         }
 
+        public MasterAssetAttachment GetLastDocumentForMsterAssetId(int masterId)
+        {
+            return _unitOfWork.MasterAssetRepository.GetLastDocumentForMsterAssetId(masterId);
+        }
+
         public IEnumerable<IndexMasterAssetVM.GetData> GetListMasterAsset()
         {
             return _unitOfWork.MasterAssetRepository.GetListMasterAsset();

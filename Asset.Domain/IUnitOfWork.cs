@@ -104,5 +104,9 @@ namespace Asset.Domain
         IStockTakingHospitalRepository StockTakingHospitalRepository { get; }
 
 
+        IManufacturerPMAssetRepository ManufacturerPMAssetRepository { get; }
+
+
+
     }
 }

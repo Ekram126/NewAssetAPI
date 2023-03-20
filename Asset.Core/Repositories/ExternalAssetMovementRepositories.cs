@@ -3,6 +3,7 @@ using Asset.Models;
 using Asset.ViewModels.AssetDetailAttachmentVM;
 using Asset.ViewModels.AssetDetailVM;
 using Asset.ViewModels.AssetMovementVM;
+using Asset.ViewModels.ExternalAssetMovementVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -81,15 +82,36 @@ namespace Asset.Core.Repositories
             return externalAssetMovementObj;
         }
 
-        public IEnumerable<ExternalAssetMovement> GetExternalAssetMovements()
+        public IndexExternalAssetMovementVM GetExternalAssetMovements(int pageNumber, int pageSize)
         {
-            var lstMovements = _context.ExternalAssetMovements.OrderByDescending(a => a.MovementDate).ToList();
-            return lstMovements;
+            IndexExternalAssetMovementVM mainClass = new IndexExternalAssetMovementVM();
+
+            List<IndexExternalAssetMovementVM.GetData> list = new List<IndexExternalAssetMovementVM.GetData>();
+
+            var lstMovements = _context.ExternalAssetMovements.Include(a=>a.AssetDetail)
+                .Include(a => a.AssetDetail.MasterAsset).OrderByDescending(a => a.MovementDate)
+                .Select(item => new IndexExternalAssetMovementVM.GetData
+                {
+                    Id = item.Id,
+                    AssetDetailId = item.AssetDetailId,
+                    AssetName= item.AssetDetail.MasterAsset != null? item.AssetDetail.MasterAsset.Name:"",
+                    AssetNameAr = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.NameAr : "",
+                    BarCode = item.AssetDetail.Barcode,
+                    SerialNumber = item.AssetDetail.SerialNumber,
+                    ModelNumber = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.ModelNumber : "",
+                    MovementDate = item.MovementDate,
+                    HospitalName = item.HospitalName,
+                    Notes = item.Notes
+                }).ToList();
+            var movementPerPage = lstMovements.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            mainClass.Results = movementPerPage;
+            mainClass.Count = lstMovements.Count();
+            return mainClass;
         }
 
         public IEnumerable<ExternalAssetMovementAttachment> GetExternalMovementAttachmentByExternalAssetMovementId(int externalAssetMovementId)
         {
-          return  _context.ExternalAssetMovementAttachments.ToList().Where(a => a.ExternalAssetMovementId == externalAssetMovementId).ToList();
+            return _context.ExternalAssetMovementAttachments.ToList().Where(a => a.ExternalAssetMovementId == externalAssetMovementId).ToList();
         }
 
         public IEnumerable<ExternalAssetMovement> GetExternalMovementsByAssetDetailId(int assetId)
@@ -106,7 +128,6 @@ namespace Asset.Core.Repositories
                     getDataObj.AssetDetailId = item.AssetDetailId;
                     getDataObj.MovementDate = item.MovementDate;
                     getDataObj.HospitalName = item.HospitalName;
-                    getDataObj.MovementDate = item.MovementDate;
                     getDataObj.Notes = item.Notes;
                     list.Add(getDataObj);
                 }

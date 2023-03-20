@@ -40,6 +40,7 @@ namespace Asset.Core.Repositories
                     supplierObj.Fax = model.Fax;
                     _context.Suppliers.Add(supplierObj);
                     _context.SaveChanges();
+                    var supplierId = supplierObj.Id;
                 }
             }
             catch (Exception ex)
@@ -112,6 +113,7 @@ namespace Asset.Core.Repositories
                 item.ContactPerson = supplierObj.ContactPerson;
                 item.Fax = supplierObj.Fax;
                 item.Notes = supplierObj.Notes;
+                item.Attachments = _context.SupplierAttachments.Where(a => a.SupplierId == id).ToList();
             }
             return item;
         }
@@ -189,6 +191,18 @@ namespace Asset.Core.Repositories
                 supplierObj.Fax = model.Fax;
                 _context.Entry(supplierObj).State = EntityState.Modified;
                 _context.SaveChanges();
+                //if (model.Attachments.Count > 0)
+                //{
+                //    foreach (var item in model.Attachments)
+                //    {
+                //        SupplierAttachment attachmentObj = new SupplierAttachment();
+                //        attachmentObj.FileName = item.FileName;
+                //        attachmentObj.Title = item.Title;
+                //        attachmentObj.SupplierId = supplierObj.Id;
+                //        _context.SupplierAttachments.Add(attachmentObj);
+                //        _context.SaveChanges();
+                //    }
+                //}
                 return supplierObj.Id;
             }
             catch (Exception ex)
@@ -348,6 +362,23 @@ namespace Asset.Core.Repositories
                 return mainClass;
             }
             return null;
+        }
+
+        public int CreateSupplierAttachment(SupplierAttachment attachObj)
+        {
+            SupplierAttachment documentObj = new SupplierAttachment();
+            documentObj.Title = attachObj.Title;
+            documentObj.FileName = attachObj.FileName;
+            documentObj.SupplierId = attachObj.SupplierId;
+            _context.SupplierAttachments.Add(documentObj);
+            _context.SaveChanges();
+            return attachObj.Id;
+        }
+
+        public List<SupplierAttachment> GetSupplierAttachmentsBySupplierId(int supplierId)
+        {
+         return   _context.SupplierAttachments.Where(a => a.SupplierId == supplierId).ToList();
+          
         }
     }
 }

@@ -64,8 +64,7 @@ namespace Asset.Core.Helpers
             int months = today.Month - from.Month;
             int years = today.Year - from.Year;
 
-            //      if (today.Day < from.Day)
-
+          
             if (today.Month < to.Month || (today.Month == to.Month && today.Day < to.Day))
             {
                 months--;
@@ -80,9 +79,10 @@ namespace Asset.Core.Helpers
             int days = (today - from.AddMonths((years * 12) + months)).Days;
 
 
-
-            return years + "  سنة   " + months + "  شهر   " + days + "  يوم ";
-
+            return string.Format("{0} {1},{2} {3},{4} {5}",
+                                 years, (years == 1) ? "سنة" : (years == 2) ? "سنتين" : "سنوات",
+                                 months, (months == 1) ? "شهر" : (months == 2) ? "شهرين" : "شهور",
+                                 days, (days == 1) ? "يوم" : (days == 2) ? "يومين":"أيام");
 
         }
 

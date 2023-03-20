@@ -2,6 +2,7 @@
 using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.AssetMovementVM;
+using Asset.ViewModels.ExternalAssetMovementVM;
 using Asset.ViewModels.RoleCategoryVM;
 using System.Collections.Generic;
 
@@ -39,10 +40,12 @@ namespace Asset.Core.Services
           return  _unitOfWork.ExternalAssetMovementRepository.GetById(id);
         }
 
-        public IEnumerable<ExternalAssetMovement> GetExternalAssetMovements()
+        public IndexExternalAssetMovementVM GetExternalAssetMovements(int pageNumber, int pageSize)
         {
-           return _unitOfWork.ExternalAssetMovementRepository.GetExternalAssetMovements();
+           return _unitOfWork.ExternalAssetMovementRepository.GetExternalAssetMovements( pageNumber, pageSize);
         }
+
+    
 
         public IEnumerable<ExternalAssetMovementAttachment> GetExternalMovementAttachmentByExternalAssetMovementId(int externalAssetMovementId)
         {

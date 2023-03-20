@@ -34,8 +34,21 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public string StrSearch { get; set; }
         public decimal? Price { get; set; }
+        public decimal? FromPrice { get; set; }
+        public decimal? ToPrice { get; set; }
+
+
 
         public DateTime? PurchaseDate { get; set; }
+        public DateTime? FromPurchaseDate { get; set; }
+        public DateTime? ToPurchaseDate { get; set; }
 
+
+        public string Start { get; set; }
+        public string End { get; set; }
+
+        public string SortField { get; set; }
+
+        public string SortStatus { get; set; }
     }
 }

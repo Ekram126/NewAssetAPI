@@ -22,6 +22,7 @@ namespace Asset.API.Controllers
     {
         private IPagingService _pagingService;
         private IMasterAssetService _MasterAssetService;
+        private IAssetDetailService _assetDetailService;
         private IMasterAssetComponentService _masterAssetComponentService;
         IWebHostEnvironment _webHostEnvironment;
         [Obsolete]
@@ -30,11 +31,13 @@ namespace Asset.API.Controllers
         [Obsolete]
         public MasterAssetController(IMasterAssetService MasterAssetService,
             IMasterAssetComponentService masterAssetComponentService,
+             IAssetDetailService assetDetailService,
             IHostingEnvironment webHostingEnvironment,
              IWebHostEnvironment webHostEnvironment,
             IPagingService pagingService)
         {
             _MasterAssetService = MasterAssetService;
+            _assetDetailService = assetDetailService;
             _masterAssetComponentService = masterAssetComponentService;
             _webHostingEnvironment = webHostingEnvironment;
             _webHostEnvironment = webHostEnvironment;
@@ -184,6 +187,13 @@ namespace Asset.API.Controllers
 
 
 
+        [Route("GetLastDocumentForMsterAssetId/{masterId}")]
+        public MasterAssetAttachment GetLastDocumentForMsterAssetId(int masterId)
+        {
+            return _MasterAssetService.GetLastDocumentForMsterAssetId(masterId);
+        }
+
+
 
         [HttpPut]
         [Route("UpdateMasterAsset")]
@@ -194,18 +204,18 @@ namespace Asset.API.Controllers
                 int id = MasterAssetVM.Id;
                 if (MasterAssetVM.Code != null)
                 {
-                    var lstCode = _MasterAssetService.GetAllMasterAssets().Where(a => a.Code == MasterAssetVM.Code && a.Id != id).ToList();
+                    var lstCode = _MasterAssetService.GetAllMasterAssets().Where(a => (a.Code == MasterAssetVM.Code && a.Code != null) && a.Id != id).ToList();
                     if (lstCode.Count > 0)
                     {
                         return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "MasterAsset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
                     }
                 }
-                var lstNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Name == MasterAssetVM.Name && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber && a.Id != id).ToList();
+                var lstNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Name == MasterAssetVM.Name && a.ModelNumber == MasterAssetVM.ModelNumber && (a.VersionNumber == MasterAssetVM.VersionNumber && a.VersionNumber != null) && a.Id != id).ToList();
                 if (lstNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "MasterAsset name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
                 }
-                var lstArNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.NameAr == MasterAssetVM.NameAr && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber && a.Id != id).ToList();
+                var lstArNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.NameAr == MasterAssetVM.NameAr && a.ModelNumber == MasterAssetVM.ModelNumber && (a.VersionNumber == MasterAssetVM.VersionNumber && a.VersionNumber != null)  && a.Id != id).ToList();
                 if (lstArNames.Count > 0)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "MasterAsset arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
@@ -277,8 +287,16 @@ namespace Asset.API.Controllers
         {
             try
             {
-
-                int deletedRow = _MasterAssetService.Delete(id);
+                var assetObj = _MasterAssetService.GetById(id);
+                var lstHospitalAssets = _assetDetailService.ViewAllAssetDetailByMasterId(id).ToList();
+                if (lstHospitalAssets.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "MasterAsset cannot be deleted", MessageAr = "لا يمكن مسح الأصل الرئيسي" });
+                }
+                else
+                {
+                    int deletedRow = _MasterAssetService.Delete(id);
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -301,26 +319,13 @@ namespace Asset.API.Controllers
         [Obsolete]
         public ActionResult UploadInFiles(IFormFile file)
         {
-
-
-
             var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets";
             bool exists = System.IO.Directory.Exists(folderPath);
             if (!exists)
                 System.IO.Directory.CreateDirectory(folderPath);
-
-            //var nameWithOutExtension = Path.GetFileNameWithoutExtension(file.FileName);
-            //var ext = Path.GetExtension(file.FileName);
-            //nameWithOutExtension = nameWithOutExtension + DateTime.Today.Date + DateTime.Today.Month + DateTime.Today.Year + ext;
-            //string filePath = folderPath + "/" + nameWithOutExtension;
-
             string filePath = folderPath + "/" + file.FileName;
             if (System.IO.File.Exists(filePath))
             {
-                System.IO.File.Delete(filePath);
-                Stream stream = new FileStream(filePath, FileMode.Create);
-                file.CopyTo(stream);
-                stream.Close();
             }
             else
             {
@@ -328,15 +333,7 @@ namespace Asset.API.Controllers
                 file.CopyTo(stream);
                 stream.Close();
             }
-
-
             return StatusCode(StatusCodes.Status201Created);
-
-
-
-
-
-
         }
 
 
@@ -350,11 +347,6 @@ namespace Asset.API.Controllers
             bool exists = System.IO.Directory.Exists(folderPath);
             if (!exists)
                 System.IO.Directory.CreateDirectory(folderPath);
-
-            //var nameWithOutExtension = Path.GetFileNameWithoutExtension(file.FileName);
-            //var ext = Path.GetExtension(file.FileName);
-            //nameWithOutExtension = nameWithOutExtension + DateTime.Now.Day + DateTime.Now.Month + DateTime.Now.Year + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + "." + ext;
-
 
             string filePath = folderPath + "/" + file.FileName;
             if (System.IO.File.Exists(filePath))

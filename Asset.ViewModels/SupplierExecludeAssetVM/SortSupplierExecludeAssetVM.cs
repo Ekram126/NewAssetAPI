@@ -12,6 +12,8 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public string AssetNameAr { get; set; }
         public string AppNumber { get; set; }
         public string Date { get; set; }
+
+        public int? StatusId { get; set; }
         public string StatusName { get; set; }
         public string StatusNameAr { get; set; }
         public string DueDate { get; set; }

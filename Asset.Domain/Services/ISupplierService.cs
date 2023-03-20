@@ -23,5 +23,8 @@ namespace Asset.Domain.Services
         IEnumerable<IndexSupplierVM.GetData> SortSuppliers(SortSupplierVM sortObj);
         IEnumerable<IndexSupplierVM.GetData> FindSupplierByText(string strText);
         IndexSupplierVM GetAllSuppliersWithPaging(int pageNumber, int pageSize);
+        int CreateSupplierAttachment(SupplierAttachment attachObj);
+        List<SupplierAttachment> GetSupplierAttachmentsBySupplierId(int supplierId);
+
     }
 }

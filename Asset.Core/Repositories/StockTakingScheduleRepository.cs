@@ -21,46 +21,6 @@ namespace Asset.Core.Repositories
             _context = context;
         }
 
-
-
-        //public int Delete(int id)
-        //{
-        //    var StockTakingScheduleObj = _context.ExternalFixes.Find(id);
-
-
-        //            _context.ExternalFixes.Remove(StockTakingScheduleObj);
-        //            return _context.SaveChanges();
-        //        }
-        //    }
-
-
-        //public IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll()
-        //{
-        //    return _context.StockTakingSchedules.Include(a => a.AssetDetail)
-        //        .Include(a => a.AssetDetail.MasterAsset)
-        //         .Include(a => a.AssetDetail.MasterAsset.brand)
-
-        //        .ToList().Select(item => new IndexStockTakingScheduleVM.GetData
-        //        {
-        //            Id = item.Id,
-        //            STCode = item.STCode,
-        //            StartDate = item.StartDate,
-        //            EndDate = item.EndDate,
-        //            HospitalName = item.Hospital.Name,
-        //            HospitalNameAr = item.Hospital.NameAr,
-        //            CreationDate = item.CreationDate,
-        //            UserName = item.ApplicationUser.UserName,
-
-
-        //        });
-        //}
-
-
-        //public object GetById(int id)
-        //{
-        //    throw new NotImplementedException();
-        //}
-        //  Guid guid { get; set; }
         public int Add(CreateStockTakingScheduleVM model)
         {
 
@@ -100,30 +60,6 @@ namespace Asset.Core.Repositories
             return 0;
         }
 
-
-
-
-
-        //public void Update(EditExternalFixVM editExternalFixVMObj)
-        //{
-
-
-        //    try
-        //    {
-        //        var externalFixObj = _context.StockTakingScheduleRepositories.Find(editExternalFixVMObj.Id);
-        //        externalFixObj.ComingDate = editExternalFixVMObj.ComingDate;
-        //        externalFixObj.ComingNotes = editExternalFixVMObj.ComingNotes;
-        //        _context.Entry(externalFixObj).State = EntityState.Modified;
-        //        _context.SaveChanges();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        string msg = ex.Message;
-        //    }
-        //}
-
-
-
         public int Delete(int id)
         {
             var stockTakingScheduleObj = _context.StockTakingSchedules.Find(id);
@@ -132,8 +68,6 @@ namespace Asset.Core.Repositories
             _context.StockTakingSchedules.Remove(stockTakingScheduleObj);
             return _context.SaveChanges();
         }
-
-
 
         public IndexStockTakingScheduleVM GetAllWithPaging(int pageNumber, int pageSize)
         {
@@ -162,10 +96,6 @@ namespace Asset.Core.Repositories
                         Name = hospital.Hospital.Name,
                         NameAr = hospital.Hospital.NameAr,
                     }).ToList();
-
-
-                //item.HospitalName = lsStockTakingHospitals[0].Hospital.Name;
-                //item.HospitalNameAr = lsStockTakingHospitals[0].Hospital.NameAr;
                 list.Add(item);
             }
 
@@ -176,9 +106,8 @@ namespace Asset.Core.Repositories
         }
 
         public IndexStockTakingScheduleVM.GetData GetById(int id)
-
         {
-            var result = new IndexStockTakingScheduleVM.GetData (); 
+            var result = new IndexStockTakingScheduleVM.GetData();
             List<IndexStockTakingScheduleVM.GetData> list = new List<IndexStockTakingScheduleVM.GetData>();
             var lsStockTakingSchedules = _context.StockTakingSchedules.Include(a => a.ApplicationUser).ToList();
 
@@ -209,7 +138,7 @@ namespace Asset.Core.Repositories
                 //item.HospitalNameAr = lsStockTakingHospitals[0].Hospital.NameAr;
                 list.Add(item);
             }
-            if(list.Count> 0)
+            if (list.Count > 0)
             {
                 result = list.Where(a => a.Id == id).ToList().FirstOrDefault();
                 result.RelatedHospitals = _context.StockTakingHospitals.Include(a => a.Hospital)
@@ -224,27 +153,6 @@ namespace Asset.Core.Repositories
 
 
         }
-
-
-        /*
-         *  GenerateExternalFixNumberVM numberObj = new GenerateExternalFixNumberVM();
-            string str = "ExtrnlFix";
-
-            var lstIds = _context.ExternalFixes.ToList();
-            if (lstIds.Count > 0)
-            {
-                var code = lstIds.LastOrDefault().Id;
-                numberObj.OutNumber = str + (code + 1);
-            }
-            else
-            {
-                numberObj.OutNumber = str + 1;
-            }
-
-            return numberObj;
-         * *
-         */
-
 
         public GenerateStockScheduleTakingNumberVM GenerateStockScheduleTakingNumber()
         {
@@ -275,11 +183,136 @@ namespace Asset.Core.Repositories
                      StartDate = item.StartDate,
                      EndDate = item.EndDate,
                      CreationDate = item.CreationDate,
-                     UserName = item.ApplicationUser.UserName,
-
-
+                     UserName = item.ApplicationUser.UserName
                  });
+        }
 
+        public IndexStockTakingScheduleVM SearchStockTakingSchedule(SearchStockTakingScheduleVM searchObj, int pageNumber, int pageSize)
+        {
+            IndexStockTakingScheduleVM mainClass = new IndexStockTakingScheduleVM();
+            List<IndexStockTakingScheduleVM.GetData> list = new List<IndexStockTakingScheduleVM.GetData>();
+            List<StockTakingSchedule> lstAssetStockTakings = new List<StockTakingSchedule>();
+            lstAssetStockTakings = _context.StockTakingSchedules
+                                 .Include(a => a.ApplicationUser)
+                                 .OrderBy(a => a.StartDate).ToList().ToList();
+
+            if (lstAssetStockTakings.Count > 0)
+            {
+
+                string setstartday, setstartmonth, setendday, setendmonth = "";
+                DateTime startingFrom = new DateTime();
+                DateTime endingTo = new DateTime();
+                if (searchObj.Start == "")
+                {
+                    searchObj.StartDate = DateTime.Parse("01/01/1900");
+                }
+                else
+                {
+                    searchObj.StartDate = DateTime.Parse(searchObj.Start.ToString());
+                    var startyear = searchObj.StartDate.Value.Year;
+                    var startmonth = searchObj.StartDate.Value.Month;
+                    var startday = searchObj.StartDate.Value.Day;
+                    if (startday < 10)
+                        setstartday = searchObj.StartDate.Value.Day.ToString().PadLeft(2, '0');
+                    else
+                        setstartday = searchObj.StartDate.Value.Day.ToString();
+
+                    if (startmonth < 10)
+                        setstartmonth = searchObj.StartDate.Value.Month.ToString().PadLeft(2, '0');
+                    else
+                        setstartmonth = searchObj.StartDate.Value.Month.ToString();
+
+                    var sDate = startyear + "/" + setstartmonth + "/" + setstartday;
+                    startingFrom = DateTime.Parse(sDate);
+                }
+
+                if (searchObj.End == "")
+                {
+                    searchObj.EndDate = DateTime.Today.Date;
+                }
+                else
+                {
+                    searchObj.EndDate = DateTime.Parse(searchObj.End.ToString());
+                    var endyear = searchObj.EndDate.Value.Year;
+                    var endmonth = searchObj.EndDate.Value.Month;
+                    var endday = searchObj.EndDate.Value.Day;
+                    if (endday < 10)
+                        setendday = searchObj.EndDate.Value.Day.ToString().PadLeft(2, '0');
+                    else
+                        setendday = searchObj.EndDate.Value.Day.ToString();
+                    if (endmonth < 10)
+                        setendmonth = searchObj.EndDate.Value.Month.ToString().PadLeft(2, '0');
+                    else
+                        setendmonth = searchObj.EndDate.Value.Month.ToString();
+                    var eDate = endyear + "/" + setendmonth + "/" + setendday;
+                    endingTo = DateTime.Parse(eDate);
+                }
+
+                if (searchObj.Start != "" && searchObj.End != "")
+                {
+                    lstAssetStockTakings = lstAssetStockTakings.Where(a => a.StartDate.Value.Date >= startingFrom.Date && a.EndDate.Value.Date <= endingTo.Date).ToList();
+                }
+            }
+
+            foreach (var detail in lstAssetStockTakings)
+            {
+                IndexStockTakingScheduleVM.GetData item = new IndexStockTakingScheduleVM.GetData();
+                item.Id = detail.Id;
+                item.STCode = detail.STCode;
+                item.StartDate = detail.StartDate;
+                item.EndDate = detail.EndDate;
+                item.CreationDate = detail.CreationDate;
+                item.UserName = detail.ApplicationUser.UserName;
+                list.Add(item);
+            }
+
+            mainClass.Count = list.Count();
+            var requestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            mainClass.Results = requestsPerPage;
+            return mainClass;
+        }
+
+        public IndexStockTakingScheduleVM SortStockTakingSchedule(int page, int pageSize, SortStockTakingScheduleVM sortObj)
+        {
+            IndexStockTakingScheduleVM mainClass = new IndexStockTakingScheduleVM();
+            List<IndexStockTakingScheduleVM.GetData> list = new List<IndexStockTakingScheduleVM.GetData>();
+            List<StockTakingSchedule> lstAssetStockTakings = new List<StockTakingSchedule>();
+            lstAssetStockTakings = _context.StockTakingSchedules
+                                 .Include(a => a.ApplicationUser)
+                                 .OrderBy(a => a.StartDate).ToList().ToList();
+
+            if (lstAssetStockTakings.Count > 0)
+            {
+                foreach (var detail in lstAssetStockTakings)
+                {
+                    IndexStockTakingScheduleVM.GetData item = new IndexStockTakingScheduleVM.GetData();
+                    item.Id = detail.Id;
+                    item.STCode = detail.STCode;
+                    item.StartDate = detail.StartDate;
+                    item.EndDate = detail.EndDate;
+                    item.CreationDate = detail.CreationDate;
+                    item.UserName = detail.ApplicationUser.UserName;
+                    list.Add(item);
+                }
+            }
+
+            if (sortObj.STCode != "")
+            {
+                if (sortObj.SortStatus == "descending")
+                    list = list.OrderByDescending(d => d.STCode).ToList();
+                else
+                    list = list.OrderBy(d => d.STCode).ToList();
+            }
+            else if (sortObj.STCode == "")
+            {
+                list = list.OrderBy(d => d.STCode).ToList();
+            }
+
+
+            mainClass.Count = list.Count();
+            var lstSchedule = list.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            mainClass.Results = lstSchedule;
+            return mainClass;
         }
     }
 

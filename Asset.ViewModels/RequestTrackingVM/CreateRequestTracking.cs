@@ -10,10 +10,12 @@ namespace Asset.ViewModels.RequestTrackingVM
     {
         public int Id { get; set; }
         public string Description { get; set; }
+  public string StrDescriptionDate { get; set; }
+
         public DateTime DescriptionDate { get; set; }
         public int RequestStatusId { get; set; }
         public int RequestId { get; set; }
         public string CreatedById { get; set; }
-    public int HospitalId { get; set; }
+        public int HospitalId { get; set; }
     }
 }

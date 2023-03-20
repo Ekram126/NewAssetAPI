@@ -9,20 +9,16 @@ using System.Threading.Tasks;
 
 namespace Asset.Domain.Services
 {
-  public  interface IStockTakingScheduleService
+    public interface IStockTakingScheduleService
     {
-       IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll();
-        IndexStockTakingScheduleVM GetAllWithPaging( int pageNumber, int pageSize);
-
-
-        //IndexStockTakingScheduleVM GetAllWithPaging(int hospitalId, int pageNumber, int pageSize);
+        IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll();
+        IndexStockTakingScheduleVM GetAllWithPaging(int pageNumber, int pageSize);
         int Add(CreateStockTakingScheduleVM StockTakingScheduleObj);
-
         int Delete(int id);
         IndexStockTakingScheduleVM.GetData GetById(int id);
-
         GenerateStockScheduleTakingNumberVM GenerateStockScheduleTakingNumber();
 
-
+        IndexStockTakingScheduleVM SearchStockTakingSchedule(SearchStockTakingScheduleVM searchObj, int pageNumber, int pageSize);
+        IndexStockTakingScheduleVM SortStockTakingSchedule(int page, int pageSize, SortStockTakingScheduleVM sortObj);
     }
 }

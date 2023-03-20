@@ -23,6 +23,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexSupplierVM.GetData> GetSupplierByName(string supplierName);
         IEnumerable<IndexSupplierVM.GetData> GetTop10Suppliers(int hospitalId);
         IndexSupplierVM GetAllSuppliersWithPaging(int pageNumber, int pageSize);
+        int CreateSupplierAttachment(SupplierAttachment attachObj);
+        List<SupplierAttachment> GetSupplierAttachmentsBySupplierId(int supplierId);
     }
 
 }

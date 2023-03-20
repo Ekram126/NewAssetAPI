@@ -92,8 +92,8 @@ namespace Asset.Core.Repositories
                 foreach (var item in lstBrands)
                 {
                     CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
-                    countHospitalObj.BrandName = item.MasterAsset.brand.Name;
-                    countHospitalObj.BrandNameAr = item.MasterAsset.brand.NameAr;
+                    countHospitalObj.BrandName = item.MasterAsset.brand != null ? item.MasterAsset.brand.Name : "";
+                    countHospitalObj.BrandNameAr = item.MasterAsset.brand != null ? item.MasterAsset.brand.NameAr : "";
                     countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
                         .Where(a => a.MasterAsset.BrandId == item.MasterAsset.BrandId && a.HospitalId == hospitalId).ToList().Count();
                     list.Add(countHospitalObj);
@@ -112,7 +112,7 @@ namespace Asset.Core.Repositories
                     list.Add(countHospitalObj);
                 }
             }
-            return list;
+            return list.OrderBy(a=>a.CountOfMasterAssets).ToList();
         }
 
         public List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier(int hospitalId)
@@ -890,6 +890,17 @@ namespace Asset.Core.Repositories
                 list.Add(masterAssetObj);
             }
             return list;
+        }
+
+        public MasterAssetAttachment GetLastDocumentForMsterAssetId(int masterId)
+        {
+            MasterAssetAttachment documentObj = new MasterAssetAttachment();
+            var lstDocuments = _context.MasterAssetAttachments.Where(a => a.MasterAssetId == masterId).OrderBy(a => a.FileName).ToList();
+            if (lstDocuments.Count > 0)
+            {
+                documentObj = lstDocuments.Last();
+            }
+            return documentObj;
         }
     }
 }

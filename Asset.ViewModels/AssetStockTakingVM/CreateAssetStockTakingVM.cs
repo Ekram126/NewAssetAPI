@@ -10,7 +10,7 @@ namespace Asset.ViewModels.AssetStockTakingVM
     {
        
         public string URL { get; set; }
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public int? HospitalId { get; set; }
         public DateTime? CaptureDate { get; set; }
         public string UserId { get; set; }

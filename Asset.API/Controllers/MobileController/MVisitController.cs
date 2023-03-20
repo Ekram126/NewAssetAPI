@@ -55,12 +55,14 @@ namespace Asset.API.Controllers
 
                 if (createVisitVM.ListAttachments.Count > 0)
                 {
-                    foreach (var item in createVisitVM.ListAttachments)
+
+                    for (int item = 0; item < createVisitVM.ListAttachments.Count; item++)
                     {
+
                         VisitAttachment attachmentObj = new VisitAttachment();
                         attachmentObj.VisitId = visitId;
-                        attachmentObj.FileName = item.FileName;
-                        attachmentObj.Title = item.Title;
+                        attachmentObj.FileName = createVisitVM.ListAttachments[item].FileName;
+                        attachmentObj.Title = createVisitVM.ListAttachments[item].Title;
 
                         var attachId = _visitService.CreateVisitAttachments(attachmentObj);
 

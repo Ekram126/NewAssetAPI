@@ -89,5 +89,15 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.SupplierRepository.GetAllSuppliersWithPaging(pageNumber, pageSize);
         }
+
+        public int CreateSupplierAttachment(SupplierAttachment attachObj)
+        {
+            return _unitOfWork.SupplierRepository.CreateSupplierAttachment(attachObj);
+        }
+
+        public List<SupplierAttachment> GetSupplierAttachmentsBySupplierId(int supplierId)
+        {
+            return _unitOfWork.SupplierRepository.GetSupplierAttachmentsBySupplierId(supplierId);
+        }
     }
 }

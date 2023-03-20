@@ -461,6 +461,10 @@ namespace Asset.Core.Repositories
                 {
                     lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
+                if (lstRoleNames.Contains("SRCreator"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
             }
             if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
             {
@@ -488,7 +492,10 @@ namespace Asset.Core.Repositories
                 {
                     lstTransactions = lstTransactions.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
-
+                if (lstRoleNames.Contains("SRCreator"))
+                {
+                    lstTransactions = lstTransactions.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
             }
             if (lstTransactions.Count > 0)
             {

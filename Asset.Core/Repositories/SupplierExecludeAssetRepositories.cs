@@ -72,7 +72,7 @@ namespace Asset.Core.Repositories
         {
             List<IndexSupplierExecludeAssetVM.GetData> list = new List<IndexSupplierExecludeAssetVM.GetData>();
             var lstSupplierExecludeAssets = _context.SupplierExecludeAssets.Include(a => a.User)
-                .Include(a => a.AssetDetail).Include(a => a.ApplicationType)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.ApplicationType)
                 .Include(a => a.HospitalSupplierStatus)
                 .Include(a => a.AssetDetail.MasterAsset).OrderByDescending(a => a.Date.Value.Date).ToList();
             foreach (var item in lstSupplierExecludeAssets)
@@ -99,10 +99,13 @@ namespace Asset.Core.Repositories
                 getDataObj.IsMoreThan3Months = getDataObj.DiffMonths <= -3 ? true : false;
                 getDataObj.StatusId = item.StatusId;
 
+                getDataObj.HospitalName = item.AssetDetail.Hospital != null ? item.AssetDetail.Hospital.Name : "";
+                getDataObj.HospitalNameAr = item.AssetDetail.Hospital != null ? item.AssetDetail.Hospital.NameAr : "";
 
                 var lstStatuses = _context.HospitalSupplierStatuses.Where(a => a.Id == item.StatusId).ToList();
                 if (lstStatuses.Count > 0)
                 {
+                    getDataObj.StatusId = lstStatuses[0].Id;
                     getDataObj.StatusName = lstStatuses[0].Name;
                     getDataObj.StatusNameAr = lstStatuses[0].NameAr;
                     getDataObj.StatusColor = lstStatuses[0].Color;
@@ -653,6 +656,16 @@ namespace Asset.Core.Repositories
                 else
                     list = list.OrderBy(d => d.ModelNumber).ToList();
             }
+
+            if(sortObj.StatusId !=0)
+            {
+                list = list.Where(a => a.StatusId == sortObj.StatusId).ToList();
+
+            }
+            else
+            {
+                list = list.ToList();
+            }
             return list;
         }
 
@@ -759,6 +772,7 @@ namespace Asset.Core.Repositories
                        .Include(a => a.ApplicationType)
                 .Include(a => a.User)
                 .Include(a => a.AssetDetail)
+                 .Include(a => a.AssetDetail.Hospital)
                 .Include(a => a.AssetDetail.MasterAsset).OrderByDescending(a => a.Date.Value.Date).ToList();
 
             if (statusId != 0)
@@ -784,6 +798,10 @@ namespace Asset.Core.Repositories
                 getDataObj.AssetId = item.AssetDetail.Id;
                 getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;// + " - " + item.AssetDetail.SerialNumber;
                 getDataObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;// + " - " + item.AssetDetail.SerialNumber;
+
+                getDataObj.HospitalName = item.AssetDetail.Hospital != null ? item.AssetDetail.Hospital.Name:"";
+                getDataObj.HospitalNameAr = item.AssetDetail.Hospital != null ? item.AssetDetail.Hospital.NameAr:"";
+
 
                 getDataObj.SerialNumber = item.AssetDetail.SerialNumber;
                 getDataObj.BarCode = item.AssetDetail.Barcode;

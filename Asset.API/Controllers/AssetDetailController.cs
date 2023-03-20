@@ -267,7 +267,7 @@ namespace Asset.API.Controllers
         [Route("AlertAssetsBefore3MonthesWithDuration2/{duration}/{pageNumber}/{pageSize}")]
         public IndexAssetDetailVM AlertAssetsBefore3Monthes2(int duration, int pageNumber, int pageSize)
         {
-            return _AssetDetailService.AlertAssetsBefore3Monthes(duration,pageNumber,pageSize);
+            return _AssetDetailService.AlertAssetsBefore3Monthes(duration, pageNumber, pageSize);
         }
 
 
@@ -399,8 +399,8 @@ namespace Asset.API.Controllers
 
                 else
                 {
-                   // var domainName = "http://" + HttpContext.Request.Host.Value;
-                  var  domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
+                    // var domainName = "http://" + HttpContext.Request.Host.Value;
+                    var domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
                     AssetDetailVM.DomainName = domainName;
                     int updatedRow = _AssetDetailService.Update(AssetDetailVM);
                 }
@@ -414,7 +414,7 @@ namespace Asset.API.Controllers
         }
         [HttpPost]
         [Route("AddAssetDetail")]
-        public ActionResult<AssetDetail> Add(CreateAssetDetailVM AssetDetailVM)
+        public ActionResult Add(CreateAssetDetailVM AssetDetailVM)
         {
             var lstCode = _AssetDetailService.GetAll().ToList().Where(a => a.Code == AssetDetailVM.Code).ToList();
             if (lstCode.Count > 0)
@@ -434,12 +434,8 @@ namespace Asset.API.Controllers
                 qrAttach.AssetDetailId = AssetDetailVM.Id;
                 qrAttach.FileName = "asset-" + AssetDetailVM.Id + ".png";
                 CreateAssetDetailAttachments(qrAttach);
-                return Ok(new { assetId = savedId });
+                return Ok(savedId);
             }
-
-
-            // return Ok(new { assetId = AssetDetailVM.Id });
-
         }
 
         [HttpDelete]
@@ -457,7 +453,7 @@ namespace Asset.API.Controllers
                 var lstRequests = _requestService.GetAllRequestsByAssetId(id, int.Parse(assetObj.HospitalId.ToString())).ToList();
                 if (lstRequests.Count > 0)
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "request", Message = "You cannot delete this asset it has requests", MessageAr = "لا يمكن مسح هذا الأصل لأن له بلاغات صيانة " });
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "request", Message = "You cannot delete this asset it has requests", MessageAr = "لا يمكن مسح هذا الأصل لأن له بلاغات أعطال " });
                 }
                 var lstWO = _workOrderService.GetLastRequestAndWorkOrderByAssetId(id).ToList();
                 if (lstWO.Count > 0)
@@ -1077,27 +1073,24 @@ namespace Asset.API.Controllers
 
 
 
-
-
+        /////////////////////////////////////////////////////
+        /// PoliceQr - 2
+        /////////////////////////////////////////
         [HttpPost]
         [Route("GenerateQrCodeForAllAssets")]
         public bool GenerateQrCodeForAllAssets(string domainName)
         {
-            //var path = HttpContext.Request.Path;
-            //var pathBase = HttpContext.Request.PathBase;
-            //domainName = "http://" + HttpContext.Request.Host.Value;
-             domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
-
+            domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
             return _AssetDetailService.GenerateQrCodeForAllAssets(domainName);
         }
-        [Route("GenerateWordForQrCodeForAllAssets")]
+        [Route("GenerateWordForQrCodeForPoliceAssets")]
         public ActionResult GenerateWordForQrCodeForAllAssets()
         {
 
             using (WordDocument document = new WordDocument())
             {
                 //Opens the Word template document
-                string strTemplateFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\CardTemplate1.dotx";
+                string strTemplateFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\PoliceCardTemplate.dotx";
 
                 Stream docStream = System.IO.File.OpenRead(strTemplateFile);
                 document.Open(docStream, FormatType.Docx);
@@ -1105,18 +1098,18 @@ namespace Asset.API.Controllers
 
 
                 var allAssets = ListAssets().ToList();
-               // DataTable dtAssets = GetAssetsAsDataTable();
+                // DataTable dtAssets = GetAssetsAsDataTable();
                 MailMergeDataTable dataTable = new MailMergeDataTable("Asset_QrCode", allAssets);
                 document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField_InsertPageBreak);
                 document.MailMerge.MergeImageField += new MergeImageFieldEventHandler(InsertQRBarcode);
                 document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField_Event);
                 document.MailMerge.RemoveEmptyGroup = true;
-           
+
                 document.MailMerge.ExecuteGroup(dataTable);
 
 
                 //Saves the file in the given path
-                string strExportFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\Cards1.docx";
+                string strExportFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\PoliceCards.docx";
                 docStream = System.IO.File.Create(strExportFile);
                 document.Save(docStream, FormatType.Docx);
                 docStream.Dispose();
@@ -1136,7 +1129,7 @@ namespace Asset.API.Controllers
                 WTextBody ownerTextBody = ownerParagraph.OwnerTextBody;
                 ownerTextBody.ChildEntities.Remove(ownerParagraph);
             }
-        }             
+        }
         private void MergeField_InsertPageBreak(object sender, MergeFieldEventArgs args)
         {
 
@@ -1155,7 +1148,7 @@ namespace Asset.API.Controllers
         }
         private void InsertQRBarcode(object sender, MergeImageFieldEventArgs args)
         {
-             if (args.FieldName == "QrFilePath")
+            if (args.FieldName == "QrFilePath")
             {
                 ////Generates barcode image for field value.
                 System.Drawing.Image barcodeImage = GenerateQRBarcodeImage(args.FieldValue.ToString());
@@ -1172,13 +1165,18 @@ namespace Asset.API.Controllers
             //Set XDimension
             barcode.XDimension = 3;
             barcode.Text = qrBarcodeText;
+            PdfColor pdfColor = new PdfColor();
+            //pdfColor.
+            barcode.ForeColor = pdfColor;
+
+
             //Convert the barcode to image
-            System.Drawing.Image barcodeImage = barcode.ToImage(new SizeF(85f, 85f));
+            System.Drawing.Image barcodeImage = barcode.ToImage(new SizeF(88f, 88f));
             return barcodeImage;
         }
         private List<IndexAssetDetailVM.GetData> ListAssets()
         {
-            var allAssets = _AssetDetailService.GetAll().OrderBy(a=>a.Barcode).ToList();
+            var allAssets = _AssetDetailService.GetAll().OrderBy(a => a.Barcode).ToList();
             if (allAssets.Count > 0)
             {
                 return allAssets;
@@ -1187,46 +1185,14 @@ namespace Asset.API.Controllers
         }
 
 
-        //private DataTable GetAssetsAsDataTable()
-        //{
-
-        //    var allAssets = _AssetDetailService.GetAll().ToList();
-        //    DataTable table = new DataTable("Asset_QrCode");
-        //    // table.TableName = "QrCode";
-        //    // Add fields to the Product_PriceList table.
-        //    table.Columns.Add("AssetName");
-        //    table.Columns.Add("BrandName");
-        //    table.Columns.Add("SerialNumber");
-        //    table.Columns.Add("Model");
-        //    table.Columns.Add("BarCode");
-        //    table.Columns.Add("QRFilePath");
-        //    table.Columns.Add("HospitalNameAr");
-        //    // DataRow row;
-
-        //    // Inserting values to the tables.
-        //    foreach (var item in allAssets)
-        //    {
-        //        DataRow row = table.NewRow();
-        //        row["AssetName"] = item.AssetName;
-        //        row["BrandName"] = item.BrandName;
-        //        row["SerialNumber"] = item.SerialNumber;
-        //        row["Model"] = item.Model;
-        //        row["BarCode"] = item.BarCode;
-        //        row["QRFilePath"] = item.QrFilePath;
-        //        row["HospitalNameAr"] = item.QrFilePath;
-        //        table.Rows.Add(row);
-
-        //    }
-        //    return table;
-        //}
-
-
-
+        /////////////////////////////////////////////////////
+        /// UniversityQr - 3
+        /////////////////////////////////////////
         [HttpPost]
         [Route("GenerateQrCodeForUniversityAssets")]
         public bool GenerateQrCodeForUniversityAssets(string domainName)
         {
-           // domainName = "http://" + HttpContext.Request.Host.Value;
+            // domainName = "http://" + HttpContext.Request.Host.Value;
             domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
 
             return _AssetDetailService.GenerateQrCodeForAllAssets(domainName);
@@ -1293,14 +1259,11 @@ namespace Asset.API.Controllers
                 }
             }
         }
-       
-        
-        
-        
-        /////////////////////////////////////////////////////
-        /// HospitalQr
-        /////////////////////////////////////////
 
+
+        /////////////////////////////////////////////////////
+        /// HospitalQr - 1
+        /////////////////////////////////////////
         [HttpPost]
         [Route("GenerateQrCodeForHospitalAssets")]
         public bool GenerateQrCodeForHospitalAssets(string domainName)
@@ -1371,11 +1334,6 @@ namespace Asset.API.Controllers
                 }
             }
         }
-
-
-
-
-
 
 
     }

@@ -292,7 +292,7 @@ namespace Asset.API.Controllers
                            select role.Id).ToList();
 
             userObj.RoleIds = RoleIds;
-
+          //  userObj.HospitalId
             return userObj;
         }
 

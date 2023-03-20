@@ -15,6 +15,6 @@ namespace Asset.ViewModels.HospitalSupplierStatusVM
         public int? ApproveStatus { get; set; }
         public int? RejectStatus { get; set; }
         public int? SystemRejectStatus { get; set; }
-
+        public int? TotalStatus { get; set; }
     }
 }

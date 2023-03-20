@@ -27,7 +27,7 @@ namespace Asset.Core.Repositories
                 {
                     RequestTracking requestTracking = new RequestTracking();
                     requestTracking.Description = createRequestTracking.Description;
-                    requestTracking.DescriptionDate = DateTime.Now; //requestDescriptionDTO.DescriptionDate;
+                    requestTracking.DescriptionDate = DateTime.Parse(createRequestTracking.StrDescriptionDate); //requestDescriptionDTO.DescriptionDate;
                     requestTracking.RequestId = createRequestTracking.RequestId;
                     requestTracking.RequestStatusId = createRequestTracking.RequestStatusId;
                     requestTracking.CreatedById = createRequestTracking.CreatedById;

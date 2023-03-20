@@ -174,5 +174,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WorkOrder.GetMobileWorkOrderByRequestUserId(requestId, userId);
         }
+
+        public List<IndexWorkOrderVM2.GetData> PrintListOfWorkOrders(PrintWorkOrderVM printWorkOrderObj)
+        {
+            return _unitOfWork.WorkOrder.PrintListOfWorkOrders(printWorkOrderObj);
+        }
     }
 }

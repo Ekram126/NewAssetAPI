@@ -38,5 +38,8 @@ namespace Asset.Domain.Repositories
         List<CountMasterAssetBrands> CountMasterAssetsByBrand(int hospitalId);
         List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier(int hospitalId);
         IEnumerable<IndexMasterAssetVM.GetData> sortMasterAssets(SortMasterAssetVM searchObj);
+
+
+        MasterAssetAttachment GetLastDocumentForMsterAssetId(int masterId);
     }
 }

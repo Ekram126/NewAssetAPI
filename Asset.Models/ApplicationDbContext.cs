@@ -57,6 +57,7 @@ namespace Asset.Models
         public DbSet<Category> Categories { get; set; }
         public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<SupplierAttachment> SupplierAttachments { get; set; }
         public DbSet<CommetieeMember> CommetieeMembers { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<AssetPeriority> AssetPeriorities { get; set; }
@@ -149,5 +150,7 @@ namespace Asset.Models
         public DbSet<AssetStockTaking> AssetStockTakings { get; set; }
         public DbSet<StockTakingSchedule> StockTakingSchedules { get; set; }
         public DbSet<StockTakingHospital> StockTakingHospitals { get; set; }
+
+        public DbSet<ManufacturerPMAsset> ManufacturerPMAssets { get; set; }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace Asset.ViewModels.SupplierVM
+﻿using Asset.Models;
+using System.Collections.Generic;
+
+namespace Asset.ViewModels.SupplierVM
 {
     public class EditSupplierVM
     {
@@ -14,5 +17,7 @@
         public string ContactPerson { get; set; }
         public string Notes { get; set; }
         public string Fax { get; set; }
+
+        public List<SupplierAttachment> Attachments { get; set; }
     }
 }

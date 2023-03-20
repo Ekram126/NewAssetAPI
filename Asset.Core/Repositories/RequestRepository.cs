@@ -31,7 +31,7 @@ namespace Asset.Core.Repositories
                     request.Subject = createRequestVM.Subject;
                     request.RequestCode = createRequestVM.RequestCode;
                     request.Description = createRequestVM.Description;
-                    request.RequestDate = DateTime.Now; //requestDTO.RequestDate;
+                    request.RequestDate = DateTime.Parse(createRequestVM.StrRequestDate);// DateTime.Now; 
                     request.RequestModeId = createRequestVM.RequestModeId;
                     request.RequestPeriorityId = createRequestVM.RequestPeriorityId;
                     request.AssetDetailId = createRequestVM.AssetDetailId;
@@ -46,6 +46,12 @@ namespace Asset.Core.Repositories
                     _context.SaveChanges();
 
 
+                    //AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
+                    //assetStatusTransactionObj.AssetDetailId = createRequestVM.AssetDetailId;
+                    //assetStatusTransactionObj.AssetStatusId = 4;
+                    //assetStatusTransactionObj.HospitalId = createRequestVM.HospitalId;
+                    //_context.AssetStatusTransactions.Add(assetStatusTransactionObj);
+                    //_context.SaveChanges();
 
 
                     createRequestVM.Id = request.Id;
@@ -414,44 +420,42 @@ namespace Asset.Core.Repositories
                 list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
 
-            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
-            {
-                if (userRoleNames.Contains("Admin"))
-                {
-                    list = list.ToList();
-                }
-                if (userRoleNames.Contains("TLHospitalManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (!userRoleNames.Contains("EngManager") && userRoleNames.Contains("Eng"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                }
-                if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("AssetOwner"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                }
-                if (userRoleNames.Contains("DE"))
-                {
-                    list = list = new List<IndexRequestVM.GetData>();
-                }
-                if (userRoleNames.Contains("HR"))
-                {
-                    list = list = new List<IndexRequestVM.GetData>();
-                }
-
-
-            }
-            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+            //if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+            //{
+            //    if (userRoleNames.Contains("Admin"))
+            //    {
+            //        list = list.ToList();
+            //    }
+            //    if (userRoleNames.Contains("TLHospitalManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (!userRoleNames.Contains("EngManager") && userRoleNames.Contains("Eng"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("AssetOwner"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("DE"))
+            //    {
+            //        list = list = new List<IndexRequestVM.GetData>();
+            //    }
+            //    if (userRoleNames.Contains("HR"))
+            //    {
+            //        list = list = new List<IndexRequestVM.GetData>();
+            //    }
+            //}
+            if (UserObj.HospitalId > 0)
             {
                 if (userRoleNames.Contains("Admin"))
                 {
@@ -481,19 +485,20 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-                //if (userRoleNames.Contains("Eng"))
-                //{
-                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //}
 
-                if (userRoleNames.Contains("DE"))
+                if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
                 {
-                    list = list = new List<IndexRequestVM.GetData>();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-                if (userRoleNames.Contains("HR"))
+                if (userRoleNames.Contains("SRCreator") && userRoleNames.Contains("SRReviewer"))
                 {
-                    list = list = new List<IndexRequestVM.GetData>();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
+                if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+
 
 
             }
@@ -645,42 +650,7 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId && t.StatusId == statusId).ToList();
                 }
-
-                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
-                {
-
-                    if (userRoleNames.Contains("TLHospitalManager"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
-                    }
-
-                    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
-                    }
-                    if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    }
-
-                    if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    }
-                    if (userRoleNames.Contains("AssetOwner"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    }
-                    if (userRoleNames.Contains("DE"))
-                    {
-                        list = list = new List<IndexRequestVM.GetData>();
-                    }
-                    if (userRoleNames.Contains("HR"))
-                    {
-                        list = list = new List<IndexRequestVM.GetData>();
-                    }
-                }
-                if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+                if (UserObj.HospitalId > 0)
                 {
 
                     if (userRoleNames.Contains("TLHospitalManager"))
@@ -708,14 +678,30 @@ namespace Asset.Core.Repositories
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
 
-                    if (userRoleNames.Contains("DE"))
+                    //if (userRoleNames.Contains("SRCreator"))
+                    //{
+                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    //}
+                    //if (userRoleNames.Contains("SRReviewer"))
+                    //{
+                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    //}
+
+
+
+                    if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
                     {
-                        list = new List<IndexRequestVM.GetData>();
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
-                    if (userRoleNames.Contains("HR"))
+                    if (userRoleNames.Contains("SRCreator") && userRoleNames.Contains("SRReviewer"))
                     {
-                        list = new List<IndexRequestVM.GetData>();
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                     }
+                    if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+
 
                 }
             }
@@ -874,45 +860,6 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId && t.StatusId == statusId).ToList();
                 }
-
-                //if (UserObj.HospitalId > 0)
-                //{
-
-                //    if (userRoleNames.Contains("TLHospitalManager"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
-                //    }
-
-                //    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
-                //    }
-                //    if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //    }
-
-                //    if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                //    }
-                //    if (userRoleNames.Contains("AssetOwner"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //    }
-                //    if (userRoleNames.Contains("SRCreator"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //    }
-                //    if (userRoleNames.Contains("DE"))
-                //    {
-                //        list = list = new List<IndexRequestVM.GetData>();
-                //    }
-                //    if (userRoleNames.Contains("HR"))
-                //    {
-                //        list = list = new List<IndexRequestVM.GetData>();
-                //    }
-                //}
                 if (UserObj.HospitalId > 0)
                 {
 
@@ -936,23 +883,22 @@ namespace Asset.Core.Repositories
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
-                    if (userRoleNames.Contains("SRCreator"))
+                    if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                     }
                     if (userRoleNames.Contains("Eng"))
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
-                    if (userRoleNames.Contains("DE"))
-                    {
-                        list = new List<IndexRequestVM.GetData>();
-                    }
-                    if (userRoleNames.Contains("HR"))
-                    {
-                        list = new List<IndexRequestVM.GetData>();
-                    }
-
                 }
             }
 
@@ -1105,40 +1051,40 @@ namespace Asset.Core.Repositories
                     list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId && t.StatusId == statusId).ToList();
                 }
 
-                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
-                {
+                //if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+                //{
 
-                    if (userRoleNames.Contains("TLHospitalManager"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
-                    }
+                //    if (userRoleNames.Contains("TLHospitalManager"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
+                //    }
 
-                    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
-                    }
-                    if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    }
+                //    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
+                //    }
+                //    if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                //    }
 
-                    if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    }
-                    if (userRoleNames.Contains("AssetOwner"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    }
-                    if (userRoleNames.Contains("DE"))
-                    {
-                        list = list = new List<IndexRequestVM.GetData>();
-                    }
-                    if (userRoleNames.Contains("HR"))
-                    {
-                        list = list = new List<IndexRequestVM.GetData>();
-                    }
-                }
+                //    if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //    }
+                //    if (userRoleNames.Contains("AssetOwner"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                //    }
+                //    if (userRoleNames.Contains("DE"))
+                //    {
+                //        list = list = new List<IndexRequestVM.GetData>();
+                //    }
+                //    if (userRoleNames.Contains("HR"))
+                //    {
+                //        list = list = new List<IndexRequestVM.GetData>();
+                //    }
+                //}
                 if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
                 {
 
@@ -1166,6 +1112,29 @@ namespace Asset.Core.Repositories
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
+                    //if (userRoleNames.Contains("SRCreator"))
+                    //{
+                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    //}
+                    //if (userRoleNames.Contains("SRReviewer"))
+                    //{
+                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    //}
+
+
+                    if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+
 
                     if (userRoleNames.Contains("DE"))
                     {
@@ -1497,6 +1466,27 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
+                //if (userRoleNames.Contains("SRCreator"))
+                //{
+                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                //}
+                //if (userRoleNames.Contains("SRReviewer"))
+                //{
+                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //}
+
+                if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                }
+                if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
                 if (userRoleNames.Contains("DE"))
                 {
                     list = list = new List<IndexRequestVM.GetData>();
@@ -1524,6 +1514,10 @@ namespace Asset.Core.Repositories
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
                 if (userRoleNames.Contains("AssetOwner"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                }
+                if (userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
@@ -1601,6 +1595,27 @@ namespace Asset.Core.Repositories
 
                 }
 
+                //if (userRoleNames.Contains("SRCreator"))
+                //{
+                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                //}
+                //if (userRoleNames.Contains("SRReviewer"))
+                //{
+                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //}
+
+                if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                }
+                if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
                 if (userRoleNames.Contains("DE"))
                 {
                     list = new List<IndexRequestVM.GetData>();
@@ -2241,6 +2256,27 @@ namespace Asset.Core.Repositories
                     {
                         request = request.Where(a => a.HospitalId == userObj.HospitalId && a.CreatedById == userObj.Id).ToList();
                     }
+                    //if (userRoleNames.Contains("SRCreator"))
+                    //{
+                    //    request = request.Where(t => t.HospitalId == userObj.HospitalId && t.CreatedById == userObj.Id).ToList();
+                    //}
+                    //if (userRoleNames.Contains("SRReviewer"))
+                    //{
+                    //    request = request.Where(t => t.HospitalId == userObj.HospitalId).ToList();
+                    //}
+
+                    if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
+                    {
+                        request = request.Where(t => t.HospitalId == userObj.HospitalId && t.CreatedById == userObj.Id).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        request = request.Where(t => t.HospitalId == userObj.HospitalId).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                    {
+                        request = request.Where(t => t.HospitalId == userObj.HospitalId).ToList();
+                    }
                     else
                     {
                         request = request.Where(a => a.HospitalId == userObj.HospitalId).ToList();
@@ -2257,6 +2293,10 @@ namespace Asset.Core.Repositories
                 if (userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId > 0)
                 {
                     if (userRoleNames.Contains("AssetOwner"))
+                    {
+                        request = request.Where(a => a.HospitalId == userObj.HospitalId && a.CreatedById == userObj.Id).ToList();
+                    }
+                    if (userRoleNames.Contains("SRCreator"))
                     {
                         request = request.Where(a => a.HospitalId == userObj.HospitalId && a.CreatedById == userObj.Id).ToList();
                     }
@@ -3223,6 +3263,26 @@ namespace Asset.Core.Repositories
                     {
                         lstRequests = lstRequests.Where(a => a.Request.User.HospitalId == userObj.HospitalId && a.CreatedById == userObj.Id).AsQueryable();
                     }
+                    //if (userRoleNames.Contains("SRCreator"))
+                    //{
+                    //    lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId && t.CreatedById == userObj.Id).AsQueryable();
+                    //}
+                    //if (userRoleNames.Contains("SRReviewer"))
+                    //{
+                    //    lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId).AsQueryable();
+                    //}
+                    if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId && t.CreatedById == userObj.Id).AsQueryable();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId).AsQueryable();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId).AsQueryable();
+                    }
                     else
                     {
                         lstRequests = lstRequests.Where(a => a.Request.User.HospitalId == userObj.HospitalId).AsQueryable();
@@ -3242,6 +3302,27 @@ namespace Asset.Core.Repositories
                     {
                         lstRequests = lstRequests.Where(a => a.Request.HospitalId == userObj.HospitalId && a.Request.CreatedById == userObj.Id).AsQueryable();
                     }
+                    //if (userRoleNames.Contains("SRCreator"))
+                    //{
+                    //    lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId && t.CreatedById == userObj.Id).AsQueryable();
+                    //}
+                    //if (userRoleNames.Contains("SRReviewer"))
+                    //{
+                    //    lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId).AsQueryable();
+                    //}
+                    if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId && t.CreatedById == userObj.Id).AsQueryable();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId).AsQueryable();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.Request.User.HospitalId == userObj.HospitalId).AsQueryable();
+                    }
+
                     else
                     {
                         lstRequests = lstRequests.Where(a => a.Request.HospitalId == userObj.HospitalId).AsQueryable();
@@ -4488,6 +4569,27 @@ namespace Asset.Core.Repositories
                     {
                         list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId && t.IsOpened == false).ToList();
                     }
+                    //if (userRoleNames.Contains("SRCreator"))
+                    //{
+                    //    list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId && t.IsOpened == false).ToList();
+                    //}
+                    //if (userRoleNames.Contains("SRReviewer"))
+                    //{
+                    //    list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.IsOpened == false).ToList();
+                    //}
+
+                    if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
+                    {
+                        list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId && t.IsOpened == false).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.IsOpened == false).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.IsOpened == false).ToList();
+                    }
                     if (userRoleNames.Contains("Eng"))
                     {
                         //var lstAssigned = (from order in _context.WorkOrders
@@ -4872,13 +4974,25 @@ namespace Asset.Core.Repositories
                     //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
                 }
-                if (userRoleNames.Contains("DE"))
+                //if (userRoleNames.Contains("SRCreator"))
+                //{
+                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+                //}
+                //if (userRoleNames.Contains("SRReviewer"))
+                //{
+                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //}
+                if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
                 {
-                    list = list = new List<IndexRequestVM.GetData>();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
                 }
-                if (userRoleNames.Contains("HR"))
+                if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
                 {
-                    list = list = new List<IndexRequestVM.GetData>();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
             }
             if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
@@ -4908,18 +5022,29 @@ namespace Asset.Core.Repositories
                 if (userRoleNames.Contains("Eng"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                }
+                //if (userRoleNames.Contains("SRCreator"))
+                //{
+                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+                //}
+                //if (userRoleNames.Contains("SRReviewer"))
+                //{
+                //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //  }
 
+                if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+                }
+                if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
 
-                if (userRoleNames.Contains("DE"))
-                {
-                    list = list = new List<IndexRequestVM.GetData>();
-                }
-                if (userRoleNames.Contains("HR"))
-                {
-                    list = list = new List<IndexRequestVM.GetData>();
-                }
             }
 
 
@@ -5105,6 +5230,27 @@ namespace Asset.Core.Repositories
                     {
                         lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
+                    //if (userRoleNames.Contains("SRCreator"))
+                    //{
+                    //    lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    //}
+                    //if (userRoleNames.Contains("SRReviewer"))
+                    //{
+                    //    lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    //}
+
+                    if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
                 }
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
                 {
@@ -5134,6 +5280,16 @@ namespace Asset.Core.Repositories
                     if (userRoleNames.Contains("AssetOwner"))
                     {
                         lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    }
+                    if (userRoleNames.Contains("SRCreator"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+
+                    }
+                    if (userRoleNames.Contains("SRReviewer"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+
                     }
                 }
             }
@@ -5672,6 +5828,10 @@ namespace Asset.Core.Repositories
                 {
                     allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
+                if (lstRoleNames.Contains("SRReviewer"))
+                {
+                    allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
             }
 
 
@@ -5885,12 +6045,10 @@ namespace Asset.Core.Repositories
                                         .Include(a => a.RequestType)
                                         .Include(a => a.AssetDetail.MasterAsset)
                                         .OrderByDescending(a => a.RequestDate)
+
                                         .AsQueryable();
 
             var allrequests = requests.ToList<Request>();
-
-
-
             if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
             {
                 allrequests = allrequests.ToList();
@@ -5917,37 +6075,35 @@ namespace Asset.Core.Repositories
                 {
                     allrequests = allrequests.ToList();
                 }
-                if (lstRoleNames.Contains("TLHospitalManager"))
-                {
-                    allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                }
-                if (lstRoleNames.Contains("AssetOwner"))
+                else if ((lstRoleNames.Contains("AssetOwner") || lstRoleNames.Contains("SRCreator")) && !lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer"))
                 {
                     allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-                if (lstRoleNames.Contains("SRCreator"))
+                else if ((lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRCreator")) && !lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer"))
                 {
                     allrequests = allrequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-                if (lstRoleNames.Contains("SRReviewer"))
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRCreator"))
                 {
-                    //List<Request> lstRequests = new List<Request>();
-                    //var lstTracks = _context.RequestTracking.Where(a => a.Request.HospitalId == UserObj.HospitalId).OrderByDescending(a => a.DescriptionDate).ToList().GroupBy(a => a.RequestId).ToList();
-                    //foreach (var item in lstTracks)
-                    //{
-                    //    if (item.FirstOrDefault().RequestStatusId == 4)
-                    //    {
-                    //        lstRequests.Add(_context.Request.Where(a => a.Id == item.FirstOrDefault().RequestId).FirstOrDefault());
-                    //    }
-                    //}
-                    //allrequests = lstRequests;
-
-                    //  allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
-
-
-
-                if (lstRoleNames.Contains("EngDepManager"))
+                else if (lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
                 {
                     allrequests = allrequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                 }
@@ -5960,7 +6116,7 @@ namespace Asset.Core.Repositories
                 {
                     if (statusId > 0)
                     {
-                        var lstTracks = _context.RequestTracking.Include(a => a.RequestStatus).Where(a => a.RequestId == req.Id).OrderByDescending(a => a.DescriptionDate).ToList();
+                        var lstTracks = _context.RequestTracking.Include(a => a.Request).Include(a => a.User).Include(a => a.RequestStatus).Where(a => a.RequestId == req.Id).OrderByDescending(a => a.DescriptionDate).ToList();
                         if (lstTracks.Count > 0)
                         {
                             var requestStatusId = lstTracks[0].RequestStatusId;
@@ -6042,7 +6198,7 @@ namespace Asset.Core.Repositories
                     }
                     else
                     {
-                        var lstTracks = _context.RequestTracking.Include(a => a.RequestStatus).Where(a => a.RequestId == req.Id).OrderByDescending(a => a.DescriptionDate).ToList();
+                        var lstTracks = _context.RequestTracking.Include(a => a.User).Include(a => a.RequestStatus).Where(a => a.RequestId == req.Id).OrderByDescending(a => a.DescriptionDate).ToList();
                         if (lstTracks.Count > 0)
                         {
                             var requestStatusId = lstTracks[0].RequestStatusId;
@@ -6266,68 +6422,108 @@ namespace Asset.Core.Repositories
                     list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId && t.StatusId == statusId).ToList();
                 }
 
-                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
-                {
+                //if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+                //{
 
-                    if (userRoleNames.Contains("TLHospitalManager"))
+                //    if (userRoleNames.Contains("TLHospitalManager"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
+                //    }
+                //    //if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
+                //    //{
+                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
+                //    //}
+                //    //if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
+                //    //{
+                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                //    //}
+                //    //if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
+                //    //{
+                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //    //}
+                //    if (userRoleNames.Contains("AssetOwner"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                //    }
+                //    if (userRoleNames.Contains("EngDepManager"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //    }
+
+                //}
+                //if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+                //{
+
+                //    if (userRoleNames.Contains("TLHospitalManager"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //    }
+
+                //    //if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
+                //    //{
+                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //    //}
+                //    //if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
+                //    //{
+                //    //{
+                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //    //}
+                //    //if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
+                //    //{
+                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                //    //}
+
+                //    if (userRoleNames.Contains("EngDepManager"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //    }
+                //    if (userRoleNames.Contains("SRCreator"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                //    }
+                //    if (userRoleNames.Contains("SRReviewer"))
+                //    {
+                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                //    }
+                //}
+                if (UserObj.HospitalId > 0)
+                {
+                    if (userRoleNames.Contains("Admin"))
                     {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
+                        list = list.ToList();
                     }
-                    //if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                    //{
-                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
-                    //}
-                    //if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
-                    //{
-                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    //}
-                    //if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-                    //{
-                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    //}
-                    if (userRoleNames.Contains("AssetOwner"))
+                    else if ((userRoleNames.Contains("AssetOwner") || userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
-                    if (userRoleNames.Contains("EngDepManager"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    }
-
-                }
-                if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
-                {
-
-                    if (userRoleNames.Contains("TLHospitalManager"))
-                    {
-                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    }
-
-                    //if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                    //{
-                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    //}
-                    //if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-                    //{
-                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    //}
-                    //if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
-                    //{
-                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    //}
-                    if (userRoleNames.Contains("AssetOwner"))
+                    else if ((userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
-
-                    if (userRoleNames.Contains("EngDepManager"))
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator"))
                     {
                         list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    //if (userRoleNames.Contains("Eng"))
-                    //{
-                    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    //}
+                    else if (userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
                 }
             }
             if (statusId == 0)
@@ -6340,9 +6536,9 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
-       
-        
-        
+
+
+
         public IndexRequestVM GetRequestsByDateAndStatus(SearchRequestDateVM requestDateObj, int pageNumber, int pageSize)
         {
             IndexRequestVM mainClass = new IndexRequestVM();
@@ -6376,6 +6572,7 @@ namespace Asset.Core.Repositories
             {
                 requestDateObj.StartDate = DateTime.Parse("01/01/1900");
                 start = DateTime.Parse(requestDateObj.StartDate.ToString());
+                requestDateObj.StartDate = start;
             }
 
 
@@ -6389,6 +6586,7 @@ namespace Asset.Core.Repositories
             {
                 requestDateObj.EndDate = DateTime.Today.Date;
                 end = DateTime.Parse(requestDateObj.EndDate.ToString());
+                requestDateObj.EndDate = end;
             }
 
             var lstRequests = _context.RequestTracking
@@ -6488,7 +6686,8 @@ namespace Asset.Core.Repositories
                     getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus.Color;
                     getDataObj.WorkOrderStatusIcon = lstWOStatus[0].WorkOrderStatus.Icon;
 
-
+                    getDataObj.WorkOrderNote = lstWOStatus[0].Notes;
+                    getDataObj.WorkOrderDate = DateTime.Parse(lstWOStatus[0].WorkOrderDate.ToString());
 
                     if (getDataObj.StatusId == 3 && (getDataObj.LatestWorkOrderStatusId == 2 && (lstWOStatus.Count > 2)))
                     {
@@ -6497,8 +6696,8 @@ namespace Asset.Core.Repositories
                     }
                     else if (getDataObj.StatusId == 3 && (getDataObj.LatestWorkOrderStatusId == 2 && (lstWOStatus.Count == 2)))
                     {
-                        foreach (var item in lstWOStatus.Where(a=>a.WorkOrderStatusId == 1))
-                        {                            
+                        foreach (var item in lstWOStatus.Where(a => a.WorkOrderStatusId == 1))
+                        {
                             getDataObj.WorkOrderNote = item.Notes;
                             getDataObj.WorkOrderDate = DateTime.Parse(item.WorkOrderDate.ToString());
                         }
@@ -6535,30 +6734,78 @@ namespace Asset.Core.Repositories
                 list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
 
+            //if (UserObj.HospitalId > 0)
+            //{
+            //    if (userRoleNames.Contains("Admin"))
+            //    {
+            //        list = list.ToList();
+            //    }
+            //    if (userRoleNames.Contains("TLHospitalManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("EngDepManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("EngManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("Eng"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //        //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("AssetOwner"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("SRCreator"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("SRReviewer"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //}
+
             if (UserObj.HospitalId > 0)
             {
                 if (userRoleNames.Contains("Admin"))
                 {
                     list = list.ToList();
                 }
-                if (userRoleNames.Contains("TLHospitalManager"))
+                else if ((userRoleNames.Contains("AssetOwner") || userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                }
+                else if ((userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                }
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleNames.Contains("EngDepManager"))
+                else if (userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleNames.Contains("EngManager"))
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleNames.Contains("Eng"))
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
                 }
-                if (userRoleNames.Contains("AssetOwner"))
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
@@ -6635,7 +6882,7 @@ namespace Asset.Core.Repositories
 
             if (start != null || end != null)
             {
-                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.RequestDate >= start.Value && a.FirstOrDefault().Request.RequestDate <= end.Value).ToList();
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.RequestDate.Date >= start.Value.Date && a.FirstOrDefault().Request.RequestDate.Date <= end.Value.Date).ToList();
             }
             else
             {
@@ -6721,10 +6968,8 @@ namespace Asset.Core.Repositories
                     getDataObj.WorkOrderStatusColor = lstWOStatus[0].WorkOrderStatus.Color;
                     getDataObj.WorkOrderStatusIcon = lstWOStatus[0].WorkOrderStatus.Icon;
 
-
-
-                    //getDataObj.WorkOrderNote = lstWOStatus[0].Notes;
-                    //getDataObj.WorkOrderDate = DateTime.Parse(lstWOStatus[0].WorkOrderDate.ToString());
+                    getDataObj.WorkOrderNote = lstWOStatus[0].Notes;
+                    getDataObj.WorkOrderDate = DateTime.Parse(lstWOStatus[0].WorkOrderDate.ToString());
 
 
                     if (getDataObj.StatusId == 3 && (getDataObj.LatestWorkOrderStatusId == 2 && (lstWOStatus.Count > 2)))
@@ -6740,8 +6985,6 @@ namespace Asset.Core.Repositories
                             getDataObj.WorkOrderDate = DateTime.Parse(item.WorkOrderDate.ToString());
                         }
                     }
-
-
                 }
                 list.Add(getDataObj);
             }
@@ -6769,60 +7012,116 @@ namespace Asset.Core.Repositories
                 list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
 
-            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
-            {
-                if (userRoleNames.Contains("Admin"))
-                {
-                    list = list.ToList();
-                }
-                if (userRoleNames.Contains("TLHospitalManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("EngDepManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("EngManager"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-                if (userRoleNames.Contains("Eng"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+            //{
+            //    if (userRoleNames.Contains("Admin"))
+            //    {
+            //        list = list.ToList();
+            //    }
+            //    if (userRoleNames.Contains("TLHospitalManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("EngDepManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("EngManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("Eng"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
 
-                    //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
-                }
-                if (userRoleNames.Contains("AssetOwner"))
-                {
-                    // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                }
-            }
-            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+            //        //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("AssetOwner"))
+            //    {
+            //        // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("SRCreator"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+            //    }
+            //    if (userRoleNames.Contains("SRReviewer"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //}
+            //if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
+            //{
+            //    if (userRoleNames.Contains("Admin"))
+            //    {
+            //        list = list.ToList();
+            //    }
+            //    if (userRoleNames.Contains("TLHospitalManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("EngDepManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("EngManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("AssetOwner"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //        //   list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("Eng"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("SRCreator"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+            //    }
+            //    if (userRoleNames.Contains("SRReviewer"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //}
+
+            if (UserObj.HospitalId > 0)
             {
                 if (userRoleNames.Contains("Admin"))
                 {
                     list = list.ToList();
                 }
-                if (userRoleNames.Contains("TLHospitalManager"))
+                else if ((userRoleNames.Contains("AssetOwner") || userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+                }
+                else if ((userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+                }
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleNames.Contains("EngDepManager"))
+                else if (userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleNames.Contains("EngManager"))
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleNames.Contains("AssetOwner"))
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                    //   list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleNames.Contains("Eng"))
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
@@ -7080,67 +7379,79 @@ namespace Asset.Core.Repositories
 
             if (list.Count > 0)
             {
-                //if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
-                //{
-                //    list = list.ToList();
-                //}
-
-
-                if (UserObj.GovernorateId > 0)
-                {
-                    list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
-                }
-                else if (searchObj.GovernorateId > 0)
+                if (searchObj.GovernorateId > 0 && searchObj.CityId == 0 && searchObj.HospitalId == 0 && searchObj.OrganizationId == 0 && searchObj.SubOrganizationId == 0)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.GovernorateId == searchObj.GovernorateId).ToList();
                 }
+                else
+                    list = list.ToList();
 
-
-                if (UserObj.CityId > 0)
-                {
-                    list = list.Where(t => t.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
-                }
-                else if (searchObj.CityId > 0)
+                if (searchObj.GovernorateId > 0 && searchObj.CityId > 0 && searchObj.HospitalId == 0 && searchObj.OrganizationId == 0 && searchObj.SubOrganizationId == 00)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.CityId == searchObj.CityId).ToList();
                 }
+                else
+                    list = list.ToList();
 
-                if (UserObj.OrganizationId > 0)
-                {
-                    list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
-                }
-                else if (searchObj.OrganizationId > 0)
+                if (searchObj.GovernorateId == 0 && searchObj.CityId == 0 && searchObj.HospitalId == 0 && searchObj.OrganizationId > 0 && searchObj.SubOrganizationId == 0)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == searchObj.OrganizationId).ToList();
                 }
+                else
+                    list = list.ToList();
 
 
-                if (UserObj.SubOrganizationId > 0)
-                {
-                    list = list.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId && t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
-                }
-                else if (searchObj.SubOrganizationId > 0)
+                if (searchObj.GovernorateId == 0 && searchObj.CityId == 0 && searchObj.HospitalId == 0 && searchObj.OrganizationId > 0 && searchObj.SubOrganizationId > 0)
                 {
                     list = list.Where(t => t.AssetDetail.Hospital.SubOrganizationId == searchObj.SubOrganizationId).ToList();
                 }
-                if (UserObj.HospitalId > 0)
-                {
-
-                    if (userRoleNames.Contains("SRCreator"))
-                    {
-                        list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
-                    }
-                    if (userRoleNames.Contains("AssetOwner"))
-                    {
-                        list = list.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
-                    }
-                    else
-                    {
-                        list = list.Where(a => a.AssetDetail.HospitalId == searchObj.HospitalId).ToList();
-                    }
-                }
                 else
                     list = list.ToList();
+
+
+                if (searchObj.HospitalId > 0)
+                {
+                    if (userRoleNames.Contains("Admin"))
+                    {
+                        if (searchObj.HospitalId != 0)
+                            list = list.Where(a => a.HospitalId == searchObj.HospitalId).ToList();
+                        else
+                            list = list.ToList();
+                    }
+                    else if ((userRoleNames.Contains("AssetOwner") || userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+                    }
+                    else if ((userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                    {
+                        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                }
+
 
 
                 if (searchObj.PeriorityId != 0)
@@ -7529,7 +7840,6 @@ namespace Asset.Core.Repositories
                     getDataObj.OrganizationId = req.FirstOrDefault().Request.User != null ? req.FirstOrDefault().Request.User.OrganizationId : 0;
                     getDataObj.SubOrganizationId = req.FirstOrDefault().Request.User != null ? req.FirstOrDefault().Request.User.SubOrganizationId : 0;
 
-
                     //var lstTransactions = _context.AssetStatusTransactions.Include(a => a.AssetDetail)
                     //                           .Include(a => a.AssetDetail.Hospital)
                     //                           .Where(a => (a.AssetStatusId == 8 || a.AssetStatusId == 9) && (a.AssetDetailId == req.FirstOrDefault().Request.AssetDetailId))
@@ -7542,8 +7852,6 @@ namespace Asset.Core.Repositories
                     //{
                     //    getDataObj.BGColor = "";
                     //}
-
-
 
                     list.Add(getDataObj);
                 }
@@ -7578,35 +7886,87 @@ namespace Asset.Core.Repositories
                 list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
 
+            //if (UserObj.HospitalId > 0)
+            //{
+            //    if (userRoleNames.Contains("Admin"))
+            //    {
+            //        list = list.ToList();
+            //    }
+            //    if (userRoleNames.Contains("TLHospitalManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (!userRoleNames.Contains("EngManager") && userRoleNames.Contains("Eng"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == searchOpenRequestObj.UserId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("AssetOwner"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+            //    if (userRoleNames.Contains("SRCreator"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+            //    }
+            //    if (userRoleNames.Contains("SRReviewer"))
+            //    {
+            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+            //    }
+
+            //}
+
+
+
+
+
+
             if (UserObj.HospitalId > 0)
             {
                 if (userRoleNames.Contains("Admin"))
                 {
                     list = list.ToList();
                 }
-                if (userRoleNames.Contains("TLHospitalManager"))
+                else if ((userRoleNames.Contains("AssetOwner") || userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+                }
+                else if ((userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
+                }
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
+                else if (userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (!userRoleNames.Contains("EngManager") && userRoleNames.Contains("Eng"))
-                {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == searchOpenRequestObj.UserId).ToList();
-                }
-                if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-                if (userRoleNames.Contains("AssetOwner"))
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
-
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
             }
-
             //if (searchOpenRequestObj.StrStartDate != "")
             //    searchOpenRequestObj.StartDate = DateTime.Parse(searchOpenRequestObj.StrStartDate);
             //if (searchOpenRequestObj.StrEndDate != "")
@@ -7748,79 +8108,6 @@ namespace Asset.Core.Repositories
                 }
             }
 
-
-            //var lstTransactions = _context.AssetStatusTransactions.Include(a => a.AssetDetail)
-            // .Include(a => a.AssetDetail.Hospital)
-            //  .Include(a => a.AssetDetail.Hospital.Governorate)
-            //   .Include(a => a.AssetDetail.Hospital.City)
-            //    .Include(a => a.AssetDetail.Hospital.Organization)
-            //     .Include(a => a.AssetDetail.Hospital.SubOrganization)
-            // .Include(a => a.AssetDetail.MasterAsset)
-            // .Where(a => a.AssetStatusId == 8 || a.AssetStatusId == 9)
-            // .OrderByDescending(a => a.StatusDate).ToList().GroupBy(a => a.AssetDetailId).ToList();
-            //if (lstTransactions.Count > 0)
-            //{
-            //    foreach (var trans in lstTransactions)
-            //    {
-
-            //        OpenRequestVM.GetData getDataObj = new OpenRequestVM.GetData();
-            //        getDataObj.Id = trans.FirstOrDefault().Id;
-
-            //        getDataObj.FixCost = trans.FirstOrDefault().AssetDetail.FixCost;
-            //        getDataObj.CostPerDay = trans.FirstOrDefault().AssetDetail.FixCost != null ? Math.Round((((decimal)trans.FirstOrDefault().AssetDetail.FixCost) / 365)) : 0;
-            //        getDataObj.Barcode = trans.FirstOrDefault().AssetDetail.Barcode;
-            //        getDataObj.ModelNumber = trans.FirstOrDefault().AssetDetail.MasterAsset.ModelNumber;
-            //        getDataObj.SerialNumber = trans.FirstOrDefault().AssetDetail.SerialNumber;
-            //        getDataObj.AssetName = trans.FirstOrDefault().AssetDetail.MasterAsset.Name;
-            //        getDataObj.AssetNameAr = trans.FirstOrDefault().AssetDetail.MasterAsset.NameAr;
-            //        getDataObj.BrandName = trans.FirstOrDefault().AssetDetail.MasterAsset.brand != null ? trans.FirstOrDefault().AssetDetail.MasterAsset.brand.Name : "";
-            //        getDataObj.BrandNameAr = trans.FirstOrDefault().AssetDetail.MasterAsset.brand != null ? trans.FirstOrDefault().AssetDetail.MasterAsset.brand.NameAr : "";
-            //        getDataObj.AssetDetailId = trans.FirstOrDefault().AssetDetailId != 0 ? (int)trans.FirstOrDefault().AssetDetailId : 0;
-            //        getDataObj.HospitalId = trans.FirstOrDefault().AssetDetail.HospitalId;
-
-
-            //        var lstExcludes = _context.HospitalApplications.Where(a => a.AssetId == trans.FirstOrDefault().AssetDetailId).ToList().OrderByDescending(a => a.AppDate).GroupBy(a => a.AssetId).ToList();
-            //        if (lstExcludes.Count > 0)
-            //        {
-            //            foreach (var exclude in lstExcludes)
-            //            {
-            //                getDataObj.RequestDate = DateTime.Parse(exclude.FirstOrDefault().AppDate.ToString());
-            //                getDataObj.AppDate = DateTime.Parse(exclude.FirstOrDefault().AppDate.ToString());
-            //                if (searchOpenRequestObj.EndDate != null)
-            //                {
-            //                    getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.StrEndDate.ToString()) - DateTime.Parse(exclude.FirstOrDefault().AppDate.ToString())).TotalDays);
-            //                }
-            //                else
-            //                {
-            //                    getDataObj.AllDays = 0;
-            //                }
-            //            }
-            //        }
-            //        //else
-            //        //{
-            //        //    if (searchOpenRequestObj.EndDate != null)
-            //        //    {
-            //        //        getDataObj.AllDays = Math.Round((DateTime.Parse(searchOpenRequestObj.EndDate.ToString()) - DateTime.Parse(exclude.FirstOrDefault().AppDate.ToString())).TotalDays);
-            //        //    }
-            //        //    else
-            //        //    {
-            //        //        getDataObj.AllDays = 0;
-            //        //    }
-            //        //}
-            //        if (getDataObj.CostPerDay != 0 && getDataObj.AllDays != null)
-            //            getDataObj.TotalCost = Math.Round((decimal)getDataObj.CostPerDay * (decimal)getDataObj.AllDays);
-            //        else
-            //            getDataObj.TotalCost = 0;
-
-            //        getDataObj.BGColor = "#f7c2c2";
-            //        getDataObj.GovernorateId = trans.FirstOrDefault().AssetDetail.Hospital.Governorate != null ? trans.FirstOrDefault().AssetDetail.Hospital.GovernorateId : 0;
-            //        getDataObj.CityId = trans.FirstOrDefault().AssetDetail.Hospital.City != null ? trans.FirstOrDefault().AssetDetail.Hospital.CityId : 0;
-            //        getDataObj.OrganizationId = trans.FirstOrDefault().AssetDetail.Hospital.Organization != null ? trans.FirstOrDefault().AssetDetail.Hospital.OrganizationId : 0;
-            //        getDataObj.SubOrganizationId = trans.FirstOrDefault().AssetDetail.Hospital.SubOrganization != null ? trans.FirstOrDefault().AssetDetail.Hospital.SubOrganizationId : 0;
-            //        list.Add(getDataObj);
-
-            //    }
-            //}
 
 
             if (searchOpenRequestObj.StrStartDate != "")

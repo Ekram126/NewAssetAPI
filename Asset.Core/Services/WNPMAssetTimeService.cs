@@ -97,5 +97,10 @@ namespace Asset.Core.Services
             return _unitOfWork.WNPMAssetTimeRepository.GetWNPMAssetTimeAttachmentByWNPMAssetTimeId(WNPMAssetTimeId);
            
         }
+
+        public int CreateAssetFiscalTimes(int year, int hospitalId)
+        {
+            return _unitOfWork.WNPMAssetTimeRepository.CreateAssetFiscalTimes(year, hospitalId);
+        }
     }
 }

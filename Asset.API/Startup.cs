@@ -83,8 +83,6 @@ namespace Asset.API
             services.AddScoped<IHospitalReasonTransactionService, HospitalReasonTransactionService>();
             services.AddScoped<IApplicationTypeService, ApplicationTypeService>();
 
-
-
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IMasterAssetService, MasterAssetService>();
             services.AddScoped<IMasterAssetComponentService, MasterAssetComponentService>();
@@ -102,18 +100,14 @@ namespace Asset.API
             services.AddScoped<IPMAssetTaskService, PMAssetTaskService>();
 
             services.AddScoped<IWNPMAssetTimeService, WNPMAssetTimeService>();
-
             services.AddScoped<IPMTimeService, PMTimeService>();
             services.AddScoped<IPMAssetTimeService, PMAssetTimeService>();
             services.AddScoped<IPMAssetTaskScheduleService, PMAssetTaskScheduleService>();
             services.AddScoped<IHospitalSupplierStatusService, HospitalSupplierStatusService>();
-
             services.AddScoped<ISupplierHoldReasonService, SupplierHoldReasonService>();
             services.AddScoped<ISupplierExecludeReasonService, SupplierExecludeReasonService>();
             services.AddScoped<ISupplierExecludeAssetService, SupplierExecludeAssetService>();
             services.AddScoped<ISupplierExecludeService, SupplierExecludeService>();
-
-
             services.AddTransient<IRequestService, RequestService>();
             services.AddTransient<IRequestModeService, RequestModeService>();
             services.AddTransient<IRequestPeriorityService, RequestPeriorityService>();
@@ -144,11 +138,10 @@ namespace Asset.API
             services.AddScoped<IExternalAssetMovementService, ExternalAssetMovementService>();
             services.AddScoped<IExternalFixService, ExternalFixService>();
             services.AddScoped<QrController, QrController>();
-
-
             services.AddScoped<IStockTakingHospitalService, StockTakingHospitalService>();
             services.AddScoped<IAssetStockTakingService, AssetStockTakingService>();
             services.AddScoped<IStockTakingScheduleService, StockTakingScheduleService>();
+            services.AddScoped<IManufacturerPMAssetService, ManufacturerPMAssetService>();
 
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()

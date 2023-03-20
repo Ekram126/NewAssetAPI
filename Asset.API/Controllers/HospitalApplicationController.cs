@@ -451,13 +451,14 @@ namespace Asset.API.Controllers
 
             var SMSobj = new SendSMS();
             SMSobj.Language = 1;
-            SMSobj.Mobile = phone;// "01021162629";
+            SMSobj.Mobile = phone;
+            SMSobj.Environment = 1;
             SMSobj.Message = $"This Asset {masterObj.NameAr} with barcode:{assetObj.Barcode} requested to be {exchold}";
             var json = JsonConvert.SerializeObject(SMSobj);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-           // var UrlSMS = "https://smsmisr.com/api/v2";
-            var UrlSMS = "https://smsmisr.com/api/SMS/?";
+            // var UrlSMS = "https://smsmisr.com/api/v2";
+            var UrlSMS = "https://smsmisr.com/api/SMS";
 
             using var client = new HttpClient();
             var response = await client.PostAsync(UrlSMS, data);

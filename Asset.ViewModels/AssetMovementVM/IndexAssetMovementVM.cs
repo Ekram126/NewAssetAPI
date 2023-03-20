@@ -10,6 +10,8 @@ namespace Asset.ViewModels.AssetMovementVM
     {
 
         public List<GetData> Results { get; set; }
+        public int Count { get; set; }
+
         public class GetData
         {
             public int Id { get; set; }
@@ -25,6 +27,14 @@ namespace Asset.ViewModels.AssetMovementVM
 
             public string RoomName { get; set; }
             public string RoomNameAr { get; set; }
+
+
+            public string AssetName { get; set; }
+            public string AssetNameAr { get; set; }
+
+            public string ModelNumber { get; set; }
+            public string BarCode { get; set; }
+            public string SerialNumber { get; set; }
         }
     }
 }

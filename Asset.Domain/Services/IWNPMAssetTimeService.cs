@@ -27,5 +27,7 @@ namespace Asset.Domain.Services
         public int CreateAssetTimes(int year, int hospitalId);
         int CreateWNPMAssetTimeAttachment(WNPMAssetTimeAttachment attachObj);
         List<WNPMAssetTimeAttachment> GetWNPMAssetTimeAttachmentByWNPMAssetTimeId(int WNPMAssetTimeId);
+        public int CreateAssetFiscalTimes(int year, int hospitalId);
+
     }
 }

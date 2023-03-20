@@ -34,9 +34,9 @@ namespace Asset.Core.Services
             return AssetMovementObj.Id;
         }
 
-        public IEnumerable<IndexAssetMovementVM.GetData> GetAll()
+        public IndexAssetMovementVM GetAll(int pageNumber, int pageSize)
         {
-            return _unitOfWork.AssetMovementRepository.GetAll();
+            return _unitOfWork.AssetMovementRepository.GetAll(pageNumber, pageSize);
         }
 
         public IEnumerable<AssetMovement> GetAllAssetMovements()

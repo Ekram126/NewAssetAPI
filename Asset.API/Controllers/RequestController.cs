@@ -237,9 +237,17 @@ namespace Asset.API.Controllers
 
 
         [HttpPost]
-        public int PostRequestDTO(CreateRequestVM createRequestVM)
+        public ActionResult PostRequestDTO(CreateRequestVM createRequestVM)
         {
-            return _requestService.AddRequest(createRequestVM);
+            if (createRequestVM.AssetDetailId == 0)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "assetId", Message = "This is not valid Asset", MessageAr = "تأكد من الباركود الخاص بالجهاز" });
+            }
+            else
+            {
+                var requestId = _requestService.AddRequest(createRequestVM);
+                return Ok(requestId);
+            }
         }
 
         // PUT api/<RequestController>/5
@@ -1201,8 +1209,8 @@ namespace Asset.API.Controllers
                         isScrap = Convert.ToBoolean(item.KeyValue);
 
 
-                    if (item.KeyName == "IsVisit")
-                        isVisit = Convert.ToBoolean(item.KeyValue);
+                    //if (item.KeyName == "IsVisit")
+                    //    isVisit = Convert.ToBoolean(item.KeyValue);
 
 
                     if (item.KeyName == "IsExternalFix")
@@ -1212,8 +1220,8 @@ namespace Asset.API.Controllers
                     if (item.KeyName == "IsOpenRequest")
                         isOpenRequest = Convert.ToBoolean(item.KeyValue);
 
-                    if (item.KeyName == "CanAdd")
-                        canAdd = Convert.ToBoolean(item.KeyValue);
+                    //if (item.KeyName == "CanAdd")
+                    //    canAdd = Convert.ToBoolean(item.KeyValue);
                 }
             }
 

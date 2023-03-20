@@ -51,7 +51,7 @@ namespace Asset.API.Controllers
             if (assetId == 0)
             {
 
-                return Ok(new { data = assetId, msg = "error this is asset id not exisit", status = "400" });
+                return Ok(new { data = assetId, msg = "error this asset id does not exist", status = "400" });
             }
 
             var userManagerObject = await _userManager.FindByIdAsync(createAssetStockTakingVM.UserId);
@@ -80,12 +80,12 @@ namespace Asset.API.Controllers
                                 {
                                     var stockTakingHospitalObj = stockTakingHospitaList[0];
                                     var stockTakingScheduleId = stockTakingHospitalObj.STSchedulesId;
-                                    var stockTakingScheduleList = _stockTakingScheduleService.GetAll().Where(ww => ww.Id == stockTakingScheduleId).ToList();
+                                    var stockTakingScheduleList = _stockTakingScheduleService.GetAll().Where(ww => ww.Id == stockTakingScheduleId).OrderByDescending(a=>a.CreationDate).ToList();
                                     if (stockTakingScheduleList.Count() > 0)
                                     {
                                         var stockTakingScheduleObj = stockTakingScheduleList[0];
                                         
-                                        if (createAssetStockTakingVM.CaptureDate.Value.Date >= stockTakingScheduleObj.StartDate && createAssetStockTakingVM.CaptureDate.Value.Date <= stockTakingScheduleObj.EndDate)
+                                        if (createAssetStockTakingVM.CaptureDate.Value.Date >= stockTakingScheduleObj.StartDate.Value.Date && createAssetStockTakingVM.CaptureDate.Value.Date <= stockTakingScheduleObj.EndDate.Value.Date)
                                         {
                                             if (_assetStockTakingService.GetAll().Where(ww => ww.AssetDetailId == assetId).Count() > 0)
                                             {
@@ -94,6 +94,7 @@ namespace Asset.API.Controllers
                                             }
                                             else
                                             {
+                                                createAssetStockTakingVM.UserId = createAssetStockTakingVM.UserId;
                                                 createAssetStockTakingVM.AssetDetailId = assetId;
                                                 createAssetStockTakingVM.HospitalId = HospitalId;
                                                 createAssetStockTakingVM.CaptureDate = DateTime.Now;
@@ -105,12 +106,20 @@ namespace Asset.API.Controllers
                                             }
 
                                         }
-                                        if (createAssetStockTakingVM.CaptureDate.Value.Date <= stockTakingScheduleObj.StartDate || createAssetStockTakingVM.CaptureDate.Value.Date >= stockTakingScheduleObj.EndDate)
+                                        if (createAssetStockTakingVM.CaptureDate.Value.Date <= stockTakingScheduleObj.StartDate.Value.Date || createAssetStockTakingVM.CaptureDate.Value.Date >= stockTakingScheduleObj.EndDate.Value.Date)
                                         {
-                                            return Ok(new { data = "", msg = "Capture Date is not in range", status = "6" });
+                                            return Ok(new { data = "", msg = "Capture Date is not in range", status = "9" });
                                         }
                                     }
+                                    else
+                                    {
+                                        return Ok(new { data = "", msg = "No Schedule Found", status = "8" });
+                                    }
 
+                                }
+                                else
+                                {
+                                    return Ok(new { data = "", msg = "No Hospital Found", status = "7" });
                                 }
 
                             }
@@ -119,6 +128,10 @@ namespace Asset.API.Controllers
                                 return Ok(new { data = "", msg = "No Data Found", status = "2" });
                             }
 
+                        }
+                        else
+                        {
+                            return Ok(new { data = "", msg = "You are not asset owner", status = "10" });
                         }
 
                     }

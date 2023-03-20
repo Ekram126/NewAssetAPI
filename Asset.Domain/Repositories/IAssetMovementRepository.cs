@@ -7,7 +7,13 @@ namespace Asset.Domain.Repositories
     public interface IAssetMovementRepository
     {
         IEnumerable<AssetMovement> GetAllAssetMovements();
-        IEnumerable<IndexAssetMovementVM.GetData> GetAll();
+
+
+
+        IndexAssetMovementVM GetAll(int pageNumber, int pageSize);
+
+
+
         IEnumerable<IndexAssetMovementVM.GetData> GetMovementByAssetDetailId(int assetId);
         AssetMovement GetById(int id);
         int Add(CreateAssetMovementVM movementObj);

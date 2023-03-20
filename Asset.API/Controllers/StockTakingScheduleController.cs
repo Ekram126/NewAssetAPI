@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Asset.ViewModels.AssetStockTakingVM;
 
 namespace Asset.API.Controllers
 {
@@ -23,28 +24,20 @@ namespace Asset.API.Controllers
 
         private IStockTakingScheduleService _stockTakingScheduleService;
         IWebHostEnvironment _webHostingEnvironment;
-        public StockTakingScheduleController(IStockTakingScheduleService stockTakingScheduleService,IWebHostEnvironment webHostingEnvironment)
+        private IAssetStockTakingService _assetStockTakingService;
+        public StockTakingScheduleController(IStockTakingScheduleService stockTakingScheduleService,
+            IWebHostEnvironment webHostingEnvironment, IAssetStockTakingService assetStockTakingService)
         {
             _stockTakingScheduleService = stockTakingScheduleService;
- 
+            _assetStockTakingService = assetStockTakingService;
             _webHostingEnvironment = webHostingEnvironment;
-
         }
 
-
-
-
-        //[HttpGet]
-        //[Route("ListStockTakingSchedules")]
-        //public IEnumerable<IndexStockTakingScheduleVM.GetData> GetAll()
-        //{
-        //    return _stockTakingScheduleService.GetAll();
-        //}
         [HttpGet]
         [Route("GetAllWithPaging/{pageNumber}/{pageSize}")]
-        public IndexStockTakingScheduleVM GetAllWithPaging( int pageNumber, int pageSize)
+        public IndexStockTakingScheduleVM GetAllWithPaging(int pageNumber, int pageSize)
         {
-            return _stockTakingScheduleService.GetAllWithPaging( pageNumber, pageSize);
+            return _stockTakingScheduleService.GetAllWithPaging(pageNumber, pageSize);
         }
 
         [HttpDelete]
@@ -72,7 +65,7 @@ namespace Asset.API.Controllers
 
             var savedId = _stockTakingScheduleService.Add(stockTakingScheduleVM);
             return savedId;
-           
+
         }
 
 
@@ -84,23 +77,29 @@ namespace Asset.API.Controllers
         }
 
 
-
-        //[HttpPost]
-        //[Route("CreateExternalFixFile")]
-        //public int CreateExternalFixFiles(CreateExternalFixFileVM attachObj)
-        //{
-        //    return _ExternalFixService.AddExternalFixFile(attachObj);
-        //}
         [HttpGet]
         [Route("GetStockTakingScheduleById/{id}")]
         public IndexStockTakingScheduleVM.GetData GetStockTakingScheduleById(int id)
         {
-           return _stockTakingScheduleService.GetById(id);  
+            return _stockTakingScheduleService.GetById(id);
 
         }
 
 
 
+        [HttpPost]
+        [Route("SearchStockTackingSchedule/{pageNumber}/{pageSize}")]
+        public IndexStockTakingScheduleVM SearchStockTakingSchedule(SearchStockTakingScheduleVM searchObj, int pageNumber, int pageSize)
+        {
+            return _stockTakingScheduleService.SearchStockTakingSchedule(searchObj, pageNumber, pageSize);
+        }
 
+
+        [HttpPost]
+        [Route("SortStockTakingSchedule/{pageNumber}/{pageSize}")]
+        public IndexStockTakingScheduleVM SortStockTakingSchedule(int pageNumber, int pageSize,SortStockTakingScheduleVM sortObj)
+        {
+            return _stockTakingScheduleService.SortStockTakingSchedule(pageNumber, pageSize,sortObj);
+        }
     }
 }

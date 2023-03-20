@@ -189,28 +189,20 @@ namespace Asset.API.Controllers
 
 
 
-        //[HttpGet]
-        //[Route("GetYearQuarters")]
-        //public List<Quarter> GetFiscalQuarters()
-        //{
-
-        //    TimeCalendar calendar = new TimeCalendar();
-        //    calendar.FiscalQuarterGrouping();
-
-
-        //    Year year = new Year(DateTime.Today.Year);
-        //    ITimePeriodCollection quarters = year.GetQuarters();
-           
-
-
-
-        //    List<Quarter> list = new List<Quarter>();
-        //    foreach (Quarter quarter in quarters)
-        //    {
-        //        list.Add(quarter);
-        //    }
-        //    return list;
-        //}
+        [HttpGet]
+        [Route("GetFiscalYearQuarters")]
+        public List<Quarter> GetFiscalYearQuarters()
+        {
+            Year year = new Year(new FiscalTimeCalendar());
+            ITimePeriodCollection quarters = year.GetQuarters();
+            List<Quarter> list = new List<Quarter>();
+            //  List<string> list = new List<string>();
+            foreach (Quarter quarter in quarters)
+            {
+                list.Add(quarter);
+            }
+            return list;
+        }
 
 
 
@@ -242,6 +234,35 @@ namespace Asset.API.Controllers
                 return Ok();
             }
             //return Ok();
+        }
+
+
+
+        public IActionResult CreateAssetFiscalTimes(int year, int hospitalId)
+        {
+            var lstAssetTimes = _wNPMAssetTimeService.GetAllWNPMAssetTime().GroupBy(a => a.PMDate.Value.Date.Year).ToList();
+            if (lstAssetTimes.Count > 0)
+            {
+                foreach (var item in lstAssetTimes)
+                {
+                    if (item.Key == year)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "year", Message = "This Year aleardy exist", MessageAr = "هذه الأصول موجودة مسبقاً" });
+                    }
+                    else
+                    {
+                        var added = _wNPMAssetTimeService.CreateAssetFiscalTimes(year, hospitalId);
+                        return Ok();
+                    }
+                }
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "year", Message = "This Year aleardy exist", MessageAr = "هذه الأصول موجودة مسبقاً" });
+            }
+            else
+            {
+                var added = _wNPMAssetTimeService.CreateAssetFiscalTimes(year, hospitalId);
+                return Ok();
+            }
+
         }
     }
 }

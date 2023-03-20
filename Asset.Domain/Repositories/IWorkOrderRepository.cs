@@ -44,5 +44,6 @@ namespace Asset.Domain.Repositories
         int CountWorkOrdersByHospitalId(int hospitalId, string userId);
         int CreateWorkOrderAttachments(WorkOrderAttachment attachObj);
         List<IndexWorkOrderVM2.GetData> PrintListOfWorkOrders(List<ExportWorkOrderVM> workOrders);
+        List<IndexWorkOrderVM2.GetData> PrintListOfWorkOrders(PrintWorkOrderVM printWorkOrderObj);
     }
 }

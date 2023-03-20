@@ -42,7 +42,8 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
             public string TypeName { get; set; }
             public string TypeNameAr { get; set; }
 
-
+            public string HospitalName { get; set; }
+            public string HospitalNameAr { get; set; }
 
             public string BrandName { get; set; }
             public string BrandNameAr { get; set; }

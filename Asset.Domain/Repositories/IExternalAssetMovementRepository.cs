@@ -1,12 +1,13 @@
 ﻿using Asset.Models;
 using Asset.ViewModels.AssetMovementVM;
+using Asset.ViewModels.ExternalAssetMovementVM;
 using System.Collections.Generic;
 
 namespace Asset.Domain.Repositories
 {
     public interface IExternalAssetMovementRepository
     {
-        IEnumerable<ExternalAssetMovement> GetExternalAssetMovements();
+        IndexExternalAssetMovementVM GetExternalAssetMovements(int pageNumber, int pageSize);
         IEnumerable<ExternalAssetMovement> GetExternalMovementsByAssetDetailId(int assetId);
         ExternalAssetMovement GetById(int id);
         int Add(ExternalAssetMovement movementObj);

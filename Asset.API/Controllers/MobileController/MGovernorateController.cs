@@ -40,7 +40,22 @@ namespace Asset.API.Controllers.MobileController
             else
                 return Ok(new { data = list, msg = "Success", status = '1' });
         }
-      
+
+
+
+        [HttpGet]
+        [Route("GetGovernorateWithHospitals")]
+        public ActionResult GetGovernorateWithHospitals()
+        {
+            var lstGovhospitals= _governorateService.GetGovernorateWithHospitals();
+            if (lstGovhospitals.Count() == 0)
+            {
+                return Ok(new { data = lstGovhospitals, msg = "No Data", status = '0' });
+            }
+            else
+                return Ok(new { data = lstGovhospitals, msg = "Success", status = '1' });
+        }
+
     }
 
 

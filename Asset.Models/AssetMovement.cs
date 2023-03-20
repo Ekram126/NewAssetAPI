@@ -13,6 +13,10 @@ namespace Asset.Models
         public int Id { get; set; }
 
         public int AssetDetailId { get; set; }
+        [ForeignKey("AssetDetailId")]
+        public virtual AssetDetail AssetDetail { get; set; }
+
+
 
         public DateTime? MovementDate { get; set; }
 

@@ -21,5 +21,9 @@ namespace Asset.ViewModels.ExternalFixVM
         public DateTime? ComingDate { get; set; }
         public string OutNumber { get; set; }
 
+
+        public string StrOutDate { get; set; }
+        public string StrExpectedDate { get; set; }
+
     }
 }

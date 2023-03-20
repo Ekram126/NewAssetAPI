@@ -1,4 +1,5 @@
-﻿using Asset.Domain.Repositories;
+﻿using Asset.Core.Helpers;
+using Asset.Domain.Repositories;
 using Asset.Models;
 using Asset.ViewModels.OriginVM;
 using Asset.ViewModels.PMAssetTaskVM;
@@ -69,6 +70,83 @@ namespace Asset.Core.Repositories
             return 0;
         }
 
+        //public IndexWNPMAssetTimesVM GetAll(FilterAssetTimeVM filterObj, int pageNumber, int pageSize, string userId)
+        //{
+
+        //    IndexWNPMAssetTimesVM mainClass = new IndexWNPMAssetTimesVM();
+        //    List<IndexWNPMAssetTimesVM.GetData> list = new List<IndexWNPMAssetTimesVM.GetData>();
+        //    var allAssetDetails = _context.WNPMAssetTimes
+        //        .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset)
+        //         .Include(a => a.AssetDetail.Department)
+        //         .Include(a => a.Supplier)
+        //        .Include(a => a.AssetDetail.Hospital).ToList();
+
+
+        //    var allAssetDetailsByQuarter = allAssetDetails.GroupBy(item => (Math.Ceiling(decimal.Parse(item.PMDate.Value.Month.ToString()) / 3)));
+        //    if (allAssetDetailsByQuarter.ToList().Count > 0)
+        //    {
+        //        foreach (var itm2 in allAssetDetailsByQuarter)
+        //        {
+        //            if (filterObj.yearQuarter == itm2.Key)
+        //            {
+        //                mainClass.YearQuarter = int.Parse(itm2.Key.ToString());
+        //                foreach (var itm in itm2)
+        //                {
+
+        //                    IndexWNPMAssetTimesVM.GetData item = new IndexWNPMAssetTimesVM.GetData();
+        //                    item.Id = itm.Id;
+        //                    item.BarCode = itm.AssetDetail.Barcode;
+        //                    item.ModelNumber = itm.AssetDetail.MasterAsset.ModelNumber;
+        //                    item.SerialNumber = itm.AssetDetail.SerialNumber;
+        //                    item.DepartmentId = itm.AssetDetail.Department != null ? itm.AssetDetail.DepartmentId : 0;
+        //                    item.DepartmentName = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.Name : "";
+        //                    item.DepartmentNameAr = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.NameAr : "";
+
+        //                    if (itm.Supplier != null)
+        //                    {
+        //                        item.SupplierId = itm.AgencyId;
+        //                        item.SupplierName = itm.Supplier.Name;
+        //                        item.SupplierNameAr = itm.Supplier.NameAr;
+        //                    }
+        //                    item.PMDate = itm.PMDate;
+        //                    item.IsDone = itm.IsDone != null ? (bool)itm.IsDone : false;
+        //                    item.DoneDate = itm.DoneDate;
+        //                    item.DueDate = itm.DueDate;
+        //                    item.AssetName = itm.AssetDetail.MasterAssetId > 0 ? itm.AssetDetail.MasterAsset.Name : "";
+        //                    item.AssetNameAr = itm.AssetDetail.MasterAssetId > 0 ? itm.AssetDetail.MasterAsset.NameAr : "";
+        //                    list.Add(item);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        list = list.ToList();
+        //    }
+        //    mainClass.Count = list.Count();
+        //    mainClass.CountDone = list.Where(a => a.IsDone == true).ToList().Count;
+        //    mainClass.CountNotDone = list.Where(a => a.IsDone == false).ToList().Count;
+
+        //    if (filterObj.IsDone == true)
+        //    {
+        //        list = list.Where(a => a.IsDone == true).ToList();
+        //    }
+        //    else if (filterObj.IsDone == false)
+        //    {
+        //        list = list.Where(a => a.IsDone == false).ToList();
+        //    }
+        //    else
+        //        list = list.ToList();
+
+
+        //    //mainClass.CountDone = list.Where(a => a.IsDone == true).ToList().Count;
+        //    //mainClass.CountNotDone = list.Where(a => a.IsDone == false).ToList().Count;
+
+        //    var assetTimeObjuestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+        //    mainClass.Results = assetTimeObjuestsPerPage;
+        //    return mainClass;
+        //}
+
         public IndexWNPMAssetTimesVM GetAll(FilterAssetTimeVM filterObj, int pageNumber, int pageSize, string userId)
         {
 
@@ -80,8 +158,8 @@ namespace Asset.Core.Repositories
                  .Include(a => a.Supplier)
                 .Include(a => a.AssetDetail.Hospital).ToList();
 
-
-            var allAssetDetailsByQuarter = allAssetDetails.GroupBy(item => (Math.Ceiling(decimal.Parse(item.PMDate.Value.Month.ToString()) / 3)));
+            //.GroupBy(item => (Math.Ceiling(decimal.Parse(item.PMDate.Value.AddMonths(-3).Month.ToString())/3+2)%4+1 ));
+            var allAssetDetailsByQuarter = allAssetDetails.GroupBy(item => (Math.Ceiling(decimal.Parse(item.PMDate.Value.AddMonths(6).Month.ToString()) / 3)));
             if (allAssetDetailsByQuarter.ToList().Count > 0)
             {
                 foreach (var itm2 in allAssetDetailsByQuarter)
@@ -94,12 +172,23 @@ namespace Asset.Core.Repositories
 
                             IndexWNPMAssetTimesVM.GetData item = new IndexWNPMAssetTimesVM.GetData();
                             item.Id = itm.Id;
-                            item.BarCode = itm.AssetDetail.Barcode;
-                            item.ModelNumber = itm.AssetDetail.MasterAsset.ModelNumber;
-                            item.SerialNumber = itm.AssetDetail.SerialNumber;
-                            item.DepartmentId = itm.AssetDetail.Department != null ? itm.AssetDetail.DepartmentId : 0;
-                            item.DepartmentName = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.Name : "";
-                            item.DepartmentNameAr = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.NameAr : "";
+                            if (itm.AssetDetail != null)
+                            {
+
+                                item.BarCode = itm.AssetDetail.Barcode;
+
+                                if (itm.AssetDetail.MasterAsset != null)
+                                {
+                                    item.ModelNumber = itm.AssetDetail.MasterAsset.ModelNumber;
+
+                                }
+                                item.SerialNumber = itm.AssetDetail.SerialNumber;
+                                item.DepartmentId = itm.AssetDetail.Department != null ? itm.AssetDetail.DepartmentId : 0;
+                                item.DepartmentName = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.Name : "";
+                                item.DepartmentNameAr = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.NameAr : "";
+
+                            }
+
 
                             if (itm.Supplier != null)
                             {
@@ -111,8 +200,16 @@ namespace Asset.Core.Repositories
                             item.IsDone = itm.IsDone != null ? (bool)itm.IsDone : false;
                             item.DoneDate = itm.DoneDate;
                             item.DueDate = itm.DueDate;
-                            item.AssetName = itm.AssetDetail.MasterAssetId > 0 ? itm.AssetDetail.MasterAsset.Name : "";
-                            item.AssetNameAr = itm.AssetDetail.MasterAssetId > 0 ? itm.AssetDetail.MasterAsset.NameAr : "";
+                            if (itm.AssetDetail != null)
+                            {
+                                if (itm.AssetDetail.MasterAsset != null)
+                                {
+                                    item.AssetName = itm.AssetDetail.MasterAssetId > 0 ? itm.AssetDetail.MasterAsset.Name : "";
+                                    item.AssetNameAr = itm.AssetDetail.MasterAssetId > 0 ? itm.AssetDetail.MasterAsset.NameAr : "";
+                                }
+
+                            }
+
                             list.Add(item);
                         }
                     }
@@ -145,6 +242,25 @@ namespace Asset.Core.Repositories
             mainClass.Results = assetTimeObjuestsPerPage;
             return mainClass;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public List<CalendarWNPMAssetTimeVM> GetAll(int hospitalId, string userId)
         {
@@ -1776,5 +1892,223 @@ namespace Asset.Core.Repositories
         {
           return  _context.WNPMAssetTimeAttachments.Where(a => a.WNPMAssetTimeId == wnpmAssetTimeId).ToList();
         }
+
+        public int CreateAssetFiscalTimes(int year, int hospitalId)
+        {
+            int counter = 0;
+            int m = 0;
+            var totalAssets = _context.AssetDetails.OrderBy(a => a.DepartmentId).ToList();
+            //  Year todayYear = new Year(DateTime.Today.Year);
+            Year todayYear = new Year(year, new FiscalTimeCalendar());
+            ITimePeriodCollection quarters = todayYear.GetQuarters();
+
+            var first = totalAssets.Skip(0).Take((int)Math.Round(totalAssets.Count * (0.4))).ToList();
+            var sec = totalAssets.Skip(first.Count).Take((int)Math.Round(totalAssets.Count * (0.4))).ToList();
+            var third = totalAssets.Skip(first.Count + sec.Count).Take((totalAssets.Count - (first.Count + sec.Count))).ToList();
+            foreach (Quarter quarter in quarters)
+            {
+
+                counter = 0;
+                m = 0;
+                var s = quarter.FirstDayStart;
+                var e = quarter.LastDayStart;
+                var s1 = quarter.FirstMonthStart;
+                var e1 = quarter.LastMonthStart;
+
+                for (int i = 0; i < quarter.GetMonths().Count; i++)
+                {
+                    counter++;
+                    var c = quarter.FirstMonthStart.AddMonths(m);
+                    DateTime startDate = c;
+                    int remain = 0;
+                    //int noOfDaysInMonth = DateTime.DaysInMonth(DateTime.Today.Year, startDate.Month);
+
+                    int noOfDaysInMonth = DateTime.DaysInMonth(quarter.FirstDayStart.Year, startDate.Month);
+                    if (counter == 1)
+                    {
+
+                        var list = new List<int>();
+                        for (int day = 0; day < noOfDaysInMonth; day++)
+                        {
+                            int itemsInDay = (((day + 1) * first.Count()) + noOfDaysInMonth / 2) / noOfDaysInMonth - (day * first.Count() + noOfDaysInMonth / 2) / noOfDaysInMonth;
+                            int x = first.Count() - remain;
+                            List<AssetDetail> assetperday = new List<AssetDetail>();
+                            if (day == 0)
+                            {
+                                assetperday = first.Skip(0).Take(itemsInDay).ToList();
+                                foreach (var f in assetperday)
+                                {
+                                    var assetDate = DateTime.Parse(quarter.FirstDayStart.Year + "-" + startDate.Month + "-" + (day + 1));
+                                    WNPMAssetTime timeObj = new WNPMAssetTime();
+                                    timeObj.AssetDetailId = f.Id;
+                                    timeObj.HospitalId = f.HospitalId;
+                                    timeObj.PMDate = assetDate;
+                                    timeObj.IsDone = false;
+                                    _context.WNPMAssetTimes.Add(timeObj);
+                                    _context.SaveChanges();
+                                }
+                            }
+                            else
+                            {
+                                assetperday = first.Skip(remain).Take(itemsInDay).ToList();
+                                foreach (var f in assetperday)
+                                {
+                                    var assetDate = DateTime.Parse(quarter.FirstDayStart.Year + "-" + startDate.Month + "-" + (day + 1));
+                                    WNPMAssetTime timeObj = new WNPMAssetTime();
+                                    timeObj.AssetDetailId = f.Id;
+                                    timeObj.HospitalId = f.HospitalId;
+                                    timeObj.PMDate = assetDate;
+                                    timeObj.IsDone = false;
+                                    _context.WNPMAssetTimes.Add(timeObj);
+                                    _context.SaveChanges();
+                                }
+                            }
+                            remain += itemsInDay;
+                        }
+                    }
+                    if (counter == 2)
+                    {
+                        remain = 0;
+                        var list = new List<int>();
+                        for (int day = 0; day < noOfDaysInMonth; day++)
+                        {
+                            int itemsInDay = (((day + 1) * sec.Count()) + noOfDaysInMonth / 2) / noOfDaysInMonth - (day * sec.Count() + noOfDaysInMonth / 2) / noOfDaysInMonth;
+                            int x = sec.Count() - remain;
+                            List<AssetDetail> assetperday = new List<AssetDetail>();
+                            if (day == 0)
+                            {
+                                assetperday = sec.Skip(0).Take(itemsInDay).ToList();
+                                foreach (var f in assetperday)
+                                {
+                                    var assetDate = DateTime.Parse(quarter.FirstDayStart.Year + "-" + startDate.Month + "-" + (day + 1));
+                                    WNPMAssetTime timeObj = new WNPMAssetTime();
+                                    timeObj.AssetDetailId = f.Id;
+                                    timeObj.HospitalId = f.HospitalId;
+                                    timeObj.PMDate = assetDate;
+                                    timeObj.IsDone = false;
+                                    _context.WNPMAssetTimes.Add(timeObj);
+                                    _context.SaveChanges();
+                                }
+                            }
+                            else
+                            {
+                                assetperday = sec.Skip(remain).Take(itemsInDay).ToList();
+                                foreach (var f in assetperday)
+                                {
+                                    var assetDate = DateTime.Parse(quarter.FirstDayStart.Year + "-" + startDate.Month + "-" + (day + 1));
+                                    WNPMAssetTime timeObj = new WNPMAssetTime();
+                                    timeObj.AssetDetailId = f.Id;
+                                    timeObj.HospitalId = f.HospitalId;
+                                    timeObj.PMDate = assetDate;
+                                    timeObj.IsDone = false;
+                                    _context.WNPMAssetTimes.Add(timeObj);
+                                    _context.SaveChanges();
+
+                                }
+                            }
+                            remain += itemsInDay;
+                        }
+                    }
+                    if (counter == 3)
+                    {
+                        if (third.Count < noOfDaysInMonth)
+                        {
+                            remain = 0;
+                            int ass = 0;
+                            var list = new List<int>();
+                            for (int day = 0; day < noOfDaysInMonth; day++)
+                            {
+                                //  int itemsInDay = (((day + 1) * third.Count()) + noOfDaysInMonth / 2) / noOfDaysInMonth - (day * third.Count() + noOfDaysInMonth / 2) / noOfDaysInMonth;
+                                int x = third.Count() - remain;
+                                List<AssetDetail> assetperday = new List<AssetDetail>();
+                                if (day == 0)
+                                {
+                                    assetperday = third.Skip(0).Take(1).ToList();
+                                    foreach (var f in assetperday)
+                                    {
+                                        var assetDate = DateTime.Parse(quarter.FirstDayStart.Year + "-" + startDate.Month + "-" + (day + 1));
+                                        WNPMAssetTime timeObj = new WNPMAssetTime();
+                                        timeObj.AssetDetailId = f.Id;
+                                        timeObj.HospitalId = f.HospitalId;
+                                        timeObj.PMDate = assetDate;
+                                        timeObj.IsDone = false;
+                                        _context.WNPMAssetTimes.Add(timeObj);
+                                        _context.SaveChanges();
+                                    }
+                                }
+                                else
+                                {
+                                    assetperday = third.Skip(ass).Take(1).ToList();
+                                    foreach (var f in assetperday)
+                                    {
+                                        var assetDate = DateTime.Parse(quarter.FirstDayStart.Year + "-" + startDate.Month + "-" + (day + 1));
+                                        WNPMAssetTime timeObj = new WNPMAssetTime();
+                                        timeObj.AssetDetailId = f.Id;
+                                        timeObj.HospitalId = f.HospitalId;
+                                        timeObj.PMDate = assetDate;
+                                        timeObj.IsDone = false;
+                                        _context.WNPMAssetTimes.Add(timeObj);
+                                        _context.SaveChanges();
+                                    }
+                                }
+                                //  remain += itemsInDay;
+                                ass++;
+                            }
+                        }
+
+                        else
+                        {
+                            remain = 0;
+                            // int noOfDaysInMonth = DateTime.DaysInMonth(DateTime.Today.Year, startDate.Month);
+                            var list = new List<int>();
+                            for (int day = 0; day < noOfDaysInMonth; day++)
+                            {
+                                int itemsInDay = (((day + 1) * third.Count()) + noOfDaysInMonth / 2) / noOfDaysInMonth - (day * third.Count() + noOfDaysInMonth / 2) / noOfDaysInMonth;
+
+
+                                int x = third.Count() - remain;
+                                List<AssetDetail> assetperday = new List<AssetDetail>();
+                                if (day == 0)
+                                {
+                                    assetperday = third.Skip(0).Take(itemsInDay).ToList();
+                                    foreach (var f in assetperday)
+                                    {
+                                        var assetDate = DateTime.Parse(quarter.FirstDayStart.Year + "-" + startDate.Month + "-" + (day + 1));
+                                        WNPMAssetTime timeObj = new WNPMAssetTime();
+                                        timeObj.AssetDetailId = f.Id;
+                                        timeObj.HospitalId = f.HospitalId;
+                                        timeObj.PMDate = assetDate;
+                                        timeObj.IsDone = false;
+                                        _context.WNPMAssetTimes.Add(timeObj);
+                                        _context.SaveChanges();
+                                    }
+                                }
+                                else
+                                {
+                                    assetperday = third.Skip(remain).Take(itemsInDay).ToList();
+                                    foreach (var f in assetperday)
+                                    {
+                                        var assetDate = DateTime.Parse(quarter.FirstDayStart.Year + "-" + startDate.Month + "-" + (day + 1));
+                                        WNPMAssetTime timeObj = new WNPMAssetTime();
+                                        timeObj.AssetDetailId = f.Id;
+                                        timeObj.HospitalId = f.HospitalId;
+                                        timeObj.PMDate = assetDate;
+                                        timeObj.IsDone = false;
+                                        _context.WNPMAssetTimes.Add(timeObj);
+                                        _context.SaveChanges();
+                                    }
+                                }
+                                remain += itemsInDay;
+                            }
+                        }
+                    }
+                    m++;
+                }
+            }
+            return 1;
+        }
+
+
+
     }
 }

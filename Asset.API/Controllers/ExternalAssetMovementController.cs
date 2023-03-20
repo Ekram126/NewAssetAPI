@@ -2,6 +2,7 @@
 using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.AssetMovementVM;
+using Asset.ViewModels.ExternalAssetMovementVM;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,10 +31,10 @@ namespace Asset.API.Controllers
 
 
         [HttpGet]
-        [Route("ListExternalAssetMovements")]
-        public IEnumerable<ExternalAssetMovement> GetExternalAssetMovements()
+        [Route("ListExternalAssetMovements/{pageNumber}/{pageSize}")]
+        public IndexExternalAssetMovementVM GetExternalAssetMovements(int pageNumber, int pageSize)
         {
-            return _externalAssetMovementService.GetExternalAssetMovements();
+            return _externalAssetMovementService.GetExternalAssetMovements( pageNumber,  pageSize);
         }
 
 
@@ -83,7 +84,6 @@ namespace Asset.API.Controllers
             //if (oldMovement.Count > 0)
             //{
             //    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "same", Message = "Cannot move asset to same place", MessageAr = "لا يمكن نقل نفس الأصل في ذات المكان" });
-
             //}
             //else
             //{

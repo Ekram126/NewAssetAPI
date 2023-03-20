@@ -11,9 +11,12 @@ namespace Asset.Domain.Repositories
 {
     public interface IAssetStockTakingRepository
     {
-        //IActionResult GetQRCodeData(string Url);
         int Add(CreateAssetStockTakingVM createAssetStockTakingVM);
         IEnumerable<IndexAssetStockTakingVM.GetData> GetAll();
-        IndexAssetStockTakingVM GetAllWithPaging (int page, int pageSize);  
+        IndexAssetStockTakingVM GetAllWithPaging (int page, int pageSize);
+
+        IndexAssetStockTakingVM SearchInAssetStockTakings(SearchAssetStockTakingVM searchObj ,int page, int pageSize);
+
+        IndexAssetStockTakingVM ListAssetStockTakings(int pageNumber, int pageSize);
     }
 }

@@ -27,9 +27,6 @@ namespace Asset.ViewModels.StockTakingScheduleVM
             public DateTime? EndDate { get; set; }
             public DateTime? CreationDate { get; set; }
             public string UserName { get; set; }
-
-           // public int? AssetDetailId { get; set; }
-
             public string STCode { get; set; }
 
             public List<StockTakingHospital> ListHospitals { get; set; }

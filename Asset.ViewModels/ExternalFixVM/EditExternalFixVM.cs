@@ -11,6 +11,6 @@ namespace Asset.ViewModels.ExternalFixVM
         public int Id { get; set; }
         public DateTime? ComingDate { get; set; }
         public string ComingNotes { get; set; }
-
+        public string StrComingDate { get; set; }
     }
 }

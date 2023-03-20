@@ -36,7 +36,14 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetStockTackingRepository.GetAllWithPaging(page, pageSize);
         }
 
+        public IndexAssetStockTakingVM ListAssetStockTakings(int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetStockTackingRepository.ListAssetStockTakings(pageNumber, pageSize);
+        }
 
-
+        public IndexAssetStockTakingVM SearchInAssetStockTakings(SearchAssetStockTakingVM searchObj, int page, int pageSize)
+        {
+            return _unitOfWork.AssetStockTackingRepository.SearchInAssetStockTakings(searchObj, page, pageSize);
+        }
     }
 }

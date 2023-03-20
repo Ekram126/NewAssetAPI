@@ -45,6 +45,7 @@ namespace Asset.Core.Repositories
                     ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
                 }
             }
+            ItemObj.TotalStatus = ItemObj.OpenStatus + ItemObj.ApproveStatus + ItemObj.RejectStatus + ItemObj.SystemRejectStatus;
             return ItemObj;
         }
 
@@ -84,6 +85,8 @@ namespace Asset.Core.Repositories
                     }
                 }
 
+                ItemObj.TotalStatus = ItemObj.OpenStatus + ItemObj.ApproveStatus + ItemObj.RejectStatus + ItemObj.SystemRejectStatus;
+
             }
            else
             {
@@ -109,32 +112,9 @@ namespace Asset.Core.Repositories
                         ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
                     }
                 }
+                ItemObj.TotalStatus = ItemObj.OpenStatus + ItemObj.ApproveStatus + ItemObj.RejectStatus + ItemObj.SystemRejectStatus;
             }
             ItemObj.ListStatus = list;
-
-
-
-            //foreach (var itm in list)
-            //{
-            //     lstHospitalStatus = lstHospitalStatus.Where(a => a.StatusId == itm.Id &&  a.AppTypeId == appTypeId).ToList();
-
-            //    if (itm.Id == 1)
-            //    {
-            //        ItemObj.OpenStatus = lstHospitalStatus.Count;
-            //    }
-            //    if (itm.Id == 2)
-            //    {
-            //        ItemObj.ApproveStatus = lstHospitalStatus.Count;
-            //    }
-            //    if (itm.Id == 3)
-            //    {
-            //        ItemObj.RejectStatus = lstHospitalStatus.Count;
-            //    }
-            //    if (itm.Id == 4)
-            //    {
-            //        ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
-            //    }
-            //}
             return ItemObj;
         }
 
@@ -184,6 +164,9 @@ namespace Asset.Core.Repositories
                             ItemObj.SystemRejectStatus = lstStatus.Count;
                         }
                     }
+
+                    ItemObj.TotalStatus = ItemObj.OpenStatus + ItemObj.ApproveStatus + ItemObj.RejectStatus + ItemObj.SystemRejectStatus;
+
                 }
             }
             else
@@ -208,8 +191,9 @@ namespace Asset.Core.Repositories
                     {
                         ItemObj.SystemRejectStatus = lstHospitalStatus.Count;
                     }
-
                 }
+                ItemObj.TotalStatus = ItemObj.OpenStatus + ItemObj.ApproveStatus + ItemObj.RejectStatus + ItemObj.SystemRejectStatus;
+
             }
             return ItemObj;
         }

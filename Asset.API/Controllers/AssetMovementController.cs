@@ -26,10 +26,10 @@ namespace Asset.API.Controllers
 
 
         [HttpGet]
-        [Route("ListAssetMovements")]
-        public IEnumerable<IndexAssetMovementVM.GetData> GetAll()
+        [Route("ListAssetMovements/{pageNumber}/{pageSize}")]
+        public IndexAssetMovementVM GetAll(int pageNumber, int pageSize)
         {
-            return _assetMovementService.GetAll();
+            return _assetMovementService.GetAll(pageNumber,  pageSize);
         }
 
 

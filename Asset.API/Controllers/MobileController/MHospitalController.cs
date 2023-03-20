@@ -49,5 +49,22 @@ namespace Asset.API.Controllers.MobileController
             else
                 return Ok(new { data = lstHospitals, msg = "Success", status = '1' });
         }
+
+
+
+
+
+        [HttpGet]
+        [Route("GetHospitalDepartmentByHospitalId2/{hospitalId}")]
+        public ActionResult GetHospitalDepartmentByHospitalId2(int hospitalId)
+        {
+            var lstHospitalDepartments = _HospitalService.GetHospitalDepartmentByHospitalId2(hospitalId);
+            if (lstHospitalDepartments.Count() == 0)
+            {
+                return Ok(new { data = lstHospitalDepartments, msg = "No Data Found", status = '0' });
+            }
+            else
+                return Ok(new { data = lstHospitalDepartments, msg = "Success", status = '1' });
+        }
     }
 }

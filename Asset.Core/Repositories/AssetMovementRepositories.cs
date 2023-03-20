@@ -81,23 +81,42 @@ namespace Asset.Core.Repositories
             return _context.AssetMovements.ToList();
         }
 
-        IEnumerable<IndexAssetMovementVM.GetData> IAssetMovementRepository.GetAll()
+        public IndexAssetMovementVM GetAll(int pageNumber, int pageSize)
         {
-            return _context.AssetMovements.ToList().OrderByDescending(a => a.MovementDate).Select(item => new IndexAssetMovementVM.GetData
-            {
-                Id = item.Id,
-                MovementDate = item.MovementDate,
-                MoveDesc = item.MoveDesc,
-                HospitalId = item.HospitalId,
-                RoomName = _context.Rooms.ToList().Where(a => a.Id == item.RoomId).ToList().First().Name,
-                RoomNameAr = _context.Rooms.ToList().Where(a => a.Id == item.RoomId).ToList().First().NameAr,
-                FloorName = _context.Floors.ToList().Where(a => a.Id == item.FloorId).ToList().First().Name,
-                FloorNameAr = _context.Floors.ToList().Where(a => a.Id == item.FloorId).ToList().First().NameAr,
-                BuildingName = _context.Buildings.ToList().Where(a => a.Id == item.BuildingId).ToList().First().Name,
-                BuildingNameAr = _context.Buildings.ToList().Where(a => a.Id == item.BuildingId).ToList().First().NameAr,
 
-                AssetDetailId = item.AssetDetailId
-            }).ToList();
+            IndexAssetMovementVM mainClass = new IndexAssetMovementVM();
+            List<IndexAssetMovementVM.GetData> list = new List<IndexAssetMovementVM.GetData>();
+
+            list = _context.AssetMovements
+                .Include(a => a.Building)
+                   .Include(a => a.Room)
+                      .Include(a => a.Floor)
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset).ToList()
+                .OrderByDescending(a => a.MovementDate).Select(item => new IndexAssetMovementVM.GetData
+                {
+                    Id = item.Id,
+                    MovementDate = item.MovementDate,
+                    MoveDesc = item.MoveDesc,
+                    HospitalId = item.HospitalId,
+                    RoomName = item.Room != null ? item.Room.Name : "",
+                    RoomNameAr = item.Room != null ? item.Room.NameAr : "",
+                    FloorName = item.Floor != null ? item.Floor.Name : "",
+                    FloorNameAr = item.Floor != null ? item.Floor.NameAr : "",
+                    BuildingName = item.Building != null ? item.Building.Name : "",
+                    BuildingNameAr = item.Building != null ? item.Building.NameAr : "",
+
+                    AssetName = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.Name : "",
+                    AssetNameAr = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.NameAr : "",
+                    BarCode = item.AssetDetail != null ? item.AssetDetail.Barcode : "",
+                    SerialNumber = item.AssetDetail != null ? item.AssetDetail.SerialNumber : "",
+                    ModelNumber = item.AssetDetail.MasterAsset != null ? item.AssetDetail.MasterAsset.ModelNumber : "",
+                    AssetDetailId = item.AssetDetailId
+                }).ToList();
+
+            var movementPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            mainClass.Results = movementPerPage;
+            mainClass.Count = list.Count();
+            return mainClass;
         }
 
         public IEnumerable<IndexAssetMovementVM.GetData> GetMovementByAssetDetailId(int assetId)

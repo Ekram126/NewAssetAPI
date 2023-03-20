@@ -165,7 +165,7 @@ namespace Asset.Core.Repositories
                 Population = item.Population,
                 Area = item.Area,
                 HospitalsCount = _context.Hospitals.Where(h => h.GovernorateId == item.Id).ToList().Count()
-            });
+            }).OrderByDescending(a=>a.HospitalsCount).ToList();
         }
     }
 }

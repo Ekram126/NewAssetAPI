@@ -36,7 +36,8 @@ namespace Asset.API.Controllers
 
 
         string strInsitute, strInsituteAr, strLogo = "";
-        bool isAgency, isScrap, isVisit,isExternalFix,isOpenRequest,canAdd;
+        bool isAgency, isScrap, isVisit, isExternalFix, isOpenRequest, canAdd;
+        int hospitalTypeNum = 0;
 
         public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IEmailSender emailSender, IConfiguration configuration, ISettingService settingService, ApplicationDbContext context)
         {
@@ -171,24 +172,28 @@ namespace Asset.API.Controllers
                         if (item.KeyName == "PMAgency")
                             isAgency = Convert.ToBoolean(item.KeyValue);
 
-                        if (item.KeyName == "IsScrap")
-                            isScrap = Convert.ToBoolean(item.KeyValue);
+                        //if (item.KeyName == "IsScrap")
+                        //    isScrap = Convert.ToBoolean(item.KeyValue);
 
 
 
-                        if (item.KeyName == "IsVisit")
-                            isVisit = Convert.ToBoolean(item.KeyValue);
+                        //if (item.KeyName == "IsVisit")
+                        //    isVisit = Convert.ToBoolean(item.KeyValue);
 
 
-                        if (item.KeyName == "IsExternalFix")
-                            isExternalFix = Convert.ToBoolean(item.KeyValue);
+                        //if (item.KeyName == "IsExternalFix")
+                        //    isExternalFix = Convert.ToBoolean(item.KeyValue);
 
 
                         if (item.KeyName == "IsOpenRequest")
                             isOpenRequest = Convert.ToBoolean(item.KeyValue);
 
-                        if (item.KeyName == "CanAdd")
-                            canAdd = Convert.ToBoolean(item.KeyValue);
+                        //if (item.KeyName == "CanAdd")
+                        //    canAdd = Convert.ToBoolean(item.KeyValue);
+
+                        if (item.KeyName == "HospitalType")
+                            hospitalTypeNum = Convert.ToInt32(item.KeyValue);
+
                     }
                 }
 
@@ -225,11 +230,12 @@ namespace Asset.API.Controllers
                     strLogo = strLogo,
                     isAgency = isAgency,
                     isScrap = isScrap,
-                    isVisit= isVisit,
-                    isOpenRequest= isOpenRequest,
-                    isExternalFix= isExternalFix,
-                    canAdd = canAdd
-                }); 
+                    isVisit = isVisit,
+                    isOpenRequest = isOpenRequest,
+                    isExternalFix = isExternalFix,
+                    canAdd = canAdd,
+                    hospitalTypeNum = hospitalTypeNum
+                });
             }
             return Unauthorized();
         }
@@ -251,8 +257,9 @@ namespace Asset.API.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var param = new Dictionary<string, string>
              {
-                 {"token", token },
-                 {"email", forgotPasswordModel.Email }
+                 {"email", forgotPasswordModel.Email },
+                 {"token", token }
+
              };
 
             var callback = QueryHelpers.AddQueryString(forgotPasswordModel.ClientURI, param);
@@ -316,18 +323,11 @@ namespace Asset.API.Controllers
                     lstErrors.Add(error);
 
                 }
-                //   errormessage = String.Join(",", $"\n\n{lstErrors}\n\n");
-
-                //  errormessage = string.Join($",\n\n", lstErrors);
                 errormessage = string.Join("<br />", lstErrors);
-
-
                 return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = errormessage, MessageAr = errormessage });
-
-                //      return BadRequest(new { Errors = errors });
             }
 
-            return Ok();
+            return Ok(lstErrors);
         }
 
 

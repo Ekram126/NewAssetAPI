@@ -51,6 +51,41 @@ namespace Asset.API.Controllers
         }
 
 
+
+
+
+
+
+        [HttpPost]
+        [Route("SearchInExternalFix/{pageNumber}/{pageSize}")]
+        public IndexExternalFixVM SearchInExternalFix(SearchExternalFixVM searchObj, int pageNumber, int pageSize)
+        {
+            return _ExternalFixService.SearchInExternalFix(searchObj, pageNumber, pageSize);
+        }
+
+
+
+        [HttpPost]
+        [Route("SortExternalFix/{pageNumber}/{pageSize}")]
+        public IndexExternalFixVM SortExternalFix(SortExternalFixVM sortObj, int pageNumber, int pageSize)
+        {
+            return _ExternalFixService.SortExternalFix(sortObj, pageNumber, pageSize);
+        }
+
+
+
+
+
+
+        [HttpGet]
+        [Route("GetAssetsExceed72HoursInExternalFix/{hospitalId}/{pageNumber}/{pageSize}")]
+        public IndexExternalFixVM GetAssetsExceed72HoursInExternalFix(int hospitalId, int pageNumber, int pageSize)
+        {
+            return _ExternalFixService.GetAssetsExceed72HoursInExternalFix(hospitalId, pageNumber, pageSize);
+        }
+
+
+
         [HttpGet]
         [Route("GenerateExternalFixNumber")]
         public GenerateExternalFixNumberVM GenerateExternalFixNumber()
@@ -83,21 +118,10 @@ namespace Asset.API.Controllers
         [Route("AddExternalFix")]
         public int Add(CreateExternalFixVM externalFixVM)
         {
-            //var lstTrans = _assetStatusTransactionService.GetLastTransactionByAssetId(externalFixVM.AssetDetailId).ToList();
-            //if (lstTrans.Count > 0)
-            //{
-            //    var transObj = lstTrans[0];
-            //    if (transObj.AssetStatusId != 3)
-            //    {
-            //        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "trans", Message = "This asset cannot be fixed", MessageAr = "هذا الجهاز يخضع للصيانة" });
-            //    }
-            //}
 
-            //else
-            //{
             var savedId = _ExternalFixService.Add(externalFixVM);
             return savedId;
-            //}
+
         }
 
 

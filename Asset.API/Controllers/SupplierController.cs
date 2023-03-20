@@ -3,11 +3,13 @@ using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.PagingParameter;
 using Asset.ViewModels.SupplierVM;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,15 +23,15 @@ namespace Asset.API.Controllers
         private IMasterContractService _masterContractService;
         private ISupplierService _SupplierService;
         private IPagingService _pagingService;
+        IWebHostEnvironment _webHostingEnvironment;
 
-
-        public SupplierController(ISupplierService SupplierService, IAssetDetailService assetDetailService, IMasterContractService masterContractService, IPagingService pagingService)
+        public SupplierController(ISupplierService SupplierService, IAssetDetailService assetDetailService, IMasterContractService masterContractService, IPagingService pagingService, IWebHostEnvironment webHostingEnvironment)
         {
             _masterContractService = masterContractService;
             _assetDetailService = assetDetailService;
             _SupplierService = SupplierService;
             _pagingService = pagingService;
-
+            _webHostingEnvironment = webHostingEnvironment;
         }
 
 
@@ -190,7 +192,7 @@ namespace Asset.API.Controllers
             var lstCitiesArNames = _SupplierService.GetAllSuppliers().ToList().Where(a => a.NameAr == SupplierVM.NameAr).ToList();
             if (lstCitiesArNames.Count > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "name", Message = "Supplier arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "nameAr", Message = "Supplier arabic name already exist", MessageAr = "هذا الاسم مسجل سابقاً" });
             }
             else
             {
@@ -198,6 +200,51 @@ namespace Asset.API.Controllers
                 return Ok(savedId);// CreatedAtAction("GetById", new { id = savedId }, SupplierVM);
             }
         }
+
+
+        [HttpPost]
+        [Route("CreateSupplierAttachment")]
+        public int CreateRequestAttachments(SupplierAttachment attachObj)
+        {
+            return _SupplierService.CreateSupplierAttachment(attachObj);
+        }
+
+
+        [HttpGet]
+        [Route("GetSupplierAttachmentsBySupplierId/{supplierId}")]
+        public List<SupplierAttachment> GetSupplierAttachmentsBySupplierId(int supplierId)
+        {
+            return _SupplierService.GetSupplierAttachmentsBySupplierId(supplierId);
+        }
+
+
+
+        [HttpPost]
+        [Route("UploadSupplierFile")]
+        public ActionResult UploadSupplierFile(IFormFile file)
+        {
+            var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/SupplierAttachments";
+            bool exists = System.IO.Directory.Exists(folderPath);
+            if (!exists)
+                System.IO.Directory.CreateDirectory(folderPath);
+            string filePath = folderPath + "/" + file.FileName;
+            if (System.IO.File.Exists(filePath))
+            {
+            }
+            else
+            {
+                Stream stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+                stream.Close();
+            }
+            return StatusCode(StatusCodes.Status201Created);
+        }
+
+
+
+
+
+
 
         [HttpDelete]
         [Route("DeleteSupplier/{id}")]
