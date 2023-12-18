@@ -120,6 +120,18 @@ namespace Asset.API.Controllers
 
 
 
+
+
+        [HttpGet]
+        [Route("DistinctAutoCompleteMasterAssetName/{name}")]
+        public IEnumerable<MasterAsset> DistinctAutoCompleteMasterAssetName(string name)
+        {
+            return _MasterAssetService.DistinctAutoCompleteMasterAssetName(name);
+        }
+
+
+
+
         [HttpGet]
         [Route("AutoCompleteMasterAssetName3/{name}/{hospitalId}")]
         public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName3(string name, int hospitalId)
@@ -127,6 +139,13 @@ namespace Asset.API.Controllers
             return _MasterAssetService.AutoCompleteMasterAssetName3(name, hospitalId);
         }
 
+
+        [HttpGet]
+        [Route("AutoCompleteMasterAssetName4/{name}/{hospitalId}")]
+        public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName4(string name, int hospitalId)
+        {
+            return _MasterAssetService.AutoCompleteMasterAssetName4(name, hospitalId);
+        }
 
 
 
@@ -258,10 +277,18 @@ namespace Asset.API.Controllers
         [Route("AddMasterAsset")]
         public ActionResult Add(CreateMasterAssetVM MasterAssetVM)
         {
-
+            if(MasterAssetVM.Code.Length > 5)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "codelen", Message = "code must be maximum 5  charchters", MessageAr = "هذا الكود اقصى حد  له 5 حروف وأرقام " });
+            }
+            if (MasterAssetVM.BrandId == 0)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "brnd", Message = "You shold select Brand", MessageAr = "لابد من اختيار الماركة" });
+            }
             var lstCode = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Code == MasterAssetVM.Code).ToList();
             if (lstCode.Count > 0)
             {
+                
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "code", Message = "MasterAsset code already exist", MessageAr = "هذا الكود مسجل سابقاً" });
             }
             var lstNames = _MasterAssetService.GetAllMasterAssets().ToList().Where(a => a.Name == MasterAssetVM.Name && a.ModelNumber == MasterAssetVM.ModelNumber && a.VersionNumber == MasterAssetVM.VersionNumber).ToList();
@@ -429,5 +456,20 @@ namespace Asset.API.Controllers
             }
             return Ok();
         }
+
+
+
+
+
+
+        [HttpGet]
+        [Route("GenerateMasterAssetcode")]
+        public GeneratedMasterAssetCodeVM GenerateAssetDetailBarcode()
+        {
+            return _MasterAssetService.GenerateAssetDetailBarcode();
+        }
+
+
+
     }
 }

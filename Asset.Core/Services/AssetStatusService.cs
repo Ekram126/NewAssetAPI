@@ -65,11 +65,6 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetStatusRepository.SortAssetStatuses(sortObj);
         }
 
-        //public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId)
-        //{
-        //      return _unitOfWork.AssetStatusRepository.GetAllAssetsGroupByStatusId(statusId, userId);
-        //}
-
         public IEnumerable<IndexAssetStatusVM.GetData> GetAllAssetsGroupByStatusId(int statusId, string userId, int hospitalId)
         {
             return _unitOfWork.AssetStatusRepository.GetAllAssetsGroupByStatusId(statusId, userId,hospitalId);

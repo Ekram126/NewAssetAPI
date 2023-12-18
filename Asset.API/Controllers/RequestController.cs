@@ -70,11 +70,12 @@ namespace Asset.API.Controllers
             var requestDTO = _requestService.GetRequestById(id);
             return requestDTO;
         }
+    
 
-        [HttpGet("AlertOpenedRequestAssetsAndHighPeriority/{periorityId}/{hospitalId}")]
-        public List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId)
+        [HttpGet("AlertOpenedRequestAssetsAndHighPeriority/{periorityId}/{hospitalId}/{pageNumber}/{pageSize}")]
+        public IndexRequestVM AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId, int pageNumber, int pageSize)
         {
-            var lstRequestHighPeriority = _requestService.AlertOpenedRequestAssetsAndHighPeriority(periorityId, hospitalId);
+            var lstRequestHighPeriority = _requestService.AlertOpenedRequestAssetsAndHighPeriority(periorityId, hospitalId,  pageNumber,  pageSize);
             return lstRequestHighPeriority;
         }
 
@@ -355,6 +356,12 @@ namespace Asset.API.Controllers
         //}
 
 
+
+
+
+
+
+
         [HttpPost]
         [Route("GetRequestsByStatusIdAndPaging/{userId}/{statusId}/{pageNumber}/{pageSize}")]
         public IndexRequestVM GetRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize)
@@ -362,6 +369,19 @@ namespace Asset.API.Controllers
             var Requests = _requestService.GetAllRequestsByStatusIdAndPaging(userId, statusId, pageNumber, pageSize);
             return Requests;
         }
+
+        [HttpPost]
+        [Route("GetAllRequestsByStatusIdAndPaging2/{userId}/{statusId}/{pageNumber}/{pageSize}")]
+        public IndexRequestVM GetAllRequestsByStatusIdAndPaging2(string userId, int statusId, int pageNumber, int pageSize)
+        {
+            var Requests = _requestService.GetAllRequestsByStatusIdAndPaging2(userId, statusId, pageNumber, pageSize);
+            return Requests;
+        }
+
+
+        
+
+
 
         [HttpPut]
         [Route("ExportAllRequests/{userId}/{statusId}")]
@@ -1607,23 +1627,12 @@ namespace Asset.API.Controllers
                     if (item.KeyName == "PMAgency")
                         isAgency = Convert.ToBoolean(item.KeyValue);
 
-                    if (item.KeyName == "IsScrap")
-                        isScrap = Convert.ToBoolean(item.KeyValue);
-
-
-                    if (item.KeyName == "IsVisit")
-                        isVisit = Convert.ToBoolean(item.KeyValue);
-
-
-                    if (item.KeyName == "IsExternalFix")
-                        isExternalFix = Convert.ToBoolean(item.KeyValue);
-
+     
 
                     if (item.KeyName == "IsOpenRequest")
                         isOpenRequest = Convert.ToBoolean(item.KeyValue);
 
-                    if (item.KeyName == "CanAdd")
-                        canAdd = Convert.ToBoolean(item.KeyValue);
+
                 }
             }
 
@@ -1739,14 +1748,14 @@ namespace Asset.API.Controllers
 
                 for (int i = 1; i <= pages; i++)
                 {
-                    PdfPTable bodytable2 = new PdfPTable(9);
-                    bodytable2.SetTotalWidth(new float[] { 90f, 80f, 100f, 100f, 80f, 100f, 100f, 80f, 90f });
+                    PdfPTable bodytable2 = new PdfPTable(10);
+                    bodytable2.SetTotalWidth(new float[] { 90f, 90f, 80f, 90f, 80f, 80f, 100f, 80f, 80f, 50f });
                     bodytable2.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
                     bodytable2.HorizontalAlignment = Element.ALIGN_RIGHT;
                     bodytable2.WidthPercentage = 100;
                     bodytable2.PaddingTop = 200;
                     bodytable2.HeaderRows = 1;
-                    bodytable2.SetWidths(new int[] { 50, 50, 70, 50, 50, 70, 40, 50, 15 });
+                    bodytable2.SetWidths(new int[] { 50,50, 50, 70, 50, 50, 50, 40, 50, 15 });
 
                     int countRows = bodytable.Rows.Count;
                     if (countRows > 13)
@@ -1776,14 +1785,14 @@ namespace Asset.API.Controllers
         public PdfPTable CreateSRReportWithInProgressDateTable(SearchRequestDateVM searchRequestDateObj)
         {
             var lstData = _requestService.GetRequestsByDateAndStatus(searchRequestDateObj).ToList();
-            PdfPTable table = new PdfPTable(9);
-            table.SetTotalWidth(new float[] { 90f, 80f, 100f, 100f, 80f, 100f, 100f, 80f, 90f });
+            PdfPTable table = new PdfPTable(10);
+            table.SetTotalWidth(new float[] { 90f, 90f, 80f, 90f, 80f, 80f, 100f, 80f, 80f, 50f });
             table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
             table.HorizontalAlignment = Element.ALIGN_RIGHT;
             table.WidthPercentage = 100;
             table.PaddingTop = 200;
             table.HeaderRows = 1;
-            table.SetWidths(new int[] { 50, 50, 70, 50, 50, 70, 40, 50, 15 });
+            table.SetWidths(new int[] {50, 50, 50, 70, 50, 50, 70, 40, 50, 15 });
 
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -1793,7 +1802,7 @@ namespace Asset.API.Controllers
 
             if (searchRequestDateObj.Lang == "ar")
             {
-                string[] col = { " وصف أمر الشغل", "تاريخ أمر الشغل", "الوصف", "الرقم المسلسل", "الباركود", "اسم الأصل", "التاريخ", "رقم بلاغ العطل", "م" };
+                string[] col = { "المُبلغ"," وصف أمر الشغل", "تاريخ أمر الشغل", "الوصف", "الرقم المسلسل", "الباركود", "اسم الأصل", "التاريخ", "رقم بلاغ العطل", "م" };
                 for (int i = col.Length - 1; i >= 0; i--)
                 {
                     PdfPCell cell = new PdfPCell(new Phrase(col[i], font));
@@ -1805,7 +1814,7 @@ namespace Asset.API.Controllers
 
             else
             {
-                string[] col = { "No.", "Request Code", "Date", "Asset Name", "Barcode", "Serial", "Notes", "WO Date", "WO Note" };
+                string[] col = { "No.", "Request Code", "Date", "Asset Name", "Barcode", "Serial", "Notes", "WO Date", "WO Note" ,"Request User"};
                 for (int i = 0; i <= col.Length - 1; i++)
                 {
                     PdfPCell cell = new PdfPCell(new Phrase(col[i], font));
@@ -1870,6 +1879,12 @@ namespace Asset.API.Controllers
 
                 if (item.WorkOrderNote != null)
                     table.AddCell(new PdfPCell(new Phrase(item.WorkOrderNote, font)) { PaddingBottom = 5 });
+                else
+                    table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
+
+
+                if (item.UserName != null)
+                    table.AddCell(new PdfPCell(new Phrase(item.UserName, font)) { PaddingBottom = 5 });
                 else
                     table.AddCell(new PdfPCell(new Phrase(" ")) { PaddingBottom = 5 });
             }
@@ -2882,34 +2897,6 @@ namespace Asset.API.Controllers
             }
             return response;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4256,5 +4243,17 @@ namespace Asset.API.Controllers
             return response;
         }
 
+
+
+
+
+
+        [HttpGet]
+        [Route("GetRequestsByStatusIdAndPagingV2/{userId}/{statusId}/{pageNumber}/{pageSize}")]
+        public IndexRequestVM GetRequestsByStatusIdAndPagingV2(string userId, int statusId, int pageNumber, int pageSize)
+        {
+            var Requests = _requestService.GetRequestsByStatusIdAndPagingV2(userId, statusId, pageNumber, pageSize);
+            return Requests;
+        }
     }
 }

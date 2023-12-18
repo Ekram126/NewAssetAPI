@@ -74,13 +74,13 @@ namespace Asset.API.Controllers
                             {
                                 var assetDetailObj = assetDetaiList[0];
                                 int HospitalId = (int)assetDetailObj.HospitalId;
-                                var stockTakingHospitaList = _stockTakingHospitalService.GetAll().Where(ww => ww.HospitalId == HospitalId).ToList();
+                                var stockTakingHospitaList = _stockTakingHospitalService.GetAll().Where(ww => ww.HospitalId == HospitalId).OrderByDescending(a=>a.Id).ToList();
 
                                 if (stockTakingHospitaList.Count() > 0)
                                 {
                                     var stockTakingHospitalObj = stockTakingHospitaList[0];
                                     var stockTakingScheduleId = stockTakingHospitalObj.STSchedulesId;
-                                    var stockTakingScheduleList = _stockTakingScheduleService.GetAll().Where(ww => ww.Id == stockTakingScheduleId).OrderByDescending(a=>a.CreationDate).ToList();
+                                    var stockTakingScheduleList = _stockTakingScheduleService.GetAll().Where(ww => ww.Id == stockTakingScheduleId).OrderByDescending(a=>a.CreationDate.Value.Date).ToList();
                                     if (stockTakingScheduleList.Count() > 0)
                                     {
                                         var stockTakingScheduleObj = stockTakingScheduleList[0];

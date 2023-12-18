@@ -118,7 +118,11 @@ namespace Asset.API.Controllers
                 var cityNameAr = user.CityId > 0 ? _context.Cities.Where(a => a.Id == user.CityId).First().NameAr : "";
                 var orgNameAr = user.OrganizationId > 0 ? _context.Organizations.Where(a => a.Id == user.OrganizationId).First().NameAr : "";
                 var subOrgNameAr = user.SubOrganizationId > 0 ? _context.SubOrganizations.Where(a => a.Id == user.SubOrganizationId).First().NameAr : "";
+
+
                 var hospitalName = user.HospitalId > 0 ? _context.Hospitals.Where(a => a.Id == user.HospitalId).First().Name : "";
+
+
 
                 var hospitalNameAr = user.HospitalId > 0 ? _context.Hospitals.Where(a => a.Id == user.HospitalId).First().NameAr : "";
                 var hospitalCode = user.HospitalId > 0 ? _context.Hospitals.Where(a => a.Id == user.HospitalId).First().Code : "";
@@ -172,25 +176,12 @@ namespace Asset.API.Controllers
                         if (item.KeyName == "PMAgency")
                             isAgency = Convert.ToBoolean(item.KeyValue);
 
-                        //if (item.KeyName == "IsScrap")
-                        //    isScrap = Convert.ToBoolean(item.KeyValue);
-
-
-
-                        //if (item.KeyName == "IsVisit")
-                        //    isVisit = Convert.ToBoolean(item.KeyValue);
-
-
-                        //if (item.KeyName == "IsExternalFix")
-                        //    isExternalFix = Convert.ToBoolean(item.KeyValue);
-
+                      
 
                         if (item.KeyName == "IsOpenRequest")
                             isOpenRequest = Convert.ToBoolean(item.KeyValue);
 
-                        //if (item.KeyName == "CanAdd")
-                        //    canAdd = Convert.ToBoolean(item.KeyValue);
-
+            
                         if (item.KeyName == "HospitalType")
                             hospitalTypeNum = Convert.ToInt32(item.KeyValue);
 

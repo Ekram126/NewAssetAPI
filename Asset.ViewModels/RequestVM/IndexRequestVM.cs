@@ -44,6 +44,10 @@ namespace Asset.ViewModels.RequestVM
             public string CreatedById { get; set; }
             public string CreatedBy { get; set; }
             public string Description { get; set; }
+
+            public string ListDescriptions { get; set; }
+
+
             public int StatusId { get; set; }
             public string StatusName { get; set; }
             public string StatusNameAr { get; set; }
@@ -82,6 +86,10 @@ namespace Asset.ViewModels.RequestVM
             public DateTime? ActualStartDate { get; set; }
             public DateTime? ActualEndDate { get; set; }
             public string WorkOrderNote { get; set; }
+
+            public string ListWorkOrderNotes { get; set; }
+
+
             public DateTime? WorkOrderDate { get; set; }
             public string AssignedTo { get; set; }
             public string WOCreatedBy { get; set; }

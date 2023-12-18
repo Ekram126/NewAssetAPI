@@ -18,6 +18,7 @@ namespace Asset.ViewModels.AssetDetailVM
             public int Id { get; set; }
             public string UserId { get; set; }
             public int? MasterAssetId { get; set; }
+            public int? MasterContractId { get; set; }
             public string Code { get; set; }
             public string Serial { get; set; }
             public string Model { get; set; }
@@ -25,7 +26,7 @@ namespace Asset.ViewModels.AssetDetailVM
             public string AssetName { get; set; }
             public string AssetNameAr { get; set; }
             public string AssetImg { get; set; }
-            public DateTime? PurchaseDate { get; set; }
+      
             public decimal? Price { get; set; }
             public string HospitalName { get; set; }
             public string HospitalNameAr { get; set; }
@@ -55,22 +56,10 @@ namespace Asset.ViewModels.AssetDetailVM
             public string DepartmentName { get; set; }
             public string DepartmentNameAr { get; set; }
 
-
-
-
-
-
             public string CategoryName { get; set; }
             public string CategoryNameAr { get; set; }
-
-
-
             public string AssetPeriorityName { get; set; }
             public string AssetPeriorityNameAr { get; set; }
-
-
-
-
 
 
             public int? EmployeeId { get; set; }
@@ -95,8 +84,8 @@ namespace Asset.ViewModels.AssetDetailVM
             public List<int> ListAssetIds { get; set; }
 
 
-
-
+            public DateTime? PurchaseDate { get; set; }
+            public DateTime? OperationDate { get; set; }
             public DateTime? InstallationDate { get; set; }
             public string BarCode { get; set; }
             public string Barcode { get; set; }
@@ -112,12 +101,55 @@ namespace Asset.ViewModels.AssetDetailVM
 
             public int Count { get; set; }
 
-
-
-
-
             public string AssetStatus { get; set; }
             public string AssetStatusAr { get; set; }
+
+            public DateTime? ContractDate { get; set; }
+            public DateTime? ContractStartDate { get; set; }
+            public DateTime? ContractEndDate { get; set; }
+
+
+
+
+            public string StrPurchaseDate { get; set; }
+            public string StrOperationDate { get; set; }
+            public string StrInstallationDate { get; set; }
+
+
+            public string InContract { get; set; }
+            public string InContractAr { get; set; }
+
+
+
+            public string ContractFrom { get; set; }
+            public string ContractTo { get; set; }
+
+    
+            public int? StatusId { get; set; }
+
+            public string StrReceivingDate { get; set; }
+
+            public DateTime? ReceivingDate { get; set; }
+
+            public string WarrantyExpires { get; set; }
+
+
+            public int? BuildingId { get; set; }
+            public int? RoomId { get; set; }
+            public int? FloorId { get; set; }
+
+            public string BuildName { get; set; }
+            public string BuildNameAr { get; set; }
+            public string FloorName { get; set; }
+            public string FloorNameAr { get; set; }
+            public string RoomNameAr { get; set; }
+            public string RoomName { get; set; }
+
+
+            public string PONumber { get; set; }
+            public decimal? DepreciationRate { get; set; }
+            public string CostCenter { get; set; }
+
         }
     }
 }

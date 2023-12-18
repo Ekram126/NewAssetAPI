@@ -51,11 +51,17 @@ namespace Asset.Domain.Services
         Task<List<IndexRequestsVM>> SortRequestsByPaging(SortRequestVM sortObj, int statusId, int pageNumber, int pageSize);
         List<IndexRequestVM.GetData> GetRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize);
         IndexRequestVM GetAllRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize);
+        IndexRequestVM GetAllRequestsByStatusIdAndPaging2(string userId, int statusId, int pageNumber, int pageSize);
+
         int GetRequestsCountByStatusIdAndPaging(string userId, int statusId);
-        List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId);
+       // List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId);
+        IndexRequestVM AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId, int pageNumber, int pageSize);
+
         List<IndexRequestVM.GetData> PrintListOfRequests(List<ExportRequestVM> requests);
         OpenRequestVM ListOpenRequests(SearchOpenRequestVM searchOpenRequestObj, int pageNumber, int pageSize);
         List<OpenRequestVM.GetData> ListOpenRequestsPDF(SearchOpenRequestVM searchOpenRequestObj);
 
+
+        IndexRequestVM GetRequestsByStatusIdAndPagingV2(string userId, int statusId, int pageNumber, int pageSize);
     }
 }

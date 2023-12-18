@@ -97,9 +97,9 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("SortManfacturerAssetTimes/{pageNumber}/{pageSize}/{userId}")]
-        public IndexManfacturerPMAssetVM SortManfacturerAssetTimes(SortManfacturerPMAssetTimeVM sortObj,int pageNumber,int pageSize,string userId)
+        public IndexManfacturerPMAssetVM SortManfacturerAssetTimes(SortManfacturerPMAssetTimeVM sortObj, int pageNumber, int pageSize, string userId)
         {
-            return _manufacturerPMAssetService.SortManfacturerAssetTimes( sortObj,pageNumber, pageSize, userId);
+            return _manufacturerPMAssetService.SortManfacturerAssetTimes(sortObj, pageNumber, pageSize, userId);
         }
 
         [HttpGet]
@@ -117,7 +117,7 @@ namespace Asset.API.Controllers
         [Route("UpdateManfacturerAssetTime")]
         public int UpdateManfacturerAssetTime(ManufacturerPMAsset model)
         {
-            return _manufacturerPMAssetService.Update(model);   
+            return _manufacturerPMAssetService.Update(model);
         }
 
 
@@ -134,7 +134,7 @@ namespace Asset.API.Controllers
         [HttpPost]
         [Route("GetAllManfacturerAssetsTimes2/{pageNumber}/{pageSize}/{userId}")]
         public IndexManfacturerPMAssetVM GetAllManfacturerAssetsTimes2(FilterManfacturerTimeVM filterObj, int pageNumber, int pageSize, string userId)
-                {
+        {
             return _manufacturerPMAssetService.GetAll(filterObj, pageNumber, pageSize, userId);
         }
 

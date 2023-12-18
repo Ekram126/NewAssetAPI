@@ -11,6 +11,7 @@ namespace Asset.ViewModels.WorkOrderTrackingVM
         public int Id { get; set; }
         public DateTime WorkOrderDate { get; set; }
         public DateTime CreationDate { get; set; }
+        public string StrWorkOrderDate { get; set; }
         public string Notes { get; set; }
         public string CreatedById { get; set; }
         public string AssignedTo { get; set; }

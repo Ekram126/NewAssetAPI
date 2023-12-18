@@ -86,33 +86,89 @@ namespace Asset.Core.Repositories
 
             if (hospitalId != 0)
             {
+                //var countsByGroup = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand)
+                //                 .Where(a => a.HospitalId == hospitalId).ToList()
+                //                 .GroupBy(item => item.MasterAssetId)
+                //                 .ToDictionary(group => group.Key, group => group.Count()).OrderByDescending(pair => pair.Value).Take(10)
+                //                 .ToList();
+
+
                 var lstBrands = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand)
-                        .Where(a => a.HospitalId == hospitalId)
-                        .OrderBy(a => a.MasterAsset.brand).Take(10).ToList();
+                                           .Where(a => a.MasterAsset.BrandId != null && a.HospitalId == hospitalId).ToList()
+                                           .GroupBy(item => item.MasterAsset.BrandId)
+                                           .ToDictionary(group => group.Key, group => new CountMasterAssetBrands
+                                           {
+                                               Key = int.Parse(group.Key.ToString()),
+                                               Value = group.Count(),
+                                               BrandName = group.FirstOrDefault().MasterAsset.brand.Name,
+                                               BrandNameAr = group.FirstOrDefault().MasterAsset.brand.NameAr,
+                                               CountOfMasterAssets = group.Count()
+                                           }).OrderByDescending(pair => pair.Value.Value).Take(10).ToList();
                 foreach (var item in lstBrands)
                 {
                     CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
-                    countHospitalObj.BrandName = item.MasterAsset.brand != null ? item.MasterAsset.brand.Name : "";
-                    countHospitalObj.BrandNameAr = item.MasterAsset.brand != null ? item.MasterAsset.brand.NameAr : "";
-                    countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
-                        .Where(a => a.MasterAsset.BrandId == item.MasterAsset.BrandId && a.HospitalId == hospitalId).ToList().Count();
+                    countHospitalObj.BrandName = item.Value.BrandName;
+                    countHospitalObj.BrandNameAr = item.Value.BrandNameAr;
+                    countHospitalObj.CountOfMasterAssets = item.Value.Value;
                     list.Add(countHospitalObj);
                 }
             }
             else
             {
+                var lstBrands = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand).ToList()
+                                          .Where(a => a.MasterAsset.BrandId != null)
+                                          .GroupBy(item => item.MasterAssetId)
+                                          .ToDictionary(group => group.Key, group => new CountMasterAssetBrands
+                                          {
+                                              Key = group.Key,
+                                              Value = group.Count(),
+                                              BrandName = group.FirstOrDefault().MasterAsset.brand.Name,
+                                              BrandNameAr = group.FirstOrDefault().MasterAsset.brand.NameAr,
+                                              CountOfMasterAssets = group.Count()
+                                          }).OrderByDescending(pair => pair.Value.Value).Take(10).ToList();
 
-                var lstBrands = _context.Brands.ToList().Take(10);
+
                 foreach (var item in lstBrands)
                 {
                     CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
-                    countHospitalObj.BrandName = item.Name;
-                    countHospitalObj.BrandNameAr = item.NameAr;
-                    countHospitalObj.CountOfMasterAssets = _context.MasterAssets.Where(a => a.BrandId == item.Id).ToList().Count();
+                    countHospitalObj.BrandName = item.Value.BrandName;
+                    countHospitalObj.BrandNameAr = item.Value.BrandNameAr;
+                    countHospitalObj.CountOfMasterAssets = item.Value.Value;
                     list.Add(countHospitalObj);
                 }
             }
-            return list.OrderBy(a=>a.CountOfMasterAssets).ToList();
+
+            return list;
+
+
+            //if (hospitalId != 0)
+            //{
+            //    var lstBrands = _context.AssetDetails.Include(a => a.MasterAsset).Include(a => a.MasterAsset.brand)
+            //            .Where(a => a.HospitalId == hospitalId)
+            //            .OrderBy(a => a.MasterAsset.brand).Take(10).ToList();
+            //    foreach (var item in lstBrands)
+            //    {
+            //        CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
+            //        countHospitalObj.BrandName = item.MasterAsset.brand != null ? item.MasterAsset.brand.Name : "";
+            //        countHospitalObj.BrandNameAr = item.MasterAsset.brand != null ? item.MasterAsset.brand.NameAr : "";
+            //        countHospitalObj.CountOfMasterAssets = _context.AssetDetails.Include(a => a.MasterAsset)
+            //            .Where(a => a.MasterAsset.BrandId == item.MasterAsset.BrandId && a.HospitalId == hospitalId).ToList().Count();
+            //        list.Add(countHospitalObj);
+            //    }
+            //}
+            //else
+            //{
+            //    var lstBrands = _context.Brands.ToList().Take(10);
+            //    foreach (var item in lstBrands)
+            //    {
+            //        CountMasterAssetBrands countHospitalObj = new CountMasterAssetBrands();
+            //        countHospitalObj.BrandName = item.Name;
+            //        countHospitalObj.BrandNameAr = item.NameAr;
+            //        countHospitalObj.CountOfMasterAssets = _context.MasterAssets.Where(a => a.BrandId == item.Id).ToList().Count();
+            //        list.Add(countHospitalObj);
+            //    }
+            //}
+            //return list.OrderBy(a => a.CountOfMasterAssets).ToList();
         }
 
         public List<CountMasterAssetSuppliers> CountMasterAssetsBySupplier(int hospitalId)
@@ -197,7 +253,7 @@ namespace Asset.Core.Repositories
             List<IndexMasterAssetVM.GetData> list = new List<IndexMasterAssetVM.GetData>();
             var lstMasters = _context.MasterAssets.Include(a => a.brand).Include(a => a.Category)
 
-                .Include(a => a.SubCategory).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Name).ToList();
+                .Include(a => a.SubCategory).Include(a => a.ECRIS).Include(a => a.Origin).OrderBy(a => a.Id).ToList();
 
             foreach (var item in lstMasters)
             {
@@ -871,6 +927,35 @@ namespace Asset.Core.Repositories
             return lst;
         }
 
+
+        public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName4(string name, int hospitalId)
+        {
+            List<int> masterIds = new List<int>();
+            var lstMasters = _context.MasterAssets.Include(a => a.brand).Where(a => a.Name.Contains(name) || a.NameAr.Contains(name)).ToList()
+              .GroupBy(a => a.Name).ToList();
+
+            foreach (var item in lstMasters)
+            {
+                foreach (var item2 in item)
+                {
+                    masterIds.Add(item2.Id);
+                }
+            }
+
+
+            var assetDetails = _context.AssetDetails.Where(h => masterIds.Contains(h.MasterAssetId)).ToList();
+
+
+
+            var lst = lstMasters.Select(item => new IndexMasterAssetVM.GetData
+            {
+
+            }).ToList();
+            return lst;
+        }
+
+
+
         public IEnumerable<IndexMasterAssetVM.GetData> GetListMasterAsset()
         {
             List<IndexMasterAssetVM.GetData> list = new List<IndexMasterAssetVM.GetData>();
@@ -901,6 +986,34 @@ namespace Asset.Core.Repositories
                 documentObj = lstDocuments.Last();
             }
             return documentObj;
+        }
+
+        public IEnumerable<MasterAsset> DistinctAutoCompleteMasterAssetName(string name)
+        {
+            var lst = _context.MasterAssets.Where(a => a.Name.StartsWith(name) || a.NameAr.StartsWith(name)).ToList();
+            lst = lst.GroupBy(a => a.Name).Select(x => x.FirstOrDefault()).ToList();
+            return lst;
+        }
+
+        public GeneratedMasterAssetCodeVM GenerateAssetDetailBarcode()
+        {
+            GeneratedMasterAssetCodeVM numberObj = new GeneratedMasterAssetCodeVM();
+            int barCode = 0;
+
+            var lastId = _context.MasterAssets.ToList();
+            if (lastId.Count > 0)
+            {
+                var code = lastId.Max(a => a.Id);
+                var barcode = (code + 1).ToString();
+                var lastcode = barcode.ToString().PadLeft(5, '0');
+                numberObj.Code = lastcode;
+            }
+            else
+            {
+                numberObj.Code = (barCode + 1).ToString();
+            }
+
+            return numberObj;
         }
     }
 }

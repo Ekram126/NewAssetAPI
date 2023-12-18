@@ -19,6 +19,9 @@ namespace Asset.Domain.Repositories
     public interface IAssetDetailRepository
     {
         IEnumerable<IndexAssetDetailVM.GetData> GetAll();
+
+        Task<IndexAssetDetailVM> LoadAssetDetailsByUserId(int pageNumber, int pageSize, string userId);
+
         IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByAssetId(int assetId);
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetDetailsByUserId(string userId);
         Task<IndexAssetDetailVM> GetAssetDetailsByUserId2(int pageNumber, int pageSize, string userId);
@@ -26,6 +29,7 @@ namespace Asset.Domain.Repositories
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetsByUserId(string userId);
         IndexAssetDetailVM GetAssetsByUserId(string userId, int pageNumber, int pageSize);
         IndexAssetDetailVM SearchAssetInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
+        IndexAssetDetailVM SearchAssetWarrantyInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
         IEnumerable<IndexAssetDetailVM.GetData> GetAllAssetsByStatusId(int statusId, string userId);
         IndexAssetDetailVM GetAllAssetsByStatusId(int pageNumber, int pageSize, int statusId, string userId);
         IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj);
@@ -41,6 +45,10 @@ namespace Asset.Domain.Repositories
         IndexAssetDetailVM AlertAssetsBefore3Monthes(int duration, int pageNumber, int pageSize);
         IEnumerable<ViewAssetDetailVM> GetSupplierNoneExcludedAssetsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(string barcode, int hospitalId);
+        IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierExcludedAssetsByHospitalId(string barcode, int hospitalId);
+
+
+
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(string barcode, int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContractBySerialNumber(string serialNumber, int hospitalId);
@@ -71,6 +79,7 @@ namespace Asset.Domain.Repositories
         List<GroupSupplierVM> GetAssetBySupplier(List<IndexAssetDetailVM.GetData> AssetModel);
         List<GroupOrganizationVM> GetAssetByOrganization(List<IndexAssetDetailVM.GetData> AssetModel);
         IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj);
+        IndexAssetDetailVM SortAssets2(Sort sortObj, int pageNumber, int pageSize);
         IndexAssetDetailVM SortAssets(Sort sortObj, int statusId, string userId);
         List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId);
         List<HospitalAssetAge> GetGeneralAssetsByAgeGroup(FilterHospitalAssetAge model);
@@ -80,7 +89,41 @@ namespace Asset.Domain.Repositories
         AssetDetailAttachment GetLastDocumentForAssetDetailId(int assetDetailId);
         GeneratedAssetDetailBCVM GenerateAssetDetailBarcode();
         MobileAssetDetailVM GetAssetDetailById(string userId, int assetId);
+        MobileAssetDetailVM2 GetAssetDetailByIdOnly(string userId, int assetId);
         bool GenerateQrCodeForAllAssets(string domainName);
-        IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj);
+        IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj, int pageNumber, int pageSize);
+
+
+        IndexAssetDetailVM GetHospitalAssetsByGovIdAndDeptIdAndHospitalId(int departmentId, int govId, int hospitalId, string userId, int pageNumber, int pageSize);
+        public IndexAssetDetailVM SortAssetsWithoutSearch(Sort sortObj, int pageNumber, int pageSize);
+        IndexAssetDetailVM GetHospitalAssetsBySupplierId(int supplierId, int pageNumber, int pageSize);
+        IndexAssetDetailVM SearchHospitalAssetsBySupplierId(SearchAssetDetailVM searchObj, int pageNumber, int pageSize);
+        IndexAssetDetailVM SortHospitalAssetsBySupplierId(Sort sortObj, int pageNumber, int pageSize);
+
+
+
+
+        List<IndexAssetDetailVM.GetData> GetAssetsBySupplierId(int supplierId);
+        IndexAssetDetailVM FilterDataByDepartmentBrandSupplierIdAndPaging(FilterHospitalAsset data, string userId, int pageNumber, int pageSize);
+        IndexAssetDetailVM GetAssetsByBrandId(int brandId);
+        IndexAssetDetailVM GetAssetsByDepartmentId(int departmentId);
+
+        IndexAssetDetailVM GetAssetsBySupplierIdWithPaging(int supplierId, int pageNumber, int pageSize);
+        IndexAssetDetailVM SortAssetDetail(SortAssetDetail sortObject, int pageNumber, int PageSize);
+        IndexAssetDetailVM SortAssetDetailAfterSearch(SortAndFilterDataModel data, int pageNumber, int pageSize);
+
+        List<IndexAssetDetailVM.GetData> FindAllFilteredAssetsForGrouping(FilterHospitalAsset data);
+
+        List<BrandGroupVM> GroupAssetDetailsByBrand(FilterHospitalAsset data);
+        List<SupplierGroupVM> GroupAssetDetailsBySupplier(FilterHospitalAsset data);
+        List<DepartmentGroupVM> GroupAssetDetailsByDepartment(FilterHospitalAsset data);
+
+        IndexAssetDetailVM GetAssetsByUserIdAndPaging(string userId, int pageNumber, int pageSize);
+
+
+        IndexAssetDetailVM ListHospitalAssets(SortAndFilterVM data, int pageNumber, int pageSize);
+
+        List<DrawChart> DrawingChart();
+
     }
 }

@@ -19,6 +19,8 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public decimal? Price { get; set; }
 
+
+        public string Serial { get; set; }
         public string SerialNumber { get; set; }
         public string Model { get; set; }
         public string Remarks { get; set; }
@@ -33,7 +35,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public int? SupplierId { get; set; }
 
         public int? HospitalId { get; set; }
-        public int? MasterAssetId { get; set; }
+        public int MasterAssetId { get; set; }
 
         public string WarrantyStart { get; set; }
         public string WarrantyEnd { get; set; }
@@ -88,5 +90,19 @@ namespace Asset.ViewModels.AssetDetailVM
         public decimal? FixCost { get; set; }
        public string DomainName { get; set; }
 
+
+
+        public string StrPurchaseDate { get; set; }
+        public string StrOperationDate { get; set; }
+        public string StrInstallationDate { get; set; }
+
+
+
+        public string InContract { get; set; }
+        public string InContractAr { get; set; }
+
+
+        public string ContractFrom{ get; set; }
+        public string ContractTo { get; set; }
     }
 }

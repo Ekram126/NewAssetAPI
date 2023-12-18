@@ -9,13 +9,14 @@ namespace Asset.ViewModels.ManufacturerPMAssetVM
     public class IndexManfacturerPMAssetVM
     {
         public List<GetData> Results { get; set; }
-
+        public int? YearQuarter { get; set; }
         public int Count { get; set; }
-
+        public int TotalCount { get; set; }
         public int CountDone { get; set; }
         public int CountNotDone { get; set; }
         public class GetData
         {
+
             public int Id { get; set; }
             public string TypeName { get; set; }
             public string TypeNameAr { get; set; }

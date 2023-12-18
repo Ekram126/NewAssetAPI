@@ -198,5 +198,11 @@ namespace Asset.API.Controllers
             return Ok();
         }
 
+
+        [HttpGet("GenerateDepartmentCode")]
+        public GenerateDepartmentCodeVM GenerateDepartmentCode()
+        {
+            return _DepartmentService.GenerateDepartmentCode();
+        }
     }
 }

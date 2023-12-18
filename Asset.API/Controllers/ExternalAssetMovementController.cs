@@ -34,8 +34,19 @@ namespace Asset.API.Controllers
         [Route("ListExternalAssetMovements/{pageNumber}/{pageSize}")]
         public IndexExternalAssetMovementVM GetExternalAssetMovements(int pageNumber, int pageSize)
         {
-            return _externalAssetMovementService.GetExternalAssetMovements( pageNumber,  pageSize);
+            return _externalAssetMovementService.GetExternalAssetMovements(pageNumber, pageSize);
         }
+
+
+
+        [HttpPost]
+        [Route("SearchExternalAssetMovement/{pageNumber}/{pageSize}")]
+        public IndexExternalAssetMovementVM SearchExternalAssetMovement(SearchExternalAssetMovementVM searchObj, int pageNumber, int pageSize)
+        {
+            return _externalAssetMovementService.SearchExternalAssetMovement(searchObj, pageNumber, pageSize);
+        }
+
+
 
 
         [HttpGet]
@@ -47,8 +58,8 @@ namespace Asset.API.Controllers
 
 
         [HttpGet]
-        [Route("GetById/{id}")]
-        public ActionResult<ExternalAssetMovement> GetById(int id)
+        [Route("GetExternalAssetMovementById/{id}")]
+        public ActionResult<EditExternalAssetMovementVM> GetById(int id)
         {
             return _externalAssetMovementService.GetById(id);
         }

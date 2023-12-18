@@ -45,6 +45,10 @@ namespace Asset.API.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+
+            var date = DateTime.UtcNow;
+            DateTime date2 = date.ToLocalTime();
+
             var rng = new Random();
 
             //var message = new MessageVM(new string[] { "pineapple_126@hotmail.com" }, "Test email", "This is the content from our email.");
@@ -66,7 +70,7 @@ namespace Asset.API.Controllers
             //}
 
 
-      
+
             //Year year = new Year(DateTime.Today.Year);
             //ITimePeriodCollection quarters = year.GetQuarters();
             //Console.WriteLine("Quarters of Year: {0}", year);
@@ -82,7 +86,7 @@ namespace Asset.API.Controllers
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
-            .ToArray();           
+            .ToArray();
         }
     }
 }

@@ -73,13 +73,15 @@ namespace Asset.API.Controllers.MobileController
         }
 
 
+
+
         [HttpGet]
         [Route("GetAssetDetailById/{userId}/{assetId}")]
         public ActionResult GetAssetDetailById(string userId, int assetId)
         {
 
             var lstAssetDetail = _assetDetailService.GetAssetDetailById(userId, assetId);
-            if (lstAssetDetail != null)
+            if (lstAssetDetail == null)
             {
                 return Ok(new { data = lstAssetDetail, msg = "No Data Found", status = '0' });
             }
@@ -87,12 +89,30 @@ namespace Asset.API.Controllers.MobileController
                 return Ok(new { data = lstAssetDetail, msg = "Success", status = '1' });
         }
 
+
         [HttpGet]
-        [Route("GetWorkOrderByRequestId/{requestId}/{userId}")]
-        public ActionResult GetMobileWorkOrderByRequestUserId(int requestId,string userId)
+        [Route("GetAssetDetailByIdOnly/{userId}/{assetId}")]
+        public ActionResult GetAssetDetailByIdOnly(string userId, int assetId)
         {
 
-            var lstAssetDetail = _workOrderService.GetMobileWorkOrderByRequestUserId(requestId,userId);
+            var lstAssetDetail = _assetDetailService.GetAssetDetailByIdOnly(userId, assetId);
+            if (lstAssetDetail == null)
+            {
+                return Ok(new { data = lstAssetDetail, msg = "No Data Found", status = '0' });
+            }
+            else
+                return Ok(new { data = lstAssetDetail, msg = "Success", status = '1' });
+        }
+
+
+
+
+        [HttpGet]
+        [Route("GetWorkOrderByRequestId/{requestId}/{userId}")]
+        public ActionResult GetMobileWorkOrderByRequestUserId(int requestId, string userId)
+        {
+
+            var lstAssetDetail = _workOrderService.GetMobileWorkOrderByRequestUserId(requestId, userId);
             if (lstAssetDetail != null)
             {
                 return Ok(new { data = lstAssetDetail, msg = "Success", status = '1' });
@@ -103,14 +123,13 @@ namespace Asset.API.Controllers.MobileController
 
 
         [HttpPost]
-        [Route("SearchAssetDetails")]
-        public ActionResult SearchInMasterAssets2(SearchMasterAssetVM searchObj)
+        [Route("SearchAssetDetails/{pageNumber}/{pageSize}")]
+        public ActionResult SearchInMasterAssets2(SearchMasterAssetVM searchObj, int pageNumber, int pageSize)
         {
-            var list = _assetDetailService.MobSearchAssetInHospital(searchObj);
+            var list = _assetDetailService.MobSearchAssetInHospital(searchObj, pageNumber, pageSize);
             if (list != null)
             {
                 return Ok(new { data = list, msg = "Success", status = '1' });
-               
             }
             else
                 return Ok(new { data = list, msg = "No Data Found", status = '0' });
@@ -120,7 +139,7 @@ namespace Asset.API.Controllers.MobileController
         [Route("CountAssetsByHospitalId/{hospitalId}")]
         public ActionResult CountAssetsByHospitalId(int hospitalId)
         {
-            var total= _assetDetailService.CountAssetsByHospitalId(hospitalId);
+            var total = _assetDetailService.CountAssetsByHospitalId(hospitalId);
             return Ok(new { data = total.ToString(), msg = "Success", status = '1' });
         }
 

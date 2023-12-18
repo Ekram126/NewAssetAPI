@@ -24,6 +24,7 @@ namespace Asset.Domain.Services
         int Update(EditAssetDetailVM assetDetailObj);
         int Delete(int id);
         IEnumerable<IndexAssetDetailVM.GetData> GetAssetDetailsByAssetId(int assetId);
+        Task<IndexAssetDetailVM> LoadAssetDetailsByUserId(int pageNumber, int pageSize, string userId);
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetDetailsByUserId(string userId);
         Task<IndexAssetDetailVM> GetAssetDetailsByUserId2(int pageNumber, int pageSize, string userId);
         Task<IEnumerable<IndexAssetDetailVM.GetData>> GetAssetsByUserId(string userId);
@@ -37,15 +38,13 @@ namespace Asset.Domain.Services
         IEnumerable<ViewAssetDetailVM> GetNoneExcludedAssetsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetSupplierNoneExcludedAssetsByHospitalId(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(string barcode, int hospitalId);
+        IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierExcludedAssetsByHospitalId(string barcode, int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContract(string barcode, int hospitalId);
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContractBySerialNumber(string serialNumber, int hospitalId);
         IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes();
         IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes(int duration);
-
-
         IndexAssetDetailVM AlertAssetsBefore3Monthes(int duration, int pageNumber, int pageSize);
-
         ViewAssetDetailVM ViewAssetDetailByMasterId(int masterId);
         ViewAssetDetailVM GetAssetHistoryById(int assetId);
         IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId);
@@ -53,12 +52,9 @@ namespace Asset.Domain.Services
         IEnumerable<AssetDetailAttachment> GetAttachmentByAssetDetailId(int assetId);
         int DeleteAssetDetailAttachment(int id);
         IndexAssetDetailVM SearchAssetInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
+        IndexAssetDetailVM SearchAssetWarrantyInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj);
         IEnumerable<IndexAssetDetailVM.GetData> SearchAssetInHospitalByHospitalId(SearchMasterAssetVM searchObj);
-
-
-
         IndexAssetDetailVM SearchHospitalAssetsByHospitalId(SearchMasterAssetVM searchObj);
-
         IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskSchedules(int? hospitalId);
         IEnumerable<IndexPMAssetTaskScheduleVM.GetData> GetAllPMAssetTaskScheduleByAssetId(int? assetId);
         List<CountAssetVM> CountAssetsByHospital();
@@ -80,7 +76,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexAssetDetailVM.GetData> SortAssets(Sort sortObj);
         //IndexAssetDetailVM SortAssets(Sort sortObj, int hospitalId, int statusId, string userId, int pageNumber, int pageSize);
         IndexAssetDetailVM SortAssets(Sort sortObj,  int statusId, string userId);
-
+        IndexAssetDetailVM SortAssets2(Sort sortObj, int pageNumber, int pageSize);
 
 
         List<HospitalAssetAge> GetAssetsByAgeGroup(int hospitalId);
@@ -89,15 +85,43 @@ namespace Asset.Domain.Services
         IEnumerable<IndexAssetDetailVM.GetData> AutoCompleteAssetSerial(string serial, int hospitalId);
         IEnumerable<IndexAssetDetailVM.GetData> GetHospitalAssets(int hospitalId, int statusId, string userId, int page, int pageSize, Sort sortObj);
         AssetDetailAttachment GetLastDocumentForAssetDetailId(int assetDetailId);
-
         GeneratedAssetDetailBCVM GenerateAssetDetailBarcode();
-
-
-
-
         MobileAssetDetailVM GetAssetDetailById(string userId,int assetId);
+        MobileAssetDetailVM2 GetAssetDetailByIdOnly(string userId, int assetId);
         bool GenerateQrCodeForAllAssets(string domainName);
+        IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj, int pageNumber, int pageSize);
 
-        IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj);
+
+        IndexAssetDetailVM GetHospitalAssetsByGovIdAndDeptIdAndHospitalId(int departmentId, int govId, int hospitalId, string userId, int pageNumber, int pageSize);
+        public IndexAssetDetailVM SortAssetsWithoutSearch(Sort sortObj, int pageNumber, int pageSize);
+
+        IndexAssetDetailVM GetHospitalAssetsBySupplierId(int supplierId, int pageNumber, int pageSize);
+
+
+        IndexAssetDetailVM SearchHospitalAssetsBySupplierId(SearchAssetDetailVM searchObj, int pageNumber, int pageSize);
+        IndexAssetDetailVM SortHospitalAssetsBySupplierId(Sort sortObj, int pageNumber, int pageSize);
+
+
+
+
+        IndexAssetDetailVM FilterDataByDepartmentBrandSupplierIdAndPaging(FilterHospitalAsset data, string userId, int pageNumber, int pageSize);
+        IndexAssetDetailVM GetAssetsByBrandId(int brandId);
+        IndexAssetDetailVM GetAssetsByDepartmentId(int departmentId);
+        List<IndexAssetDetailVM.GetData> GetAssetsBySupplierId(int supplierId);
+        IndexAssetDetailVM GetAssetsBySupplierIdWithPaging(int supplierId, int pageNumber, int pageSize);
+        IndexAssetDetailVM SortAssetDetail(SortAssetDetail sortObject, int pageNumber, int PageSize);
+        IndexAssetDetailVM SortAssetDetailAfterSearch(SortAndFilterDataModel data, int pageNumber, int pageSize);
+        List<IndexAssetDetailVM.GetData> FindAllFilteredAssetsForGrouping(FilterHospitalAsset data);
+        List<BrandGroupVM> GroupAssetDetailsByBrand(FilterHospitalAsset data);
+        List<SupplierGroupVM> GroupAssetDetailsBySupplier(FilterHospitalAsset data);
+        List<DepartmentGroupVM> GroupAssetDetailsByDepartment(FilterHospitalAsset data);
+
+
+        IndexAssetDetailVM GetAssetsByUserIdAndPaging(string userId, int pageNumber, int pageSize);
+
+        List<DrawChart> DrawingChart();
+
+
+        IndexAssetDetailVM ListHospitalAssets(SortAndFilterVM data, int pageNumber, int pageSize);
     }
 }

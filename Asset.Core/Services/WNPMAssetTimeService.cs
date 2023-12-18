@@ -102,5 +102,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.WNPMAssetTimeRepository.CreateAssetFiscalTimes(year, hospitalId);
         }
+
+        public IndexWNPMAssetTimesVM GetAllWithDate(WNPDateVM filterObj, int pageNumber, int pageSize, string userId)
+        {
+            return _unitOfWork.WNPMAssetTimeRepository.GetAllWithDate(filterObj, pageNumber, pageSize, userId);
+        }
     }
 }

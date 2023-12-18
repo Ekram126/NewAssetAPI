@@ -37,5 +37,18 @@ namespace Asset.Domain.Services
 
         IndexSupplierExecludeAssetVM GetAllSupplierExecludes(SearchSupplierExecludeAssetVM searchObj);
         IndexSupplierExecludeAssetVM GetAllSupplierHoldes(SearchSupplierExecludeAssetVM searchObj);
+
+
+        IEnumerable<IndexSupplierExecludeAssetVM.GetData> SearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj);
+        IndexSupplierExecludeAssetVM SearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj, int pageNumber, int pageSize);
+
+
+        IEnumerable<IndexSupplierExecludeAssetVM.GetData> PrintSearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj);
+
+
+
+
+      //  IEnumerable<IndexSupplierExecludeAssetVM.GetData> PrintSearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj);
+
     }
 }

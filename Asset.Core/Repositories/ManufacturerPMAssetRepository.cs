@@ -30,14 +30,10 @@ namespace Asset.Core.Repositories
             CheckObjects = CheckObjects.Distinct().ToList();
             ForCheckManfacturerPMAssetsVM checkObj = null; // object to Compare
             List<IndexUnScheduledManfacturerPMAssetVM.GetData> unscheduledList = new List<IndexUnScheduledManfacturerPMAssetVM.GetData>();
-            //unscheduledList = unscheduledList.GroupBy(x => new { x.AssetDetailId, x.UnscheduledReason })
-            //    .Select(x => x.First()).ToList();
             var allAsset = _context.AssetDetails.Include(a => a.MasterAsset)
                 .Include(a => a.Department).Include(a => a.Supplier)
                 .Include(a => a.Hospital).Include(a => a.MasterAsset.brand)
                 .OrderBy(ww => ww.Id).Distinct().ToList();
-            // allAsset = allAsset.GroupBy(a => new { a.Id }).Select(x=>x.First());
-            // to remove repeation of data
             allAsset = allAsset.GroupBy(x => new { x.Id }).Select(x => x.First()).ToList();
 
             var contracts = _context.ContractDetails.Include(a => a.MasterContract).ToList();
@@ -48,7 +44,6 @@ namespace Asset.Core.Repositories
                 {
                     // catch Last Schedule date 
                     checkObj = CheckObjects.Where(a => a.AssetDetailId == asset.Id).ToList().LastOrDefault();
-
                 }
                 else
                 {
@@ -56,9 +51,7 @@ namespace Asset.Core.Repositories
                     checkObj = null;
                 }
                 //check Warranty Or Contract
-
                 //warranty
-
                 if ((asset.InstallationDate != null) && (asset.WarrantyStart != null) && (asset.WarrantyEnd != null))
                 {
                     if (checkObj == null)
@@ -700,10 +693,6 @@ namespace Asset.Core.Repositories
                         unscheduledList.Add(Obj);
                     }
                 }
-
-
-
-
             }
             //this step to prevent repeated data to return uniqe data
             unscheduledList = unscheduledList.GroupBy(x => new { x.AssetDetailId, x.UnscheduledReason })
@@ -714,693 +703,6 @@ namespace Asset.Core.Repositories
             return mainClass;
 
         }
-
-        //IndexUnScheduledManfacturerPMAssetVM CreateManfacturerAssetTimes(int pageNumber, int pageSize)
-        //{
-        //    IndexUnScheduledManfacturerPMAssetVM mainClass = new IndexUnScheduledManfacturerPMAssetVM();
-        //    List<ForCheckManfacturerPMAssetsVM> CheckObjects = GetAllForCheck();
-        //    CheckObjects=CheckObjects.Distinct().ToList();
-        //    ForCheckManfacturerPMAssetsVM checkObj = null; // object to Compare
-        //    List<IndexUnScheduledManfacturerPMAssetVM.GetData> unscheduledList = new List<IndexUnScheduledManfacturerPMAssetVM.GetData>();
-        //    var allAsset = _context.AssetDetails.Include(a => a.MasterAsset)
-        //        .Include(a => a.Department).Include(a => a.Supplier)
-        //        .Include(a => a.Hospital).Include(a=>a.MasterAsset.brand)
-        //        .OrderBy(ww => ww.Id).ToList();
-        //    var contracts = _context.ContractDetails.Include(a => a.MasterContract).ToList();
-
-        //    foreach (var asset in allAsset)
-        //    {
-        //        if (CheckObjects.Find(a => a.AssetDetailId == asset.Id) !=null)
-        //        {
-        //            // catch Last Schedule date 
-        //            checkObj = CheckObjects.Where(a => a.AssetDetailId == asset.Id).ToList().LastOrDefault();
-
-        //        }
-        //        else
-        //        {
-        //            // if check object not found of previous scheduled data so its new asset and its null 
-        //            checkObj = null;
-        //        }
-        //        //check Warranty Or Contract
-
-        //        //warranty
-
-        //        if ((asset.InstallationDate != null) && (asset.WarrantyStart != null) && (asset.WarrantyEnd != null))
-        //        {
-        //            if (checkObj == null)
-        //            {
-        //                if (asset.InstallationDate >= asset.WarrantyStart && asset.InstallationDate <= asset.WarrantyEnd)
-        //                {
-        //                    // device installed in warranty period
-        //                    if (DateTime.Now <= asset.WarrantyEnd)
-        //                    {
-        //                        if (asset.MasterAsset != null)
-        //                        {
-        //                            var periodcMaintananceDuration = asset.MasterAsset.PMTimeId;
-        //                            if (periodcMaintananceDuration != null)
-        //                            {
-        //                                if (periodcMaintananceDuration == 1)
-        //                                {
-        //                                    // m for month y for year
-        //                                    int m = 0;
-        //                                    int y = 0;
-
-        //                                    for (var i = asset.InstallationDate.Value.Year; i <= asset.WarrantyEnd.Value.Year; i += y)
-        //                                    {
-        //                                        var assetDate = asset.InstallationDate.Value.AddMonths(m);
-        //                                        if (asset.WarrantyEnd.Value >= assetDate)
-        //                                        {
-
-        //                                            ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                            timeObj.AssetDetailId = asset.Id;
-        //                                            timeObj.HospitalId = asset.HospitalId;
-        //                                            timeObj.PMDate = assetDate;
-        //                                            timeObj.IsDone = false;
-        //                                            _context.ManufacturerPMAssets.Add(timeObj);
-        //                                            _context.SaveChanges();
-
-        //                                            m += 12;
-        //                                            y = m % 12 == 0 ? 1 : 0;
-        //                                        }
-        //                                    }
-        //                                }
-        //                                if (periodcMaintananceDuration == 2)
-        //                                {
-
-        //                                    int m = 0;
-        //                                    int y = 0;
-
-        //                                    for (var i = asset.InstallationDate.Value.Year; i <= asset.WarrantyEnd.Value.Year; i += y)
-        //                                    {
-        //                                        var assetDate = asset.InstallationDate.Value.AddMonths(m);
-        //                                        if (asset.WarrantyEnd.Value >= assetDate)
-        //                                        {
-
-        //                                            ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                            timeObj.AssetDetailId = asset.Id;
-        //                                            timeObj.HospitalId = asset.HospitalId;
-        //                                            timeObj.PMDate = assetDate;
-        //                                            timeObj.IsDone = false;
-        //                                            _context.ManufacturerPMAssets.Add(timeObj);
-        //                                            _context.SaveChanges();
-
-        //                                            m += 6;
-        //                                            y = m % 12 == 0 ? 1 : 0;
-        //                                        }
-        //                                    }
-
-        //                                }
-        //                                if (periodcMaintananceDuration == 3)
-        //                                {
-        //                                    int m = 0;
-        //                                    int y = 0;
-
-        //                                    for (var i = asset.InstallationDate.Value.Year; i <= asset.WarrantyEnd.Value.Year; i += y)
-        //                                    {
-        //                                        var assetDate = asset.InstallationDate.Value.AddMonths(m);
-        //                                        if (asset.WarrantyEnd.Value >= assetDate)
-        //                                        {
-
-        //                                            ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                            timeObj.AssetDetailId = asset.Id;
-        //                                            timeObj.HospitalId = asset.HospitalId;
-        //                                            timeObj.PMDate = assetDate;
-        //                                            timeObj.IsDone = false;
-        //                                            _context.ManufacturerPMAssets.Add(timeObj);
-        //                                            _context.SaveChanges();
-
-        //                                            m += 3;
-        //                                            y = m % 12 == 0 ? 1 : 0;
-        //                                        }
-        //                                    }
-        //                                }
-        //                                if (periodcMaintananceDuration == 4)
-        //                                {
-        //                                    int m = 0;
-        //                                    int y = 0;
-
-        //                                    for (var i = asset.InstallationDate.Value.Year; i <= asset.WarrantyEnd.Value.Year; i += y)
-        //                                    {
-        //                                        var assetDate = asset.InstallationDate.Value.AddMonths(m);
-        //                                        if (asset.WarrantyEnd.Value >= assetDate)
-        //                                        {
-
-        //                                            ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                            timeObj.AssetDetailId = asset.Id;
-        //                                            timeObj.HospitalId = asset.HospitalId;
-        //                                            timeObj.PMDate = assetDate;
-        //                                            timeObj.IsDone = false;
-        //                                            _context.ManufacturerPMAssets.Add(timeObj);
-        //                                            _context.SaveChanges();
-
-        //                                            m += 1;
-        //                                            y = m % 12 == 0 ? 1 : 0;
-        //                                        }
-        //                                    }
-
-        //                                }
-
-        //                            }
-
-        //                            // else
-        //                            //  // لا توجد مده صيانه دوريه مسجله
-        //                            // periodic time is null
-
-        //                            else
-        //                            {
-
-        //                                var Obj = new IndexUnScheduledManfacturerPMAssetVM.GetData();
-        //                                Obj.AssetDetailId = asset.Id;
-        //                                Obj.UnscheduledReason = "Asset Periodic Maintainance Time is null";
-        //                                Obj.UnscheduledReasonAR = "لا توجد مده صيانه دوريه مسجله لهذا الاصل ";
-        //                                Obj.Barcode = asset.Barcode;
-        //                                Obj.SerialNumber = asset.SerialNumber;
-        //                                Obj.ModelNumber = asset.MasterAsset.ModelNumber;
-        //                                Obj.BrandName = asset.MasterAsset.brand.Name;
-        //                                Obj.BrandNameAR = asset.MasterAsset.brand.NameAr;
-        //                                Obj.BrandCode = asset.MasterAsset.brand.Code;
-        //                                Obj.AssetName = asset.MasterAsset.Name;
-        //                                Obj.AssetNameAR = asset.MasterAsset.NameAr;
-        //                                unscheduledList.Add(Obj);
-        //                            }
-
-
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (asset.InstallationDate >= asset.WarrantyStart && asset.InstallationDate <= asset.WarrantyEnd &&asset.WarrantyStart>checkObj.PMDate)
-        //                {
-        //                    // device installed in warranty period
-        //                    if (DateTime.Now <= asset.WarrantyEnd)
-        //                    {
-        //                        if (asset.MasterAsset != null)
-        //                        {
-        //                            var periodcMaintananceDuration = asset.MasterAsset.PMTimeId;
-        //                            if (periodcMaintananceDuration != null)
-        //                            {
-        //                                if (periodcMaintananceDuration == 1)
-        //                                {
-        //                                    // m for month y for year
-        //                                    int m = 0;
-        //                                    int y = 0;
-
-        //                                    for (var i = asset.InstallationDate.Value.Year; i <= asset.WarrantyEnd.Value.Year; i += y)
-        //                                    {
-        //                                        var assetDate = asset.InstallationDate.Value.AddMonths(m);
-        //                                        if (asset.WarrantyEnd.Value >= assetDate)
-        //                                        {
-
-        //                                            ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                            timeObj.AssetDetailId = asset.Id;
-        //                                            timeObj.HospitalId = asset.HospitalId;
-        //                                            timeObj.PMDate = assetDate;
-        //                                            timeObj.IsDone = false;
-        //                                            _context.ManufacturerPMAssets.Add(timeObj);
-        //                                            _context.SaveChanges();
-
-        //                                            m += 12;
-        //                                            y = m % 12 == 0 ? 1 : 0;
-        //                                        }
-        //                                    }
-        //                                }
-        //                                if (periodcMaintananceDuration == 2)
-        //                                {
-
-        //                                    int m = 0;
-        //                                    int y = 0;
-
-        //                                    for (var i = asset.InstallationDate.Value.Year; i <= asset.WarrantyEnd.Value.Year; i += y)
-        //                                    {
-        //                                        var assetDate = asset.InstallationDate.Value.AddMonths(m);
-        //                                        if (asset.WarrantyEnd.Value >= assetDate)
-        //                                        {
-
-        //                                            ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                            timeObj.AssetDetailId = asset.Id;
-        //                                            timeObj.HospitalId = asset.HospitalId;
-        //                                            timeObj.PMDate = assetDate;
-        //                                            timeObj.IsDone = false;
-        //                                            _context.ManufacturerPMAssets.Add(timeObj);
-        //                                            _context.SaveChanges();
-
-        //                                            m += 6;
-        //                                            y = m % 12 == 0 ? 1 : 0;
-        //                                        }
-        //                                    }
-
-        //                                }
-        //                                if (periodcMaintananceDuration == 3)
-        //                                {
-        //                                    int m = 0;
-        //                                    int y = 0;
-
-        //                                    for (var i = asset.InstallationDate.Value.Year; i <= asset.WarrantyEnd.Value.Year; i += y)
-        //                                    {
-        //                                        var assetDate = asset.InstallationDate.Value.AddMonths(m);
-        //                                        if (asset.WarrantyEnd.Value >= assetDate)
-        //                                        {
-
-        //                                            ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                            timeObj.AssetDetailId = asset.Id;
-        //                                            timeObj.HospitalId = asset.HospitalId;
-        //                                            timeObj.PMDate = assetDate;
-        //                                            timeObj.IsDone = false;
-        //                                            _context.ManufacturerPMAssets.Add(timeObj);
-        //                                            _context.SaveChanges();
-
-        //                                            m += 3;
-        //                                            y = m % 12 == 0 ? 1 : 0;
-        //                                        }
-        //                                    }
-        //                                }
-        //                                if (periodcMaintananceDuration == 4)
-        //                                {
-        //                                    int m = 0;
-        //                                    int y = 0;
-
-        //                                    for (var i = asset.InstallationDate.Value.Year; i <= asset.WarrantyEnd.Value.Year; i += y)
-        //                                    {
-        //                                        var assetDate = asset.InstallationDate.Value.AddMonths(m);
-        //                                        if (asset.WarrantyEnd.Value >= assetDate)
-        //                                        {
-
-        //                                            ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                            timeObj.AssetDetailId = asset.Id;
-        //                                            timeObj.HospitalId = asset.HospitalId;
-        //                                            timeObj.PMDate = assetDate;
-        //                                            timeObj.IsDone = false;
-        //                                            _context.ManufacturerPMAssets.Add(timeObj);
-        //                                            _context.SaveChanges();
-
-        //                                            m += 1;
-        //                                            y = m % 12 == 0 ? 1 : 0;
-        //                                        }
-        //                                    }
-
-        //                                }
-
-        //                            }
-
-        //                            // else
-        //                            //  // لا توجد مده صيانه دوريه مسجله
-        //                            // periodic time is null
-
-        //                            else
-        //                            {
-
-        //                                var Obj = new IndexUnScheduledManfacturerPMAssetVM.GetData();
-        //                                Obj.AssetDetailId = asset.Id;
-        //                                Obj.UnscheduledReason = "Asset Periodic Maintainance Time is null";
-        //                                Obj.UnscheduledReasonAR = "لا توجد مده صيانه دوريه مسجله لهذا الاصل ";
-        //                                Obj.Barcode = asset.Barcode;
-        //                                Obj.SerialNumber = asset.SerialNumber;
-        //                                Obj.ModelNumber = asset.MasterAsset.ModelNumber;
-        //                                Obj.BrandName = asset.MasterAsset.brand.Name;
-        //                                Obj.BrandNameAR = asset.MasterAsset.brand.NameAr;
-        //                                Obj.BrandCode = asset.MasterAsset.brand.Code;
-        //                                Obj.AssetName = asset.MasterAsset.Name;
-        //                                Obj.AssetNameAR = asset.MasterAsset.NameAr;
-        //                                unscheduledList.Add(Obj);
-        //                            }
-
-
-        //                        }
-        //                    }
-        //                }
-        //            }
-
-
-        //        }
-
-
-
-        //        //contracts
-
-        //        else if (contracts != null)
-        //        {
-        //            if (contracts.Find(a => a.AssetDetailId == asset.Id) != null)
-        //            {
-        //                // Have a Contract
-        //                var contractsInfo = contracts.Where(a => a.AssetDetailId == asset.Id).FirstOrDefault();
-        //                // var contractsInfo = contracts.Find(a => a.AssetDetailId == asset.Id);
-        //                if (contractsInfo != null)
-        //                {
-        //                    if (contractsInfo.MasterContractId != null)
-        //                    {
-
-        //                        if ((contractsInfo.MasterContract.From != null) && (contractsInfo.MasterContract.To != null))
-
-        //                        {
-        //                            if (checkObj == null)
-        //                            {
-        //                                if (contractsInfo.MasterContract.To > contractsInfo.MasterContract.From)
-        //                                {
-
-        //                                    if (contractsInfo.MasterContract.To >= DateTime.Now)
-        //                                    {
-        //                                        var periodcMaintananceDuration = asset.MasterAsset.PMTimeId;
-        //                                        if (periodcMaintananceDuration != null)
-        //                                        {
-        //                                            if (periodcMaintananceDuration == 1)
-        //                                            {
-        //                                                int m = 0;
-        //                                                int y = 0;
-
-        //                                                for (var i = contractsInfo.MasterContract.From.Value.Year; i <= contractsInfo.MasterContract.To.Value.Year; i += y)
-        //                                                {
-        //                                                    var assetDate = contractsInfo.MasterContract.From.Value.AddMonths(m);
-        //                                                    if (contractsInfo.MasterContract.To.Value >= assetDate)
-        //                                                    {
-
-        //                                                        ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                                        timeObj.AssetDetailId = asset.Id;
-        //                                                        timeObj.HospitalId = asset.HospitalId;
-        //                                                        timeObj.PMDate = assetDate;
-        //                                                        timeObj.IsDone = false;
-        //                                                        _context.ManufacturerPMAssets.Add(timeObj);
-        //                                                        _context.SaveChanges();
-
-        //                                                    }
-
-        //                                                    m += 12;
-        //                                                    y = m % 12 == 0 ? 1 : 0;
-        //                                                }
-
-        //                                            }
-        //                                            if (periodcMaintananceDuration == 2)
-        //                                            {
-        //                                                int m = 0;
-        //                                                int y = 0;
-
-        //                                                for (var i = contractsInfo.MasterContract.From.Value.Year; i <= contractsInfo.MasterContract.To.Value.Year; i += y)
-        //                                                {
-        //                                                    var assetDate = contractsInfo.MasterContract.From.Value.AddMonths(m);
-
-
-
-        //                                                    if (contractsInfo.MasterContract.To.Value >= assetDate)
-        //                                                    {
-
-        //                                                        ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                                        timeObj.AssetDetailId = asset.Id;
-        //                                                        timeObj.HospitalId = asset.HospitalId;
-        //                                                        timeObj.PMDate = assetDate;
-        //                                                        timeObj.IsDone = false;
-        //                                                        _context.ManufacturerPMAssets.Add(timeObj);
-        //                                                        _context.SaveChanges();
-        //                                                    }
-        //                                                    m += 6;
-        //                                                    y = m % 12 == 0 ? 1 : 0;
-
-
-        //                                                }
-        //                                            }
-        //                                            if (periodcMaintananceDuration == 3)
-        //                                            {
-        //                                                int m = 0;
-        //                                                int y = 0;
-
-        //                                                for (var i = contractsInfo.MasterContract.From.Value.Year; i <= contractsInfo.MasterContract.To.Value.Year; i += y)
-        //                                                {
-        //                                                    var assetDate = contractsInfo.MasterContract.From.Value.AddMonths(m);
-        //                                                    if (contractsInfo.MasterContract.To.Value >= assetDate)
-        //                                                    {
-
-        //                                                        ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                                        timeObj.AssetDetailId = asset.Id;
-        //                                                        timeObj.HospitalId = asset.HospitalId;
-        //                                                        timeObj.PMDate = assetDate;
-        //                                                        timeObj.IsDone = false;
-        //                                                        _context.ManufacturerPMAssets.Add(timeObj);
-        //                                                        _context.SaveChanges();
-        //                                                    }
-        //                                                    m += 3;
-        //                                                    y = m % 12 == 0 ? 1 : 0;
-        //                                                }
-        //                                            }
-        //                                            if (periodcMaintananceDuration == 4)
-        //                                            {
-        //                                                int m = 0;
-        //                                                int y = 0;
-
-        //                                                for (var i = contractsInfo.MasterContract.From.Value.Year; i <= contractsInfo.MasterContract.To.Value.Year; i += y)
-        //                                                {
-        //                                                    var assetDate = contractsInfo.MasterContract.From.Value.AddMonths(m);
-        //                                                    if (contractsInfo.MasterContract.To.Value >= assetDate)
-        //                                                    {
-
-        //                                                        ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                                        timeObj.AssetDetailId = asset.Id;
-        //                                                        timeObj.HospitalId = asset.HospitalId;
-        //                                                        timeObj.PMDate = assetDate;
-        //                                                        timeObj.IsDone = false;
-        //                                                        _context.ManufacturerPMAssets.Add(timeObj);
-        //                                                        _context.SaveChanges();
-
-
-        //                                                    }
-
-        //                                                    m += 1;
-        //                                                    y = m % 12 == 0 ? 1 : 0;
-        //                                                }
-        //                                            }
-        //                                        }
-        //                                        //else
-        //                                        // لا توجد مده صيانه دوريه مسجله
-        //                                        // periodic time is null
-        //                                        else
-        //                                        {
-        //                                            var Obj = new IndexUnScheduledManfacturerPMAssetVM.GetData();
-        //                                            Obj.AssetDetailId = asset.Id;
-        //                                            Obj.UnscheduledReason = "Asset Periodic Maintainance Time is null";
-        //                                            Obj.UnscheduledReasonAR = "لا توجد مده صيانه دوريه مسجله لهذا الاصل ";
-        //                                            unscheduledList.Add(Obj);
-
-        //                                        }
-
-
-        //                                    }
-
-        //                                    //contract has ended 
-        //                                    // the reason is contract has ended
-        //                                    //انتهاء مده عقد الصيانه
-
-
-        //                                    else
-        //                                    {
-        //                                        var Obj = new IndexUnScheduledManfacturerPMAssetVM.GetData();
-        //                                        Obj.AssetDetailId = asset.Id;
-        //                                        Obj.UnscheduledReason = "Asset Contract has been ended";
-        //                                        Obj.UnscheduledReasonAR = "انتهاء مده عقد صيانه هذا الاصل";
-        //                                        unscheduledList.Add(Obj);
-        //                                    }
-
-        //                                }
-
-        //                            }
-
-        //                            else
-        //                            {
-        //                                if (contractsInfo.MasterContract.To > contractsInfo.MasterContract.From && contractsInfo.MasterContract.From > checkObj.PMDate)
-        //                                {
-
-        //                                    if (contractsInfo.MasterContract.To >= DateTime.Now)
-        //                                    {
-        //                                        var periodcMaintananceDuration = asset.MasterAsset.PMTimeId;
-        //                                        if (periodcMaintananceDuration != null)
-        //                                        {
-        //                                            if (periodcMaintananceDuration == 1)
-        //                                            {
-        //                                                int m = 0;
-        //                                                int y = 0;
-
-        //                                                for (var i = contractsInfo.MasterContract.From.Value.Year; i <= contractsInfo.MasterContract.To.Value.Year; i += y)
-        //                                                {
-        //                                                    var assetDate = contractsInfo.MasterContract.From.Value.AddMonths(m);
-        //                                                    if (contractsInfo.MasterContract.To.Value >= assetDate)
-        //                                                    {
-
-        //                                                        ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                                        timeObj.AssetDetailId = asset.Id;
-        //                                                        timeObj.HospitalId = asset.HospitalId;
-        //                                                        timeObj.PMDate = assetDate;
-        //                                                        timeObj.IsDone = false;
-        //                                                        _context.ManufacturerPMAssets.Add(timeObj);
-        //                                                        _context.SaveChanges();
-
-        //                                                    }
-
-        //                                                    m += 12;
-        //                                                    y = m % 12 == 0 ? 1 : 0;
-        //                                                }
-
-        //                                            }
-        //                                            if (periodcMaintananceDuration == 2)
-        //                                            {
-        //                                                int m = 0;
-        //                                                int y = 0;
-
-        //                                                for (var i = contractsInfo.MasterContract.From.Value.Year; i <= contractsInfo.MasterContract.To.Value.Year; i += y)
-        //                                                {
-        //                                                    var assetDate = contractsInfo.MasterContract.From.Value.AddMonths(m);
-
-
-
-        //                                                    if (contractsInfo.MasterContract.To.Value >= assetDate)
-        //                                                    {
-
-        //                                                        ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                                        timeObj.AssetDetailId = asset.Id;
-        //                                                        timeObj.HospitalId = asset.HospitalId;
-        //                                                        timeObj.PMDate = assetDate;
-        //                                                        timeObj.IsDone = false;
-        //                                                        _context.ManufacturerPMAssets.Add(timeObj);
-        //                                                        _context.SaveChanges();
-        //                                                    }
-        //                                                    m += 6;
-        //                                                    y = m % 12 == 0 ? 1 : 0;
-
-
-        //                                                }
-        //                                            }
-        //                                            if (periodcMaintananceDuration == 3)
-        //                                            {
-        //                                                int m = 0;
-        //                                                int y = 0;
-
-        //                                                for (var i = contractsInfo.MasterContract.From.Value.Year; i <= contractsInfo.MasterContract.To.Value.Year; i += y)
-        //                                                {
-        //                                                    var assetDate = contractsInfo.MasterContract.From.Value.AddMonths(m);
-        //                                                    if (contractsInfo.MasterContract.To.Value >= assetDate)
-        //                                                    {
-
-        //                                                        ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                                        timeObj.AssetDetailId = asset.Id;
-        //                                                        timeObj.HospitalId = asset.HospitalId;
-        //                                                        timeObj.PMDate = assetDate;
-        //                                                        timeObj.IsDone = false;
-        //                                                        _context.ManufacturerPMAssets.Add(timeObj);
-        //                                                        _context.SaveChanges();
-        //                                                    }
-        //                                                    m += 3;
-        //                                                    y = m % 12 == 0 ? 1 : 0;
-        //                                                }
-        //                                            }
-        //                                            if (periodcMaintananceDuration == 4)
-        //                                            {
-        //                                                int m = 0;
-        //                                                int y = 0;
-
-        //                                                for (var i = contractsInfo.MasterContract.From.Value.Year; i <= contractsInfo.MasterContract.To.Value.Year; i += y)
-        //                                                {
-        //                                                    var assetDate = contractsInfo.MasterContract.From.Value.AddMonths(m);
-        //                                                    if (contractsInfo.MasterContract.To.Value >= assetDate)
-        //                                                    {
-
-        //                                                        ManufacturerPMAsset timeObj = new ManufacturerPMAsset();
-        //                                                        timeObj.AssetDetailId = asset.Id;
-        //                                                        timeObj.HospitalId = asset.HospitalId;
-        //                                                        timeObj.PMDate = assetDate;
-        //                                                        timeObj.IsDone = false;
-        //                                                        _context.ManufacturerPMAssets.Add(timeObj);
-        //                                                        _context.SaveChanges();
-
-
-        //                                                    }
-
-        //                                                    m += 1;
-        //                                                    y = m % 12 == 0 ? 1 : 0;
-        //                                                }
-        //                                            }
-        //                                        }
-        //                                        //else
-        //                                        // لا توجد مده صيانه دوريه مسجله
-        //                                        // periodic time is null
-        //                                        else
-        //                                        {
-        //                                            var Obj = new IndexUnScheduledManfacturerPMAssetVM.GetData();
-        //                                            Obj.AssetDetailId = asset.Id;
-        //                                            Obj.UnscheduledReason = "Asset Periodic Maintainance Time is null";
-        //                                            Obj.UnscheduledReasonAR = "لا توجد مده صيانه دوريه مسجله لهذا الاصل ";
-        //                                            unscheduledList.Add(Obj);
-
-        //                                        }
-
-
-        //                                    }
-
-        //                                    //contract has ended 
-        //                                    // the reason is contract has ended
-        //                                    //انتهاء مده عقد الصيانه
-
-
-        //                                    else
-        //                                    {
-        //                                        var Obj = new IndexUnScheduledManfacturerPMAssetVM.GetData();
-        //                                        Obj.AssetDetailId = asset.Id;
-        //                                        Obj.UnscheduledReason = "Asset Contract has been ended";
-        //                                        Obj.UnscheduledReasonAR = "انتهاء مده عقد صيانه هذا الاصل";
-        //                                        unscheduledList.Add(Obj);
-        //                                    }
-
-        //                                }
-
-        //                            }
-
-
-
-
-        //                        }
-        //                    }
-        //                    else
-        //                    {
-        //                        var Obj = new IndexUnScheduledManfacturerPMAssetVM.GetData();
-        //                        Obj.AssetDetailId = asset.Id;
-        //                        Obj.UnscheduledReason = "Asset have not contract";
-        //                        Obj.UnscheduledReasonAR = "لا توجد عثد صيانه مسجل لهذا الاصل ";
-        //                        unscheduledList.Add(Obj);
-        //                    }
-        //                }
-
-
-        //            }
-
-
-        //            else
-        //            {
-        //                var Obj = new IndexUnScheduledManfacturerPMAssetVM.GetData();
-        //                Obj.AssetDetailId = asset.Id;
-        //                Obj.UnscheduledReason = "Asset has no Warranty or recorded contract";
-        //                Obj.UnscheduledReasonAR = "هذا الاصل ليس له مده ضمان او عقد مسجل ";
-        //                Obj.Barcode = asset.Barcode;
-        //                Obj.SerialNumber = asset.SerialNumber;
-        //                Obj.ModelNumber=asset.MasterAsset.ModelNumber;
-        //                Obj.BrandName = asset.MasterAsset.brand.Name;
-        //                Obj.BrandNameAR = asset.MasterAsset.brand.NameAr;
-        //                Obj.BrandCode=asset.MasterAsset.brand.Code;
-        //                Obj.AssetName = asset.MasterAsset.Name;
-        //                Obj.AssetNameAR = asset.MasterAsset.NameAr;
-        //                unscheduledList.Add(Obj);
-        //            }
-        //        }
-
-
-
-
-        //    }
-        //    //this step to prevent repeated data to return uniqe data
-        //    unscheduledList = unscheduledList.GroupBy(x => new { x.AssetDetailId, x.UnscheduledReason })
-        //        .Select(x => x.First()).ToList();
-        //    mainClass.Count = unscheduledList.Count();
-        //    var unScheduledObj = unscheduledList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-        //    mainClass.Results = unScheduledObj;
-        //    return mainClass;
-
-        //}
-
 
 
         public IndexManfacturerPMAssetVM GetAll(int pageNumber, int pageSize, string userId)
@@ -1614,68 +916,81 @@ namespace Asset.Core.Repositories
         {
             IndexManfacturerPMAssetVM mainClass = new IndexManfacturerPMAssetVM();
             List<IndexManfacturerPMAssetVM.GetData> list = new List<IndexManfacturerPMAssetVM.GetData>();
+            List<IndexManfacturerPMAssetVM.GetData> listPerPage = new List<IndexManfacturerPMAssetVM.GetData>();
             var allAssetDetails = _context.ManufacturerPMAssets
                 .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset)
                  .Include(a => a.AssetDetail.Department)
                  .Include(a => a.Supplier)
                 .Include(a => a.AssetDetail.Hospital).ToList();
 
-            if (allAssetDetails.Count>0)
+            var allAssetDetailsByQuarter = allAssetDetails.GroupBy(item => (Math.Ceiling(decimal.Parse(item.PMDate.Value.Date.AddMonths(6).Month.ToString()) / 3)));
+            if (allAssetDetailsByQuarter.ToList().Count > 0)
             {
-                foreach (var item in allAssetDetails)
+                foreach (var itm2 in allAssetDetailsByQuarter)
                 {
-
-                    IndexManfacturerPMAssetVM.GetData Obj = new IndexManfacturerPMAssetVM.GetData();
-                    Obj.Id = item.Id;
-                    Obj.BarCode = item.AssetDetail.Barcode;
-                    Obj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
-                    Obj.SerialNumber = item.AssetDetail.SerialNumber;
-                    Obj.DepartmentId = item.AssetDetail.Department != null ? item.AssetDetail.DepartmentId : 0;
-                    Obj.DepartmentName = item.AssetDetail.Department != null ? item.AssetDetail.Department.Name : "";
-                    Obj.DepartmentNameAr = item.AssetDetail.Department != null ? item.AssetDetail.Department.NameAr : "";
-
-                    if (item.Supplier != null)
+                    if (filterObj.YearQuarter == itm2.Key)
                     {
-                        Obj.SupplierId = item.AgencyId;
-                        Obj.SupplierName = item.Supplier.Name;
-                        Obj.SupplierNameAr = item.Supplier.NameAr;
-                    }
-                    Obj.PMDate = item.PMDate;
-                    Obj.IsDone = item.IsDone != null ? (bool)item.IsDone : false;
-                    Obj.DoneDate = item.DoneDate;
-                    Obj.DueDate = item.DueDate;
-                    Obj.AssetName = item.AssetDetail.MasterAssetId > 0 ? item.AssetDetail.MasterAsset.Name : "";
-                    Obj.AssetNameAr = item.AssetDetail.MasterAssetId > 0 ? item.AssetDetail.MasterAsset.NameAr : "";
+                        mainClass.YearQuarter = int.Parse(itm2.Key.ToString());
+                        foreach (var item in itm2)
+                        {
+                            IndexManfacturerPMAssetVM.GetData Obj = new IndexManfacturerPMAssetVM.GetData();
+                            Obj.Id = item.Id;
+                            Obj.BarCode = item.AssetDetail.Barcode;
+                            Obj.ModelNumber = item.AssetDetail.MasterAsset.ModelNumber;
+                            Obj.SerialNumber = item.AssetDetail.SerialNumber;
+                            Obj.DepartmentId = item.AssetDetail.Department != null ? item.AssetDetail.DepartmentId : 0;
+                            Obj.DepartmentName = item.AssetDetail.Department != null ? item.AssetDetail.Department.Name : "";
+                            Obj.DepartmentNameAr = item.AssetDetail.Department != null ? item.AssetDetail.Department.NameAr : "";
 
-                    list.Add(Obj);
+                            if (item.Supplier != null)
+                            {
+                                Obj.SupplierId = item.AgencyId;
+                                Obj.SupplierName = item.Supplier.Name;
+                                Obj.SupplierNameAr = item.Supplier.NameAr;
+                            }
+                            Obj.PMDate = item.PMDate;
+                            Obj.IsDone = item.IsDone != null ? (bool)item.IsDone : false;
+                            Obj.DoneDate = item.DoneDate;
+                            Obj.DueDate = item.DueDate;
+                            Obj.AssetName = item.AssetDetail.MasterAssetId > 0 ? item.AssetDetail.MasterAsset.Name : "";
+                            Obj.AssetNameAr = item.AssetDetail.MasterAssetId > 0 ? item.AssetDetail.MasterAsset.NameAr : "";
+
+                            list.Add(Obj);
+                        }
+                    }
                 }
 
+                mainClass.TotalCount = list.Count;
+                mainClass.CountDone = list.Where(a => a.IsDone == true).ToList().Count;
+                mainClass.CountNotDone = list.Where(a => a.IsDone == false).ToList().Count;
+                if (filterObj.IsDone == true)
+                {
+                    list = list.Where(a => a.IsDone == true).ToList();
+                    listPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                }
+                if (filterObj.IsDone == false)
+                {
+                    list = list.Where(a => a.IsDone == false).ToList();
+                    listPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                }
+                if (filterObj.IsDone == null)
+                {
+                    list = list.ToList();
+                    listPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                }
+               
+  
+                mainClass.Results = listPerPage;
+                if (mainClass.Results.Count > 0)
+                {
+                    mainClass.Count = list.Count;
+                }
+                else
+                {
+                    mainClass.Count = 0;
+                }
             }
-            mainClass.Count = list.Count();
-            mainClass.CountDone = list.Where(a => a.IsDone == true).ToList().Count;
-            mainClass.CountNotDone = list.Where(a => a.IsDone == false).ToList().Count;
-
-
-
-            if (filterObj.IsDone == true)
-            {
-                list = list.Where(a => a.IsDone == true).ToList();
-            }
-             if (filterObj.IsDone == false)
-            {
-                list = list.Where(a => a.IsDone == false).ToList();
-            }
-            else
-            {
-                list = list.ToList();
-            }
-
-          
-            var assetTimeObjuestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-            mainClass.Results = assetTimeObjuestsPerPage;
             return mainClass;
-
-
 
         }
 
@@ -1685,8 +1000,6 @@ namespace Asset.Core.Repositories
             var manfacturerPMAssets = _context.ManufacturerPMAssets.ToList();
             if (manfacturerPMAssets.Count() > 0)
             {
-
-
                 foreach (var obj in manfacturerPMAssets)
 
                 {

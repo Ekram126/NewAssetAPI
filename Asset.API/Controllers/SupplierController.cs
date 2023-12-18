@@ -85,7 +85,7 @@ namespace Asset.API.Controllers
 
 
         [HttpPost]
-        [Route("FindSupplier/{strText}/{pagenumber}/{pagesize}")]
+        [Route("FindSupplier/{pagenumber}/{pagesize}")]
         public IndexSupplierVM FindSupplier(string strText, int pageNumber, int pageSize)
         {
             var lstSuppliers = _SupplierService.FindSupplier(strText, pageNumber, pageSize);
@@ -276,5 +276,16 @@ namespace Asset.API.Controllers
 
             return Ok();
         }
+
+
+
+
+        [HttpGet("GenerateSupplierCode")]
+        public GenerateSupplierCodeVM GenerateSupplierCode()
+        {
+            return _SupplierService.GenerateSupplierCode();
+        }
+
+
     }
 }

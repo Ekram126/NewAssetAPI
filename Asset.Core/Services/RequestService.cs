@@ -219,9 +219,9 @@ namespace Asset.Core.Services
             return _unitOfWork.Request.GetRequestsByDateAndStatus(requestDateObj,pageNumber,pageSize);
         }
 
-        public List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId)
+        public IndexRequestVM AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId, int pageNumber, int pageSize)
         {
-            return _unitOfWork.Request.AlertOpenedRequestAssetsAndHighPeriority(periorityId,hospitalId);
+            return _unitOfWork.Request.AlertOpenedRequestAssetsAndHighPeriority(periorityId,hospitalId, pageNumber, pageSize);
         }
 
         public List<IndexRequestVM.GetData> PrintListOfRequests(List<ExportRequestVM> requests)
@@ -252,6 +252,18 @@ namespace Asset.Core.Services
         public IndexRequestVM GetAllRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize)
         {
             return _unitOfWork.Request.GetAllRequestsByStatusIdAndPaging(userId, statusId, pageNumber, pageSize);
+        }
+
+        public IndexRequestVM GetAllRequestsByStatusIdAndPaging2(string userId, int statusId, int pageNumber, int pageSize)
+        { 
+            return _unitOfWork.Request.GetAllRequestsByStatusIdAndPaging2(userId, statusId, pageNumber, pageSize);
+           
+        }
+
+
+        public IndexRequestVM GetRequestsByStatusIdAndPagingV2(string userId, int statusId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.Request.GetRequestsByStatusIdAndPagingV2(userId, statusId, pageNumber, pageSize);
         }
     }
 }

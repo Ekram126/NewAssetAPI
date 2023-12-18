@@ -54,6 +54,12 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetMovementRepository.GetMovementByAssetDetailId(assetId);
         }
 
+        public IndexAssetMovementVM SearchAssetMovement(SearchAssetMovementVM searchObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetMovementRepository.SearchAssetMovement(searchObj, pageNumber, pageSize);
+           
+        }
+
         public int Update(EditAssetMovementVM AssetMovementVM)
         {
             _unitOfWork.AssetMovementRepository.Update(AssetMovementVM);

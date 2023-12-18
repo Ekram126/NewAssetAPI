@@ -18,8 +18,8 @@ namespace Asset.Domain.Repositories
         int Add(CreateBrandVM brandObj);
         int Update(EditBrandVM brandObj);
         int Delete(int id);
-
         int CountBrands();
         IEnumerable<IndexBrandVM.GetData> SortBrands(SortBrandVM sortObj);
+        GenerateBrandCodeVM GenerateBrandCode();
     }
 }

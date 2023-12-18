@@ -99,5 +99,10 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.SupplierRepository.GetSupplierAttachmentsBySupplierId(supplierId);
         }
+
+        public GenerateSupplierCodeVM GenerateSupplierCode()
+        {
+            return _unitOfWork.SupplierRepository.GenerateSupplierCode();
+        }
     }
 }

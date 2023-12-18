@@ -19,5 +19,7 @@ namespace Asset.Domain.Repositories
 
 
         IEnumerable<IndexDepartmentVM.GetData> SortDepartments(SortDepartmentVM sortObj);
+
+        GenerateDepartmentCodeVM GenerateDepartmentCode();
     }
 }

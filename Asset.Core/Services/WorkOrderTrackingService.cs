@@ -88,5 +88,11 @@ namespace Asset.Core.Services
         {
             _unitOfWork.WorkOrderTracking.Update(id, editWorkOrderTrackingVM);
         }
+
+
+        public void UpdateWorkOrderTracking(EditWorkOrderTrackingVM editWorkOrderTrackingVM)
+        {
+            _unitOfWork.WorkOrderTracking.Update(editWorkOrderTrackingVM);
+        }
     }
 }

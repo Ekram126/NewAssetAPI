@@ -76,6 +76,9 @@ namespace Asset.ViewModels.RequestVM
         public string BrandNameAr { get; set; }
 
 
+        public string DepartmentName { get; set; }
+        public string DepartmentNameAr { get; set; }
+
         public List<LstWorkOrderFromTracking> LstWorkOrderTracking { get; set; }
 
         public List<IndexRequestTracking> RequestTrackingList { get; set; }

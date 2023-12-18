@@ -15,16 +15,12 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
         public int? AssetId { get; set; }
         public int? StatusId { get; set; }
         public string UserId { get; set; }
+        public string MemberId { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? ExecludeDate { get; set; }
         public string ActionDate { get; set; }
         public string ExNumber { get; set; }
-
-        public int? AppTypeId
-        {
-            get; set;
-        }
-     
+        public int? AppTypeId { get; set; }
         public List<int> ReasonIds { get; set; }
         public List<int> HoldReasonIds { get; set; }
         public string SerialNumber { get; set; }

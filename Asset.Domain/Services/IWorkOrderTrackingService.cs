@@ -24,6 +24,7 @@ namespace Asset.Domain.Services
         List<IndexWorkOrderTrackingVM> GetTrackOfWorkOrderByWorkOrderId(int workOrderId);
         int AddWorkOrderTracking(CreateWorkOrderTrackingVM createWorkOrderTrackingVM);
         void UpdateWorkOrderTracking(int id, EditWorkOrderTrackingVM editWorkOrderTrackingVM);
+        void UpdateWorkOrderTracking(EditWorkOrderTrackingVM editWorkOrderTrackingVM);
         void DeleteWorkOrderTracking(int id);
 
 

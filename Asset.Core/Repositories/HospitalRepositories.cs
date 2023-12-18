@@ -47,6 +47,11 @@ namespace Asset.Core.Repositories
                 hospitalObj.CityId = item.CityId != null ? item.CityId : 0;
                 hospitalObj.OrganizationId = item.OrganizationId != null ? item.OrganizationId : 0;
                 hospitalObj.SubOrganizationId = item.SubOrganizationId != null ? item.SubOrganizationId : 0;
+                hospitalObj.ContractName = item.ContractName;
+                hospitalObj.StrContractStart = item.ContractStart.ToString();
+                hospitalObj.StrContractEnd = item.ContractEnd.ToString();
+                hospitalObj.ContractStart = item.ContractStart;
+                hospitalObj.ContractEnd = item.ContractEnd;
                 hospitalObj.Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList();
                 hospitalObj.EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).ToList().Count > 0 ?
                  _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
@@ -81,7 +86,10 @@ namespace Asset.Core.Repositories
                              OrgName = (item.Organization != null) ? item.Organization.Name : "",
                              OrgNameAr = (item.Organization != null) ? item.Organization.NameAr : "",
                              SubOrgName = (item.SubOrganization != null) ? item.SubOrganization.Name : "",
-                             SubOrgNameAr = (item.SubOrganization != null) ? item.SubOrganization.NameAr : ""
+                             SubOrgNameAr = (item.SubOrganization != null) ? item.SubOrganization.NameAr : "",
+                             ContractName = item.ContractName,
+                             StrContractStart = item.ContractStart.ToString(),
+                             StrContractEnd = item.ContractEnd.ToString()
                          });
 
             return lstHospitals;
@@ -108,7 +116,15 @@ namespace Asset.Core.Repositories
                     HospitalObj.GovernorateId = HospitalVM.GovernorateId;
                     HospitalObj.CityId = HospitalVM.CityId;
                     HospitalObj.OrganizationId = HospitalVM.OrganizationId;
-                    HospitalObj.SubOrganizationId = HospitalVM.SubOrganizationId;
+                    HospitalObj.SubOrganizationId =(int)HospitalVM.SubOrganizationId;
+
+
+                    HospitalObj.ContractName = HospitalVM.ContractName;
+                    if(HospitalVM.StrContractStart != "")
+                    HospitalObj.ContractStart = DateTime.Parse(HospitalVM.StrContractStart);
+                    if (HospitalVM.StrContractEnd != "")
+                        HospitalObj.ContractEnd = DateTime.Parse(HospitalVM.StrContractEnd);
+
                     _context.Hospitals.Add(HospitalObj);
                     _context.SaveChanges();
 
@@ -179,6 +195,13 @@ namespace Asset.Core.Repositories
                 HospitalObj.CityId = HospitalVM.CityId;
                 HospitalObj.OrganizationId = HospitalVM.OrganizationId;
                 HospitalObj.SubOrganizationId = HospitalVM.SubOrganizationId;
+
+
+                HospitalObj.ContractName = HospitalVM.ContractName;
+                HospitalObj.ContractStart = DateTime.Parse(HospitalVM.StrContractStart);
+                HospitalObj.ContractEnd = DateTime.Parse(HospitalVM.StrContractEnd);
+
+
                 _context.Entry(HospitalObj).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -253,7 +276,10 @@ namespace Asset.Core.Repositories
                          OrgNameAr = (item.Organization != null) ? item.Organization.NameAr : "",
                          SubOrganizationId = item.SubOrganization != null ? item.SubOrganization.Id : 0,
                          SubOrgName = (item.SubOrganization != null) ? item.SubOrganization.Name : "",
-                         SubOrgNameAr = (item.SubOrganization != null) ? item.SubOrganization.NameAr : ""
+                         SubOrgNameAr = (item.SubOrganization != null) ? item.SubOrganization.NameAr : "",
+                         ContractName = item.ContractName,
+                         StrContractStart = item.ContractStart.ToString(),
+                         StrContractEnd = item.ContractEnd.ToString(),
                      }).ToList();
 
                 if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
@@ -321,17 +347,12 @@ namespace Asset.Core.Repositories
                                     Longtitude = item.Longtitude != null ? decimal.Parse(item.Longtitude.ToString()) : 0,
                                     ManagerName = item.ManagerName,
                                     ManagerNameAr = item.ManagerNameAr,
-
-
                                     Departments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList().Count > 0 ? _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(a => a.DepartmentId).ToList() : null,
-
-
                                     EnableDisableDepartments = _context.HospitalDepartments.Where(a => a.HospitalId == item.Id).Select(item => new EnableDisableDepartment
                                     {
                                         DepartmentId = item.DepartmentId,
                                         IsActive = item.IsActive
                                     }).ToList(),
-
 
                                     GovernorateName = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.Name : "",
                                     GovernorateNameAr = (item.GovernorateId != null || item.GovernorateId != 0) ? item.Governorate.NameAr : "",
@@ -340,7 +361,16 @@ namespace Asset.Core.Repositories
                                     SubOrganizationName = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.Name : "",
                                     SubOrganizationNameAr = (item.SubOrganizationId != null || item.SubOrganizationId != 0) ? item.SubOrganization.NameAr : "",
                                     OrganizationName = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.Name : "",
-                                    OrganizationNameAr = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.NameAr : ""
+                                    OrganizationNameAr = (item.OrganizationId != null || item.OrganizationId != 0) ? item.Organization.NameAr : "",
+
+
+                                    ContractName = item.ContractName,
+                                    StrContractStart = item.ContractStart.ToString(),
+                                    StrContractEnd = item.ContractEnd.ToString(),
+                                    ContractStart = item.ContractStart,
+                                    ContractEnd = item.ContractEnd,
+
+
 
                                 }).First();
 
@@ -788,6 +818,33 @@ namespace Asset.Core.Repositories
 
             }
             return getDataObj;
+        }
+
+
+        public IEnumerable<Hospital> GetHospitalByGovId(int govId)
+        {
+            return _context.Hospitals.Where(h => h.GovernorateId == govId).ToList();
+        }
+
+        public GenerateHospitalCodeVM GenerateHospitalCode()
+        {
+            GenerateHospitalCodeVM numberObj = new GenerateHospitalCodeVM();
+            int code = 0;
+
+            var lastId = _context.Hospitals.ToList();
+            if (lastId.Count > 0)
+            {
+                var lastHospitalCode = lastId.Max(a => a.Code);
+                var hospitalCode = (int.Parse(lastHospitalCode) + 1).ToString();
+                var lastcode = hospitalCode.ToString().PadLeft(3, '0');
+                numberObj.Code = lastcode;
+            }
+            else
+            {
+                numberObj.Code = (code + 1).ToString();
+            }
+
+            return numberObj;
         }
     }
 }

@@ -28,6 +28,11 @@ namespace Asset.Models
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; }
 
+
+        public string MemberId { get; set; }
+        [ForeignKey("MemberId")]
+        public virtual ApplicationUser MemberUser { get; set; }
+
         public DateTime? Date { get; set; }
         public DateTime? ExecludeDate { get; set; }
         public DateTime? ActionDate { get; set; }

@@ -117,6 +117,24 @@ namespace Asset.ViewModels.AssetDetailVM
         public string MasterAssetName { get; set; }
         public string MasterAssetNameAr { get; set; }
 
+        public string ContractDate { get; set; }
+        public string ContractStartDate { get; set; }
+        public string ContractEndDate { get; set; }
+
+        public string StrPurchaseDate { get; set; }
+        public string StrOperationDate { get; set; }
+        public string StrInstallationDate { get; set; }
+
+
+
+        public string InContract { get; set; }
+        public string InContractAr { get; set; }
+
+
+
+        public string ContractFrom { get; set; }
+        public string ContractTo { get; set; }
+
         public List<RequestVM.IndexRequestVM.GetData> ListRequests { get; set; }
         public List<WorkOrderVM.ListWorkOrderVM.GetData> ListWorkOrders { get; set; }
     }

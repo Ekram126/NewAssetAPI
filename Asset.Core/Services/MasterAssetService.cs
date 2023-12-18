@@ -40,6 +40,11 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterAssetRepository.AutoCompleteMasterAssetName3(name,hospitalId);
         }
 
+        public IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName4(string name, int hospitalId)
+        {  
+            return _unitOfWork.MasterAssetRepository.AutoCompleteMasterAssetName4(name,hospitalId);
+            
+        }
 
         public int CountMasterAssets()
         {
@@ -74,6 +79,18 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterAssetRepository.DeleteMasterAssetAttachment(id);
 
 
+        }
+
+        public IEnumerable<MasterAsset> DistinctAutoCompleteMasterAssetName(string name)
+        {
+            return _unitOfWork.MasterAssetRepository.DistinctAutoCompleteMasterAssetName(name);
+        }
+
+        public GeneratedMasterAssetCodeVM GenerateAssetDetailBarcode()
+        {
+
+            return _unitOfWork.MasterAssetRepository.GenerateAssetDetailBarcode();
+            
         }
 
         public IEnumerable<IndexMasterAssetVM.GetData> GetAll()

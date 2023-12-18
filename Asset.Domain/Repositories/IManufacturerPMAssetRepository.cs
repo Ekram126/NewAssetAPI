@@ -18,15 +18,11 @@ namespace Asset.Domain.Repositories
         IndexManfacturerPMAssetVM SearchAssetTimes(SearchManfacturerAssetTimeVM searchObj, int pageNumber, int pageSize, string userId);
         List<CalendarManfacturerPMAssetTimeVM> GetAll(int hospitalId, string userId);
         IndexManfacturerPMAssetVM SortManfacturerAssetTimes(SortManfacturerPMAssetTimeVM sortObj, int pageNumber, int pageSize, string userId);
-
         ViewManfacturerPMAssetTimeVM GetAssetTimeById(int id);
         int Update(ManufacturerPMAsset model);
-
         ManufacturerPMAsset GetById(int id);
         IndexManfacturerPMAssetVM GetAll(FilterManfacturerTimeVM filterObj, int pageNumber, int pageSize, string userId);
 
-
-
-
+     //   IndexManfacturerPMAssetVM GetAllBrandsByQuarter(FilterAssetTimeVM filterObj, int pageNumber, int pageSize, string userId);
     }
 }

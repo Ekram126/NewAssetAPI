@@ -72,7 +72,6 @@ namespace Asset.Core.Repositories
 
         //public IndexWNPMAssetTimesVM GetAll(FilterAssetTimeVM filterObj, int pageNumber, int pageSize, string userId)
         //{
-
         //    IndexWNPMAssetTimesVM mainClass = new IndexWNPMAssetTimesVM();
         //    List<IndexWNPMAssetTimesVM.GetData> list = new List<IndexWNPMAssetTimesVM.GetData>();
         //    var allAssetDetails = _context.WNPMAssetTimes
@@ -80,8 +79,6 @@ namespace Asset.Core.Repositories
         //         .Include(a => a.AssetDetail.Department)
         //         .Include(a => a.Supplier)
         //        .Include(a => a.AssetDetail.Hospital).ToList();
-
-
         //    var allAssetDetailsByQuarter = allAssetDetails.GroupBy(item => (Math.Ceiling(decimal.Parse(item.PMDate.Value.Month.ToString()) / 3)));
         //    if (allAssetDetailsByQuarter.ToList().Count > 0)
         //    {
@@ -92,7 +89,6 @@ namespace Asset.Core.Repositories
         //                mainClass.YearQuarter = int.Parse(itm2.Key.ToString());
         //                foreach (var itm in itm2)
         //                {
-
         //                    IndexWNPMAssetTimesVM.GetData item = new IndexWNPMAssetTimesVM.GetData();
         //                    item.Id = itm.Id;
         //                    item.BarCode = itm.AssetDetail.Barcode;
@@ -101,7 +97,6 @@ namespace Asset.Core.Repositories
         //                    item.DepartmentId = itm.AssetDetail.Department != null ? itm.AssetDetail.DepartmentId : 0;
         //                    item.DepartmentName = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.Name : "";
         //                    item.DepartmentNameAr = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.NameAr : "";
-
         //                    if (itm.Supplier != null)
         //                    {
         //                        item.SupplierId = itm.AgencyId;
@@ -137,8 +132,6 @@ namespace Asset.Core.Repositories
         //    }
         //    else
         //        list = list.ToList();
-
-
         //    //mainClass.CountDone = list.Where(a => a.IsDone == true).ToList().Count;
         //    //mainClass.CountNotDone = list.Where(a => a.IsDone == false).ToList().Count;
 
@@ -234,10 +227,6 @@ namespace Asset.Core.Repositories
             else
                 list = list.ToList();
 
-
-            //mainClass.CountDone = list.Where(a => a.IsDone == true).ToList().Count;
-            //mainClass.CountNotDone = list.Where(a => a.IsDone == false).ToList().Count;
-
             var assetTimeObjuestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             mainClass.Results = assetTimeObjuestsPerPage;
             return mainClass;
@@ -288,12 +277,10 @@ namespace Asset.Core.Repositories
                     //string enddueday = "";
 
                     CalendarWNPMAssetTimeVM viewWNPMAssetTimeObj = new CalendarWNPMAssetTimeVM();
-                    if (item.AssetDetail.Barcode == "200700889")
-                    {
-                        viewWNPMAssetTimeObj.titleAr = item.AssetDetail.MasterAsset.NameAr.Trim();
-                    }
-
-
+                    //if (item.AssetDetail.Barcode == "200700889")
+                    //{
+                    //    viewWNPMAssetTimeObj.titleAr = item.AssetDetail.MasterAsset.NameAr.Trim();
+                    //}
 
                     viewWNPMAssetTimeObj.Id = item.Id;
                     viewWNPMAssetTimeObj.PMDate = item.PMDate;
@@ -334,44 +321,6 @@ namespace Asset.Core.Repositories
                         viewWNPMAssetTimeObj.color = "#ff7578";
                         viewWNPMAssetTimeObj.textColor = "#fff";
                     }
-                    //else
-                    //{
-                    //    viewWNPMAssetTimeObj.color = "#87092c";
-                    //    viewWNPMAssetTimeObj.textColor = "#fff";
-                    //}
-
-                    //if (item.DueDate != null)
-                    //{
-                    //    if (item.DueDate.Value.Month < 10)
-                    //        duemonth = item.DueDate.Value.Month.ToString().PadLeft(2, '0');
-                    //    else
-                    //        duemonth = item.DueDate.Value.Month.ToString();
-
-                    //    if (item.DueDate.Value.Month < 10)
-                    //        endduemonth = item.DueDate.Value.Month.ToString().PadLeft(2, '0');
-                    //    else
-                    //        endduemonth = item.DueDate.Value.Month.ToString();
-
-                    //    if (item.DueDate.Value.Day < 10)
-                    //        dueday = item.DueDate.Value.Day.ToString().PadLeft(2, '0');
-                    //    else
-                    //        dueday = item.DueDate.Value.Day.ToString();
-
-                    //    if (item.DueDate.Value.Day < 10)
-                    //        enddueday = (item.DueDate.Value.Day).ToString().PadLeft(2, '0');
-                    //    else
-                    //        enddueday = item.DueDate.Value.Day.ToString();
-                    //    viewWNPMAssetTimeObj.start = item.DueDate.Value.Year + "-" + duemonth + "-" + dueday;
-                    //    viewWNPMAssetTimeObj.end = item.DueDate.Value.Year + "-" + endduemonth + "-" + enddueday;
-                    //    viewWNPMAssetTimeObj.color = "#87092c";
-                    //    viewWNPMAssetTimeObj.textColor = "#fff";
-                    //}
-                    //else
-                    //{
-                    //    viewWNPMAssetTimeObj.start = item.PMDate.Value.Year + "-" + month + "-" + day;
-                    //    viewWNPMAssetTimeObj.end = item.PMDate.Value.Year + "-" + endmonth + "-" + endday;
-                    //}
-
 
                     viewWNPMAssetTimeObj.allDay = true;
                     viewWNPMAssetTimeObj.DoneDate = item.DoneDate;
@@ -406,8 +355,8 @@ namespace Asset.Core.Repositories
                         }
                         else
                         {
-                            viewWNPMAssetTimeObj.AssetName = item.AssetDetail.MasterAsset.Name.Trim();
-                            viewWNPMAssetTimeObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr.Trim();
+                            viewWNPMAssetTimeObj.AssetName = item.AssetDetail.MasterAsset.Name;
+                            viewWNPMAssetTimeObj.AssetNameAr = item.AssetDetail.MasterAsset.NameAr;
 
                             if (item.AssetDetail.Department != null)
                             {
@@ -1890,7 +1839,7 @@ namespace Asset.Core.Repositories
 
         public List<WNPMAssetTimeAttachment> GetWNPMAssetTimeAttachmentByWNPMAssetTimeId(int wnpmAssetTimeId)
         {
-          return  _context.WNPMAssetTimeAttachments.Where(a => a.WNPMAssetTimeId == wnpmAssetTimeId).ToList();
+            return _context.WNPMAssetTimeAttachments.Where(a => a.WNPMAssetTimeId == wnpmAssetTimeId).ToList();
         }
 
         public int CreateAssetFiscalTimes(int year, int hospitalId)
@@ -2106,6 +2055,128 @@ namespace Asset.Core.Repositories
                 }
             }
             return 1;
+        }
+
+        public IndexWNPMAssetTimesVM GetAllWithDate(WNPDateVM filterObj, int pageNumber, int pageSize, string userId)
+        {
+
+            IndexWNPMAssetTimesVM mainClass = new IndexWNPMAssetTimesVM();
+            List<IndexWNPMAssetTimesVM.GetData> list = new List<IndexWNPMAssetTimesVM.GetData>();
+            var allWNAssetDetails = _context.WNPMAssetTimes
+                .Include(a => a.AssetDetail).Include(a => a.AssetDetail.MasterAsset)
+                 .Include(a => a.AssetDetail.Department)
+                 .Include(a => a.Supplier)
+                .Include(a => a.AssetDetail.Hospital)
+                .OrderBy(a=>a.PMDate.Value.Date).ToList();
+
+
+            foreach (var itm in allWNAssetDetails)
+            {
+
+                IndexWNPMAssetTimesVM.GetData item = new IndexWNPMAssetTimesVM.GetData();
+                item.Id = itm.Id;
+                if (itm.AssetDetail != null)
+                {
+
+                    item.BarCode = itm.AssetDetail.Barcode;
+
+                    if (itm.AssetDetail.MasterAsset != null)
+                    {
+                        item.ModelNumber = itm.AssetDetail.MasterAsset.ModelNumber;
+
+                    }
+                    item.SerialNumber = itm.AssetDetail.SerialNumber;
+                    item.DepartmentId = itm.AssetDetail.Department != null ? itm.AssetDetail.DepartmentId : 0;
+                    item.DepartmentName = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.Name : "";
+                    item.DepartmentNameAr = itm.AssetDetail.Department != null ? itm.AssetDetail.Department.NameAr : "";
+
+                }
+
+
+                if (itm.Supplier != null)
+                {
+                    item.SupplierId = itm.AgencyId;
+                    item.SupplierName = itm.Supplier.Name;
+                    item.SupplierNameAr = itm.Supplier.NameAr;
+                }
+                item.PMDate = itm.PMDate;
+                item.IsDone = itm.IsDone != null ? (bool)itm.IsDone : false;
+                item.DoneDate = itm.DoneDate;
+                item.DueDate = itm.DueDate;
+                if (itm.AssetDetail != null)
+                {
+                    if (itm.AssetDetail.MasterAsset != null)
+                    {
+                        item.AssetName = itm.AssetDetail.MasterAssetId > 0 ? itm.AssetDetail.MasterAsset.Name : "";
+                        item.AssetNameAr = itm.AssetDetail.MasterAssetId > 0 ? itm.AssetDetail.MasterAsset.NameAr : "";
+                    }
+
+                }
+
+                list.Add(item);
+            }
+
+
+            string setstartday, setstartmonth, setendday, setendmonth = "";
+            DateTime startingFrom = new DateTime();
+            DateTime endingTo = new DateTime();
+            if (filterObj.Start == "")
+            {
+                filterObj.StartDate = DateTime.Parse("01/01/1900");
+            }
+            else
+            {
+                filterObj.StartDate = DateTime.Parse(filterObj.Start.ToString());
+                var startyear = filterObj.StartDate.Value.Year;
+                var startmonth = filterObj.StartDate.Value.Month;
+                var startday = filterObj.StartDate.Value.Day;
+                if (startday < 10)
+                    setstartday = filterObj.StartDate.Value.Day.ToString().PadLeft(2, '0');
+                else
+                    setstartday = filterObj.StartDate.Value.Day.ToString();
+
+                if (startmonth < 10)
+                    setstartmonth = filterObj.StartDate.Value.Month.ToString().PadLeft(2, '0');
+                else
+                    setstartmonth = filterObj.StartDate.Value.Month.ToString();
+
+                var sDate = startyear + "/" + setstartmonth + "/" + setstartday;
+                startingFrom = DateTime.Parse(sDate);//.AddDays(1);
+            }
+
+            if (filterObj.End == "")
+            {
+                filterObj.EndDate = DateTime.Today.Date;
+            }
+            else
+            {
+                filterObj.EndDate = DateTime.Parse(filterObj.End.ToString());
+                var endyear = filterObj.EndDate.Value.Year;
+                var endmonth = filterObj.EndDate.Value.Month;
+                var endday = filterObj.EndDate.Value.Day;
+                if (endday < 10)
+                    setendday = filterObj.EndDate.Value.Day.ToString().PadLeft(2, '0');
+                else
+                    setendday = filterObj.EndDate.Value.Day.ToString();
+                if (endmonth < 10)
+                    setendmonth = filterObj.EndDate.Value.Month.ToString().PadLeft(2, '0');
+                else
+                    setendmonth = filterObj.EndDate.Value.Month.ToString();
+                var eDate = endyear + "/" + setendmonth + "/" + setendday;
+                endingTo = DateTime.Parse(eDate);
+            }
+
+
+
+            if (filterObj.Start != "" && filterObj.End != "")
+            {
+                list = list.Where(a => a.PMDate.Value.Date >= startingFrom.Date && a.PMDate.Value.Date <= endingTo.Date).OrderBy(d => d.PMDate.Value.Date).ToList();
+            }
+
+            var assetTimeObjuestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            mainClass.Results = assetTimeObjuestsPerPage;
+            mainClass.Count = list.Count();
+            return mainClass;
         }
 
 

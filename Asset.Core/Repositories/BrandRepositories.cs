@@ -62,6 +62,39 @@ namespace Asset.Core.Repositories
             return 0;
         }
 
+        public GenerateBrandCodeVM GenerateBrandCode()
+        {
+           GenerateBrandCodeVM numberObj = new GenerateBrandCodeVM();
+            int code = 0;
+
+            var lastId = _context.Brands.ToList();
+            if (lastId.Count > 0)
+            {
+
+                var lastBrandCode = lastId.Max(a => a.Code);
+                if (lastBrandCode == null)
+                {
+                    numberObj.Code = (code + 1).ToString();
+                    var lastcode = numberObj.Code.PadLeft(3, '0');
+                    numberObj.Code = lastcode;
+                }
+                else
+                {
+                    var hospitalCode = (int.Parse(lastBrandCode) + 1).ToString();
+                    var lastcode = hospitalCode.ToString().PadLeft(3, '0');
+                    numberObj.Code = lastcode;
+                }
+            }
+            else
+            {
+                numberObj.Code = (code + 1).ToString();
+                var lastcode = numberObj.Code.PadLeft(3, '0');
+                numberObj.Code = lastcode;
+            }
+
+            return numberObj;
+        }
+
         public IEnumerable<IndexBrandVM.GetData> GetAll()
         {
             return _context.Brands.ToList().Select(item => new IndexBrandVM.GetData
@@ -105,8 +138,9 @@ namespace Asset.Core.Repositories
         {
             if (hospitalId != 0)
             {
-                return _context.AssetDetails.Include(a=>a.MasterAsset.brand).Include(a => a.Hospital).Where(a=>a.HospitalId == hospitalId)
-                    .ToList().GroupBy(a => a.MasterAsset.BrandId).Select(item => new IndexBrandVM.GetData
+                return _context.AssetDetails.Include(a => a.MasterAsset).Include(a=>a.MasterAsset.brand)
+                    .Include(a => a.Hospital).Where(a=>a.HospitalId == hospitalId)
+                    .ToList().GroupBy(a => new {a.MasterAssetId, a.MasterAsset.BrandId }).Select(item => new IndexBrandVM.GetData
                 {
                     Id = item.FirstOrDefault().MasterAsset.brand != null? item.FirstOrDefault().MasterAsset.brand.Id:0,
                     Code = item.FirstOrDefault().MasterAsset.brand != null ? item.FirstOrDefault().MasterAsset.brand.Code:"",

@@ -430,7 +430,9 @@ namespace Asset.Core.Repositories
                     assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                     assetStatusTransactionObj.AssetStatusId = 8;
                     assetStatusTransactionObj.HospitalId = hospitalApplicationObj.HospitalId;
-                    assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+                    var utcDate = DateTime.UtcNow;
+                    DateTime localDate = utcDate.ToLocalTime();
+                    assetStatusTransactionObj.StatusDate = localDate.Date;
                     _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                     _context.SaveChanges();
                 }
@@ -446,7 +448,10 @@ namespace Asset.Core.Repositories
                 assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                 assetStatusTransactionObj.AssetStatusId = 9;
                 assetStatusTransactionObj.HospitalId = hospitalApplicationObj.HospitalId;
-                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+
+                var utcDate = DateTime.UtcNow;
+                DateTime localDate = utcDate.ToLocalTime();
+                assetStatusTransactionObj.StatusDate = localDate.Date;
                 _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                 _context.SaveChanges();
             }
@@ -456,7 +461,10 @@ namespace Asset.Core.Repositories
                 assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                 assetStatusTransactionObj.AssetStatusId = 3;
                 assetStatusTransactionObj.HospitalId = hospitalApplicationObj.HospitalId;
-                assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
+
+                var utcDate = DateTime.UtcNow;
+                DateTime localDate = utcDate.ToLocalTime();
+                assetStatusTransactionObj.StatusDate = localDate.Date;
                 _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                 _context.SaveChanges();
             }
@@ -467,6 +475,11 @@ namespace Asset.Core.Repositories
                 assetStatusTransactionObj.AssetDetailId = (int)model.AssetId;
                 assetStatusTransactionObj.AssetStatusId = 3;
                 assetStatusTransactionObj.HospitalId = hospitalApplicationObj.HospitalId;
+
+
+                      var utcDate = DateTime.UtcNow;
+                    DateTime localDate = utcDate.ToLocalTime();
+
                 assetStatusTransactionObj.StatusDate = DateTime.Today.Date;
                 _context.AssetStatusTransactions.Add(assetStatusTransactionObj);
                 _context.SaveChanges();
@@ -1096,12 +1109,13 @@ namespace Asset.Core.Repositories
             IndexHospitalApplicationVM mainClass = new IndexHospitalApplicationVM();
             List<IndexHospitalApplicationVM.GetData> list = new List<IndexHospitalApplicationVM.GetData>();
 
-            var lstHospitalApplications = _context.HospitalApplications.Include(a => a.ApplicationType).Include(a => a.User)
+            var lstHospitalApplications = _context.HospitalApplications
+                .Include(a => a.ApplicationType).Include(a => a.User)
                 .Include(a => a.HospitalSupplierStatus).Include(a => a.ApplicationType)
                 .Include(a => a.AssetDetail).Include(a => a.AssetDetail.Hospital).Include(a => a.AssetDetail.MasterAsset)
                 .Include(a => a.AssetDetail.MasterAsset.brand).ToList()
                 .OrderByDescending(a => a.AppDate.Value.Date)
-                .Where(a => a.StatusId == statusId && a.AppTypeId == appTypeId).ToList();
+                .Where(a => (a.StatusId == statusId || a.StatusId == 4) && a.AppTypeId == appTypeId).ToList();
 
 
             if (lstHospitalApplications.Count > 0)
@@ -1113,7 +1127,7 @@ namespace Asset.Core.Repositories
                     lstHospitalApplications = lstHospitalApplications.Where(a => a.AppTypeId == appTypeId).ToList();
 
                 if (statusId != 0)
-                    lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == statusId).ToList();
+                    lstHospitalApplications = lstHospitalApplications.Where(a => a.StatusId == statusId || a.StatusId == 4).ToList();
 
 
 

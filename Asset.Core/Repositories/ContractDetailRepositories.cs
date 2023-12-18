@@ -91,13 +91,41 @@ namespace Asset.Core.Repositories
             {
                 IndexContractVM.GetData getDataObj = new IndexContractVM.GetData();
                 getDataObj.Id = item.Id;
-                var lstassets = _context.AssetDetails.Where(a => a.Id == item.AssetDetailId).ToList();
+
+
+
+
+              
+                var lstassets = _context.AssetDetails.Include(a=>a.MasterAsset)
+                    .Include(a => a.MasterAsset.brand)
+                    .Include(a => a.Department).Where(a => a.Id == item.AssetDetailId).ToList();
                 if (lstassets.Count > 0)
                 {
                     AssetDetail assetDetailObj = lstassets[0];
                     getDataObj.SerialNumber = assetDetailObj.SerialNumber;
                     getDataObj.HospitalId = assetDetailObj.HospitalId;
                     getDataObj.BarCode = assetDetailObj.Barcode;
+
+                    if (assetDetailObj.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = assetDetailObj.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = assetDetailObj.MasterAsset.brand.NameAr;
+                    }
+
+
+                    if (assetDetailObj.Department != null)
+                    {
+                        getDataObj.DepartmentName = assetDetailObj.Department.Name;
+                        getDataObj.DepartmentNameAr = assetDetailObj.Department.NameAr;
+                    }
+
+
+
+
+
+
+
+
                     var lstmasters = _context.MasterAssets.Where(a => a.Id == lstassets[0].MasterAssetId).ToList();
                     if (lstmasters.Count > 0)
                     {

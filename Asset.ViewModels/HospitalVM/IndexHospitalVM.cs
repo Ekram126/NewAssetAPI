@@ -43,6 +43,9 @@ namespace Asset.ViewModels.HospitalVM
             public bool? hasSparePart { get; set; }
 
 
+            public string ContractName { get; set; }
+            public string StrContractStart { get; set; }
+            public string StrContractEnd { get; set; }
 
 
         }

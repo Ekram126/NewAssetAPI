@@ -11,6 +11,8 @@ using Asset.ViewModels.PagingParameter;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using System.Data.SqlClient;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -25,12 +27,15 @@ namespace Asset.API.Controllers
 
         IVisitService _visitService;
         private IPagingService _pagingService;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private IEngineerService _EngineerService;
 
-
-        public MVisitController(IVisitService visitService, IWebHostEnvironment webHostingEnvironment)
+        public MVisitController(IVisitService visitService, IWebHostEnvironment webHostingEnvironment, UserManager<ApplicationUser> userManager, IEngineerService EngineerService)
         {
             _visitService = visitService;
             _webHostingEnvironment = webHostingEnvironment;
+            _userManager = userManager;
+            _EngineerService = EngineerService;
         }
 
 
@@ -47,92 +52,65 @@ namespace Asset.API.Controllers
 
         [HttpPost]
         [Route("AddVisit")]
-        public ActionResult AddVisit(CreateVisitVM createVisitVM)
+        public async Task<ActionResult> AddVisit([FromForm] CreateVisitVM createVisitVM, [FromForm] List<IFormFile> ListAttachments)
         {
             if (createVisitVM != null)
             {
-                var visitId = _visitService.Add(createVisitVM);
+                var userObj = await _userManager.FindByIdAsync(createVisitVM.UserId);
 
-                if (createVisitVM.ListAttachments.Count > 0)
+                if (userObj == null)
                 {
-
-                    for (int item = 0; item < createVisitVM.ListAttachments.Count; item++)
+                    return Ok(new { data = "", msg = "No User Exist", status = '3' });
+                }
+                else
+                {
+                    var lstEngs = _EngineerService.GetAll().Where(a => a.Email == userObj.Email).ToList();
+                    if (lstEngs.Count == 0)
                     {
-
-                        VisitAttachment attachmentObj = new VisitAttachment();
-                        attachmentObj.VisitId = visitId;
-                        attachmentObj.FileName = createVisitVM.ListAttachments[item].FileName;
-                        attachmentObj.Title = createVisitVM.ListAttachments[item].Title;
-
-                        var attachId = _visitService.CreateVisitAttachments(attachmentObj);
-
-                        var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/VisitFiles/";
-                        bool exists = System.IO.Directory.Exists(folderPath);
-                        if (!exists)
-                            System.IO.Directory.CreateDirectory(folderPath);
-
-                        string filePath = folderPath + "/" + attachmentObj.FileName;
-                        if (System.IO.File.Exists(filePath))
+                        return Ok(new { data = "", msg = "No Engineer Exist", status = '2' });
+                    }
+                    else
+                    {
+                        try
                         {
-
+                            var visitId = _visitService.Add(createVisitVM);
+                            if (ListAttachments.Count > 0)
+                            {
+                                for (int item = 0; item < ListAttachments.Count; item++)
+                                {
+                                    VisitAttachment attachmentObj = new VisitAttachment();
+                                    attachmentObj.VisitId = visitId;
+                                    attachmentObj.FileName = ListAttachments[item].FileName;
+                                    attachmentObj.Title = Path.GetFileNameWithoutExtension(ListAttachments[item].FileName);
+                                    var attachId = _visitService.CreateVisitAttachments(attachmentObj);
+                                    var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/VisitFiles/";
+                                    bool exists = System.IO.Directory.Exists(folderPath);
+                                    if (!exists)
+                                        System.IO.Directory.CreateDirectory(folderPath);
+                                    string filePath = folderPath + "/" + attachmentObj.FileName;
+                                    if (System.IO.File.Exists(filePath))
+                                    {
+                                    }
+                                    else
+                                    {
+                                        Stream stream = new FileStream(filePath, FileMode.Create);
+                                        ListAttachments[item].CopyTo(stream);
+                                        stream.Close();
+                                    }
+                                }
+                                return Ok(new { data = visitId, msg = "Success", status = '1' });
+                            }
+                            return Ok(new { data = visitId, msg = "Success", status = '1' });
                         }
-                        else
+                        catch(SqlException ex)
                         {
-                            Stream stream = new FileStream(filePath, FileMode.Create);
-                            attachmentObj.FileToUpload.CopyTo(stream);
-                            stream.Close();
+                          string str =  ex.Message;
                         }
+                       
                     }
                 }
-                return Ok(new { data = visitId, msg = "Success", status = '1' });
             }
-            else
-                return Ok(new { data = "", msg = "No Data", status = '0' });
+            return Ok();
         }
-
-
-        //[HttpPost]
-        //[Route("CreateVisitAttachments")]
-        //public ActionResult CreateVisitAttachments(VisitAttachment visitAttachment)
-        //{
-        //    if (visitAttachment != null)
-        //    {
-        //        var createVisitAttachmentObj = _visitService.CreateVisitAttachments(visitAttachment);
-        //        return Ok(new { data = createVisitAttachmentObj, msg = "Success", status = '1' });
-        //    }
-        //    else
-        //        return Ok(new { data = "", msg = "No Data", status = '0' });
-        //}
-
-
-        //[HttpPost]
-        //[Route("UploadVisitFiles")]
-        //public ActionResult UploadVisitFiles(IFormFile file)
-        //{
-        //    var folderPath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/VisitFiles/";
-        //    bool exists = System.IO.Directory.Exists(folderPath);
-        //    if (!exists)
-        //        System.IO.Directory.CreateDirectory(folderPath);
-
-        //    string filePath = folderPath + "/" + file.FileName;
-        //    if (System.IO.File.Exists(filePath))
-        //    {
-
-        //    }
-        //    else
-        //    {
-        //        Stream stream = new FileStream(filePath, FileMode.Create);
-        //        file.CopyTo(stream);
-        //        stream.Close();
-        //    }
-        //    var lstUploadVisitFiles = StatusCode(StatusCodes.Status201Created);
-        //    if (lstUploadVisitFiles != null)
-        //    {
-        //        return Ok(new { data = lstUploadVisitFiles, msg = "Success", status = '1' });
-        //    }
-        //    else
-        //        return Ok(new { data = lstUploadVisitFiles, msg = "No Data", status = '0' });
-        //}
-
     }
 }

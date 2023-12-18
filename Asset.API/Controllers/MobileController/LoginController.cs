@@ -187,13 +187,12 @@ namespace Asset.API.Controllers.MobileController
                             isAgency = Convert.ToBoolean(item.KeyValue);
 
 
-                        if (item.KeyName == "IsVisit")
-                            isVisit = Convert.ToBoolean(item.KeyValue);
+                        //if (item.KeyName == "IsVisit")
+                        //    isVisit = Convert.ToBoolean(item.KeyValue);
 
                         if (item.KeyName == "IsOpenRequest")
                             isOpenRequest = Convert.ToBoolean(item.KeyValue);
-                        if (item.KeyName == "CanAdd")
-                            canAdd = Convert.ToBoolean(item.KeyValue);
+                    
                     }
                 }
 

@@ -31,7 +31,14 @@ namespace Asset.ViewModels.ContractVM
             public int? HospitalId { get; set; }
             public DateTime? ContractDate { get; set; }
 
-       
+
+
+            public string BrandName { get; set; }
+            public string BrandNameAr { get; set; }
+
+
+            public string DepartmentName { get; set; }
+            public string DepartmentNameAr { get; set; }
 
         }
     }

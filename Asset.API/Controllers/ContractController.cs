@@ -44,7 +44,7 @@ namespace Contract.API.Controllers
 
         [HttpGet]
         [Route("GetById/{id}")]
-        public ActionResult<MasterContract> GetById(int id)
+        public ActionResult<DetailMasterContractVM> GetById(int id)
         {
             return _masterContractService.GetById(id);
         }
@@ -170,22 +170,19 @@ namespace Contract.API.Controllers
 
         [HttpPost]
         [Route("SearchInContract/{pagenumber}/{pagesize}")]
-        public IEnumerable<IndexMasterContractVM.GetData> SearchInContract(int pagenumber, int pagesize, SearchContractVM searchObj)
+        public IndexMasterContractVM SearchInContract( SearchContractVM searchObj, int pageNumber, int pageSize)
         {
-            PagingParameter pageInfo = new PagingParameter();
-            pageInfo.PageNumber = pagenumber;
-            pageInfo.PageSize = pagesize;
-            var list = _masterContractService.Search(searchObj).ToList();
-            return _pagingService.GetAll<IndexMasterContractVM.GetData>(pageInfo, list);
+            var list = _masterContractService.Search(searchObj,  pageNumber,  pageSize);
+            return list;
         }
 
-        [HttpPost]
-        [Route("SearchInContractCount")]
-        public int SearchInContractCount(SearchContractVM searchObj)
-        {
-            int count = _masterContractService.Search(searchObj).ToList().Count();
-            return count;
-        }
+        //[HttpPost]
+        //[Route("SearchInContractCount")]
+        //public int SearchInContractCount(SearchContractVM searchObj,int pageNumber, int pageSize)
+        //{
+        //    int count = _masterContractService.Search(searchObj,  pageNumber,  pageSize).ToList().Count();
+        //    return count;
+        //}
 
         [HttpDelete]
         [Route("DeleteMasterContract/{id}")]

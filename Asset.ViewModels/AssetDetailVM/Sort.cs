@@ -12,6 +12,8 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public int StatusId { get; set; }
         public int? HospitalId { get; set; }
+        public int? DepartmentId { get; set; }
+
 
         public int? GovernorateId { get; set; }
         public int? CityId { get; set; }
@@ -54,5 +56,6 @@ namespace Asset.ViewModels.AssetDetailVM
 
         public string SupplierName { get; set; }
         public string SupplierNameAr { get; set; }
+        public string SortBy { get; set; }
     }
 }

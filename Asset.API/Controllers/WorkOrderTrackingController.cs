@@ -1,6 +1,8 @@
-﻿using Asset.Domain.Services;
+﻿using Asset.API.Helpers;
+using Asset.Domain.Services;
 using Asset.Models;
 using Asset.ViewModels.WorkOrderTrackingVM;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -27,16 +29,6 @@ namespace Asset.API.Controllers
         {
             return _workOrderTrackingService.GetAllWorkOrderFromTrackingByServiceRequestId(ServiceRequestId, userId);
         }
-
-
-
-        //[Route("GetAllWorkOrderFromTrackingByServiceRequestId/{ServiceRequestId}/{userId}")]
-        //public IEnumerable<LstWorkOrderFromTracking> GetAllWorkOrderFromTrackingByServiceRequestId(int ServiceRequestId, string userId)
-        //{
-        //    return _workOrderTrackingService.GetAllWorkOrderFromTrackingByServiceRequestId(ServiceRequestId, userId);
-        //}
-
-
 
 
         [Route("GetAllWorkOrderFromTrackingByUserId/{userId}")]
@@ -87,11 +79,20 @@ namespace Asset.API.Controllers
 
 
         // GET api/<WorkOrderTrackingController>/5
+
         [HttpGet("{id}")]
         public IndexWorkOrderTrackingVM Get(int id)
         {
             return _workOrderTrackingService.GetWorkOrderTrackingById(id);
         }
+
+        [HttpGet("GetWorkOrderTrackingById/{id}")]
+        public IndexWorkOrderTrackingVM GetWorkOrderTrackingById(int id)
+        {
+            return _workOrderTrackingService.GetWorkOrderTrackingById(id);
+        }
+
+
         [Route("GetAllWorkOrderByWorkOrderId/{WorkOrderId}")]
         public WorkOrderDetails GetAllWorkOrderByWorkOrderId(int WorkOrderId)
         {
@@ -110,9 +111,27 @@ namespace Asset.API.Controllers
         // POST api/<WorkOrderTrackingController>
         [HttpPost]
         [Route("AddWorkOrderTracking")]
-        public int Post(CreateWorkOrderTrackingVM createWorkOrderObj)
+        public IActionResult Post(CreateWorkOrderTrackingVM createWorkOrderObj)
         {
-            return _workOrderTrackingService.AddWorkOrderTracking(createWorkOrderObj);
+
+            var lstWOTrackings = _workOrderTrackingService.GetAll().Where(a => a.WorkOrderId == createWorkOrderObj.WorkOrderId).OrderByDescending(a => a.CreationDate).ToList();
+            if (lstWOTrackings.Count > 0)
+            {
+                var lastDate = lstWOTrackings[0].CreationDate;
+                if (createWorkOrderObj.CreationDate < lastDate)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "sr", Message = "Work Order Date should be greater than the last one", MessageAr = "تاريخ أمر الشغل لابد أن يكون متسلسل" });
+                }
+                else
+                {
+                    return Ok(_workOrderTrackingService.AddWorkOrderTracking(createWorkOrderObj));
+                }
+            }
+            else
+            {
+                return Ok(_workOrderTrackingService.AddWorkOrderTracking(createWorkOrderObj));
+            }
+            //   return Ok();
 
         }
 
@@ -123,8 +142,20 @@ namespace Asset.API.Controllers
             _workOrderTrackingService.UpdateWorkOrderTracking(id, editWorkOrderTrackingVM);
         }
 
+
+
+        [HttpPut]
+        [Route("UpdateWorkOrderTracking")]
+        public void UpdateWorkOrderTracking(EditWorkOrderTrackingVM editWorkOrderTrackingVM)
+        {
+            _workOrderTrackingService.UpdateWorkOrderTracking(editWorkOrderTrackingVM);
+        }
+
+
+
         // DELETE api/<WorkOrderTrackingController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("DeleteWorkOrderTracking/{id}")]
         public void Delete(int id)
         {
             _workOrderTrackingService.DeleteWorkOrderTracking(id);

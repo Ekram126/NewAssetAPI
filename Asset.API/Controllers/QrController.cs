@@ -35,6 +35,7 @@ namespace Asset.API.Controllers
         IWebHostEnvironment _webHostingEnvironment;
         IHttpContextAccessor _httpContextAccessor;
         int i = 1;
+        int hospitalTypeNum = 0;
 
         public QrController(IAssetDetailService assetDetailService,
           ApplicationDbContext context, IWebHostEnvironment webHostingEnvironment,
@@ -89,10 +90,16 @@ namespace Asset.API.Controllers
         /// <param name="eqId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("UpdateQrCode")]
-        public IActionResult GenerateQrCodeWithAssetData()
+        [Route("UpdateQrCode/{hospitalId}")]
+        public IActionResult GenerateQrCodeWithAssetData(int? hospitalId)
         {
-            var lstHospitalAssets = _assetDetailService.GetAll().ToList();
+            List<IndexAssetDetailVM.GetData> lstHospitalAssets = new List<IndexAssetDetailVM.GetData>();
+            if (hospitalId != 0)
+                lstHospitalAssets = _assetDetailService.GetAll().Where(a => a.HospitalId == hospitalId).ToList();
+            else
+                lstHospitalAssets = _assetDetailService.GetAll().ToList();
+
+
             foreach (var item in lstHospitalAssets)
             {
                 var assetObj = _assetDetailService.GetById(item.Id);
@@ -153,7 +160,6 @@ namespace Asset.API.Controllers
             {
                 //Opens the Word template document
                 string strTemplateFile = _webHostingEnvironment.ContentRootPath + @"\UploadedAttachments\QrTemplates\PoliceCardTemplate.dotx";
-
                 Stream docStream = System.IO.File.OpenRead(strTemplateFile);
                 document.Open(docStream, FormatType.Docx);
                 docStream.Dispose();
@@ -180,7 +186,7 @@ namespace Asset.API.Controllers
             }
             return Ok();
         }
-     
+
 
 
         /////////////////////////////////////////////////////
@@ -224,7 +230,7 @@ namespace Asset.API.Controllers
 
 
         /////////////////////////////////////////////////////
-        /// University - 1
+        /// University - 3
         /////////////////////////////////////////
         [Route("GenerateWordForUniversitySelectedQrCode")]
         public ActionResult GenerateWordForUniversitySelectedQrCode(List<IndexAssetDetailVM.GetData> selectedAssets)
@@ -306,15 +312,35 @@ namespace Asset.API.Controllers
             //Set Error Correction Level
             barcode.ErrorCorrectionLevel = PdfErrorCorrectionLevel.Low;
             //Set XDimension
-            barcode.XDimension = 3;
+            barcode.XDimension = 4;
             barcode.Text = qrBarcodeText;
             //Convert the barcode to image
-            System.Drawing.Image barcodeImage = barcode.ToImage(new SizeF(90f, 90f));
+            System.Drawing.Image barcodeImage = barcode.ToImage(new SizeF(88f, 88f));
             return barcodeImage;
         }
         private List<IndexAssetDetailVM.GetData> ListAssets(List<IndexAssetDetailVM.GetData> selectedAssets)
         {
-            return selectedAssets;
+            var lstSettings = _context.Settings.ToList();
+            foreach (var item in lstSettings)
+            {
+                if (item.KeyName == "HospitalType")
+                    hospitalTypeNum = Convert.ToInt32(item.KeyValue);
+            }
+            if (hospitalTypeNum == 2)
+            {
+                foreach (var item in selectedAssets)
+                {
+                    item.QrFilePath = item.QrData;
+                }
+            }
+            else
+            {
+                foreach (var item in selectedAssets)
+                {
+                    item.QrFilePath = item.QrFilePath;
+                }
+            }
+            return selectedAssets.ToList();
         }
     }
 }

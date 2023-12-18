@@ -40,20 +40,9 @@ namespace Asset.Core.Repositories
                     request.IsOpened = false;
                     if (createRequestVM.SubProblemId > 0)
                         request.SubProblemId = createRequestVM.SubProblemId;
-
                     request.RequestTypeId = createRequestVM.RequestTypeId;
                     _context.Request.Add(request);
                     _context.SaveChanges();
-
-
-                    //AssetStatusTransaction assetStatusTransactionObj = new AssetStatusTransaction();
-                    //assetStatusTransactionObj.AssetDetailId = createRequestVM.AssetDetailId;
-                    //assetStatusTransactionObj.AssetStatusId = 4;
-                    //assetStatusTransactionObj.HospitalId = createRequestVM.HospitalId;
-                    //_context.AssetStatusTransactions.Add(assetStatusTransactionObj);
-                    //_context.SaveChanges();
-
-
                     createRequestVM.Id = request.Id;
                 }
             }
@@ -150,6 +139,9 @@ namespace Asset.Core.Repositories
                .Include(r => r.AssetDetail.MasterAsset)
                 .Include(r => r.AssetDetail.MasterAsset.brand)
                   .Include(r => r.AssetDetail.Supplier)
+                   .Include(r => r.AssetDetail.Building)
+                   .Include(r => r.AssetDetail.Floor)
+                   .Include(r => r.AssetDetail.Room)
            .Where(e => e.Id == id).ToList();
 
 
@@ -217,9 +209,9 @@ namespace Asset.Core.Repositories
                 requestDTO.DepreciationRate = req.AssetDetail.DepreciationRate;
                 if (req.AssetDetail.BuildingId != null)
                 {
-                    requestDTO.BuildingId = req.AssetDetail.BuildingId;
-                    requestDTO.BuildName = req.AssetDetail.Building.Name;
-                    requestDTO.BuildNameAr = req.AssetDetail.Building.NameAr;
+                    requestDTO.BuildingId = req.AssetDetail.BuildingId != 0 ? req.AssetDetail.BuildingId : 0;
+                    requestDTO.BuildName = req.AssetDetail.Building != null ? req.AssetDetail.Building.Name : "";
+                    requestDTO.BuildNameAr = req.AssetDetail.Building != null ? req.AssetDetail.Building.NameAr : "";
                 }
 
                 if (req.AssetDetail.RoomId != null)
@@ -4633,6 +4625,7 @@ namespace Asset.Core.Repositories
             PrintServiceRequestVM printSRObj = new PrintServiceRequestVM();
 
             var lstRequests = _context.Request.Where(a => a.Id == id).Include(a => a.AssetDetail)
+                .Include(a => a.AssetDetail.Department)
                 .Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand)
                  .Include(a => a.RequestType).Include(a => a.SubProblem).Include(a => a.SubProblem.Problem)
                  .Include(a => a.RequestMode)
@@ -4682,6 +4675,12 @@ namespace Asset.Core.Repositories
 
                 printSRObj.BrandName = requestObj.AssetDetail.MasterAsset.brand != null ? requestObj.AssetDetail.MasterAsset.brand.Name : "";
                 printSRObj.BrandNameAr = requestObj.AssetDetail.MasterAsset.brand != null ? requestObj.AssetDetail.MasterAsset.brand.NameAr : "";
+
+
+                printSRObj.DepartmentName = requestObj.AssetDetail.Department != null ? requestObj.AssetDetail.Department.Name : "";
+                printSRObj.DepartmentNameAr = requestObj.AssetDetail.Department != null ? requestObj.AssetDetail.Department.NameAr : "";
+
+
 
 
                 var lstRequestNote = _context.RequestTracking.Where(a => a.RequestId == requestObj.Id && a.RequestStatusId == 1).Include(a => a.Request.AssetDetail).ToList();
@@ -4742,7 +4741,6 @@ namespace Asset.Core.Repositories
                             LstWorkOrderFromTracking trackObj = new LstWorkOrderFromTracking();
                             if (item.ActualStartDate != null)
                                 trackObj.ActualStartDate = DateTime.Parse(item.ActualStartDate.ToString());
-
                             if (item.ActualEndDate != null)
                                 trackObj.ActualEndDate = DateTime.Parse(item.ActualEndDate.ToString());
                             trackObj.Notes = item.Notes;
@@ -4810,16 +4808,9 @@ namespace Asset.Core.Repositories
             if (requestDateObj.StrEndDate != "")
                 requestDateObj.EndDate = DateTime.Parse(requestDateObj.StrEndDate);
             else
+            {
                 requestDateObj.EndDate = DateTime.Today.Date;
-
-            //var lstRequests = _context.Request
-            //                   .Include(t => t.AssetDetail)
-            //                   .Include(t => t.AssetDetail.MasterAsset)
-            //                   .Include(t => t.User)
-            //                   .Include(t => t.RequestMode)
-            //                   .Include(t => t.RequestPeriority).OrderByDescending(a => a.RequestDate)
-            //                   .Where(a => a.RequestDate >= requestDateObj.StartDate.Value.Date && a.RequestDate <= requestDateObj.EndDate.Value.Date).ToList();
-
+            }
 
 
 
@@ -5068,9 +5059,13 @@ namespace Asset.Core.Repositories
             {
                 list = list.Where(a => a.RequestDate.Date >= start.Value.Date && a.RequestDate.Date <= end.Value.Date).ToList();
             }
-            return list;
 
+
+
+            return list;
         }
+
+
         public IndexRequestsVM GetByRequestCode(string code)
         {
             var request = _context.Request.Where(a => a.RequestCode == code)
@@ -5212,46 +5207,6 @@ namespace Asset.Core.Repositories
                 {
                     lstRequests = lstRequests.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId && t.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
                 }
-                if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
-                {
-                    if (userRoleNames.Contains("Admin"))
-                    {
-                        lstRequests = lstRequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    }
-                    if (userRoleNames.Contains("TLHospitalManager"))
-                    {
-                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
-                    }
-                    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                    {
-                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
-                    }
-                    if (userRoleNames.Contains("AssetOwner"))
-                    {
-                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    }
-                    //if (userRoleNames.Contains("SRCreator"))
-                    //{
-                    //    lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    //}
-                    //if (userRoleNames.Contains("SRReviewer"))
-                    //{
-                    //    lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
-                    //}
-
-                    if (userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("SRReviewer"))
-                    {
-                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                    }
-                    if (userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator"))
-                    {
-                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
-                    }
-                    if (userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator"))
-                    {
-                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
-                    }
-                }
                 if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
                 {
                     lstRequests = lstRequests.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
@@ -5260,42 +5215,50 @@ namespace Asset.Core.Repositories
                 {
                     lstRequests = lstRequests.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId && t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
                 }
-                if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
+                if (UserObj.HospitalId > 0)
                 {
-                    lstRequests = lstRequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-
-
                     if (userRoleNames.Contains("Admin"))
                     {
-                        lstRequests = lstRequests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
-                    }
-                    if (userRoleNames.Contains("TLHospitalManager"))
-                    {
                         lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
-                    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                    {
-                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
-                    }
-                    if (userRoleNames.Contains("AssetOwner"))
+                    else if ((userRoleNames.Contains("AssetOwner") || userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
                     {
                         lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                     }
-                    if (userRoleNames.Contains("SRCreator"))
+                    else if ((userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
                     {
                         lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-
                     }
-                    if (userRoleNames.Contains("SRReviewer"))
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator"))
                     {
                         lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
-
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && !userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && !userRoleNames.Contains("AssetOwner"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                    }
+                    else if (userRoleNames.Contains("EngDepManager"))
+                    {
+                        lstRequests = lstRequests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
                     }
                 }
             }
-
-
-
             return lstRequests.Count();
 
         }
@@ -6306,6 +6269,8 @@ namespace Asset.Core.Repositories
             }
             var lstRequests = _context.Request
                             .Include(t => t.AssetDetail)
+                             .Include(t => t.AssetDetail.MasterAsset.brand)
+                               .Include(t => t.AssetDetail.Department)
                             .Include(t => t.AssetDetail.MasterAsset)
                             .Include(t => t.User)
                             .Include(t => t.RequestMode)
@@ -6349,6 +6314,18 @@ namespace Asset.Core.Repositories
                             getDataObj.ClosedDate = "";
                         }
                     }
+                    if (req.AssetDetail.MasterAsset.brand != null)
+                    {
+                        getDataObj.BrandName = req.AssetDetail.MasterAsset.brand.Name;
+                        getDataObj.BrandNameAr = req.AssetDetail.MasterAsset.brand.NameAr;
+                    }
+
+                    if (req.AssetDetail.Department != null)
+                    {
+                        getDataObj.DepartmentName = req.AssetDetail.Department.Name;
+                        getDataObj.DepartmentNameAr = req.AssetDetail.Department.NameAr;
+                    }
+
                     getDataObj.Barcode = req.AssetDetail.Barcode;
                     getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
                     getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
@@ -6364,36 +6341,6 @@ namespace Asset.Core.Repositories
                     getDataObj.Barcode = req.AssetDetail.Barcode;
                     getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;// _context.MasterAssets.Where(a => a.Id == req.AssetDetail.MasterAssetId).ToList().FirstOrDefault().Name;
                     getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
-                    //getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
-                    //        .ToList().Select(item => new IndexRequestTrackingVM.GetData
-                    //        {
-                    //            Id = item.Id,
-                    //            StatusName = item.RequestStatusId != null ? _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().Name : "",
-                    //            StatusNameAr = item.RequestStatusId != null ? _context.RequestStatus.Where(a => a.Id == item.RequestStatusId).First().NameAr : "",
-                    //            Description = item.Description,
-                    //            Date = item.DescriptionDate,
-                    //            StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
-                    //            isExpanded = (_context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
-                    //            ListDocuments = _context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).ToList(),
-                    //        }).ToList();
-
-                    //var lstWOStatus = _context.WorkOrderTrackings
-                    //        .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
-                    //        .OrderByDescending(a => a.CreationDate).ToList();
-
-                    //if (lstWOStatus.Count > 0)
-                    //{
-                    //    getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
-                    //    getDataObj.WOLastTrackDescription = lstWOStatus[0].Notes;
-                    //}
-
-
-                    //getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
-                    //getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count > 0 ? _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count : 0;
-                    //getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId : 0;
-                    //getDataObj.CityId = req.User != null ? req.User.CityId : 0;
-                    //getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId : 0;
-                    //getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId : 0;
                     list.Add(getDataObj);
                 }
 
@@ -6421,71 +6368,6 @@ namespace Asset.Core.Repositories
                 {
                     list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId && t.StatusId == statusId).ToList();
                 }
-
-                //if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
-                //{
-
-                //    if (userRoleNames.Contains("TLHospitalManager"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
-                //    }
-                //    //if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                //    //{
-                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.StatusId == statusId).ToList();
-                //    //}
-                //    //if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
-                //    //{
-                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //    //}
-                //    //if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-                //    //{
-                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                //    //}
-                //    if (userRoleNames.Contains("AssetOwner"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //    }
-                //    if (userRoleNames.Contains("EngDepManager"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                //    }
-
-                //}
-                //if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
-                //{
-
-                //    if (userRoleNames.Contains("TLHospitalManager"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                //    }
-
-                //    //if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-                //    //{
-                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                //    //}
-                //    //if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-                //    //{
-                //    //{
-                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                //    //}
-                //    //if (userRoleNames.Contains("Eng") && !userRoleNames.Contains("EngDepManager"))
-                //    //{
-                //    //    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //    //}
-
-                //    if (userRoleNames.Contains("EngDepManager"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                //    }
-                //    if (userRoleNames.Contains("SRCreator"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
-                //    }
-                //    if (userRoleNames.Contains("SRReviewer"))
-                //    {
-                //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                //    }
-                //}
                 if (UserObj.HospitalId > 0)
                 {
                     if (userRoleNames.Contains("Admin"))
@@ -6536,9 +6418,6 @@ namespace Asset.Core.Repositories
             }
             return list;
         }
-
-
-
         public IndexRequestVM GetRequestsByDateAndStatus(SearchRequestDateVM requestDateObj, int pageNumber, int pageSize)
         {
             IndexRequestVM mainClass = new IndexRequestVM();
@@ -6592,12 +6471,23 @@ namespace Asset.Core.Repositories
             var lstRequests = _context.RequestTracking
                               .Include(t => t.Request)
                              .Include(t => t.Request.AssetDetail)
+                              .Include(t => t.Request.AssetDetail.Hospital)
                              .Include(t => t.Request.AssetDetail.MasterAsset)
                              .Include(t => t.User)
                              .Include(t => t.Request.RequestMode).Include(t => t.RequestStatus)
                              .Include(t => t.Request.RequestPeriority)
                              .OrderByDescending(a => a.DescriptionDate)
                              .ToList().GroupBy(a => a.Request.Id).ToList();
+
+            if (requestDateObj.HospitalId > 0)
+            {
+                lstRequests = lstRequests.Where(a => a.FirstOrDefault().Request.HospitalId == requestDateObj.HospitalId).ToList();
+            }
+            else
+            {
+                lstRequests = lstRequests.ToList();
+            }
+
 
 
             if (start != null || end != null)
@@ -6611,12 +6501,12 @@ namespace Asset.Core.Repositories
             if (requestDateObj.StatusId > 0)
             {
                 lstRequests = lstRequests.Where(a => a.FirstOrDefault().RequestStatusId == requestDateObj.StatusId).ToList();
-
             }
             else
             {
                 lstRequests = lstRequests.ToList();
             }
+
 
 
             foreach (var req in lstRequests)
@@ -6733,44 +6623,6 @@ namespace Asset.Core.Repositories
             {
                 list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
-
-            //if (UserObj.HospitalId > 0)
-            //{
-            //    if (userRoleNames.Contains("Admin"))
-            //    {
-            //        list = list.ToList();
-            //    }
-            //    if (userRoleNames.Contains("TLHospitalManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("EngDepManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("EngManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("Eng"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //        //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("AssetOwner"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("SRCreator"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("SRReviewer"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //}
-
             if (UserObj.HospitalId > 0)
             {
                 if (userRoleNames.Contains("Admin"))
@@ -6779,11 +6631,13 @@ namespace Asset.Core.Repositories
                 }
                 else if ((userRoleNames.Contains("AssetOwner") || userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
                 {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                    // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
                 else if ((userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator")) && !userRoleNames.Contains("TLHospitalManager") && !userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("SRReviewer"))
                 {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                    //list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
                 else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRCreator"))
                 {
@@ -6827,6 +6681,8 @@ namespace Asset.Core.Repositories
             List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
             ApplicationUser UserObj = new ApplicationUser();
             List<string> userRoleNames = new List<string>();
+            List<string> listNotes = new List<string>();
+            List<string> listRequestDesc = new List<string>();
             var obj = _context.ApplicationUser.Where(a => a.Id == requestDateObj.UserId).ToList();
             if (obj.Count > 0)
             {
@@ -6854,7 +6710,7 @@ namespace Asset.Core.Repositories
             else
             {
                 requestDateObj.StartDate = DateTime.Parse("01/01/1900");
-                start = DateTime.Parse(requestDateObj.StartDate.ToString());
+                start = DateTime.Parse(requestDateObj.StartDate.Value.Date.ToString());
             }
 
 
@@ -6865,8 +6721,11 @@ namespace Asset.Core.Repositories
             }
             else
             {
-                requestDateObj.EndDate = DateTime.Today.Date;
-                end = DateTime.Parse(requestDateObj.EndDate.ToString());
+
+                var utcDate = DateTime.UtcNow;
+                DateTime localDate = utcDate.ToLocalTime();
+                requestDateObj.EndDate = localDate.Date;
+                end = DateTime.Parse(requestDateObj.EndDate.Value.Date.ToString());
             }
 
 
@@ -6925,6 +6784,24 @@ namespace Asset.Core.Repositories
                     getDataObj.StatusIcon = req.FirstOrDefault().RequestStatus.Icon;
                     getDataObj.DescriptionDate = req.FirstOrDefault().DescriptionDate;
                     getDataObj.Description = req.FirstOrDefault().Description;
+
+
+                    var lstDescription = _context.RequestTracking.Include(t => t.Request).Where(a => a.RequestId == req.FirstOrDefault().RequestId).ToList();
+
+                    foreach (var itm in lstDescription)
+                    {
+                        listRequestDesc.Add("-" + itm.Description);
+                    }
+                    getDataObj.ListDescriptions = string.Join(Environment.NewLine, listRequestDesc);
+
+
+
+
+
+
+
+
+
                     if (getDataObj.StatusId == 2)
                     {
                         getDataObj.ClosedDate = req.FirstOrDefault().DescriptionDate.ToString();
@@ -6972,6 +6849,17 @@ namespace Asset.Core.Repositories
                     getDataObj.WorkOrderDate = DateTime.Parse(lstWOStatus[0].WorkOrderDate.ToString());
 
 
+
+
+                    foreach (var note in lstWOStatus)
+                    {
+                        listNotes.Add(note.Notes);
+                    }
+                    getDataObj.ListWorkOrderNotes = string.Join(",", listNotes);
+
+
+
+
                     if (getDataObj.StatusId == 3 && (getDataObj.LatestWorkOrderStatusId == 2 && (lstWOStatus.Count > 2)))
                     {
                         getDataObj.WorkOrderNote = lstWOStatus[0].Notes;
@@ -7011,82 +6899,6 @@ namespace Asset.Core.Repositories
             {
                 list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
-
-            //if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId > 0)
-            //{
-            //    if (userRoleNames.Contains("Admin"))
-            //    {
-            //        list = list.ToList();
-            //    }
-            //    if (userRoleNames.Contains("TLHospitalManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("EngDepManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("EngManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("Eng"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-
-            //        //  list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == requestDateObj.UserId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("AssetOwner"))
-            //    {
-            //        // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("SRCreator"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
-            //    }
-            //    if (userRoleNames.Contains("SRReviewer"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //}
-            //if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId > 0)
-            //{
-            //    if (userRoleNames.Contains("Admin"))
-            //    {
-            //        list = list.ToList();
-            //    }
-            //    if (userRoleNames.Contains("TLHospitalManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("EngDepManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("EngManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("AssetOwner"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //        //   list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("Eng"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("SRCreator"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
-            //    }
-            //    if (userRoleNames.Contains("SRReviewer"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //}
-
             if (UserObj.HospitalId > 0)
             {
                 if (userRoleNames.Contains("Admin"))
@@ -7134,34 +6946,17 @@ namespace Asset.Core.Repositories
 
 
         }
-        public List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId)
+        public IndexRequestVM AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId, int pageNumber, int pageSize)
         {
+
+            IndexRequestVM mainClass = new IndexRequestVM();
             List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
-            ApplicationUser UserObj = new ApplicationUser();
-            ApplicationRole roleObj = new ApplicationRole();
-
-            //List<string> userRoleNames = new List<string>();
-            //var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
-            //if (obj.Count > 0)
-            //{
-            //    UserObj = obj[0];
-
-            //    var roles = (from userRole in _context.UserRoles
-            //                 join role in _context.ApplicationRole on userRole.RoleId equals role.Id
-            //                 where userRole.UserId == userId
-            //                 select role);
-            //    foreach (var role in roles)
-            //    {
-            //        userRoleNames.Add(role.Name);
-            //    }
-            //}
-
-
             var lstRequests = _context.Request
                         .Include(t => t.AssetDetail).Include(t => t.AssetDetail.Department)
                         .Include(t => t.AssetDetail.MasterAsset)
                          .OrderByDescending(a => a.RequestDate)
                          .Where(a => a.AssetDetail.HospitalId == hospitalId)
+
                          .ToList();
 
             foreach (var req in lstRequests)
@@ -7179,10 +6974,10 @@ namespace Asset.Core.Repositories
                         getDataObj.RequestDate = req.RequestDate;
                         getDataObj.HospitalId = req.AssetDetail.HospitalId;
                         getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
-                        getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
-                        getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
-                        getDataObj.DepartmentName = req.AssetDetail.Department.Name;
-                        getDataObj.DepartmentNameAr = req.AssetDetail.Department.NameAr;
+                        getDataObj.AssetName = req.AssetDetail.MasterAsset != null ? req.AssetDetail.MasterAsset.Name : "";
+                        getDataObj.AssetNameAr = req.AssetDetail.MasterAsset != null ? req.AssetDetail.MasterAsset.NameAr : "";
+                        getDataObj.DepartmentName = req.AssetDetail.Department != null ? req.AssetDetail.Department.Name : "";
+                        getDataObj.DepartmentNameAr = req.AssetDetail.Department != null ? req.AssetDetail.Department.NameAr : "";
                         getDataObj.PeriorityId = (int)req.AssetDetail.MasterAsset.PeriorityId;
 
                         if (req.AssetDetail.MasterAsset.PeriorityId == 1)
@@ -7215,8 +7010,10 @@ namespace Asset.Core.Repositories
             {
                 list = list.ToList();
             }
-            return list;
-
+            var requestsPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            mainClass.Results = requestsPerPage;
+            mainClass.Count = list.Count();
+            return mainClass;
         }
         public List<IndexRequestVM.GetData> PrintListOfRequests(List<ExportRequestVM> requests)
         {
@@ -7571,7 +7368,7 @@ namespace Asset.Core.Repositories
                 {
                     getDataObj.AssetDetailId = item.AssetDetailId != null ? (int)item.AssetDetailId : 0;
                 }
-                if (item.AssetDetail.MasterAssetId != null)
+                if (item.AssetDetail.MasterAsset != null)
                 {
                     getDataObj.MasterAssetId = item.AssetDetail.MasterAsset != null ? (int)item.AssetDetail.MasterAsset.Id : 0;
                     getDataObj.AssetName = item.AssetDetail.MasterAsset.Name;
@@ -7672,7 +7469,9 @@ namespace Asset.Core.Repositories
 
                 if (searchObj.End == "")
                 {
-                    searchObj.EndDate = DateTime.Today.Date;
+                    var utcDate = DateTime.UtcNow;
+                    DateTime localDate = utcDate.ToLocalTime();
+                    searchObj.EndDate = localDate.Date;
                 }
                 else
                 {
@@ -7885,49 +7684,6 @@ namespace Asset.Core.Repositories
             {
                 list = list.Where(t => t.SubOrganizationId == UserObj.SubOrganizationId).ToList();
             }
-
-            //if (UserObj.HospitalId > 0)
-            //{
-            //    if (userRoleNames.Contains("Admin"))
-            //    {
-            //        list = list.ToList();
-            //    }
-            //    if (userRoleNames.Contains("TLHospitalManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("EngDepManager") && !userRoleNames.Contains("Eng"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (!userRoleNames.Contains("EngManager") && userRoleNames.Contains("Eng"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == searchOpenRequestObj.UserId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("Eng") && userRoleNames.Contains("EngDepManager"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("AssetOwner"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-            //    if (userRoleNames.Contains("SRCreator"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == UserObj.Id).ToList();
-            //    }
-            //    if (userRoleNames.Contains("SRReviewer"))
-            //    {
-            //        list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-            //    }
-
-            //}
-
-
-
-
-
-
             if (UserObj.HospitalId > 0)
             {
                 if (userRoleNames.Contains("Admin"))
@@ -7963,6 +7719,10 @@ namespace Asset.Core.Repositories
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
                 else if (userRoleNames.Contains("TLHospitalManager") && userRoleNames.Contains("EngDepManager") && userRoleNames.Contains("SRReviewer") && userRoleNames.Contains("SRCreator") && userRoleNames.Contains("AssetOwner") && !userRoleNames.Contains("SRCreator"))
+                {
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
+                }
+                else if (userRoleNames.Contains("AssetOwner") && userRoleNames.Contains("SRReviewer"))
                 {
                     list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
                 }
@@ -8131,5 +7891,918 @@ namespace Asset.Core.Repositories
 
             return list;
         }
+
+
+
+
+
+
+        public IndexRequestVM GetAllRequestsByStatusIdAndPaging2(string userId, int statusId, int pageNumber, int pageSize)
+        {
+            IndexRequestVM mainClass = new IndexRequestVM();
+            List<IndexRequestVM.GetData> lstModel = new List<IndexRequestVM.GetData>();
+            ApplicationUser UserObj = new ApplicationUser();
+            List<string> lstRoleNames = new List<string>();
+
+            var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+            if (obj.Count > 0)
+            {
+                UserObj = obj[0];
+                var roleNames = (from userRole in _context.UserRoles
+                                 join role in _context.Roles on userRole.RoleId equals role.Id
+                                 where userRole.UserId == userId
+                                 select role);
+                foreach (var name in roleNames)
+                {
+                    lstRoleNames.Add(name.Name);
+                }
+            }
+
+            IQueryable<Request> requests = _context.Request
+                                        .Include(a => a.AssetDetail)
+                                        .Include(a => a.AssetDetail.Hospital)
+                                        .Include(a => a.AssetDetail.Hospital.Governorate)
+                                        .Include(a => a.AssetDetail.Hospital.City)
+                                        .Include(a => a.AssetDetail.Hospital.Organization)
+                                        .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                        .Include(a => a.User)
+                                        .Include(a => a.RequestMode)
+                                        .Include(a => a.RequestPeriority)
+                                        .Include(a => a.RequestType)
+                                        .Include(a => a.AssetDetail.MasterAsset)
+                                        .OrderByDescending(a => a.RequestDate)
+                                        .AsQueryable();
+
+
+
+            if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.AsQueryable();
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).AsQueryable();
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.AssetDetail.Hospital.CityId == UserObj.CityId).AsQueryable();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).AsQueryable();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).AsQueryable();
+            }
+            if (UserObj.HospitalId > 0)
+            {
+                if (lstRoleNames.Contains("Admin"))
+                {
+                    requests = requests.AsQueryable();
+                }
+                else if ((lstRoleNames.Contains("AssetOwner") || lstRoleNames.Contains("SRCreator")) && !lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).AsQueryable();
+                }
+                else if (lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRReviewer"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).AsQueryable();
+                }
+                else if ((lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRCreator")) && !lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).AsQueryable();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRCreator"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).AsQueryable();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).AsQueryable();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).AsQueryable();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).AsQueryable();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).AsQueryable();
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).AsQueryable();
+                }
+
+            }
+
+
+            var allrequests = requests.ToList();
+
+            if (allrequests.Count() > 0)
+            {
+                IQueryable<RequestTracking> lstQueryTracks = null;
+                List<RequestTracking> lstTracks = new List<RequestTracking>();
+                foreach (var req in allrequests)
+                {
+
+                    lstQueryTracks = _context.RequestTracking.Include(a => a.Request).Include(a => a.User).Include(a => a.RequestStatus)
+                                                        .Where(a => a.RequestId == req.Id).OrderByDescending(a => a.DescriptionDate).AsQueryable();
+
+                    lstTracks = lstQueryTracks.ToList();
+
+
+
+                    if (lstTracks.Count > 0)
+                    {
+                        IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
+                        var requestStatusId = lstTracks[0].RequestStatusId;
+                        if (statusId > 0)
+                        {
+                            if (requestStatusId == statusId)
+                            {
+                                getDataObj.RequestId = req.Id;
+                                getDataObj.Id = req.Id;
+                                getDataObj.RequestCode = req.RequestCode;
+                                getDataObj.Barcode = req.AssetDetail.Barcode;
+                                getDataObj.CreatedById = req.CreatedById;
+                                getDataObj.CreatedBy = lstTracks[0].User != null ? lstTracks[0].User.UserName : "";
+                                getDataObj.Subject = req.Subject;
+                                getDataObj.RequestDate = req.RequestDate;
+                                getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
+                                getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                                getDataObj.StatusId = (int)lstTracks[0].RequestStatusId;
+                                getDataObj.StatusName = lstTracks[0].RequestStatus.Name;
+                                getDataObj.StatusNameAr = lstTracks[0].RequestStatus.NameAr;
+                                getDataObj.StatusColor = lstTracks[0].RequestStatus.Color;
+                                getDataObj.StatusIcon = lstTracks[0].RequestStatus.Icon;
+                                getDataObj.Description = lstTracks[0].Description;
+                                if (int.Parse(lstTracks[0].RequestStatusId.ToString()) == 2)
+                                {
+                                    getDataObj.ClosedDate = lstTracks[0].DescriptionDate.ToString();
+                                }
+                                else
+                                {
+                                    getDataObj.ClosedDate = "";
+                                }
+                                getDataObj.Barcode = req.AssetDetail.Barcode;
+                                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                getDataObj.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
+                                getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
+                                getDataObj.ModeName = req.RequestMode != null ? req.RequestMode.Name : "";
+                                getDataObj.ModeNameAr = req.RequestMode != null ? req.RequestMode.NameAr : "";
+                                getDataObj.PeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
+                                getDataObj.PeriorityName = req.RequestPeriority != null ? req.RequestPeriority.Name : "";
+                                getDataObj.PeriorityNameAr = req.RequestPeriority != null ? req.RequestPeriority.NameAr : "";
+                                getDataObj.PeriorityColor = req.RequestPeriority != null ? req.RequestPeriority.Color : "";
+                                getDataObj.PeriorityIcon = req.RequestPeriority != null ? req.RequestPeriority.Icon : "";
+                                getDataObj.AssetHospitalId = req.HospitalId;
+                                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                getDataObj.Barcode = req.AssetDetail.Barcode;
+                                getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                                getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                                getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
+                                   .ToList().Select(item => new IndexRequestTrackingVM.GetData
+                                   {
+                                       Id = item.Id,
+                                       StatusName = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Name : "",
+                                       StatusNameAr = item.RequestStatusId != null ? lstTracks[0].RequestStatus.NameAr : "",
+                                       StatusColor = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Color : "",
+                                       StatusIcon = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Icon : "",
+                                       Description = item.Description,
+                                       Date = item.DescriptionDate,
+                                       StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
+                                       isExpanded = (_context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
+                                       ListDocuments = _context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).ToList(),
+                                   }).ToList();
+                                var lstWOStatus = _context.WorkOrderTrackings
+                                        .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
+                                        .OrderByDescending(a => a.CreationDate).ToList();
+
+                                if (lstWOStatus.Count > 0)
+                                {
+                                    getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                                    getDataObj.WOLastTrackDescription = lstWOStatus[0].Notes;
+                                }
+                                getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
+                                getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count > 0 ? _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count : 0;
+                                getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId : 0;
+                                getDataObj.CityId = req.User != null ? req.User.CityId : 0;
+                                getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId : 0;
+                                getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId : 0;
+                                lstModel.Add(getDataObj);
+                            }
+                        }
+                        else
+                        {
+
+                            getDataObj.RequestId = req.Id;
+                            getDataObj.Id = req.Id;
+                            getDataObj.RequestCode = req.RequestCode;
+                            getDataObj.Barcode = req.AssetDetail.Barcode;
+                            getDataObj.CreatedById = req.CreatedById;
+                            getDataObj.CreatedBy = lstTracks[0].User != null ? lstTracks[0].User.UserName : "";
+                            getDataObj.Subject = req.Subject;
+                            getDataObj.RequestDate = req.RequestDate;
+                            getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
+                            getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                            getDataObj.StatusId = (int)lstTracks[0].RequestStatusId;
+                            getDataObj.StatusName = lstTracks[0].RequestStatus.Name;
+                            getDataObj.StatusNameAr = lstTracks[0].RequestStatus.NameAr;
+                            getDataObj.StatusColor = lstTracks[0].RequestStatus.Color;
+                            getDataObj.StatusIcon = lstTracks[0].RequestStatus.Icon;
+                            getDataObj.Description = lstTracks[0].Description;
+                            if (int.Parse(lstTracks[0].RequestStatusId.ToString()) == 2)
+                            {
+                                getDataObj.ClosedDate = lstTracks[0].DescriptionDate.ToString();
+                            }
+                            else
+                            {
+                                getDataObj.ClosedDate = "";
+                            }
+                            getDataObj.Barcode = req.AssetDetail.Barcode;
+                            getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                            getDataObj.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
+                            getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
+                            getDataObj.ModeName = req.RequestMode != null ? req.RequestMode.Name : "";
+                            getDataObj.ModeNameAr = req.RequestMode != null ? req.RequestMode.NameAr : "";
+                            getDataObj.PeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
+                            getDataObj.PeriorityName = req.RequestPeriority != null ? req.RequestPeriority.Name : "";
+                            getDataObj.PeriorityNameAr = req.RequestPeriority != null ? req.RequestPeriority.NameAr : "";
+                            getDataObj.PeriorityColor = req.RequestPeriority != null ? req.RequestPeriority.Color : "";
+                            getDataObj.PeriorityIcon = req.RequestPeriority != null ? req.RequestPeriority.Icon : "";
+                            getDataObj.AssetHospitalId = req.HospitalId;
+                            getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                            getDataObj.Barcode = req.AssetDetail.Barcode;
+                            getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                            getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                            getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
+                               .ToList().Select(item => new IndexRequestTrackingVM.GetData
+                               {
+                                   Id = item.Id,
+                                   StatusName = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Name : "",
+                                   StatusNameAr = item.RequestStatusId != null ? lstTracks[0].RequestStatus.NameAr : "",
+                                   StatusColor = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Color : "",
+                                   StatusIcon = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Icon : "",
+                                   Description = item.Description,
+                                   Date = item.DescriptionDate,
+                                   StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
+                                   isExpanded = (_context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
+                                   ListDocuments = _context.RequestDocument.Where(a => a.RequestTrackingId == item.Id).ToList(),
+                               }).ToList();
+                            var lstWOStatus = _context.WorkOrderTrackings
+                                    .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
+                                    .OrderByDescending(a => a.CreationDate).ToList();
+
+                            if (lstWOStatus.Count > 0)
+                            {
+                                getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                                getDataObj.WOLastTrackDescription = lstWOStatus[0].Notes;
+                            }
+                            getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
+                            getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count > 0 ? _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count : 0;
+                            getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId : 0;
+                            getDataObj.CityId = req.User != null ? req.User.CityId : 0;
+                            getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId : 0;
+                            getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId : 0;
+                            lstModel.Add(getDataObj);
+                        }
+
+                    }
+                    var requestsPerPage = lstModel.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                    mainClass.Results = requestsPerPage;
+                    mainClass.Count = lstModel.Count;
+
+                }
+            }
+
+            return mainClass;
+        }
+
+
+        public IndexRequestVM GetRequestsByStatusIdAndPagingV2(string userId, int statusId, int pageNumber, int pageSize)
+        {
+
+
+            var LastTrackingForeachRequest =
+                from rt1 in _context.RequestTracking
+                join Subquery in
+                (from rt2 in _context.RequestTracking
+                 group rt2 by rt2.RequestId into g
+                 select new { RequestId = g.Key, DescriptionDate = g.Max(x => x.DescriptionDate) }
+                )
+                on new { rt1.RequestId, rt1.DescriptionDate }
+                equals new { Subquery.RequestId, Subquery.DescriptionDate }
+                select rt1;
+
+
+            IndexRequestVM mainClass = new();
+            List<IndexRequestVM.GetData> lstModel = new List<IndexRequestVM.GetData>();
+            // identity part
+            ApplicationUser UserObj = new ApplicationUser();
+            List<string> lstRoleNames = new List<string>();
+            Func<Request, bool> IsEligble = null; // func delegate to pass function as a parameter
+            var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+            // fetch UserRoles to Filter Data base on it
+            if (obj.Count > 0)
+            {
+                UserObj = obj[0];
+                var roleNames = (from userRole in _context.UserRoles
+                                 join role in _context.Roles on userRole.RoleId equals role.Id
+                                 where userRole.UserId == userId
+                                 select role);
+                foreach (var name in roleNames)
+                {
+                    lstRoleNames.Add(name.Name);
+                }
+
+            }
+            // Fill The Func Delegate With The Filteration Condition 
+
+            if (UserObj.GovernorateId == 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                IsEligble = null;
+            }
+
+            if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                IsEligble = t => t.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId;
+            }
+
+            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
+            {
+                IsEligble = t => t.AssetDetail.Hospital.CityId == UserObj.CityId;
+            }
+
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
+            {
+                IsEligble = t => t.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId;
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
+            {
+                IsEligble = t => t.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId;
+            }
+
+
+            if (UserObj.HospitalId > 0)
+            {
+                //if (lstRoleNames.Contains("Admin"))
+                //{
+                //    IsEligble = null;
+                //}
+                //if (lstRoleNames.Contains("TLHospitalManager"))
+                //{
+                //    IsEligble = t => t.HospitalId == UserObj.HospitalId;
+                //}
+                //if (lstRoleNames.Contains("EngDepManager"))
+                //{
+                //    IsEligble = t => t.HospitalId == UserObj.HospitalId;
+                //}
+                //if (lstRoleNames.Contains("EngManager"))
+                //{
+                //    IsEligble = t => t.HospitalId == UserObj.HospitalId;
+                //}
+                //if (lstRoleNames.Contains("AssetOwner"))
+                //{
+                //    IsEligble = t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId;
+                //}
+                //if (lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRReviewer"))
+                //{
+                //    IsEligble = t => t.AssetDetail.Hospital.Id == UserObj.HospitalId;
+                //}
+                //if (lstRoleNames.Contains("Eng"))
+                //{
+                //    IsEligble = t => t.HospitalId == UserObj.HospitalId;
+                //}
+
+
+                if (lstRoleNames.Contains("Admin"))
+                {
+                    IsEligble = null;
+                }
+                else if ((lstRoleNames.Contains("AssetOwner") || lstRoleNames.Contains("SRCreator")) && !lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer"))
+                {
+                    IsEligble = t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId;
+                }
+                else if ((lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRCreator")) && !lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer"))
+                {
+                    IsEligble = t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId;
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRCreator"))
+                {
+                    IsEligble = t => t.AssetDetail.HospitalId == UserObj.HospitalId;
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    IsEligble = t => t.AssetDetail.HospitalId == UserObj.HospitalId;
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    IsEligble = t => t.AssetDetail.HospitalId == UserObj.HospitalId;
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    IsEligble = t => t.AssetDetail.HospitalId == UserObj.HospitalId;
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    IsEligble = t => t.AssetDetail.HospitalId == UserObj.HospitalId;
+                }
+                else if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    IsEligble = t => t.AssetDetail.HospitalId == UserObj.HospitalId;
+                }
+            }
+
+            if (statusId > 0)
+            {
+                if (IsEligble is not null)
+                {
+                    //mainClass.Count = LastTrackingForeachRequest.Where(a => a.RequestStatusId == statusId).Count();
+                    var lastTrackOfRequestByStatus = LastTrackingForeachRequest.Where(a => a.RequestStatusId == statusId).ToList();
+                    var ids = lastTrackOfRequestByStatus.Select(a => a.RequestId).ToList();
+
+                    var requests = _context.Request
+                                       .Include(a => a.AssetDetail)
+                                       .Include(a => a.AssetDetail.Hospital)
+                                       .Include(a => a.AssetDetail.Hospital.Governorate)
+                                       .Include(a => a.AssetDetail.Hospital.City)
+                                       .Include(a => a.AssetDetail.Hospital.Organization)
+                                       .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                       .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                       .Include(a => a.User)
+                                       .Include(a => a.RequestMode)
+                                       .Include(a => a.RequestPeriority)
+                                       .Include(a => a.RequestType)
+                                       .Include(a => a.AssetDetail.MasterAsset)
+                                       .OrderByDescending(a => a.RequestDate)
+                                       .AsNoTracking()
+                                       .Where(IsEligble).ToList();
+                    requests = requests.Where(a => ids.Contains(a.Id)).ToList();
+                    mainClass.Count = requests.Count;
+                    requests = requests.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+
+
+                    if (requests.Count > 0)
+                    {
+                        foreach (var req in requests)
+                        {
+                            var lstTracks = _context.RequestTracking.Include(a => a.RequestStatus).Where(a => a.RequestId == req.Id).OrderByDescending(a => a.DescriptionDate).ToList();
+                            if (lstTracks.Count > 0)
+                            {
+                                var requestStatusId = lstTracks[0].RequestStatusId;
+                                if (requestStatusId == statusId)
+                                {
+                                    IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
+                                    getDataObj.RequestId = req.Id;
+                                    getDataObj.Id = req.Id;
+                                    getDataObj.RequestCode = req.RequestCode;
+                                    getDataObj.Barcode = req.AssetDetail.Barcode;
+                                    getDataObj.CreatedById = req.CreatedById;
+                                    //  getDataObj.CreatedBy = lstTracks[0].User != null ? lstTracks[0].User.UserName : "";
+                                    getDataObj.CreatedBy = req.User != null ? req.User.UserName : "";
+                                    getDataObj.Subject = req.Subject;
+                                    getDataObj.RequestDate = req.RequestDate;
+                                    getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
+                                    getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                                    getDataObj.StatusId = (int)lstTracks[0].RequestStatusId;
+                                    getDataObj.StatusName = lstTracks[0].RequestStatus.Name;
+                                    getDataObj.StatusNameAr = lstTracks[0].RequestStatus.NameAr;
+                                    getDataObj.StatusColor = lstTracks[0].RequestStatus.Color;
+                                    getDataObj.StatusIcon = lstTracks[0].RequestStatus.Icon;
+                                    getDataObj.Description = lstTracks[0].Description;
+                                    if (int.Parse(lstTracks[0].RequestStatusId.ToString()) == 2)
+                                    {
+                                        getDataObj.ClosedDate = lstTracks[0].DescriptionDate.ToString();
+                                    }
+                                    else
+                                    {
+                                        getDataObj.ClosedDate = "";
+                                    }
+                                    getDataObj.Barcode = req.AssetDetail.Barcode;
+                                    getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                    getDataObj.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
+                                    getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
+                                    getDataObj.ModeName = req.RequestMode != null ? req.RequestMode.Name : "";
+                                    getDataObj.ModeNameAr = req.RequestMode != null ? req.RequestMode.NameAr : "";
+                                    getDataObj.PeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
+                                    getDataObj.PeriorityName = req.RequestPeriority != null ? req.RequestPeriority.Name : "";
+                                    getDataObj.PeriorityNameAr = req.RequestPeriority != null ? req.RequestPeriority.NameAr : "";
+                                    getDataObj.PeriorityColor = req.RequestPeriority != null ? req.RequestPeriority.Color : "";
+                                    getDataObj.PeriorityIcon = req.RequestPeriority != null ? req.RequestPeriority.Icon : "";
+                                    getDataObj.AssetHospitalId = req.HospitalId;
+                                    getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                    getDataObj.Barcode = req.AssetDetail.Barcode;
+                                    getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                                    getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                                    getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
+                                       .ToList().Select(item => new IndexRequestTrackingVM.GetData
+                                       {
+                                           Id = item.Id,
+                                           StatusName = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Name : "",
+                                           StatusNameAr = item.RequestStatusId != null ? lstTracks[0].RequestStatus.NameAr : "",
+                                           Description = item.Description,
+                                           Date = item.DescriptionDate,
+                                           StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
+                                           //   isExpanded = (_context.ExternalFixFile.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
+                                           //   ListDocuments = _context.ExternalFixFile.Where(a => a.RequestTrackingId == item.Id).ToList(),
+                                       }).ToList();
+                                    var lstWOStatus = _context.WorkOrderTrackings
+                                            .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
+                                            .OrderByDescending(a => a.CreationDate).ToList();
+
+                                    if (lstWOStatus.Count > 0)
+                                    {
+                                        getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                                        getDataObj.WOLastTrackDescription = lstWOStatus[0].Notes;
+                                    }
+                                    getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
+                                    getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count > 0 ? _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count : 0;
+                                    getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId : 0;
+                                    getDataObj.CityId = req.User != null ? req.User.CityId : 0;
+                                    getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId : 0;
+                                    getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId : 0;
+                                    lstModel.Add(getDataObj);
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+
+                else
+                {
+                    mainClass.Count = LastTrackingForeachRequest.Where(a => a.RequestStatusId == statusId).Count();
+
+                    var lastTrackOfRequestByStatus = LastTrackingForeachRequest.Where(a => a.RequestStatusId == statusId).ToList();
+
+                    var requests = _context.Request
+                                       .Include(a => a.AssetDetail)
+                                       .Include(a => a.AssetDetail.Hospital)
+                                       .Include(a => a.AssetDetail.Hospital.Governorate)
+                                       .Include(a => a.AssetDetail.Hospital.City)
+                                       .Include(a => a.AssetDetail.Hospital.Organization)
+                                       .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                       .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                       .Include(a => a.User)
+                                       .Include(a => a.RequestMode)
+                                       .Include(a => a.RequestPeriority)
+                                       .Include(a => a.RequestType)
+                                       .Include(a => a.AssetDetail.MasterAsset)
+                                       .OrderByDescending(a => a.RequestDate)
+                                       .AsNoTracking().ToList();
+
+
+                    //  List<Person> selectedPeople = people.Where(p => selectedIds.Contains(p.Id)).ToList();
+                    var ids = lastTrackOfRequestByStatus.Select(a => a.RequestId).ToList();
+                    requests = requests.Where(a => ids.Contains(a.Id)).ToList();
+                    mainClass.Count = requests.Count;
+                    requests = requests.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+                    if (requests.Count > 0)
+                    {
+                        foreach (var req in requests)
+                        {
+                            var lstTracks = _context.RequestTracking.Include(a => a.RequestStatus).Where(a => a.RequestId == req.Id).OrderByDescending(a => a.DescriptionDate).ToList();
+                            if (lstTracks.Count > 0)
+                            {
+                                var requestStatusId = lstTracks[0].RequestStatusId;
+                                if (requestStatusId == statusId)
+                                {
+                                    IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
+                                    getDataObj.RequestId = req.Id;
+                                    getDataObj.Id = req.Id;
+                                    getDataObj.RequestCode = req.RequestCode;
+                                    getDataObj.Barcode = req.AssetDetail.Barcode;
+                                    getDataObj.CreatedById = req.CreatedById;
+                                    //getDataObj.CreatedBy = lstTracks[0].User != null ? lstTracks[0].User.UserName : "";
+                                    getDataObj.CreatedBy = req.User != null ? req.User.UserName : "";
+                                    getDataObj.Subject = req.Subject;
+                                    getDataObj.RequestDate = req.RequestDate;
+                                    getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
+                                    getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                                    getDataObj.StatusId = (int)lstTracks[0].RequestStatusId;
+                                    getDataObj.StatusName = lstTracks[0].RequestStatus.Name;
+                                    getDataObj.StatusNameAr = lstTracks[0].RequestStatus.NameAr;
+                                    getDataObj.StatusColor = lstTracks[0].RequestStatus.Color;
+                                    getDataObj.StatusIcon = lstTracks[0].RequestStatus.Icon;
+                                    getDataObj.Description = lstTracks[0].Description;
+                                    if (int.Parse(lstTracks[0].RequestStatusId.ToString()) == 2)
+                                    {
+                                        getDataObj.ClosedDate = lstTracks[0].DescriptionDate.ToString();
+                                    }
+                                    else
+                                    {
+                                        getDataObj.ClosedDate = "";
+                                    }
+                                    getDataObj.Barcode = req.AssetDetail.Barcode;
+                                    getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                    getDataObj.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
+                                    getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
+                                    getDataObj.ModeName = req.RequestMode != null ? req.RequestMode.Name : "";
+                                    getDataObj.ModeNameAr = req.RequestMode != null ? req.RequestMode.NameAr : "";
+                                    getDataObj.PeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
+                                    getDataObj.PeriorityName = req.RequestPeriority != null ? req.RequestPeriority.Name : "";
+                                    getDataObj.PeriorityNameAr = req.RequestPeriority != null ? req.RequestPeriority.NameAr : "";
+                                    getDataObj.PeriorityColor = req.RequestPeriority != null ? req.RequestPeriority.Color : "";
+                                    getDataObj.PeriorityIcon = req.RequestPeriority != null ? req.RequestPeriority.Icon : "";
+                                    getDataObj.AssetHospitalId = req.HospitalId;
+                                    getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                    getDataObj.Barcode = req.AssetDetail.Barcode;
+                                    getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                                    getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                                    getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
+                                       .ToList().Select(item => new IndexRequestTrackingVM.GetData
+                                       {
+                                           Id = item.Id,
+                                           StatusName = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Name : "",
+                                           StatusNameAr = item.RequestStatusId != null ? lstTracks[0].RequestStatus.NameAr : "",
+                                           Description = item.Description,
+                                           Date = item.DescriptionDate,
+                                           StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
+                                           //   isExpanded = (_context.ExternalFixFile.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
+                                           //   ListDocuments = _context.ExternalFixFile.Where(a => a.RequestTrackingId == item.Id).ToList(),
+                                       }).ToList();
+                                    var lstWOStatus = _context.WorkOrderTrackings
+                                            .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
+                                            .OrderByDescending(a => a.CreationDate).ToList();
+
+                                    if (lstWOStatus.Count > 0)
+                                    {
+                                        getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                                        getDataObj.WOLastTrackDescription = lstWOStatus[0].Notes;
+                                    }
+                                    getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
+                                    getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count > 0 ? _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count : 0;
+                                    getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId : 0;
+                                    getDataObj.CityId = req.User != null ? req.User.CityId : 0;
+                                    getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId : 0;
+                                    getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId : 0;
+                                    lstModel.Add(getDataObj);
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+            else
+            {
+                if (IsEligble is not null)
+                {
+                    // count of request based on sepecific condition
+                    mainClass.Count = _context.Request
+                        .Include(a => a.AssetDetail)
+                         .Include(a => a.AssetDetail.Hospital)
+                        .Include(a => a.AssetDetail.Hospital.Governorate)
+                        .Include(a => a.AssetDetail.Hospital.City)
+                        .Include(a => a.AssetDetail.Hospital.Organization)
+                        .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                       .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                        .Include(a => a.User)
+                        .Include(a => a.RequestMode)
+                        .Include(a => a.RequestPeriority)
+                       .Include(a => a.RequestType)
+                      .Include(a => a.AssetDetail.MasterAsset).AsNoTracking().Where(IsEligble).Count();
+
+                    // requests based on specific condition
+                    var requests = _context.Request
+                      .Include(a => a.AssetDetail)
+                      .Include(a => a.AssetDetail.Hospital)
+                      .Include(a => a.AssetDetail.Hospital.Governorate)
+                      .Include(a => a.AssetDetail.Hospital.City)
+                      .Include(a => a.AssetDetail.Hospital.Organization)
+                      .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                      .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                      .Include(a => a.User)
+                      .Include(a => a.RequestMode)
+                      .Include(a => a.RequestPeriority)
+                      .Include(a => a.RequestType)
+                      .Include(a => a.AssetDetail.MasterAsset)
+                      .OrderByDescending(a => a.RequestDate)
+                      .Where(IsEligble).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+                    if (requests.Count > 0)
+                    {
+
+                        foreach (var req in requests)
+                        {
+
+
+                            var lstTracks = _context.RequestTracking.Include(a => a.RequestStatus).Where(a => a.RequestId == req.Id).OrderByDescending(a => a.DescriptionDate).ToList();
+                            if (lstTracks.Count > 0)
+                            {
+                                var requestStatusId = lstTracks[0].RequestStatusId;
+                                IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
+                                getDataObj.RequestId = req.Id;
+                                getDataObj.Id = req.Id;
+                                getDataObj.RequestCode = req.RequestCode;
+                                getDataObj.Barcode = req.AssetDetail.Barcode;
+                                getDataObj.CreatedById = req.CreatedById;
+                                //getDataObj.CreatedBy = lstTracks[0].User != null ? lstTracks[0].User.UserName : "";
+                                getDataObj.CreatedBy = req.User != null ? req.User.UserName : "";
+                                getDataObj.Subject = req.Subject;
+                                getDataObj.RequestDate = req.RequestDate;
+                                getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
+                                getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                                getDataObj.StatusId = (int)lstTracks[0].RequestStatusId;
+                                getDataObj.StatusName = lstTracks[0].RequestStatus.Name;
+                                getDataObj.StatusNameAr = lstTracks[0].RequestStatus.NameAr;
+                                getDataObj.StatusColor = lstTracks[0].RequestStatus.Color;
+                                getDataObj.StatusIcon = lstTracks[0].RequestStatus.Icon;
+                                getDataObj.Description = lstTracks[0].Description;
+                                if (int.Parse(lstTracks[0].RequestStatusId.ToString()) == 2)
+                                {
+                                    getDataObj.ClosedDate = lstTracks[0].DescriptionDate.ToString();
+                                }
+                                else
+                                {
+                                    getDataObj.ClosedDate = "";
+                                }
+                                getDataObj.Barcode = req.AssetDetail.Barcode;
+                                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                getDataObj.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
+                                getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
+                                getDataObj.ModeName = req.RequestMode != null ? req.RequestMode.Name : "";
+                                getDataObj.ModeNameAr = req.RequestMode != null ? req.RequestMode.NameAr : "";
+                                getDataObj.PeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
+                                getDataObj.PeriorityName = req.RequestPeriority != null ? req.RequestPeriority.Name : "";
+                                getDataObj.PeriorityNameAr = req.RequestPeriority != null ? req.RequestPeriority.NameAr : "";
+                                getDataObj.PeriorityColor = req.RequestPeriority != null ? req.RequestPeriority.Color : "";
+                                getDataObj.PeriorityIcon = req.RequestPeriority != null ? req.RequestPeriority.Icon : "";
+                                getDataObj.AssetHospitalId = req.HospitalId;
+                                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                getDataObj.Barcode = req.AssetDetail.Barcode;
+                                getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                                getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                                getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
+                                        .ToList().Select(item => new IndexRequestTrackingVM.GetData
+                                        {
+                                            Id = item.Id,
+                                            StatusName = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Name : "",
+                                            StatusNameAr = item.RequestStatusId != null ? lstTracks[0].RequestStatus.NameAr : "",
+                                            Description = item.Description,
+                                            Date = item.DescriptionDate,
+                                            StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
+                                            // isExpanded = (_context.ExternalFixFile.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
+                                            // ListDocuments = _context.ExternalFixFile.Where(a => a.RequestTrackingId == item.Id).ToList(),
+                                        }).ToList();
+
+                                var lstWOStatus = _context.WorkOrderTrackings
+                                        .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
+                                        .OrderByDescending(a => a.CreationDate).ToList();
+
+                                if (lstWOStatus.Count > 0)
+                                {
+                                    getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                                    getDataObj.WOLastTrackDescription = lstWOStatus[0].Notes;
+                                }
+                                getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
+                                getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count > 0 ? _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count : 0;
+                                getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId : 0;
+                                getDataObj.CityId = req.User != null ? req.User.CityId : 0;
+                                getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId : 0;
+                                getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId : 0;
+                                lstModel.Add(getDataObj);
+                            }
+
+                        }
+                    }
+
+
+
+
+                }
+
+                else
+                {
+                    mainClass.Count = _context.Request.AsNoTracking().Count();
+
+                    var requests = _context.Request
+                                        .Include(a => a.AssetDetail)
+                                        .Include(a => a.AssetDetail.Hospital)
+                                        .Include(a => a.AssetDetail.Hospital.Governorate)
+                                        .Include(a => a.AssetDetail.Hospital.City)
+                                        .Include(a => a.AssetDetail.Hospital.Organization)
+                                        .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                        .Include(a => a.AssetDetail.Hospital.SubOrganization)
+                                        .Include(a => a.User)
+                                        .Include(a => a.RequestMode)
+                                        .Include(a => a.RequestPeriority)
+                                        .Include(a => a.RequestType)
+                                        .Include(a => a.AssetDetail.MasterAsset)
+                                        .OrderByDescending(a => a.RequestDate)
+                                        .AsNoTracking()
+                                        .Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+
+
+                    if (requests.Count > 0)
+                    {
+
+                        foreach (var req in requests)
+                        {
+
+
+                            var lstTracks = _context.RequestTracking.Include(a => a.RequestStatus).Where(a => a.RequestId == req.Id).OrderByDescending(a => a.DescriptionDate).ToList();
+                            if (lstTracks.Count > 0)
+                            {
+                                var requestStatusId = lstTracks[0].RequestStatusId;
+                                IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
+                                getDataObj.RequestId = req.Id;
+                                getDataObj.Id = req.Id;
+                                getDataObj.RequestCode = req.RequestCode;
+                                getDataObj.Barcode = req.AssetDetail.Barcode;
+                                getDataObj.CreatedById = req.CreatedById;
+                                //       getDataObj.CreatedBy = lstTracks[0].User != null ? lstTracks[0].User.UserName : "";
+                                getDataObj.CreatedBy = req.User != null ? req.User.UserName : "";
+                                getDataObj.Subject = req.Subject;
+                                getDataObj.RequestDate = req.RequestDate;
+                                getDataObj.AssetDetailId = req.AssetDetailId != null ? (int)req.AssetDetailId : 0;
+                                getDataObj.HospitalId = req.AssetDetail.HospitalId;
+                                getDataObj.StatusId = (int)lstTracks[0].RequestStatusId;
+                                getDataObj.StatusName = lstTracks[0].RequestStatus.Name;
+                                getDataObj.StatusNameAr = lstTracks[0].RequestStatus.NameAr;
+                                getDataObj.StatusColor = lstTracks[0].RequestStatus.Color;
+                                getDataObj.StatusIcon = lstTracks[0].RequestStatus.Icon;
+                                getDataObj.Description = lstTracks[0].Description;
+                                if (int.Parse(lstTracks[0].RequestStatusId.ToString()) == 2)
+                                {
+                                    getDataObj.ClosedDate = lstTracks[0].DescriptionDate.ToString();
+                                }
+                                else
+                                {
+                                    getDataObj.ClosedDate = "";
+                                }
+                                getDataObj.Barcode = req.AssetDetail.Barcode;
+                                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                getDataObj.ModelNumber = req.AssetDetail.MasterAsset.ModelNumber;
+                                getDataObj.ModeId = req.RequestModeId != null ? (int)req.RequestModeId : 0;
+                                getDataObj.ModeName = req.RequestMode != null ? req.RequestMode.Name : "";
+                                getDataObj.ModeNameAr = req.RequestMode != null ? req.RequestMode.NameAr : "";
+                                getDataObj.PeriorityId = req.RequestPeriorityId != null ? (int)req.RequestPeriorityId : 0;
+                                getDataObj.PeriorityName = req.RequestPeriority != null ? req.RequestPeriority.Name : "";
+                                getDataObj.PeriorityNameAr = req.RequestPeriority != null ? req.RequestPeriority.NameAr : "";
+                                getDataObj.PeriorityColor = req.RequestPeriority != null ? req.RequestPeriority.Color : "";
+                                getDataObj.PeriorityIcon = req.RequestPeriority != null ? req.RequestPeriority.Icon : "";
+                                getDataObj.AssetHospitalId = req.HospitalId;
+                                getDataObj.SerialNumber = req.AssetDetail.SerialNumber;
+                                getDataObj.Barcode = req.AssetDetail.Barcode;
+                                getDataObj.AssetName = req.AssetDetail.MasterAsset.Name;
+                                getDataObj.AssetNameAr = req.AssetDetail.MasterAsset.NameAr;
+                                getDataObj.ListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id)
+                                        .ToList().Select(item => new IndexRequestTrackingVM.GetData
+                                        {
+                                            Id = item.Id,
+                                            StatusName = item.RequestStatusId != null ? lstTracks[0].RequestStatus.Name : "",
+                                            StatusNameAr = item.RequestStatusId != null ? lstTracks[0].RequestStatus.NameAr : "",
+                                            Description = item.Description,
+                                            Date = item.DescriptionDate,
+                                            StatusId = item.RequestStatusId != null ? (int)item.RequestStatusId : 0,
+                                            // isExpanded = (_context.ExternalFixFile.Where(a => a.RequestTrackingId == item.Id).Count()) > 0 ? true : false,
+                                            // ListDocuments = _context.ExternalFixFile.Where(a => a.RequestTrackingId == item.Id).ToList(),
+                                        }).ToList();
+
+                                var lstWOStatus = _context.WorkOrderTrackings
+                                        .Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus).Where(a => a.WorkOrder.RequestId == req.Id)
+                                        .OrderByDescending(a => a.CreationDate).ToList();
+
+                                if (lstWOStatus.Count > 0)
+                                {
+                                    getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                                    getDataObj.WOLastTrackDescription = lstWOStatus[0].Notes;
+                                }
+                                getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.Id).ToList().Count;
+                                getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count > 0 ? _context.WorkOrders.Where(a => a.RequestId == req.Id).ToList().Count : 0;
+                                getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId : 0;
+                                getDataObj.CityId = req.User != null ? req.User.CityId : 0;
+                                getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId : 0;
+                                getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId : 0;
+                                lstModel.Add(getDataObj);
+                            }
+
+                        }
+                    }
+
+
+                }
+
+
+            }
+
+
+            mainClass.Results = lstModel;
+            return mainClass;
+        }
+
     }
 }

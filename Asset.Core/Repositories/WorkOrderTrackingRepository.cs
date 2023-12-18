@@ -44,8 +44,8 @@ namespace Asset.Core.Repositories
                         }
                     }
                     WorkOrderTracking workOrderTracking = new WorkOrderTracking();
-                    workOrderTracking.WorkOrderDate = DateTime.Now; //createWorkOrderTrackingVM.WorkOrderDate;
-                    workOrderTracking.CreationDate = DateTime.Now;
+                    workOrderTracking.WorkOrderDate = DateTime.Parse(createWorkOrderTrackingVM.StrWorkOrderDate.ToString()); //createWorkOrderTrackingVM.WorkOrderDate;
+                    workOrderTracking.CreationDate = createWorkOrderTrackingVM.CreationDate;
                     workOrderTracking.Notes = createWorkOrderTrackingVM.Notes;
                     workOrderTracking.WorkOrderStatusId = createWorkOrderTrackingVM.WorkOrderStatusId;
                     workOrderTracking.CreatedById = createWorkOrderTrackingVM.CreatedById;
@@ -58,7 +58,7 @@ namespace Asset.Core.Repositories
                     }
                     else
                     {
-                      //  workOrderTracking.AssignedTo = createWorkOrderTrackingVM.AssignedTo;
+                        //  workOrderTracking.AssignedTo = createWorkOrderTrackingVM.AssignedTo;
                         workOrderTracking.AssignedTo = createWorkOrderTrackingVM.CreatedById;
 
                     }
@@ -216,8 +216,8 @@ namespace Asset.Core.Repositories
                     ActualEndDate = DateTime.Parse(work.WorkOrder.ActualEndDate.ToString()),
                     Note = work.WorkOrder.Note,
                     WorkOrderPeriorityId = work.WorkOrder.WorkOrderPeriorityId != null ? (int)work.WorkOrder.WorkOrderPeriorityId : 0,
-                    WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriorityId != null ? work.WorkOrder.WorkOrderPeriority.Name:"",
-                    WorkOrderPeriorityNameAr = work.WorkOrder.WorkOrderPeriorityId != null ? work.WorkOrder.WorkOrderPeriority.NameAr:"",
+                    WorkOrderPeriorityName = work.WorkOrder.WorkOrderPeriorityId != null ? work.WorkOrder.WorkOrderPeriority.Name : "",
+                    WorkOrderPeriorityNameAr = work.WorkOrder.WorkOrderPeriorityId != null ? work.WorkOrder.WorkOrderPeriority.NameAr : "",
                     WorkOrderTypeId = work.WorkOrder.WorkOrderTypeId != null ? (int)work.WorkOrder.WorkOrderTypeId : 0,
                     WorkOrderTypeName = work.WorkOrder.WorkOrderType.Name,
                     RequestId = work.WorkOrder.RequestId != null ? (int)work.WorkOrder.RequestId : 0,
@@ -318,7 +318,7 @@ namespace Asset.Core.Repositories
                 if (userRoleName == "AssetOwner")
                 {
                     lstWorkOrderTrackingVM = lstWorkOrderTrackingVM.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
-                   // lstWorkOrderTrackingVM = lstWorkOrderTrackingVM.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    // lstWorkOrderTrackingVM = lstWorkOrderTrackingVM.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
                 if (userRoleName == "DE")
                 {
@@ -354,7 +354,7 @@ namespace Asset.Core.Repositories
                                                 .Include(w => w.WorkOrderStatus)
                                                 .Include(w => w.WorkOrder).Include(w => w.WorkOrder.WorkOrderPeriority)
                                                 .Include(w => w.WorkOrder.WorkOrderType).Include(w => w.WorkOrder.Request)
-                                                .Include(w => w.WorkOrder.Request.AssetDetail).OrderByDescending(a=>a.CreationDate).ToList();
+                                                .Include(w => w.WorkOrder.Request.AssetDetail).OrderByDescending(a => a.CreationDate).ToList();
 
             foreach (var item in ListWorkOrderFromTracking)
             {
@@ -488,9 +488,9 @@ namespace Asset.Core.Repositories
                 }
                 if (userRoleName == "AssetOwner")
                 {
-                    list = list.Where(t => t.HospitalId == UserObj.HospitalId ).ToList();
+                    list = list.Where(t => t.HospitalId == UserObj.HospitalId).ToList();
 
-                   // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
+                    // list = list.Where(t => t.HospitalId == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
                 if (userRoleName == "DE")
                 {
@@ -680,23 +680,26 @@ namespace Asset.Core.Repositories
 
         public IndexWorkOrderTrackingVM GetById(int id)
         {
+            IndexWorkOrderTrackingVM work = new IndexWorkOrderTrackingVM();
             var WorkOrderFromTracking = _context.WorkOrderTrackings.Include(w => w.WorkOrderStatus)
-               .Include(w => w.WorkOrder).Include(w => w.WorkOrder.WorkOrderPeriority)
-               .Include(w => w.WorkOrder.WorkOrderType).Include(w => w.WorkOrder.Request)
-               .Select(work => new IndexWorkOrderTrackingVM
-               {
-                   Id = work.Id,  //trackingId
-                   WorkOrderDate = DateTime.Parse(work.WorkOrderDate.ToString()),
-                   CreationDate = DateTime.Parse(work.CreationDate.ToString()),
-                   Notes = work.Notes,
-                   CreatedById = work.CreatedById,
-                   CreatedBy = work.User.UserName,
-                   WorkOrderStatusId = work.WorkOrderStatusId,
-                   WorkOrderStatusName = work.WorkOrderStatus.Name,
-                   // from work order
-                   WorkOrderId = work.WorkOrderId,
-               }).FirstOrDefault();
-            return WorkOrderFromTracking;
+               .Include(w => w.WorkOrder).Include(w => w.WorkOrder.WorkOrderPeriority).Include(w => w.User)
+               .Include(w => w.WorkOrder.WorkOrderType).Include(w => w.WorkOrder.Request).Where(a => a.Id == id).ToList();
+            if (WorkOrderFromTracking.Count > 0)
+            {
+
+                var trackObj = WorkOrderFromTracking[0];
+                work.Id = trackObj.Id;
+                work.WorkOrderDate = DateTime.Parse(trackObj.WorkOrderDate.ToString());
+                work.CreationDate = DateTime.Parse(trackObj.CreationDate.ToString());
+                work.Notes = trackObj.Notes;
+                work.CreatedById = trackObj.CreatedById;
+                work.CreatedBy = trackObj.User.UserName;
+                work.WorkOrderStatusId = trackObj.WorkOrderStatusId;
+                work.WorkOrderStatusName = trackObj.WorkOrderStatus.Name;
+                work.WorkOrderId = trackObj.WorkOrderId;
+
+            }
+            return work;
         }
 
         public LstWorkOrderFromTracking GetEngManagerWhoFirstAssignedWO(int woId)
@@ -743,8 +746,8 @@ namespace Asset.Core.Repositories
                 IndexWorkOrderTrackingVM item = new IndexWorkOrderTrackingVM();
                 item.Id = work.Id;
                 item.TrackId = work.Id;
-                item.WorkOrderDate = work.WorkOrderDate != null ? DateTime.Parse(work.WorkOrderDate.ToString()):null;
-                item.CreationDate = work.CreationDate != null ? DateTime.Parse(work.CreationDate.ToString()):null;
+                item.WorkOrderDate = work.WorkOrderDate != null ? DateTime.Parse(work.WorkOrderDate.ToString()) : null;
+                item.CreationDate = work.CreationDate != null ? DateTime.Parse(work.CreationDate.ToString()) : null;
                 item.AssignedTo = work.AssignedTo != "" ? _context.ApplicationUser.Where(a => a.Id == work.AssignedTo).FirstOrDefault().UserName : "";
                 item.Notes = work.Notes;
                 item.CreatedById = work.CreatedById;
@@ -781,7 +784,6 @@ namespace Asset.Core.Repositories
             //    WorkOrderStatusNameAr = work.WorkOrderStatus.NameAr,
             //    ActualStartDate = work.ActualStartDate,
             //    ActualEndDate = work.ActualEndDate,
-
             //}).ToList().OrderByDescending(a => a.CreationDate).ToList();
 
             return lstTracks;
@@ -793,15 +795,17 @@ namespace Asset.Core.Repositories
             {
                 WorkOrderTracking workOrderTracking = new WorkOrderTracking();
                 workOrderTracking.Id = editWorkOrderTrackingVM.Id;
-                workOrderTracking.WorkOrderDate = editWorkOrderTrackingVM.WorkOrderDate;
-                workOrderTracking.CreationDate = editWorkOrderTrackingVM.CreationDate;
+                if (editWorkOrderTrackingVM.WorkOrderDate != null)
+                    workOrderTracking.WorkOrderDate = editWorkOrderTrackingVM.WorkOrderDate;
+                if (editWorkOrderTrackingVM.CreationDate != null)
+                    workOrderTracking.CreationDate = editWorkOrderTrackingVM.CreationDate;
                 workOrderTracking.Notes = editWorkOrderTrackingVM.Notes;
                 workOrderTracking.WorkOrderStatusId = editWorkOrderTrackingVM.WorkOrderStatusId;
                 workOrderTracking.CreatedById = editWorkOrderTrackingVM.CreatedById;
-                workOrderTracking.ActualStartDate = editWorkOrderTrackingVM.ActualStartDate;
-                workOrderTracking.ActualEndDate = editWorkOrderTrackingVM.ActualEndDate;
-
-
+                if (editWorkOrderTrackingVM.ActualStartDate != null)
+                    workOrderTracking.ActualStartDate = editWorkOrderTrackingVM.ActualStartDate;
+                if (editWorkOrderTrackingVM.ActualEndDate != null)
+                    workOrderTracking.ActualEndDate = editWorkOrderTrackingVM.ActualEndDate;
                 _context.Entry(workOrderTracking).State = EntityState.Modified;
                 _context.SaveChanges();
             }
@@ -810,5 +814,30 @@ namespace Asset.Core.Repositories
                 string msg = ex.Message;
             }
         }
+
+
+
+
+        public void Update(EditWorkOrderTrackingVM editWorkOrderTrackingVM)
+        {
+            try
+            {
+                var lstTracks = _context.WorkOrderTrackings.Where(a => a.Id == editWorkOrderTrackingVM.Id).ToList();
+                if (lstTracks.Count > 0)
+                {
+                    var trackObj = lstTracks[0];
+                  //  trackObj.Id = editWorkOrderTrackingVM.Id;
+                    trackObj.Notes = editWorkOrderTrackingVM.Notes;
+                    _context.Entry(trackObj).State = EntityState.Modified;
+                    _context.SaveChanges();
+                }             
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+            }
+        }
+
+
     }
 }

@@ -14,5 +14,7 @@ namespace Asset.Domain.Services
         int Add(CreateAssetMovementVM movementObj);
         int Update(EditAssetMovementVM movementObj);
         int Delete(int id);
+
+        IndexAssetMovementVM SearchAssetMovement(SearchAssetMovementVM searchObj, int pageNumber, int pageSize);
     }
 }

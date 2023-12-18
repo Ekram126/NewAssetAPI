@@ -25,6 +25,7 @@ namespace Asset.Models
         [StringLength(500)]
         public string Notes { get; set; }
 
+     
 
     }
 }

@@ -24,7 +24,11 @@ namespace Asset.ViewModels.WorkOrderVM
             public DateTime? PlannedEndDate { get; set; }
             public DateTime? ActualStartDate { get; set; }
             public DateTime? ActualEndDate { get; set; }
+
+
+
             public string Note { get; set; }
+            public string ListWorkOrderNotes { get; set; }
             public string CreatedById { get; set; }
             public string TrackCreatedById { get; set; }
             public string AssignedTo { get; set; }

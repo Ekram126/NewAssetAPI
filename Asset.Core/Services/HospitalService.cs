@@ -71,7 +71,7 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.HospitalRepository.GetHospitalDepartmentByHospitalId2(hospitalId);
         }
-       
+
         public DetailHospitalVM GetHospitalDetailById(int id)
         {
             return _unitOfWork.HospitalRepository.GetHospitalDetailById(id);
@@ -88,9 +88,9 @@ namespace Asset.Core.Services
         }
 
 
-        public  IEnumerable<IndexHospitalVM.GetData> GetHospitalsByUserId(string userId)
+        public IEnumerable<IndexHospitalVM.GetData> GetHospitalsByUserId(string userId)
         {
-            return  _unitOfWork.HospitalRepository.GetHospitalsByUserId(userId);
+            return _unitOfWork.HospitalRepository.GetHospitalsByUserId(userId);
         }
 
         public List<SubOrganization> GetSubOrganizationsByHospitalId(int hospitalId)
@@ -136,7 +136,17 @@ namespace Asset.Core.Services
         public IndexHospitalDepartmentVM.GetData GetSelectedHospitalDepartmentByDepartmentId(int hospitalId, int departmentId)
         {
             return _unitOfWork.HospitalRepository.GetSelectedHospitalDepartmentByDepartmentId(hospitalId, departmentId);
-            
+        }
+
+
+        public IEnumerable<Hospital> GetHospitalByGovId(int govId)
+        {
+            return _unitOfWork.HospitalRepository.GetHospitalByGovId(govId);
+        }
+
+        public GenerateHospitalCodeVM GenerateHospitalCode()
+        {
+            return _unitOfWork.HospitalRepository.GenerateHospitalCode();
         }
     }
 }

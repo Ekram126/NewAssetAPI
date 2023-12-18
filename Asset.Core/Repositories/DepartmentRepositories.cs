@@ -207,5 +207,37 @@ namespace Asset.Core.Repositories
             }
             return DepartmentObj.Id;
         }
+
+        public GenerateDepartmentCodeVM GenerateDepartmentCode()
+        {
+            GenerateDepartmentCodeVM numberObj = new GenerateDepartmentCodeVM();
+            int code = 0;
+
+            var lastId = _context.Departments.ToList();
+            if (lastId.Count > 0)
+            {
+                var lastSupplierCode = lastId.Max(a => a.Code);
+                if (lastSupplierCode == null)
+                {
+                    numberObj.Code = (code + 1).ToString();
+                    var lastcode = numberObj.Code.PadLeft(3, '0');
+                    numberObj.Code = lastcode;
+                }
+                else
+                {
+                    var hospitalCode = (int.Parse(lastSupplierCode) + 1).ToString();
+                    var lastcode = hospitalCode.ToString().PadLeft(3, '0');
+                    numberObj.Code = lastcode;
+                }
+            }
+            else
+            {
+                numberObj.Code = (code + 1).ToString();
+                var lastcode = numberObj.Code.PadLeft(3, '0');
+                numberObj.Code = lastcode;
+            }
+
+            return numberObj;
+        }
     }
 }

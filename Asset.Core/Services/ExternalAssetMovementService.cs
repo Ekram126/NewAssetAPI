@@ -32,20 +32,20 @@ namespace Asset.Core.Services
 
         public int Delete(int id)
         {
-           return _unitOfWork.ExternalAssetMovementRepository.Delete(id);
+            return _unitOfWork.ExternalAssetMovementRepository.Delete(id);
         }
 
-        public ExternalAssetMovement GetById(int id)
+        public EditExternalAssetMovementVM GetById(int id)
         {
-          return  _unitOfWork.ExternalAssetMovementRepository.GetById(id);
+            return _unitOfWork.ExternalAssetMovementRepository.GetById(id);
         }
 
         public IndexExternalAssetMovementVM GetExternalAssetMovements(int pageNumber, int pageSize)
         {
-           return _unitOfWork.ExternalAssetMovementRepository.GetExternalAssetMovements( pageNumber, pageSize);
+            return _unitOfWork.ExternalAssetMovementRepository.GetExternalAssetMovements(pageNumber, pageSize);
         }
 
-    
+
 
         public IEnumerable<ExternalAssetMovementAttachment> GetExternalMovementAttachmentByExternalAssetMovementId(int externalAssetMovementId)
         {
@@ -54,12 +54,17 @@ namespace Asset.Core.Services
 
         public IEnumerable<ExternalAssetMovement> GetExternalMovementsByAssetDetailId(int assetId)
         {
-         return   _unitOfWork.ExternalAssetMovementRepository.GetExternalMovementsByAssetDetailId(assetId);
+            return _unitOfWork.ExternalAssetMovementRepository.GetExternalMovementsByAssetDetailId(assetId);
+        }
+
+        public IndexExternalAssetMovementVM SearchExternalAssetMovement(SearchExternalAssetMovementVM searchObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.ExternalAssetMovementRepository.SearchExternalAssetMovement(searchObj, pageNumber, pageSize);
         }
 
         public int Update(ExternalAssetMovement movementObj)
         {
-          return  _unitOfWork.ExternalAssetMovementRepository.Update(movementObj);
+            return _unitOfWork.ExternalAssetMovementRepository.Update(movementObj);
         }
     }
 }

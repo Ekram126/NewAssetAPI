@@ -29,5 +29,7 @@ namespace Asset.Domain.Services
         List<WNPMAssetTimeAttachment> GetWNPMAssetTimeAttachmentByWNPMAssetTimeId(int WNPMAssetTimeId);
         public int CreateAssetFiscalTimes(int year, int hospitalId);
 
+        public IndexWNPMAssetTimesVM GetAllWithDate(WNPDateVM filterObj, int pageNumber, int pageSize, string userId);
+
     }
 }

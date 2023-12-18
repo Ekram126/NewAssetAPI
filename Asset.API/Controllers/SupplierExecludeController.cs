@@ -78,9 +78,8 @@ namespace Asset.API.Controllers
         {
             try
             {
-
+         
                 int updatedRow = _supplierExecludeService.Update(SupplierExecludeVM);
-
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -108,8 +107,8 @@ namespace Asset.API.Controllers
         {
             string strExcludes = "";
             string strHolds = "";
-            string phone = "";
-            string userName = "";
+            //string phone = "";
+            //string userName = "";
             string exchold = "";
             List<string> execludeNames = new List<string>();
             List<IndexSupplierExcludeReasonVM.GetData> lstExcludes = new List<IndexSupplierExcludeReasonVM.GetData>();
@@ -117,20 +116,23 @@ namespace Asset.API.Controllers
 
 
             var applicationObj = _supplierExecludeService.GetById(supplierExecludeAssetId);
-            var hospitalAssetObj = _supplierExecludeAssetService.GetById(supplierExecludeAssetId);
-            var userObj = await _userManager.FindByNameAsync("MemberUser");
+           // var hospitalAssetObj = _supplierExecludeAssetService.GetById(supplierExecludeAssetId);
+            var hospitalAssetObj = _supplierExecludeAssetService.GetById(int.Parse(applicationObj.SupplierExecludeAssetId.ToString()));
 
-            var lstSuppliers = _supplierService.GetAllSuppliers().Where(a => a.EMail == userObj.Email).ToList();
-            if (lstSuppliers.Count > 0)
-            {
-                phone = lstSuppliers[0].Mobile;
-                userName = lstSuppliers[0].Name;
-            }
-            if (lstSuppliers.Count == 0)
-            {
-                phone = userObj.PhoneNumber;
-                userName = userObj.UserName;
-            }
+
+
+            //var userObj = await _userManager.FindByNameAsync("MemberUser");
+            //var lstSuppliers = _supplierService.GetAllSuppliers().Where(a => a.EMail == userObj.Email).ToList();
+            //if (lstSuppliers.Count > 0)
+            //{
+            //    phone = lstSuppliers[0].Mobile;
+            //    userName = lstSuppliers[0].Name;
+            //}
+            //if (lstSuppliers.Count == 0)
+            //{
+            //    phone = userObj.PhoneNumber;
+            //    userName = userObj.UserName;
+            //}
             var assetObj = _assetDetailService.GetById(int.Parse(hospitalAssetObj.AssetId.ToString()));
             var masterObj = _masterAssetService.GetById(int.Parse(assetObj.MasterAssetId.ToString()));
 
@@ -173,87 +175,175 @@ namespace Asset.API.Controllers
                 strHolds = string.Join(",", execludeNames);
             }
 
-
-            StringBuilder strBuild = new StringBuilder();
-            strBuild.Append($"Dear {userObj.UserName}\r\n");
-            strBuild.Append("<table>");
-            strBuild.Append("<tr>");
-            strBuild.Append("<td> Asset Name");
-            strBuild.Append("</td>");
-            strBuild.Append("<td>" + masterObj.NameAr);
-            strBuild.Append("</td>");
-            strBuild.Append("</tr>");
-            strBuild.Append("<tr>");
-            strBuild.Append("<td> Serial");
-            strBuild.Append("</td>");
-            strBuild.Append("<td>" + assetObj.SerialNumber);
-            strBuild.Append("</td>");
-            strBuild.Append("</tr>");
-            strBuild.Append("<tr>");
-            strBuild.Append("<td> BarCode");
-            strBuild.Append("</td>");
-            strBuild.Append("<td>" + assetObj.Barcode);
-            strBuild.Append("</td>");
-            strBuild.Append("</tr>");
-            if (hospitalAssetObj.AppTypeId == 1)
+            var memberUsers = await _userManager.GetUsersInRoleAsync("Member");
+            if (memberUsers.ToList().Count > 0)
             {
-                strBuild.Append("<tr>");
-                strBuild.Append("<td> Reasons");
-                strBuild.Append("</td>");
-                strBuild.Append("<td>" + strExcludes);
-                strBuild.Append("</td>");
-                strBuild.Append("</tr>");
+                foreach (var usr in memberUsers)
+                {
+                    if (!string.IsNullOrEmpty(usr.PhoneNumber))
+                    {
+                        StringBuilder strBuild = new StringBuilder();
+                        strBuild.Append($"Dear {usr.UserName}\r\n");
+                        strBuild.Append("<table>");
+                        strBuild.Append("<tr>");
+                        strBuild.Append("<td> Asset Name");
+                        strBuild.Append("</td>");
+                        strBuild.Append("<td>" + masterObj.NameAr);
+                        strBuild.Append("</td>");
+                        strBuild.Append("</tr>");
+                        strBuild.Append("<tr>");
+                        strBuild.Append("<td> Serial");
+                        strBuild.Append("</td>");
+                        strBuild.Append("<td>" + assetObj.SerialNumber);
+                        strBuild.Append("</td>");
+                        strBuild.Append("</tr>");
+                        strBuild.Append("<tr>");
+                        strBuild.Append("<td> BarCode");
+                        strBuild.Append("</td>");
+                        strBuild.Append("<td>" + assetObj.Barcode);
+                        strBuild.Append("</td>");
+                        strBuild.Append("</tr>");
+                        if (hospitalAssetObj.AppTypeId == 1)
+                        {
+                            strBuild.Append("<tr>");
+                            strBuild.Append("<td> Reasons");
+                            strBuild.Append("</td>");
+                            strBuild.Append("<td>" + strExcludes);
+                            strBuild.Append("</td>");
+                            strBuild.Append("</tr>");
+                        }
+                        if (hospitalAssetObj.AppTypeId == 2)
+                        {
+                            strBuild.Append("<tr>");
+                            strBuild.Append("<td> Reasons");
+                            strBuild.Append("</td>");
+                            strBuild.Append("<td>" + strHolds);
+                            strBuild.Append("</td>");
+                            strBuild.Append("</tr>");
+                        }
+                        strBuild.Append("</table>");
+
+
+
+                        string from = "almostakbaltechnology.dev@gmail.com";
+                        //string to = "pineapple_126@hotmail.com ";
+                        string subject = "Exclude-Hold Asset";
+                        string body = strBuild.ToString();
+                        string appSpecificPassword = "fajtjigwpcnxyyuv";
+
+                        //var mailMessage = new MailMessage(from, to, subject, body);
+                        var mailMessage2 = new MailMessage(from, usr.Email, subject, body);
+                        //  mailMessage.IsBodyHtml = true;
+                        mailMessage2.IsBodyHtml = true;
+                        using (var smtpClient = new SmtpClient("smtp.gmail.com", 587))
+                        {
+                            smtpClient.EnableSsl = true;
+                            smtpClient.Credentials = new NetworkCredential(from, appSpecificPassword);
+                            // smtpClient.Send(mailMessage);
+                            smtpClient.Send(mailMessage2);
+                        }
+
+
+
+                        var SMSobj = new SendSMS();
+                        SMSobj.Language = 1;
+                        SMSobj.Mobile = usr.PhoneNumber;
+                        SMSobj.Environment = 1;
+                        SMSobj.Message = $"This Asset: {masterObj.NameAr} with barcode:{assetObj.Barcode} requested to be {exchold}";
+                        var json = JsonConvert.SerializeObject(SMSobj);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                        var UrlSMS = "https://smsmisr.com/api/SMS";
+
+                        using var client = new HttpClient();
+                        var response = await client.PostAsync(UrlSMS, data);
+                        string resultS = response.Content.ReadAsStringAsync().Result;
+                        Console.WriteLine(resultS);
+                    }
+                }
             }
-            if (hospitalAssetObj.AppTypeId == 2)
-            {
-                strBuild.Append("<tr>");
-                strBuild.Append("<td> Reasons");
-                strBuild.Append("</td>");
-                strBuild.Append("<td>" + strHolds);
-                strBuild.Append("</td>");
-                strBuild.Append("</tr>");
-            }
-            strBuild.Append("</table>");
-
-
-
-            string from = "almostakbaltechnology.dev@gmail.com";
-            string to = "pineapple_126@hotmail.com ";
-            string subject = "Exclude-Hold Asset";
-            string body = strBuild.ToString();
-            string appSpecificPassword = "fajtjigwpcnxyyuv";
-
-            var mailMessage = new MailMessage(from, to, subject, body);
-            var mailMessage2 = new MailMessage(from, userObj.Email, subject, body);
-            mailMessage.IsBodyHtml = true;
-            mailMessage2.IsBodyHtml = true;
-            using (var smtpClient = new SmtpClient("smtp.gmail.com", 587))
-            {
-                smtpClient.EnableSsl = true;
-                smtpClient.Credentials = new NetworkCredential(from, appSpecificPassword);
-                smtpClient.Send(mailMessage);
-                smtpClient.Send(mailMessage2);
-            }
-
-
-
-            var SMSobj = new SendSMS();
-            SMSobj.Language = 1;
-            SMSobj.Mobile = phone;
-            SMSobj.Environment = 1;
-            SMSobj.Message = $"This Asset {masterObj.NameAr} with barcode:{assetObj.Barcode} requested to be {exchold}";
-            var json = JsonConvert.SerializeObject(SMSobj);
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-            //  var UrlSMS = "https://smsmisr.com/api/v2";
-            var UrlSMS = "https://smsmisr.com/api/SMS";
-
-
-            using var client = new HttpClient();
-            var response = await client.PostAsync(UrlSMS, data);
-            string resultS = response.Content.ReadAsStringAsync().Result;
-            Console.WriteLine(resultS);
             return 1;
+
+            //StringBuilder strBuild = new StringBuilder();
+            //strBuild.Append($"Dear {userObj.UserName}\r\n");
+            //strBuild.Append("<table>");
+            //strBuild.Append("<tr>");
+            //strBuild.Append("<td> Asset Name");
+            //strBuild.Append("</td>");
+            //strBuild.Append("<td>" + masterObj.NameAr);
+            //strBuild.Append("</td>");
+            //strBuild.Append("</tr>");
+            //strBuild.Append("<tr>");
+            //strBuild.Append("<td> Serial");
+            //strBuild.Append("</td>");
+            //strBuild.Append("<td>" + assetObj.SerialNumber);
+            //strBuild.Append("</td>");
+            //strBuild.Append("</tr>");
+            //strBuild.Append("<tr>");
+            //strBuild.Append("<td> BarCode");
+            //strBuild.Append("</td>");
+            //strBuild.Append("<td>" + assetObj.Barcode);
+            //strBuild.Append("</td>");
+            //strBuild.Append("</tr>");
+            //if (hospitalAssetObj.AppTypeId == 1)
+            //{
+            //    strBuild.Append("<tr>");
+            //    strBuild.Append("<td> Reasons");
+            //    strBuild.Append("</td>");
+            //    strBuild.Append("<td>" + strExcludes);
+            //    strBuild.Append("</td>");
+            //    strBuild.Append("</tr>");
+            //}
+            //if (hospitalAssetObj.AppTypeId == 2)
+            //{
+            //    strBuild.Append("<tr>");
+            //    strBuild.Append("<td> Reasons");
+            //    strBuild.Append("</td>");
+            //    strBuild.Append("<td>" + strHolds);
+            //    strBuild.Append("</td>");
+            //    strBuild.Append("</tr>");
+            //}
+            //strBuild.Append("</table>");
+
+
+
+            //string from = "almostakbaltechnology.dev@gmail.com";
+            //string to = "pineapple_126@hotmail.com ";
+            //string subject = "Exclude-Hold Asset";
+            //string body = strBuild.ToString();
+            //string appSpecificPassword = "fajtjigwpcnxyyuv";
+
+            //var mailMessage = new MailMessage(from, to, subject, body);
+            //var mailMessage2 = new MailMessage(from, userObj.Email, subject, body);
+            //mailMessage.IsBodyHtml = true;
+            //mailMessage2.IsBodyHtml = true;
+            //using (var smtpClient = new SmtpClient("smtp.gmail.com", 587))
+            //{
+            //    smtpClient.EnableSsl = true;
+            //    smtpClient.Credentials = new NetworkCredential(from, appSpecificPassword);
+            //    smtpClient.Send(mailMessage);
+            //    smtpClient.Send(mailMessage2);
+            //}
+
+
+
+            //var SMSobj = new SendSMS();
+            //SMSobj.Language = 1;
+            //SMSobj.Mobile = phone;
+            //SMSobj.Environment = 1;
+            //SMSobj.Message = $"This Asset: {masterObj.NameAr} with barcode:{assetObj.Barcode} requested to be {exchold}";
+            //var json = JsonConvert.SerializeObject(SMSobj);
+            //var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            ////  var UrlSMS = "https://smsmisr.com/api/v2";
+            //var UrlSMS = "https://smsmisr.com/api/SMS";
+
+
+            //using var client = new HttpClient();
+            //var response = await client.PostAsync(UrlSMS, data);
+            //string resultS = response.Content.ReadAsStringAsync().Result;
+            //Console.WriteLine(resultS);
+            //return 1;
 
         }
     }

@@ -10,15 +10,15 @@ namespace Asset.ViewModels.VisitVM
     public class CreateVisitVM
     {
         public int Id { get; set; }
-      
+
         //public int? EngineerId { get; set; }
-   
+
         public int? HospitalId { get; set; }
-      
+
         public DateTime VisitDate { get; set; }
 
         public int? VisitTypeId { get; set; }
-      
+
         public string VisitDescr { get; set; }
 
         public int? StatusId { get; set; }
@@ -34,5 +34,7 @@ namespace Asset.ViewModels.VisitVM
         public bool? IsMode { get; set; }
 
         public List<VisitAttachment> ListAttachments { get; set; }
+
+
     }
 }

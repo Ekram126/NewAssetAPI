@@ -25,6 +25,6 @@ namespace Asset.Domain.Services
         IndexSupplierVM GetAllSuppliersWithPaging(int pageNumber, int pageSize);
         int CreateSupplierAttachment(SupplierAttachment attachObj);
         List<SupplierAttachment> GetSupplierAttachmentsBySupplierId(int supplierId);
-
+        GenerateSupplierCodeVM GenerateSupplierCode();
     }
 }

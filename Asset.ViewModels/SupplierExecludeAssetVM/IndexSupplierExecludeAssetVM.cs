@@ -21,6 +21,7 @@ namespace Asset.ViewModels.SupplierExecludeAssetVM
             public int? HospitalId { get; set; }
             public string UserName { get; set; }
             public string Date { get; set; }
+            public DateTime? DemandDate { get; set; }
             public string ExecludeDate { get; set; }
             public string ExNumber { get; set; }
             public int? AppTypeId { get; set; }

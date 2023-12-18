@@ -157,6 +157,12 @@ namespace Asset.Core.Repositories
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
 
+                if (lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRReviewer"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+
+
 
                 if (lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator"))
                 {
@@ -310,19 +316,18 @@ namespace Asset.Core.Repositories
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
-                if (lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("Eng") && !lstRoleNames.Contains("EngDepManager"))
+                if (lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("Eng") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer"))
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-
-
                 if (lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("SRReviewer"))
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId && t.CreatedById == userId).ToList();
                 }
-
-
-
+                if (lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRReviewer"))
+                {
+                    requests = requests.Where(t => t.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
                 if (lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("EngDepManager"))
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
@@ -658,19 +663,19 @@ namespace Asset.Core.Repositories
             List<RequestTracking> lstApprovedTracks = new List<RequestTracking>();
 
        
-            var obj = _context.ApplicationUser.Where(a => a.Id == requestDateObj.UserId).ToList();
-            if (obj.Count > 0)
-            {
-                UserObj = obj[0];
-                //var roleNames = (from userRole in _context.UserRoles
-                //                 join role in _context.Roles on userRole.RoleId equals role.Id
-                //                 where userRole.UserId == requestDateObj.UserId
-                //                 select role);
-                //foreach (var name in roleNames)
-                //{
-                //    lstRoleNames.Add(name.Name);
-                //}
-            }
+            //var obj = _context.ApplicationUser.Where(a => a.Id == requestDateObj.UserId).ToList();
+            //if (obj.Count > 0)
+            //{
+            //    UserObj = obj[0];
+            //    //var roleNames = (from userRole in _context.UserRoles
+            //    //                 join role in _context.Roles on userRole.RoleId equals role.Id
+            //    //                 where userRole.UserId == requestDateObj.UserId
+            //    //                 select role);
+            //    //foreach (var name in roleNames)
+            //    //{
+            //    //    lstRoleNames.Add(name.Name);
+            //    //}
+            //}
 
             var lstStatus = _context.RequestStatus.Where(a => a.Id != 5).ToList();
             ItemObj.ListStatus = lstStatus;

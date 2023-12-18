@@ -57,6 +57,14 @@ namespace Asset.API.Controllers
 
 
 
+        [HttpPost]
+        [Route("GetAllWithDate/{pageNumber}/{pageSize}/{userId}")]
+        public IndexWNPMAssetTimesVM GetAllWithDate(WNPDateVM searchObj, int pageNumber, int pageSize, string userId)
+        {
+            return _wNPMAssetTimeService.GetAllWithDate(searchObj, pageNumber, pageSize, userId);
+        }
+
+
         [HttpPut]
         [Route("UpdateWNAssetTime")]
         public int UpdateWNAssetTime(WNPMAssetTime model)
@@ -154,30 +162,13 @@ namespace Asset.API.Controllers
 
 
 
-
-
-        //[HttpGet]
-        //[Route("GetYearQuarters")]
-        //public ITimePeriodCollection GetYearQuarters()
-        //{
-        //    Year year = new Year(DateTime.Today.Year);
-        //    ITimePeriodCollection quarters = year.GetQuarters();
-        //    foreach (Quarter quarter in quarters)
-        //    {
-        //        Console.WriteLine("Quarter: {0}", quarter.YearQuarter);
-        //    }
-        //    return quarters;
-        //}
-
-
-
         [HttpGet]
         [Route("GetYearQuarters")]
         public List<Quarter> GetYearQuarters()
         {
             Year year = new Year(DateTime.Today.Year);
             ITimePeriodCollection quarters = year.GetQuarters();
-           
+
             List<Quarter> list = new List<Quarter>();
             foreach (Quarter quarter in quarters)
             {
@@ -196,12 +187,21 @@ namespace Asset.API.Controllers
             Year year = new Year(new FiscalTimeCalendar());
             ITimePeriodCollection quarters = year.GetQuarters();
             List<Quarter> list = new List<Quarter>();
-            //  List<string> list = new List<string>();
             foreach (Quarter quarter in quarters)
             {
                 list.Add(quarter);
             }
             return list;
+        }
+
+
+        [HttpGet]
+        [Route("GetFiscalYearCurrentQuarter")]
+        public YearQuarter GetFiscalYearCurrentQuarter()
+        {
+            FiscalTimeCalendar calendar = new FiscalTimeCalendar(); // use fiscal periods
+            DateTime today = new DateTime(DateTime.Today.Date.Year, DateTime.Today.Date.Month, DateTime.Today.Date.Day);
+            return new Quarter(today, calendar).YearQuarter;
         }
 
 

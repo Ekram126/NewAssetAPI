@@ -47,6 +47,9 @@ namespace Asset.Core.Repositories
             visitObj.Code = createVisitVM.Code;
             visitObj.ListAttachments = createVisitVM.ListAttachments;
             visitObj.EngineerId = engObj.Id;
+            visitObj.Latitude = createVisitVM.Latitude;
+            visitObj.Longtitude = createVisitVM.Longtitude;
+            visitObj.IsMode = createVisitVM.IsMode;
             _context.Visits.Add(visitObj);
             _context.SaveChanges();
             // model.Id = visitObj.Id;

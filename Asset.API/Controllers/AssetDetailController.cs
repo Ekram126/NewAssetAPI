@@ -62,9 +62,7 @@ namespace Asset.API.Controllers
         private readonly ISettingService _settingService;
         IHttpContextAccessor _httpContextAccessor;
         int i = 1;
-        //[Obsolete]
-        //IHostingEnvironment _webHostingEnvironment;
-        // private object ComponentInfo;
+
 
         [Obsolete]
         public AssetDetailController(IAssetDetailService AssetDetailService, IAssetOwnerService assetOwnerService, IWorkOrderService workOrderService,
@@ -131,6 +129,15 @@ namespace Asset.API.Controllers
             return _AssetDetailService.AutoCompleteAssetSerial(serial, hospitalId);
         }
 
+    
+        [HttpPost]
+        [Route("LoadAssetDetailsByUserId/{pagenumber}/{pagesize}/{userId}")]
+        public async Task<IndexAssetDetailVM> LoadAssetDetailsByUserId(int pageNumber, int pageSize, string userId)
+        {
+            var lstAssetDetails = await _AssetDetailService.LoadAssetDetailsByUserId(pageNumber, pageSize, userId);
+            return lstAssetDetails;
+        }
+
         [HttpGet]
         [Route("GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId/{barcode}/{hospitalId}")]
         public IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(string barcode, int hospitalId)
@@ -138,6 +145,30 @@ namespace Asset.API.Controllers
             return _AssetDetailService.GetAutoCompleteSupplierNoneExcludedAssetsByHospitalId(barcode, hospitalId);
         }
 
+
+
+        [HttpGet]
+        [Route("GetAutoCompleteSupplierExcludedAssetsByHospitalId/{barcode}/{hospitalId}")]
+        public ActionResult< IEnumerable<ViewAssetDetailVM>> GetAutoCompleteSupplierExcludedAssetsByHospitalId(string barcode, int hospitalId)
+        {
+            //var lstExcludes = _AssetDetailService.GetAutoCompleteSupplierExcludedAssetsByHospitalId(barcode, hospitalId).ToList();
+            //if (lstExcludes.Count > 0)
+            //{
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "assetId", Message = "Asset already exist", MessageAr = "هذا الجهاز مسجل سابقاً" });
+            //}
+            //else
+            //{
+                return _AssetDetailService.GetAutoCompleteSupplierExcludedAssetsByHospitalId(barcode, hospitalId).ToList();
+          //  }
+        }
+
+
+
+
+
+
+
+    
 
         [HttpGet]
         [Route("GetAssetHistoryById/{assetId}")]
@@ -173,6 +204,18 @@ namespace Asset.API.Controllers
             var lstAssets = _AssetDetailService.GetAllAssetsByStatusId(statusId, userId).ToList();
             return _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, lstAssets);
         }
+
+
+        [HttpPost]
+        [Route("ExportAssetsByStatusId/{statusId}/{userId}")]
+        public IEnumerable<IndexAssetDetailVM.GetData> ExportAssetsByStatusId(int statusId, string userId)
+        {
+            var lstAssets = _AssetDetailService.GetAllAssetsByStatusId(statusId, userId).ToList();
+            return  lstAssets;
+        }
+
+
+
         [HttpPost]
         [Route("GetAllAssetsCountByStatusId/{statusId}/{userId}")]
         public int GetCountByStatusId(int statusId, string userId)
@@ -198,6 +241,13 @@ namespace Asset.API.Controllers
             return lstAssets;
         }
 
+        [HttpPost]
+        [Route("ListHospitalAssets/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM ListHospitalAssets(SortAndFilterVM data, int pageNumber, int pageSize)
+        {
+            return _AssetDetailService.ListHospitalAssets(data, pageNumber, pageSize);
+        }
+
 
         [HttpPost]
         [Route("SearchAssetDetails/{pagenumber}/{pagesize}")]
@@ -206,13 +256,13 @@ namespace Asset.API.Controllers
             var list = _AssetDetailService.SearchAssetInHospital(pagenumber, pagesize, searchObj);
             return list;// _pagingService.GetAll<IndexAssetDetailVM.GetData>(pageInfo, list);
         }
-        [HttpPost]
-        [Route("FilterDataByDepartmentBrandSupplierId")]
-        public List<IndexAssetDetailVM.GetData> FilterDataByDepartmentBrandSupplierId(FilterHospitalAsset data)
-        {
-            var list = _AssetDetailService.FilterDataByDepartmentBrandSupplierId(data);
-            return list;
-        }
+        //[HttpPost]
+        //[Route("FilterDataByDepartmentBrandSupplierId")]
+        //public List<IndexAssetDetailVM.GetData> FilterDataByDepartmentBrandSupplierId(FilterHospitalAsset data)
+        //{
+        //    var list = _AssetDetailService.FilterDataByDepartmentBrandSupplierId(data);
+        //    return list;
+        //}
 
 
         [HttpGet]
@@ -334,8 +384,29 @@ namespace Asset.API.Controllers
         [Route("GetAssetsByUserIdAndPaging/{userId}/{pageNumber}/{pageSize}")]
         public IndexAssetDetailVM GetAssetsByUserIdAndPaging(string userId, int pageNumber, int pageSize)
         {
-            return _AssetDetailService.GetAssetsByUserId(userId, pageNumber, pageSize);
+           // return _AssetDetailService.GetAssetsByUserId(userId, pageNumber, pageSize);
+            return _AssetDetailService.GetAssetsByUserIdAndPaging(userId, pageNumber, pageSize);
         }
+
+        //[HttpPost]
+        //[Route("GetAssetsByUserIdAndPaging/{userId}/{pageNumber}/{pageSize}")]
+        //public IndexAssetDetailVM GetAssetsByUserIdAndPaging(string userId, int pageNumber, int pageSize)
+        //{
+        //    //return _AssetDetailService.GetAssetsByUserId(userId, pageNumber, pageSize);
+        //    return _AssetDetailService.GetAssetsByUserIdAndPaging(userId, pageNumber, pageSize);
+        //}
+
+
+
+        //[HttpPost]
+        //[Route("GetAssetsByUserIdAndPaging/{userId}/{pageNumber}/{pageSize}")]
+        //public IndexAssetDetailVM GetAssetsByUserIdAndPaging(string userId, int pageNumber, int pageSize)
+        //{
+        //    //return _AssetDetailService.GetAssetsByUserId(userId, pageNumber, pageSize);
+        //    return _AssetDetailService.GetAssetsByUserIdAndPaging(userId, pageNumber, pageSize);
+        //}
+
+
 
 
 
@@ -658,6 +729,25 @@ namespace Asset.API.Controllers
         public IndexAssetDetailVM SortAssets(Sort sortObj, int statusId, string userId)
         {
             var assetDetailData = _AssetDetailService.SortAssets(sortObj, statusId, userId);
+            return assetDetailData;
+        }
+
+        [HttpPost]
+        [Route("SortAssetsByPaging/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM SortAssets2(Sort sortObj, int pageNumber, int pageSize)
+        {
+            var assetDetailData = _AssetDetailService.SortAssets2(sortObj, pageNumber, pageSize);
+            return assetDetailData;
+        }
+
+
+
+
+        [HttpPost]
+        [Route("SortHospitalAssetsBySupplierId/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM SortHospitalAssetsBySupplierId(Sort sortObj, int pageNumber, int pageSize)
+        {
+            var assetDetailData = _AssetDetailService.SortHospitalAssetsBySupplierId(sortObj, pageNumber, pageSize);
             return assetDetailData;
         }
 
@@ -1132,19 +1222,15 @@ namespace Asset.API.Controllers
         }
         private void MergeField_InsertPageBreak(object sender, MergeFieldEventArgs args)
         {
-
-            List<IndexAssetDetailVM.GetData> allAssets = ListAssets();
-            if (allAssets.Count > 0)
+            if (args.FieldName == "DepartmentName")
             {
-                if (args.FieldName == "BarCode" && i != allAssets.Count)
-                {
-                    //Gets the owner paragraph 
-                    WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
-                    //Appends the page break 
-                    paragraph.AppendBreak(BreakType.PageBreak);
-                    i++;
-                }
+                //Gets the owner paragraph 
+                WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
+                //Appends the page break 
+                paragraph.AppendBreak(BreakType.PageBreak);
+                i++;
             }
+
         }
         private void InsertQRBarcode(object sender, MergeImageFieldEventArgs args)
         {
@@ -1161,9 +1247,9 @@ namespace Asset.API.Controllers
             //Drawing QR Barcode
             PdfQRBarcode barcode = new PdfQRBarcode();
             //Set Error Correction Level
-            barcode.ErrorCorrectionLevel = PdfErrorCorrectionLevel.High;
+            barcode.ErrorCorrectionLevel = PdfErrorCorrectionLevel.Low;
             //Set XDimension
-            barcode.XDimension = 3;
+            barcode.XDimension = 4;
             barcode.Text = qrBarcodeText;
             PdfColor pdfColor = new PdfColor();
             //pdfColor.
@@ -1176,6 +1262,7 @@ namespace Asset.API.Controllers
         }
         private List<IndexAssetDetailVM.GetData> ListAssets()
         {
+
             var allAssets = _AssetDetailService.GetAll().OrderBy(a => a.Barcode).ToList();
             if (allAssets.Count > 0)
             {
@@ -1246,18 +1333,16 @@ namespace Asset.API.Controllers
         private void MergeField1_InsertPageBreak(object sender, MergeFieldEventArgs args)
         {
 
-            List<IndexAssetDetailVM.GetData> allAssets = ListAssets();
-            if (allAssets.Count > 0)
+
+            if (args.FieldName == "DepartmentName")
             {
-                if (args.FieldName == "DepartmentName" && i != allAssets.Count)
-                {
-                    //Gets the owner paragraph 
-                    WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
-                    //Appends the page break 
-                    paragraph.AppendBreak(BreakType.PageBreak);
-                    i++;
-                }
+                //Gets the owner paragraph 
+                WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
+                //Appends the page break 
+                paragraph.AppendBreak(BreakType.PageBreak);
+                i++;
             }
+
         }
 
 
@@ -1272,6 +1357,9 @@ namespace Asset.API.Controllers
             domainName = "http://" + _httpContextAccessor.HttpContext.Request.Host.Value;
             return _AssetDetailService.GenerateQrCodeForAllAssets(domainName);
         }
+
+
+        [HttpPost]
         [Route("GenerateWordForQrCodeForHospitalAssets")]
         public ActionResult GenerateWordForQrCodeForHospitalAssets()
         {
@@ -1286,7 +1374,7 @@ namespace Asset.API.Controllers
                 docStream.Dispose();
 
 
-                var allAssets = ListAssets().Take(10).ToList();
+                var allAssets = ListAssets().ToList();
                 MailMergeDataTable dataTable = new MailMergeDataTable("Asset_QrCode", allAssets);
                 document.MailMerge.MergeField += new MergeFieldEventHandler(MergeField2_InsertPageBreak);
                 document.MailMerge.MergeImageField += new MergeImageFieldEventHandler(InsertQRBarcode);
@@ -1321,20 +1409,161 @@ namespace Asset.API.Controllers
         private void MergeField2_InsertPageBreak(object sender, MergeFieldEventArgs args)
         {
 
-            List<IndexAssetDetailVM.GetData> allAssets = ListAssets();
-            if (allAssets.Count > 0)
+            //List<IndexAssetDetailVM.GetData> allAssets = ListAssets().ToList();
+            //if (allAssets.Count > 0)
+            //{
+            if (args.FieldName == "DepartmentName")
             {
-                if (args.FieldName == "DepartmentName" && i != allAssets.Count)
-                {
-                    //Gets the owner paragraph 
-                    WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
-                    //Appends the page break 
-                    paragraph.AppendBreak(BreakType.PageBreak);
-                    i++;
-                }
+                //Gets the owner paragraph 
+                WParagraph paragraph = args.CurrentMergeField.OwnerParagraph;
+                //Appends the page break 
+                paragraph.AppendBreak(BreakType.PageBreak);
+                i++;
             }
+            // }
         }
 
+
+        [HttpPost]
+        [Route("GetHospitalAssetsByGovIdAndDeptIdAndHospitalId/{departmentId}/{govId}/{hospitalId}/{userId}/{pageNumber}/{pageSize}")]
+        public ActionResult<IndexAssetDetailVM> GetHospitalAssetsByGovIdAndDeptIdAndHospitalId2(int departmentId, int govId, int hospitalId, string userId, int pageNumber, int pageSize)
+        {
+            return _AssetDetailService.GetHospitalAssetsByGovIdAndDeptIdAndHospitalId(departmentId, govId, hospitalId, userId, pageNumber, pageSize);
+        }
+
+
+
+
+
+
+        [HttpPost]
+        [Route("SortAssetsWithoutSearch/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM SortAssetsWithoutSearch(Sort sortObj, int pageNumber, int pageSize)
+        {
+            return _AssetDetailService.SortAssetsWithoutSearch(sortObj, pageNumber, pageSize);
+        }
+
+
+        [HttpPost]
+        [Route("GetHospitalAssetsBySupplierId/{supplierId}/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM GetHospitalAssetsBySupplierId(int supplierId, int pageNumber, int pageSize)
+        {
+            return _AssetDetailService.GetHospitalAssetsBySupplierId(supplierId, pageNumber, pageSize);
+        }
+
+
+        [HttpPost]
+        [Route("SearchHospitalAssetsBySupplierId/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM SearchHospitalAssetsBySupplierId(SearchAssetDetailVM searchObj, int pageNumber, int pageSize)
+        {
+            return _AssetDetailService.SearchHospitalAssetsBySupplierId(searchObj, pageNumber, pageSize);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet]
+        [Route("GetAssetsByBrandId/{brandId}")]
+        public IndexAssetDetailVM GetAssetsByBrandId(int brandId)
+        {
+            IndexAssetDetailVM result = new IndexAssetDetailVM();
+            result = _AssetDetailService.GetAssetsByBrandId(brandId);
+            return result;
+        }
+        [HttpGet]
+        [Route("GetAssetsByDepartmentId/{departmentId}")]
+        public IndexAssetDetailVM GetAssetsByDepartmentId(int departmentId)
+        {
+            IndexAssetDetailVM result = new IndexAssetDetailVM();
+            result = _AssetDetailService.GetAssetsByDepartmentId(departmentId);
+            return result;
+
+        }
+
+        [HttpGet]
+        [Route("GetAssetsBySupplierId/{supplierId}")]
+
+        public List<IndexAssetDetailVM.GetData> GetAssetsBySupplierId(int supplierId)
+        {
+            List<IndexAssetDetailVM.GetData> result = new List<IndexAssetDetailVM.GetData>();
+            result = _AssetDetailService.GetAssetsBySupplierId(supplierId);
+            return result;
+        }
+
+        [HttpGet]
+        [Route("GetAssetsBySupplierIdWithPaging/{supplierId}/{pageNumber}/{pageSize}")]
+
+        public IndexAssetDetailVM GetAssetsBySupplierIdWithPaging(int supplierId, int pageNumber, int pageSize)
+        {
+            IndexAssetDetailVM result = new IndexAssetDetailVM();
+            result = _AssetDetailService.GetAssetsBySupplierIdWithPaging(supplierId, pageNumber, pageSize);
+            return result;
+        }
+
+        [HttpPost]
+        [Route("SortAssetDetail/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM SortAssetDetail(SortAssetDetail sortObject, int pageNumber, int pageSize)
+        {
+            var result = new IndexAssetDetailVM();
+            result = _AssetDetailService.SortAssetDetail(sortObject, pageNumber, pageSize);
+            return result;
+        }
+
+        [HttpPost]
+        [Route("SortAssetDetailAfterSearch/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM SortAssetDetailAfterSearch(SortAndFilterDataModel data, int pageNumber, int pageSize)
+        {
+            return _AssetDetailService.SortAssetDetailAfterSearch(data, pageNumber, pageSize);
+        }
+
+        [HttpPost]
+        [Route("GroupAssetDetailsByBrand")]
+        public List<BrandGroupVM> GroupAssetDetailsByBrand(FilterHospitalAsset data)
+        {
+            return _AssetDetailService.GroupAssetDetailsByBrand(data);
+        }
+
+        [HttpPost]
+        [Route("GroupAssetDetailsBySupplier")]
+        public List<SupplierGroupVM> GroupAssetDetailsBySupplier(FilterHospitalAsset data)
+        {
+            return _AssetDetailService.GroupAssetDetailsBySupplier(data);
+        }
+
+        [HttpPost]
+        [Route("GroupAssetDetailsByDepartment")]
+        public List<DepartmentGroupVM> GroupAssetDetailsByDepartment(FilterHospitalAsset data)
+        {
+            return _AssetDetailService.GroupAssetDetailsByDepartment(data);
+        }
+
+
+        [HttpPost]
+        [Route("FilterDataByDepartmentBrandSupplierIdAndPaging/{userId}/{pageNumber}/{pageSize}")]
+        public IndexAssetDetailVM FilterDataByDepartmentBrandSupplierIdAndPaging(FilterHospitalAsset data, string userId, int pageNumber, int pageSize)
+        {
+            var list = _AssetDetailService.FilterDataByDepartmentBrandSupplierIdAndPaging(data, userId, pageNumber, pageSize);
+            return list;
+        }
+
+
+
+        [HttpGet]
+        [Route("DrawingChart")]
+        public List<DrawChart> DrawingChart()
+        {
+            var list = _AssetDetailService.DrawingChart();
+            return list;
+        }
 
     }
 }

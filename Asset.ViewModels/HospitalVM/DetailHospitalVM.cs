@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Asset.ViewModels.HospitalVM
 {
@@ -54,6 +55,13 @@ namespace Asset.ViewModels.HospitalVM
         public string SubOrganizationNameAr { get; set; }
 
         public List<int> Departments { get; set; }
+
+
+        public string ContractName { get; set; }
+        public DateTime? ContractStart { get; set; }
+        public DateTime? ContractEnd { get; set; }
+        public string StrContractStart { get; set; }
+        public string StrContractEnd { get; set; }
 
         public List<EnableDisableDepartment> EnableDisableDepartments { get; set; }
 

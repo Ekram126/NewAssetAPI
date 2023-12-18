@@ -30,7 +30,7 @@ namespace Asset.ViewModels.ContractVM
             public string SupplierName { get; set; }
             public string SupplierNameAr { get; set; }
 
-    public string Notes { get; set; }
+            public string Notes { get; set; }
         }
     }
 }

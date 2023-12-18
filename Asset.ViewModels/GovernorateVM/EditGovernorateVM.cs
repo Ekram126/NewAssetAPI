@@ -16,5 +16,7 @@
 
         public decimal? Latitude { get; set; }
         public decimal? Longtitude { get; set; }
+
+        public string Logo { get; set; }
     }
 }

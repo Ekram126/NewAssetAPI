@@ -18,5 +18,6 @@ namespace Asset.Domain.Services
         int Delete(int id);
 
         IEnumerable<IndexDepartmentVM.GetData> SortDepartments(SortDepartmentVM sortObj);
+        GenerateDepartmentCodeVM GenerateDepartmentCode();
     }
 }

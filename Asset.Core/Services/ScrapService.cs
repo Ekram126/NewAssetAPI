@@ -40,6 +40,12 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.scrapRepository.GetById(id);
         }
+
+
+        public IndexScrapVM.GetData GetById2(int id)
+        {
+            return _unitOfWork.scrapRepository.GetById2(id);
+        }
         public GeneratedScrapNumberVM GenerateScrapNumber()
         {
             return _unitOfWork.scrapRepository.GenerateScrapNumber();
@@ -71,6 +77,21 @@ namespace Asset.Core.Services
         public List<ViewScrapVM> GetScrapReasonByScrapId(int scrapId)
         {
             return _unitOfWork.scrapRepository.GetScrapReasonByScrapId(scrapId);
+        }
+
+        public IndexScrapVM SearchInScraps(SearchScrapVM searchObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.scrapRepository.SearchInScraps(searchObj, pageNumber, pageSize);
+        }
+
+        public IndexScrapVM GetAllScraps(int pageNumber, int pageSize)
+        {
+            return _unitOfWork.scrapRepository.GetAllScraps(pageNumber, pageSize);
+        }
+
+        public List<IndexScrapVM.GetData> PrintListOfScraps(List<IndexScrapVM.GetData> scraps)
+        {
+            return _unitOfWork.scrapRepository.PrintListOfScraps(scraps);
         }
     }
 }

@@ -26,6 +26,7 @@ namespace Asset.Domain.Repositories
         IndexWorkOrderTrackingVM GetById(int id);
         int Add(CreateWorkOrderTrackingVM createWorkOrderTrackingVM);
         void Update(int id, EditWorkOrderTrackingVM editWorkOrderTrackingVM);
+        void Update(EditWorkOrderTrackingVM editWorkOrderTrackingVM);
         void Delete(int id);
 
         LstWorkOrderFromTracking GetEngManagerWhoFirstAssignedWO(int woId);

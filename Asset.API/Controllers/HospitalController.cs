@@ -332,5 +332,21 @@ namespace Asset.API.Controllers
         {
             return _HospitalService.GetHospitalsWithAssets();
         }
+
+
+
+        [HttpGet("GetHospitalByGovId/{govId}")]
+        public IEnumerable<Hospital> GetHospitalByGovId(int govId)
+        {
+            return _HospitalService.GetHospitalByGovId(govId);
+        }
+
+
+        [HttpGet("GenerateHospitalCode")]
+        public GenerateHospitalCodeVM GenerateHospitalCode()
+        {
+            return _HospitalService.GenerateHospitalCode();
+        }
+
     }
 }

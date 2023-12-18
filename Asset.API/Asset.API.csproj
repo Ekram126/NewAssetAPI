@@ -53,6 +53,8 @@
     <Folder Include="UploadedAttachments\HospitalApplications\" />
     <Folder Include="UploadedAttachments\MasterContractFiles\" />
     <Folder Include="UploadedAttachments\ExternalAssetMovements\" />
+    <Folder Include="UploadedAttachments\ScrapReports\" />
+    <Folder Include="UploadedAttachments\SupplierExecludePDF\" />
     <Folder Include="UploadedAttachments\SupplierAttachments\" />
     <Folder Include="UploadedAttachments\WNPMAssetTime\" />
     <Folder Include="UploadedAttachments\UploadScrapFiles\" />

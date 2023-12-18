@@ -340,9 +340,9 @@ namespace Asset.Core.Services
             return _unitOfWork.AssetDetailRepository.GenerateQrCodeForAllAssets(domainName);
         }
 
-        public IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj)
+        public IndexAssetDetailVM MobSearchAssetInHospital(SearchMasterAssetVM searchObj, int pageNumber, int pageSize)
         {
-            return _unitOfWork.AssetDetailRepository.MobSearchAssetInHospital(searchObj);
+            return _unitOfWork.AssetDetailRepository.MobSearchAssetInHospital(searchObj, pageNumber, pageSize);
         }
 
         public IndexAssetDetailVM AlertAssetsBefore3Monthes(int duration, int pageNumber, int pageSize)
@@ -354,5 +354,130 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.AssetDetailRepository.SearchHospitalAssetsByHospitalId(searchObj);
         }
+
+        public IndexAssetDetailVM SearchAssetWarrantyInHospital(int pagenumber, int pagesize, SearchMasterAssetVM searchObj)
+        {
+            return _unitOfWork.AssetDetailRepository.SearchAssetWarrantyInHospital(pagenumber, pagesize, searchObj);
+        }
+
+        public MobileAssetDetailVM2 GetAssetDetailByIdOnly(string userId, int assetId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetDetailByIdOnly(userId, assetId);
+        }
+
+        public IndexAssetDetailVM SortAssets2(Sort sortObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.SortAssets2(sortObj, pageNumber, pageSize);
+        }
+
+        public IEnumerable<ViewAssetDetailVM> GetAutoCompleteSupplierExcludedAssetsByHospitalId(string barcode, int hospitalId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAutoCompleteSupplierExcludedAssetsByHospitalId(barcode, hospitalId);
+        }
+
+        public IndexAssetDetailVM GetHospitalAssetsByGovIdAndDeptIdAndHospitalId(int departmentId, int govId, int hospitalId, string userId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.GetHospitalAssetsByGovIdAndDeptIdAndHospitalId(departmentId, govId, hospitalId, userId, pageNumber, pageSize);
+        }
+
+        public IndexAssetDetailVM SortAssetsWithoutSearch(Sort sortObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.SortAssetsWithoutSearch(sortObj, pageNumber, pageSize);
+        }
+
+        public IndexAssetDetailVM GetHospitalAssetsBySupplierId(int supplierId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.GetHospitalAssetsBySupplierId(supplierId, pageNumber, pageSize);
+
+        }
+
+        public IndexAssetDetailVM SearchHospitalAssetsBySupplierId(SearchAssetDetailVM searchObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.SearchHospitalAssetsBySupplierId(searchObj, pageNumber, pageSize);
+        }
+
+        public IndexAssetDetailVM SortHospitalAssetsBySupplierId(Sort sortObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.SortHospitalAssetsBySupplierId(sortObj, pageNumber, pageSize);
+        }
+
+
+        public IndexAssetDetailVM FilterDataByDepartmentBrandSupplierIdAndPaging(FilterHospitalAsset data, string userId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.FilterDataByDepartmentBrandSupplierIdAndPaging(data, userId, pageNumber, pageSize);
+        }
+
+
+
+        public IndexAssetDetailVM GetAssetsByBrandId(int brandId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetsByBrandId(brandId);
+        }
+
+        public IndexAssetDetailVM GetAssetsByDepartmentId(int departmentId)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetsByDepartmentId(departmentId);
+        }
+
+        public List<IndexAssetDetailVM.GetData> GetAssetsBySupplierId(int supplierId)
+        {
+
+            return _unitOfWork.AssetDetailRepository.GetAssetsBySupplierId(supplierId);
+        }
+
+        public IndexAssetDetailVM GetAssetsBySupplierIdWithPaging(int supplierId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetsBySupplierIdWithPaging(supplierId, pageNumber, pageSize);
+        }
+
+        public IndexAssetDetailVM SortAssetDetail(SortAssetDetail sortObject, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.SortAssetDetail(sortObject, pageNumber, pageSize);
+        }
+
+        public IndexAssetDetailVM SortAssetDetailAfterSearch(SortAndFilterDataModel data, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.SortAssetDetailAfterSearch(data, pageNumber, pageSize);
+        }
+
+        public List<IndexAssetDetailVM.GetData> FindAllFilteredAssetsForGrouping(FilterHospitalAsset data)
+        {
+            return _unitOfWork.AssetDetailRepository.FindAllFilteredAssetsForGrouping(data);
+        }
+
+        public List<BrandGroupVM> GroupAssetDetailsByBrand(FilterHospitalAsset data)
+        {
+            return _unitOfWork.AssetDetailRepository.GroupAssetDetailsByBrand(data);
+        }
+
+        public List<SupplierGroupVM> GroupAssetDetailsBySupplier(FilterHospitalAsset data)
+        {
+            return _unitOfWork.AssetDetailRepository.GroupAssetDetailsBySupplier(data);
+        }
+
+        public List<DepartmentGroupVM> GroupAssetDetailsByDepartment(FilterHospitalAsset data)
+        {
+            return _unitOfWork.AssetDetailRepository.GroupAssetDetailsByDepartment(data);
+        }
+
+        public Task<IndexAssetDetailVM> LoadAssetDetailsByUserId(int pageNumber, int pageSize, string userId)
+        {
+            return _unitOfWork.AssetDetailRepository.LoadAssetDetailsByUserId(pageNumber, pageSize, userId);
+        }
+
+        public IndexAssetDetailVM GetAssetsByUserIdAndPaging(string userId, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.GetAssetsByUserIdAndPaging(userId, pageNumber, pageSize);
+        }
+
+        public List<DrawChart> DrawingChart()
+        {
+            return _unitOfWork.AssetDetailRepository.DrawingChart();
+        }
+        public IndexAssetDetailVM ListHospitalAssets(SortAndFilterVM data, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.AssetDetailRepository.ListHospitalAssets(data, pageNumber, pageSize);
+        }
+
     }
 }

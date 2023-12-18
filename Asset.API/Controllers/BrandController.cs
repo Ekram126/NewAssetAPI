@@ -187,5 +187,12 @@ namespace Asset.API.Controllers
 
             return Ok();
         }
+
+
+        [HttpGet("GenerateBrandCode")]
+        public GenerateBrandCodeVM GenerateBrandCode()
+        {
+            return _BrandService.GenerateBrandCode();
+        }
     }
 }

@@ -16,6 +16,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId);
         IEnumerable<IndexRequestVM.GetData> ExportRequestByStatusId(int? hospitalId, string userId, int statusId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByStatusId(string userId, int statusId, int page, int pageSize);
+
+
         IEnumerable<IndexRequestVM.GetData> GetRequestsByUserIdAssetId(string userId, int assetId);
         IEnumerable<IndexRequestVM.GetData> ExportRequestsByStatusId(string userId, int statusId);
         IEnumerable<IndexRequestVM.GetData> GetAllRequestsByHospitalId(int hospitalId);
@@ -53,12 +55,21 @@ namespace Asset.Domain.Repositories
 
         IndexRequestVM GetAllRequestsByStatusIdAndPaging(string userId, int statusId, int pageNumber, int pageSize);
 
+        IndexRequestVM GetAllRequestsByStatusIdAndPaging2(string userId, int statusId, int pageNumber, int pageSize);
 
 
         int GetRequestsCountByStatusIdAndPaging(string userId, int statusId);
-        List<IndexRequestVM.GetData> AlertOpenedRequestAssetsAndHighPeriority(int periorityId,int hospitalId);
+   
+        IndexRequestVM AlertOpenedRequestAssetsAndHighPeriority(int periorityId, int hospitalId, int pageNumber, int pageSize);
+
+
         List<IndexRequestVM.GetData> PrintListOfRequests(List<ExportRequestVM> requests);
         OpenRequestVM ListOpenRequests(SearchOpenRequestVM searchOpenRequestObj, int pageNumber, int pageSize);
         List<OpenRequestVM.GetData> ListOpenRequestsPDF(SearchOpenRequestVM searchOpenRequestObj);
+
+
+
+
+        IndexRequestVM GetRequestsByStatusIdAndPagingV2(string userId, int statusId, int pageNumber, int pageSize);
     }
 }

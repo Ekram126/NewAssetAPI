@@ -29,10 +29,8 @@ namespace Asset.API.Controllers
         [Route("ListAssetMovements/{pageNumber}/{pageSize}")]
         public IndexAssetMovementVM GetAll(int pageNumber, int pageSize)
         {
-            return _assetMovementService.GetAll(pageNumber,  pageSize);
+            return _assetMovementService.GetAll(pageNumber, pageSize);
         }
-
-
 
 
         [HttpGet]
@@ -43,6 +41,14 @@ namespace Asset.API.Controllers
         }
 
 
+
+
+        [HttpPost]
+        [Route("SearchAssetMovement/{pageNumber}/{pageSize}")]
+        public IndexAssetMovementVM GetMovementByAssetDetailId(SearchAssetMovementVM searchObj, int pageNumber, int pageSize)
+        {
+            return _assetMovementService.SearchAssetMovement(searchObj, pageNumber, pageSize);
+        }
 
 
 
@@ -80,7 +86,7 @@ namespace Asset.API.Controllers
         public ActionResult<AssetMovement> Add(CreateAssetMovementVM AssetMovementVM)
         {
             var oldMovement = _assetMovementService.GetAllAssetMovements()
-                .Where(a => a.BuildingId == AssetMovementVM.BuildingId && a.FloorId == AssetMovementVM.FloorId && a.RoomId == AssetMovementVM.RoomId && a.AssetDetailId == AssetMovementVM.AssetDetailId).OrderByDescending(a=>a.MovementDate).ToList();
+                .Where(a => a.BuildingId == AssetMovementVM.BuildingId && a.FloorId == AssetMovementVM.FloorId && a.RoomId == AssetMovementVM.RoomId && a.AssetDetailId == AssetMovementVM.AssetDetailId).OrderByDescending(a => a.MovementDate).ToList();
             if (oldMovement.Count > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "same", Message = "Cannot move asset to same place", MessageAr = "لا يمكن نقل نفس الأصل في ذات المكان" });
@@ -91,7 +97,7 @@ namespace Asset.API.Controllers
                 var savedId = _assetMovementService.Add(AssetMovementVM);
                 return CreatedAtAction("GetById", new { id = savedId }, AssetMovementVM);
             }
-            
+
         }
 
         [HttpDelete]

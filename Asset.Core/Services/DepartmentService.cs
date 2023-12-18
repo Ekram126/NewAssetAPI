@@ -39,6 +39,11 @@ namespace Asset.Core.Services
             return DepartmentObj.Id;
         }
 
+        public GenerateDepartmentCodeVM GenerateDepartmentCode()
+        {
+            return _unitOfWork.DepartmentRepository.GenerateDepartmentCode();
+        }
+
         public IEnumerable<IndexDepartmentVM.GetData> GetAll()
         {
             return _unitOfWork.DepartmentRepository.GetAll();

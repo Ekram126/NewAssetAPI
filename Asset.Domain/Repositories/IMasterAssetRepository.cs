@@ -22,7 +22,10 @@ namespace Asset.Domain.Repositories
 
         IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName2(string name);
         IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName3(string name, int hospitalId);
-    
+        IEnumerable<IndexMasterAssetVM.GetData> AutoCompleteMasterAssetName4(string name, int hospitalId);
+
+        IEnumerable<MasterAsset> DistinctAutoCompleteMasterAssetName(string name);
+
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId, string userId);
         IEnumerable<MasterAsset> GetAllMasterAssetsByHospitalId(int hospitalId);
         EditMasterAssetVM GetById(int id);
@@ -41,5 +44,7 @@ namespace Asset.Domain.Repositories
 
 
         MasterAssetAttachment GetLastDocumentForMsterAssetId(int masterId);
+        GeneratedMasterAssetCodeVM GenerateAssetDetailBarcode();
+
     }
 }

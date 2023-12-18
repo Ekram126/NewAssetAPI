@@ -34,10 +34,15 @@ namespace Asset.Domain.Repositories
         IndexSupplierExecludeAssetVM GetAllSupplierExecludes(SearchSupplierExecludeAssetVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize);
         IndexSupplierExecludeAssetVM GetAllSupplierHoldes(SearchSupplierExecludeAssetVM searchObj, int statusId, int appTypeId, int hospitalId, int pageNumber, int pageSize);
 
-
-
-        IndexSupplierExecludeAssetVM GetAllSupplierExecludes(SearchSupplierExecludeAssetVM searchObj);
+       IndexSupplierExecludeAssetVM GetAllSupplierExecludes(SearchSupplierExecludeAssetVM searchObj);
         IndexSupplierExecludeAssetVM GetAllSupplierHoldes(SearchSupplierExecludeAssetVM searchObj);
+
+
+        IEnumerable<IndexSupplierExecludeAssetVM.GetData> SearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj);
+        IndexSupplierExecludeAssetVM SearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj, int pageNumber, int pageSize);
+
+        IEnumerable<IndexSupplierExecludeAssetVM.GetData> PrintSearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj);
+
 
     }
 }

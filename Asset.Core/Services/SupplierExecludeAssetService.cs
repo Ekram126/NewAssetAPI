@@ -22,7 +22,6 @@ namespace Asset.Core.Services
         public int Add(CreateSupplierExecludeAssetVM SupplierExecludeAssetObj)
         {
             return _unitOfWork.SupplierExecludeAssetRepository.Add(SupplierExecludeAssetObj);
-            // return _unitOfWork.CommitAsync();
         }
 
         public int CreateSupplierExecludAttachments(SupplierExecludeAttachment attachObj)
@@ -112,6 +111,21 @@ namespace Asset.Core.Services
             return _unitOfWork.SupplierExecludeAssetRepository.GetSupplierExecludeAssetDetailById(id);
         }
 
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> PrintSearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.PrintSearchSupplierExecludes(searchObj);
+        }
+
+        public IEnumerable<IndexSupplierExecludeAssetVM.GetData> SearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.SearchSupplierExecludes(searchObj);
+        }
+
+        public IndexSupplierExecludeAssetVM SearchSupplierExecludes(SearchSupplierExecludeAssetVM searchObj, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.SupplierExecludeAssetRepository.SearchSupplierExecludes(searchObj, pageNumber, pageSize);
+        }
+
         public IEnumerable<IndexSupplierExecludeAssetVM.GetData> SortSuplierApp(SortSupplierExecludeAssetVM sortObj)
         {
             return _unitOfWork.SupplierExecludeAssetRepository.SortSuplierApp(sortObj);
@@ -120,8 +134,6 @@ namespace Asset.Core.Services
         public int Update(EditSupplierExecludeAssetVM SupplierExecludeAssetObj)
         {
             return _unitOfWork.SupplierExecludeAssetRepository.Update(SupplierExecludeAssetObj);
-            //  _unitOfWork.CommitAsync();
-            //  return SupplierExecludeAssetObj.Id;
         }
 
         public int UpdateExcludedDate(EditSupplierExecludeAssetVM execludeAssetObj)

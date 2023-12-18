@@ -279,28 +279,46 @@ namespace Asset.Core.Repositories
             IndexSupplierVM mainClass = new IndexSupplierVM();
             List<IndexSupplierVM.GetData> list = new List<IndexSupplierVM.GetData>();
 
-
-            list = _context.Suppliers.Where(a =>
-            a.Name.Contains(strText)
-            || a.NameAr.Contains(strText)
-            || a.Mobile.Contains(strText)
-            || a.Address.Contains(strText)
-            || a.AddressAr.Contains(strText)
-            || a.EMail.Contains(strText)
-            || a.ContactPerson.Contains(strText)
-            ).ToList().Select(item => new IndexSupplierVM.GetData
+            if (!string.IsNullOrEmpty( strText))
             {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name.Trim(),
-                NameAr = item.NameAr.Trim(),
-                Mobile = item.Mobile,
-                Address = item.Address,
-                AddressAr = item.AddressAr,
-                EMail = item.EMail,
-                Website = item.Website,
-                ContactPerson = item.ContactPerson
-            }).ToList();
+                list = _context.Suppliers.Where(a =>
+                a.Name.Contains(strText)
+                || a.NameAr.Contains(strText)
+                || a.Mobile.Contains(strText)
+                || a.Address.Contains(strText)
+                || a.AddressAr.Contains(strText)
+                || a.EMail.Contains(strText)
+                || a.ContactPerson.Contains(strText)
+                ).ToList().Select(item => new IndexSupplierVM.GetData
+                {
+                    Id = item.Id,
+                    Code = item.Code,
+                    Name = item.Name.Trim(),
+                    NameAr = item.NameAr.Trim(),
+                    Mobile = item.Mobile,
+                    Address = item.Address,
+                    AddressAr = item.AddressAr,
+                    EMail = item.EMail,
+                    Website = item.Website,
+                    ContactPerson = item.ContactPerson
+                }).ToList();
+            }
+            else
+            {
+                list = _context.Suppliers.ToList().Select(item => new IndexSupplierVM.GetData
+                {
+                    Id = item.Id,
+                    Code = item.Code,
+                    Name = item.Name.Trim(),
+                    NameAr = item.NameAr.Trim(),
+                    Mobile = item.Mobile,
+                    Address = item.Address,
+                    AddressAr = item.AddressAr,
+                    EMail = item.EMail,
+                    Website = item.Website,
+                    ContactPerson = item.ContactPerson
+                }).ToList();
+            }
 
             var supplierPerPage = list.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             mainClass.Results = supplierPerPage;
@@ -379,6 +397,38 @@ namespace Asset.Core.Repositories
         {
          return   _context.SupplierAttachments.Where(a => a.SupplierId == supplierId).ToList();
           
+        }
+
+        public GenerateSupplierCodeVM GenerateSupplierCode()
+        {
+            GenerateSupplierCodeVM numberObj = new GenerateSupplierCodeVM();
+            int code = 0;
+
+            var lastId = _context.Suppliers.ToList();
+            if (lastId.Count > 0)
+            {
+                var lastSupplierCode = lastId.Max(a => a.Code);
+                if (lastSupplierCode == null)
+                {
+                    numberObj.Code = (code + 1).ToString();
+                    var lastcode = numberObj.Code.PadLeft(3, '0');
+                    numberObj.Code = lastcode;
+                }
+                else
+                {
+                    var hospitalCode = (int.Parse(lastSupplierCode) + 1).ToString();
+                    var lastcode = hospitalCode.ToString().PadLeft(3, '0');
+                    numberObj.Code = lastcode;
+                }
+            }
+            else
+            {
+                numberObj.Code = (code + 1).ToString();
+                var lastcode = numberObj.Code.PadLeft(3, '0');
+                numberObj.Code = lastcode;
+            }
+
+            return numberObj;
         }
     }
 }

@@ -30,5 +30,8 @@ public class Governorate
         public decimal? Latitude { get; set; }
         [Column(TypeName = "decimal(18, 8)")]
         public decimal? Longtitude { get; set; }
+
+        [StringLength(50)]
+        public string Logo { get; set; }
     }
 }

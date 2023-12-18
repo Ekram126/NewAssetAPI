@@ -18,7 +18,7 @@ namespace Asset.ViewModels.ContractVM
 
         public int? HospitalId { get; set; }
 
-
+ public int SelectedContractType { get; set; }
 
 
     }

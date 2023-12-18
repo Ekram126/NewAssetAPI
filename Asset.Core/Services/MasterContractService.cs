@@ -55,7 +55,7 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterContractRepository.GetAll();
         }
 
-        public MasterContract GetById(int id)
+        public DetailMasterContractVM GetById(int id)
         {
             return _unitOfWork.MasterContractRepository.GetById(id);
         }
@@ -80,9 +80,9 @@ namespace Asset.Core.Services
             return _unitOfWork.MasterContractRepository.GetMasterContractsByHospitalId(hospitalId);
         }
 
-        public IEnumerable<IndexMasterContractVM.GetData> Search(SearchContractVM model)
+        public IndexMasterContractVM Search(SearchContractVM model, int pageNumber, int pageSize)
         {
-            return _unitOfWork.MasterContractRepository.Search(model);
+            return _unitOfWork.MasterContractRepository.Search(model, pageNumber, pageSize);
         }
 
         public IEnumerable<IndexMasterContractVM.GetData> SortContracts(int hospitalId, SortContractsVM sortObj)

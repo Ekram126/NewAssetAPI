@@ -47,6 +47,11 @@ namespace Asset.Models
         public string AddressAr { get; set; }
 
 
+        public string ContractName { get; set; }
+        public DateTime? ContractStart { get; set; }
+        public DateTime? ContractEnd { get; set; }
+
+
         public int? GovernorateId { get; set; }
         [ForeignKey("GovernorateId")]
         public virtual Governorate Governorate { get; set; }

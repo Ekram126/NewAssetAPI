@@ -33,6 +33,8 @@ namespace Asset.API.Controllers
     {
         private IWorkOrderService _workOrderService;
 
+        private IRequestService _requestService;
+        private IRequestTrackingService _requestTrackingService;
         private IPagingService _pagingService;
         IWebHostEnvironment _webHostingEnvironment;
         private IWorkOrderTrackingService _workOrderTackingService;
@@ -42,13 +44,15 @@ namespace Asset.API.Controllers
         private readonly ISettingService _settingService;
 
 
-        public WorkOrderController(IWorkOrderService workOrderService, IWorkOrderTrackingService workOrderTackingService, IPagingService pagingService, IWebHostEnvironment webHostingEnvironment, ISettingService settingService)
+        public WorkOrderController(IRequestTrackingService requestTrackingService,IRequestService requestService, IWorkOrderService workOrderService, IWorkOrderTrackingService workOrderTackingService, IPagingService pagingService, IWebHostEnvironment webHostingEnvironment, ISettingService settingService)
         {
             _workOrderService = workOrderService;
             _workOrderTackingService = workOrderTackingService;
             _pagingService = pagingService;
             _webHostingEnvironment = webHostingEnvironment;
             _settingService = settingService;
+            _requestService = requestService;
+            _requestTrackingService = requestTrackingService;
         }
         // GET: api/<WorkOrderController>
         [HttpGet]
@@ -338,9 +342,23 @@ namespace Asset.API.Controllers
 
         // POST api/<WorkOrderController>
         [HttpPost]
-        public int Post(CreateWorkOrderVM createWorkOrderVM)
+        public IActionResult Post(CreateWorkOrderVM createWorkOrderVM)
         {
-            return _workOrderService.AddWorkOrder(createWorkOrderVM);
+            var lstRequests = _requestTrackingService.GetAll().Where(a => a.RequestId == createWorkOrderVM.RequestId).OrderByDescending(a => a.DescriptionDate).ToList();
+            if (lstRequests.Count > 0)
+            {
+                var lastDate = lstRequests[0].DescriptionDate;
+                if(createWorkOrderVM.CreationDate < lastDate)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "sr", Message = "Work Order Date should be greater than the last one", MessageAr = "تاريخ أمر الشغل لابد أن يكون متسلسل" });
+                }
+                else
+                {
+                    return Ok(_workOrderService.AddWorkOrder(createWorkOrderVM));
+                }
+            }
+            return Ok();
+           // return _workOrderService.AddWorkOrder(createWorkOrderVM);
         }
 
         // PUT api/<WorkOrderController>/5
@@ -558,13 +576,13 @@ namespace Asset.API.Controllers
                 for (int i = 1; i <= pages; i++)
                 {
                     PdfPTable bodytable2 = new PdfPTable(11);
-                    bodytable2.SetTotalWidth(new float[] { 80f, 70f, 90f, 90f, 60f, 90f, 60f, 60f, 80f, 70f, 40f });
+                    bodytable2.SetTotalWidth(new float[] { 100f, 70f, 90f, 80f, 80f, 60f, 80f, 80f, 80f, 80f, 20f });
                     bodytable2.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
                     bodytable2.HorizontalAlignment = Element.ALIGN_RIGHT;
                     bodytable2.WidthPercentage = 100;
                     bodytable2.PaddingTop = 200;
                     bodytable2.HeaderRows = 1;
-                    bodytable2.SetWidths(new int[] { 15, 12, 12, 12, 8, 10, 12, 10, 20, 10, 5 });
+                    bodytable2.SetWidths(new int[] { 100,  25, 30, 30, 30, 30, 30, 30, 50, 20, 10 });
 
                     int countRows = bodytable.Rows.Count;
                     if (countRows > 13)
@@ -596,13 +614,13 @@ namespace Asset.API.Controllers
         {
             var lstData = _workOrderService.GetWorkOrdersByDateAndStatus(searchWorkOrderObj);
             PdfPTable table = new PdfPTable(11);
-            table.SetTotalWidth(new float[] { 80f, 70f, 90f, 90f, 60f, 90f, 60f, 60f, 80f, 70f, 40f });
+            table.SetTotalWidth(new float[] { 100f, 70f, 90f, 80f, 80f, 60f, 80f, 80f, 80f, 80f, 20f });
             table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
             table.HorizontalAlignment = Element.ALIGN_RIGHT;
             table.WidthPercentage = 100;
             table.PaddingTop = 200;
             table.HeaderRows = 1;
-            table.SetWidths(new int[] { 15, 12, 12, 12, 8, 10, 12, 10, 20, 10, 5 });
+            table.SetWidths(new int[] { 100, 25, 30, 30, 30, 30, 30, 30, 50, 20, 10 });
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             string ARIALUNI_TFF = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
             BaseFont bfArialUniCode = BaseFont.CreateFont(ARIALUNI_TFF, BaseFont.IDENTITY_H, true);

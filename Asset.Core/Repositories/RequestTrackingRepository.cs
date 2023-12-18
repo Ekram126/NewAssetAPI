@@ -236,9 +236,6 @@ namespace Asset.Core.Repositories
                     StatusIcon = req.RequestStatusId != null ? req.RequestStatus.Icon : "",
                 }).OrderByDescending(t => t.DescriptionDate).ThenBy(a => a.DescriptionDate.Value.TimeOfDay).ToList();
 
-            //listOfA.OrderByDescending(a => a.Start.Date)
-            //                   .ThenBy(a => a.Start.TimeOfDay);
-
             var lstWONotes = _context.WorkOrderTrackings.Include(a => a.WorkOrder).Include(a => a.WorkOrder.Request).Where(a => a.WorkOrder.RequestId == RequestId)
                 .OrderByDescending(a => a.CreationDate).ThenBy(a => a.CreationDate.Value.TimeOfDay).ToList();
 
@@ -248,7 +245,7 @@ namespace Asset.Core.Repositories
                 wonotes = lstWONotes[0].Notes;
             }
 
-            var lstRequestTracking = _context.RequestTracking.Include(t => t.Request.AssetDetail).Include(t => t.Request.AssetDetail.MasterAsset)
+            var lstRequestTracking = _context.RequestTracking.Include(t => t.Request.AssetDetail).Include(a => a.Request.AssetDetail.Department).Include(t => t.Request.AssetDetail.MasterAsset)
             .Include(t => t.Request.RequestMode).Include(t => t.Request.RequestPeriority)
             .Include(t => t.Request.SubProblem).Include(t => t.Request.SubProblem.Problem).Include(t => t.Request.RequestType).Include(r => r.RequestStatus)
             .Where(r => r.RequestId == RequestId).Select(req => new RequestDetails
@@ -291,6 +288,9 @@ namespace Asset.Core.Repositories
 
                 StatusColor = req.RequestStatus.Color,
                 StatusIcon = req.RequestStatus.Icon,
+
+                departmentName = req.Request.AssetDetail.Department != null?req.Request.AssetDetail.Department.Name:"",
+                departmentNameAr = req.Request.AssetDetail.Department != null ? req.Request.AssetDetail.Department.NameAr:"",
 
 
                 AssetName = req.Request.AssetDetail.MasterAsset.Name,

@@ -8,6 +8,9 @@ namespace Asset.ViewModels.MasterAssetVM
 {
     public class CountMasterAssetBrands
     {
+        public int Key { get; set; }
+        public int Value { get; set; }
+
         public string BrandName { get; set; }
         public string BrandNameAr { get; set; }
         public int CountOfMasterAssets { get; set; }

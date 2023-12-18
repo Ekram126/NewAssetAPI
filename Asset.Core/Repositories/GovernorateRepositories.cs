@@ -1,9 +1,6 @@
 ﻿using Asset.Domain.Repositories;
 using Asset.Models;
 using Asset.ViewModels.GovernorateVM;
-using Asset.ViewModels.HospitalVM;
-using Asset.ViewModels.RoleCategoryVM;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,7 +30,8 @@ namespace Asset.Core.Repositories
                 Population = item.Population,
                 Latitude = item.Latitude,
                 Longtitude = item.Longtitude,
-                Area = item.Area
+                Area = item.Area,
+                Logo = item.Logo
             }).First();
         }
 
@@ -52,6 +50,7 @@ namespace Asset.Core.Repositories
                 Area = item.Area.ToString(),
                 Latitude = item.Latitude,
                 Longtitude = item.Longtitude,
+                Logo = item.Logo
             });
         }
 
@@ -147,6 +146,7 @@ namespace Asset.Core.Repositories
                 Area = item.Area,
                 Latitude = item.Latitude,
                 Longtitude = item.Longtitude,
+                Logo = item.Logo
             }).First();
 
 
@@ -164,6 +164,7 @@ namespace Asset.Core.Repositories
                 Longtitude = item.Longtitude,
                 Population = item.Population,
                 Area = item.Area,
+                Logo = item.Logo,
                 HospitalsCount = _context.Hospitals.Where(h => h.GovernorateId == item.Id).ToList().Count()
             }).OrderByDescending(a=>a.HospitalsCount).ToList();
         }

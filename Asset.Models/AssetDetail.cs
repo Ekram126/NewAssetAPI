@@ -76,10 +76,14 @@ namespace Asset.Models
         [ForeignKey("HospitalId")]
         public virtual Hospital Hospital { get; set; }
 
-        public int? MasterAssetId { get; set; }
-
+        public int MasterAssetId { get; set; }
         [ForeignKey("MasterAssetId")]
         public virtual MasterAsset MasterAsset { get; set; }
+
+
+        public int? MasterContractId { get; set; }
+        [ForeignKey("MasterContractId")]
+        public virtual MasterContract MasterContract { get; set; }
 
 
 

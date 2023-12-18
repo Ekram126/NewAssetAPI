@@ -39,6 +39,11 @@ namespace Asset.Core.Services
             return brandObj.Id;
         }
 
+        public GenerateBrandCodeVM GenerateBrandCode()
+        {
+            return _unitOfWork.BrandRepository.GenerateBrandCode();
+        }
+
         public IEnumerable<IndexBrandVM.GetData> GetAll()
         {
             return _unitOfWork.BrandRepository.GetAll();

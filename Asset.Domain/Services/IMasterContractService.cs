@@ -9,13 +9,11 @@ namespace Asset.Domain.Services
     public interface IMasterContractService
     {
         IEnumerable<MasterContract> GetAll();
-        //IEnumerable<IndexMasterContractVM.GetData> GetMasterContractsByHospitalId(int hospitalId);
-
         IndexMasterContractVM GetMasterContractsByHospitalId(int hospitalId, int pageNumber, int pageSize);
         IndexMasterContractVM GetMasterContractsByHospitalId(int hospitalId);
+        IndexMasterContractVM Search(SearchContractVM model, int pageNumber, int pageSize);
 
-       IEnumerable<IndexMasterContractVM.GetData> Search(SearchContractVM model);
-        MasterContract GetById(int id);
+        DetailMasterContractVM GetById(int id);
         int Add(CreateMasterContractVM masterContractObj);
         int Update(MasterContract masterContractObj);
         int Delete(int id);

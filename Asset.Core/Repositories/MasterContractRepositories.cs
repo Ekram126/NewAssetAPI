@@ -29,9 +29,62 @@ namespace Contract.Core.Repositories
             return _context.MasterContracts.ToList();
         }
 
-        public MasterContract GetById(int id)
+        public DetailMasterContractVM GetById(int id)
         {
-            return _context.MasterContracts.Find(id);
+            var lstContracts = _context.MasterContracts
+                 .Include(a => a.Supplier)
+                                   .Include(a => a.Hospital)
+                                   .Include(a => a.Supplier)
+                                   .Where(a => a.Id == id).ToList();
+
+            DetailMasterContractVM detailMasterObj = new DetailMasterContractVM();
+
+            if (lstContracts.Count > 0)
+            {
+                var masterObj = lstContracts[0];
+                detailMasterObj.Id = masterObj.Id;
+                detailMasterObj.SupplierId = masterObj.SupplierId;
+                detailMasterObj.HospitalId = masterObj.HospitalId;
+                detailMasterObj.Subject = masterObj.Subject;
+                detailMasterObj.Serial = masterObj.Serial;
+                detailMasterObj.Cost = masterObj.Cost;
+                detailMasterObj.ContractDate = masterObj.ContractDate.Value;
+                detailMasterObj.From = masterObj.From.Value;
+                detailMasterObj.To = masterObj.To.Value;
+                detailMasterObj.Notes = masterObj.Notes;
+                if(masterObj.Supplier != null)
+                {
+                    detailMasterObj.SupplierName = masterObj.Supplier.Name;
+                    detailMasterObj.SupplierNameAr = masterObj.Supplier.NameAr;
+                }
+                else
+                {
+                    detailMasterObj.SupplierName = "";
+                    detailMasterObj.SupplierNameAr = "";
+                }
+
+
+                detailMasterObj.ListDetails = _context.ContractDetails.Include(a => a.AssetDetail).Include(a => a.AssetDetail.Department)
+                    .Include(a => a.AssetDetail.MasterAsset).Include(a => a.AssetDetail.MasterAsset.brand)
+                    .Where(a => a.MasterContractId == masterObj.Id).ToList().Select(detail => new ContractDetailVM
+                    {
+                        AssetName = detail.AssetDetail.MasterAsset.Name,
+                        AssetNameAr = detail.AssetDetail.MasterAsset.NameAr,
+                        BarCode= detail.AssetDetail.Barcode,
+                        SerialNumber= detail.AssetDetail.SerialNumber,
+                        HasSpareParts= detail.HasSpareParts,
+                        ResponseTime= detail.ResponseTime,
+                        BrandNameAr = detail.AssetDetail.MasterAsset.brand.NameAr,
+                        BrandName = detail.AssetDetail.MasterAsset.brand.Name,
+                        DepartmentNameAr = detail.AssetDetail.Department.NameAr,
+                        DepartmentName = detail.AssetDetail.Department.Name
+                    }).ToList();
+            }
+
+            return detailMasterObj;
+
+
+            ;
         }
 
         public int Add(CreateMasterContractVM model)
@@ -68,6 +121,14 @@ namespace Contract.Core.Repositories
                             detailObj.HasSpareParts = item.HasSpareParts;
                             detailObj.HospitalId = item.HospitalId;
                             _context.ContractDetails.Add(detailObj);
+                            _context.SaveChanges();
+                        }
+
+                        foreach (var item in model.lstDetails)
+                        {
+                            var assetDetailObj = _context.AssetDetails.Find(item.AssetDetailId);
+                            assetDetailObj.MasterContractId = masterId;
+                            _context.Entry(assetDetailObj).State = EntityState.Modified;
                             _context.SaveChanges();
                         }
                     }
@@ -142,6 +203,7 @@ namespace Contract.Core.Repositories
             List<IndexMasterContractVM.GetData> list = new List<IndexMasterContractVM.GetData>();
             var lstMasters = _context.ContractDetails
                          .Include(a => a.MasterContract)
+                           .Include(a => a.MasterContract.Supplier)
                          .Include(a => a.AssetDetail)
                             .Include(a => a.AssetDetail.Hospital)
                          .Include(a => a.MasterContract.Supplier).Select(item => new IndexMasterContractVM.GetData
@@ -155,8 +217,9 @@ namespace Contract.Core.Repositories
                              ContractDate = item.MasterContract.ContractDate.Value,
                              StartDate = item.MasterContract.From.Value,
                              EndDate = item.MasterContract.To.Value,
-                             SupplierName = item.MasterContract.Supplier.Name,
-                             SupplierNameAr = item.MasterContract.Supplier.NameAr,
+
+                             SupplierName = item.MasterContract.Supplier != null?item.MasterContract.Supplier.Name:"",
+                             SupplierNameAr = item.MasterContract.Supplier != null ? item.MasterContract.Supplier.NameAr:"",
                              Notes = item.MasterContract.Notes
 
                          }).ToList().GroupBy(a => a.Id);
@@ -196,14 +259,16 @@ namespace Contract.Core.Repositories
 
         }
 
-        public IEnumerable<IndexMasterContractVM.GetData> Search(SearchContractVM searchObj)
+        public IndexMasterContractVM Search(SearchContractVM searchObj, int pageNumber, int pageSize)
         {
 
-
-            string setstartcontractday, setstartcontractmonth, setendcontractday, setendcontractmonth = "";
+            IndexMasterContractVM mainClass = new IndexMasterContractVM();
             List<IndexMasterContractVM.GetData> lstData = new List<IndexMasterContractVM.GetData>();
 
-            var list = _context.ContractDetails
+            string setstartcontractday, setstartcontractmonth, setendcontractday, setendcontractmonth = "";
+            // List<IndexMasterContractVM.GetData> lstData = new List<IndexMasterContractVM.GetData>();
+
+            var lstContracts = _context.ContractDetails
                              .Include(a => a.MasterContract)
                              .Include(a => a.AssetDetail)
                              .Include(a => a.MasterContract.Supplier)
@@ -225,7 +290,7 @@ namespace Contract.Core.Repositories
 
 
 
-            foreach (var cntrct in list)
+            foreach (var cntrct in lstContracts)
             {
                 IndexMasterContractVM.GetData getDataObj = new IndexMasterContractVM.GetData();
                 getDataObj.Id = cntrct.FirstOrDefault().Id;
@@ -242,10 +307,24 @@ namespace Contract.Core.Repositories
             }
 
 
-            if (searchObj.HospitalId != 0)
+            if (searchObj.SelectedContractType == 1)
             {
-                lstData = lstData.Where(b => b.HospitalId == searchObj.HospitalId).ToList();
+                lstData = lstData.Where(b => b.EndDate != null).ToList();
+                lstData = lstData.Where(b => b.EndDate.Value.Date >= DateTime.Today.Date).ToList();
             }
+            if (searchObj.SelectedContractType == 2)
+            {
+                lstData = lstData.Where(b => b.EndDate != null).ToList();
+                lstData = lstData.Where(b => b.EndDate.Value.Date <= DateTime.Today.Date).ToList();
+            }
+
+
+
+
+            //if (searchObj.HospitalId != 0)
+            //{
+            //    lstData = lstData.Where(b => b.HospitalId == searchObj.HospitalId).ToList();
+            //}
             if (searchObj.Subject != "")
             {
                 lstData = lstData.Where(b => b.Subject == searchObj.Subject).ToList();
@@ -254,91 +333,105 @@ namespace Contract.Core.Repositories
             {
                 lstData = lstData.Where(b => b.ContractNumber == searchObj.ContractNumber).ToList();
             }
-            if (searchObj.StartDate.ToString() == "" || searchObj.StartDate == null)
+
+
+
+
+            if (searchObj.StartDate == null)
             {
-                searchObj.StartDate = DateTime.Parse("01/01/1900");
+                //   searchObj.StartDate = DateTime.Parse("01/01/1900");
             }
             else
             {
-                searchObj.StartDate = searchObj.StartDate;
+                //   searchObj.StartDate = searchObj.StartDate;
+
+                var startyear = searchObj.StartDate.Value.Year;
+                var startmonth = searchObj.StartDate.Value.Month;
+                var startday = searchObj.StartDate.Value.Day;
+                if (startday < 10)
+                    setstartcontractday = searchObj.StartDate.Value.Day.ToString().PadLeft(2, '0');
+                else
+                    setstartcontractday = searchObj.StartDate.Value.Day.ToString();
+
+                if (startmonth < 10)
+                    setstartcontractmonth = searchObj.StartDate.Value.Month.ToString().PadLeft(2, '0');
+                else
+                    setstartcontractmonth = searchObj.StartDate.Value.Month.ToString();
+
+                var sDate = startyear + "-" + setstartcontractmonth + "-" + setstartcontractday;
+                var startingFrom = DateTime.Parse(sDate);
             }
 
-            if (searchObj.EndDate.ToString() == "" || searchObj.EndDate == null)
+            if (searchObj.EndDate == null)
             {
-                searchObj.EndDate = DateTime.Today.Date;
+                //  searchObj.EndDate = DateTime.Today.Date;
             }
             else
             {
-                searchObj.EndDate = searchObj.EndDate;
+                //  searchObj.EndDate = searchObj.EndDate;
+
+
+                var endyear = searchObj.EndDate.Value.Year;
+                var endmonth = searchObj.EndDate.Value.Month;
+                var endday = searchObj.EndDate.Value.Day;
+                if (endday < 10)
+                    setendcontractday = searchObj.EndDate.Value.Day.ToString().PadLeft(2, '0');
+                else
+                    setendcontractday = searchObj.EndDate.Value.Day.ToString();
+
+                if (endmonth < 10)
+                    setendcontractmonth = searchObj.EndDate.Value.Month.ToString().PadLeft(2, '0');
+                else
+                    setendcontractmonth = searchObj.EndDate.Value.Month.ToString();
+
+                var eDate = endyear + "-" + setendcontractmonth + "-" + setendcontractday;
+                var endingTo = DateTime.Parse(eDate);
             }
 
-            var startyear = searchObj.StartDate.Value.Year;
-            var startmonth = searchObj.StartDate.Value.Month;
-            var startday = searchObj.StartDate.Value.Day;
-            if (startday < 10)
-                setstartcontractday = searchObj.StartDate.Value.Day.ToString().PadLeft(2, '0');
-            else
-                setstartcontractday = searchObj.StartDate.Value.Day.ToString();
-
-            if (startmonth < 10)
-                setstartcontractmonth = searchObj.StartDate.Value.Month.ToString().PadLeft(2, '0');
-            else
-                setstartcontractmonth = searchObj.StartDate.Value.Month.ToString();
-
-            var sDate = startyear + "-" + setstartcontractmonth + "-" + setstartcontractday;
-            var startingFrom = DateTime.Parse(sDate);
-
-
-
-            var endyear = searchObj.EndDate.Value.Year;
-            var endmonth = searchObj.EndDate.Value.Month;
-            var endday = searchObj.EndDate.Value.Day;
-            if (endday < 10)
-                setendcontractday = searchObj.EndDate.Value.Day.ToString().PadLeft(2, '0');
-            else
-                setendcontractday = searchObj.EndDate.Value.Day.ToString();
-
-            if (endmonth < 10)
-                setendcontractmonth = searchObj.EndDate.Value.Month.ToString().PadLeft(2, '0');
-            else
-                setendcontractmonth = searchObj.EndDate.Value.Month.ToString();
-
-            var eDate = endyear + "-" + setendcontractmonth + "-" + setendcontractday;
-            var endingTo = DateTime.Parse(eDate);
-
-
-            lstData = lstData.Where(a => a.StartDate >= startingFrom && a.EndDate <= endingTo).ToList();
 
 
 
 
 
 
+            // lstData = lstData.Where(a => a.StartDate >= startingFrom && a.EndDate <= endingTo).ToList();
 
-
-            string setcontractday, setcontractmonth = "";
-            var year = searchObj.ContractDate.Value.Year;
-            var month = searchObj.ContractDate.Value.Month;
-            var day = searchObj.ContractDate.Value.Day;
-            if (day < 10)
-                setcontractday = searchObj.ContractDate.Value.Day.ToString().PadLeft(2, '0');
-            else
-                setcontractday = searchObj.ContractDate.Value.Day.ToString();
-
-            if (month < 10)
-                setcontractmonth = searchObj.ContractDate.Value.Month.ToString().PadLeft(2, '0');
-            else
-                setcontractmonth = searchObj.ContractDate.Value.Month.ToString();
-
-            var contrctDate = year + "-" + setcontractmonth + "-" + setcontractday;
-            var conDate = DateTime.Parse(contrctDate);
-
-
-            lstData = lstData.Where(a => a.ContractDate >= conDate && a.ContractDate <= conDate).ToList();
+            if (searchObj.StartDate != null && searchObj.EndDate != null)
+                lstData = lstData.Where(a => a.StartDate.Value.Date >= searchObj.StartDate.Value.Date && a.EndDate.Value.Date <= searchObj.EndDate.Value.Date).ToList();
 
 
 
-            return lstData;
+
+
+
+            if (searchObj.ContractDate != null)
+            {
+                string setcontractday, setcontractmonth = "";
+                var year = searchObj.ContractDate.Value.Year;
+                var month = searchObj.ContractDate.Value.Month;
+                var day = searchObj.ContractDate.Value.Day;
+                if (day < 10)
+                    setcontractday = searchObj.ContractDate.Value.Day.ToString().PadLeft(2, '0');
+                else
+                    setcontractday = searchObj.ContractDate.Value.Day.ToString();
+
+                if (month < 10)
+                    setcontractmonth = searchObj.ContractDate.Value.Month.ToString().PadLeft(2, '0');
+                else
+                    setcontractmonth = searchObj.ContractDate.Value.Month.ToString();
+
+                var contrctDate = year + "-" + setcontractmonth + "-" + setcontractday;
+                var conDate = DateTime.Parse(contrctDate);
+
+
+                lstData = lstData.Where(a => a.ContractDate >= conDate && a.ContractDate <= conDate).ToList();
+            }
+
+
+            var contractPerPage = lstData.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            mainClass.Results = contractPerPage;
+            mainClass.Count = lstData.Count();
+            return mainClass;
         }
 
         public IEnumerable<IndexMasterContractVM.GetData> SortContracts(int hospitalId, SortContractsVM sortObj)
@@ -537,8 +630,8 @@ namespace Contract.Core.Repositories
                              ContractDate = item.MasterContract.ContractDate.Value,
                              StartDate = item.MasterContract.From.Value,
                              EndDate = item.MasterContract.To.Value,
-                             SupplierName = item.MasterContract.Supplier.Name,
-                             SupplierNameAr = item.MasterContract.Supplier.NameAr,
+                             SupplierName = item.MasterContract.Supplier != null ? item.MasterContract.Supplier.Name:"",
+                             SupplierNameAr = item.MasterContract.Supplier != null ? item.MasterContract.Supplier.NameAr:"",
                              Notes = item.MasterContract.Notes
 
                          }).ToList().GroupBy(a => a.Id);

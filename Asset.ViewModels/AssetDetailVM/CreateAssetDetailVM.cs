@@ -24,7 +24,7 @@ namespace Asset.ViewModels.AssetDetailVM
         public int? SupplierId { get; set; }
 
         public int? HospitalId { get; set; }
-        public int? MasterAssetId { get; set; }
+        public int MasterAssetId { get; set; }
 
         public string WarrantyStart { get; set; }
         public string WarrantyEnd { get; set; }

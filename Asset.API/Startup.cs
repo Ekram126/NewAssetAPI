@@ -42,6 +42,8 @@ namespace Asset.API
             //services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromSeconds(30));
 
 
+            //in the program.cs file Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzU5MEAzMjMwMkUzMTJFMzBUbmZOc1RiYkhhdkdjQTlUaTlYTkpOSkl3c3hTVDFYY0M4enBtOTEvMzdrPQ=="
+
 
             //  services.AddControllers();
             services.AddControllers().AddNewtonsoftJson();
