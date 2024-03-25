@@ -54,6 +54,8 @@ namespace Asset.Domain.Repositories
         IEnumerable<ViewAssetDetailVM> GetListOfAssetDetailsByHospitalNotInContractBySerialNumber(string serialNumber, int hospitalId);
         EditAssetDetailVM GetById(int id);
         ViewAssetDetailVM ViewAssetDetailByMasterId(int masterId);
+        AssetDetail QueryAssetDetailById(int assetId);
+
         IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId);
         int Add(CreateAssetDetailVM assetDetailObj);
         int Update(EditAssetDetailVM assetDetailObj);

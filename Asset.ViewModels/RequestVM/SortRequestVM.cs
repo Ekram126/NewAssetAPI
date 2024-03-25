@@ -42,9 +42,9 @@ namespace Asset.ViewModels.RequestVM
         public string StrSubject { get; set; }
         public string StrRequestCode { get; set; }
         public string StrBarCode { get; set; }
-        public string StrModel { get; set; }
 
 
+        public string SortBy { get; set; }
         public List<IndexRequestTrackingVM.GetData> ListTracks { get; set; }
 
 

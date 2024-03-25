@@ -39,6 +39,13 @@ namespace Asset.API.Controllers
 
 
         [HttpGet]
+        [Route("GetRequestStatusByUserId/{userId}/{hospitalId}")]
+        public IndexRequestStatusVM GetRequestStatusByUserId(string userId, int hospitalId)
+        {
+            return _requestStatusService.GetRequestStatusByUserId(userId,hospitalId);
+        }
+
+        [HttpGet]
         [Route("GetAllForReport")]
         public IndexRequestStatusVM.GetData GetAllForReport()
         {

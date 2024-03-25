@@ -304,19 +304,6 @@ namespace Asset.API.Controllers
             return _requestService.SearchInRequests(searchObj, pagenumber, pagesize);
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         [HttpPost]
         [Route("SearchInRequests/{pagenumber}/{pagesize}")]
         public IEnumerable<IndexRequestVM.GetData> SearchInRequests(int pagenumber, int pagesize, SearchRequestVM searchObj)
@@ -533,11 +520,6 @@ namespace Asset.API.Controllers
             return _requestService.GetRequestEstimations(searchRequestDateObj).ToList();
         }
 
-
-
-
-
-
         [HttpGet]
         [Route("PrintReport")]
         public FileStreamResult GenerateReport(int id)
@@ -594,11 +576,6 @@ namespace Asset.API.Controllers
             cell.Border = PdfPCell.NO_BORDER;
             return cell;
         }
-
-
-
-
-
 
         [HttpPost]
         [Route("CreatePDF")]
@@ -872,11 +849,6 @@ namespace Asset.API.Controllers
 
             return table;
         }
-
-
-
-
-
 
 
         [HttpPost]
@@ -1601,10 +1573,6 @@ namespace Asset.API.Controllers
         }
 
 
-
-
-
-
         [HttpPost]
         [Route("CreateSRReportWithInProgressPDF")]
         public void CreateSRReportWithInProgressPDF(SearchRequestDateVM searchRequestDateObj)
@@ -1937,19 +1905,6 @@ namespace Asset.API.Controllers
             }
             return response;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         [HttpPost]
@@ -2899,18 +2854,6 @@ namespace Asset.API.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
         [HttpPost]
         [Route("CreateOpenServiceRequestPDF")]
         public void CreateOpenServiceRequestPDF(SearchOpenRequestVM searchOpenRequestObj)
@@ -3389,9 +3332,6 @@ namespace Asset.API.Controllers
             document.Close();
 
         }
-
-
-
 
 
         public PdfPTable CreateOpenServiceRequestGenerateTable(SearchOpenRequestVM searchOpenRequestObj)
@@ -4255,5 +4195,14 @@ namespace Asset.API.Controllers
             var Requests = _requestService.GetRequestsByStatusIdAndPagingV2(userId, statusId, pageNumber, pageSize);
             return Requests;
         }
+
+
+        [HttpPost]
+        [Route("ListRequests/{pageNumber}/{pageSize}")]
+        public IndexRequestVM ListRequests(SortAndFilterRequestVM data, int pageNumber, int pageSize)
+        {
+            return _requestService.ListRequests(data, pageNumber, pageSize);
+        }
+
     }
 }

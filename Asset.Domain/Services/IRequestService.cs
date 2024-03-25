@@ -63,5 +63,7 @@ namespace Asset.Domain.Services
 
 
         IndexRequestVM GetRequestsByStatusIdAndPagingV2(string userId, int statusId, int pageNumber, int pageSize);
+
+        IndexRequestVM ListRequests(SortAndFilterRequestVM data, int pageNumber, int pageSize);
     }
 }

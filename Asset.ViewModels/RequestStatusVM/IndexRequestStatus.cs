@@ -12,6 +12,15 @@ namespace Asset.ViewModels.RequestStatusVM
         public List<GetData> Results { get; set; }
 
 
+        public int? CountOpen { get; set; }
+        public int? CountClosed { get; set; }
+        public int? CountInProgress { get; set; }
+        public int? CountSolved { get; set; }
+        public int? CountAll { get; set; }
+        public int? CountApproved { get; set; }
+
+        public List<RequestStatus> ListStatus { get; set; }
+
         public class GetData
         {
             public int Id { get; set; }
@@ -34,6 +43,7 @@ namespace Asset.ViewModels.RequestStatusVM
             public int? SubOrganizationId { get; set; }
             public List<RequestStatus> ListStatus{ get; set; }
 
-    }
+
+        }
     }
 }

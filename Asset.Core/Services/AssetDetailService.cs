@@ -30,10 +30,12 @@ namespace Asset.Core.Services
         public int Add(CreateAssetDetailVM assetDetailObj)
         {
             return _unitOfWork.AssetDetailRepository.Add(assetDetailObj);
-            //  return _unitOfWork.CommitAsync();
-
         }
 
+        public AssetDetail QueryAssetDetailById(int assetId)
+        {
+            return _unitOfWork.AssetDetailRepository.QueryAssetDetailById(assetId);
+        }
         public int Delete(int id)
         {
             var assetDetailObj = _unitOfWork.AssetDetailRepository.GetById(id);

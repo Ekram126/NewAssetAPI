@@ -38,6 +38,14 @@ using Syncfusion.Pdf.Graphics;
 using System.Drawing;
 using Rectangle = iTextSharp.text.Rectangle;
 using System.Drawing.Imaging;
+using System.Text;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.pdf;
+using Document = iTextSharp.text.Document;
+using iTextSharp.tool.xml;
+using iTextSharp.text.html;
+using Font = iTextSharp.text.Font;
+
 
 namespace Asset.API.Controllers
 {
@@ -129,7 +137,7 @@ namespace Asset.API.Controllers
             return _AssetDetailService.AutoCompleteAssetSerial(serial, hospitalId);
         }
 
-    
+
         [HttpPost]
         [Route("LoadAssetDetailsByUserId/{pagenumber}/{pagesize}/{userId}")]
         public async Task<IndexAssetDetailVM> LoadAssetDetailsByUserId(int pageNumber, int pageSize, string userId)
@@ -149,7 +157,7 @@ namespace Asset.API.Controllers
 
         [HttpGet]
         [Route("GetAutoCompleteSupplierExcludedAssetsByHospitalId/{barcode}/{hospitalId}")]
-        public ActionResult< IEnumerable<ViewAssetDetailVM>> GetAutoCompleteSupplierExcludedAssetsByHospitalId(string barcode, int hospitalId)
+        public ActionResult<IEnumerable<ViewAssetDetailVM>> GetAutoCompleteSupplierExcludedAssetsByHospitalId(string barcode, int hospitalId)
         {
             //var lstExcludes = _AssetDetailService.GetAutoCompleteSupplierExcludedAssetsByHospitalId(barcode, hospitalId).ToList();
             //if (lstExcludes.Count > 0)
@@ -158,8 +166,8 @@ namespace Asset.API.Controllers
             //}
             //else
             //{
-                return _AssetDetailService.GetAutoCompleteSupplierExcludedAssetsByHospitalId(barcode, hospitalId).ToList();
-          //  }
+            return _AssetDetailService.GetAutoCompleteSupplierExcludedAssetsByHospitalId(barcode, hospitalId).ToList();
+            //  }
         }
 
 
@@ -168,7 +176,7 @@ namespace Asset.API.Controllers
 
 
 
-    
+
 
         [HttpGet]
         [Route("GetAssetHistoryById/{assetId}")]
@@ -211,7 +219,7 @@ namespace Asset.API.Controllers
         public IEnumerable<IndexAssetDetailVM.GetData> ExportAssetsByStatusId(int statusId, string userId)
         {
             var lstAssets = _AssetDetailService.GetAllAssetsByStatusId(statusId, userId).ToList();
-            return  lstAssets;
+            return lstAssets;
         }
 
 
@@ -300,6 +308,807 @@ namespace Asset.API.Controllers
         {
             return _AssetDetailService.ViewAssetDetailByMasterId(masterId);
         }
+
+
+
+
+
+        [HttpGet]
+        [Route("DownloadAssetHistory/{fileName}")]
+        public HttpResponseMessage DownloadSRReportWithInProgressPDF(string fileName)
+        {
+            var file = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/AssetDetails/" + fileName;
+            HttpResponseMessage response = null;
+            if (!System.IO.File.Exists(file))
+            {
+                // return new HttpResponseMessage(HttpStatusCode.Gone);
+                var folder = Directory.CreateDirectory(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/AssetDetails/");
+                var openFile = System.IO.File.Create(folder + fileName);
+                openFile.Close();
+
+
+                var file2 = folder + fileName;
+                var fStream = new FileStream(file2, FileMode.Open, FileAccess.Read);
+                response = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StreamContent(fStream)
+                };
+                response.Content.Headers.ContentDisposition =
+                                            new ContentDispositionHeaderValue("attachment")
+                                            {
+                                                FileName = Path.GetFileName(fStream.Name)
+                                            };
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            }
+            else
+            {
+                //if file present than read file 
+                var fStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                //compose response and include file as content in it
+                response = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StreamContent(fStream)
+                };
+                response.Content.Headers.ContentDisposition =
+                                            new ContentDispositionHeaderValue("attachment")
+                                            {
+                                                FileName = Path.GetFileName(fStream.Name)
+                                            };
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            }
+            return response;
+        }
+
+
+
+
+        [HttpGet]
+        [Route("PrintAssetHistory/{assetId}/{lang}")]
+        public void PrintAssetHistory(int assetId, string lang)
+        {
+
+
+            var lstSettings = _settingService.GetAll().ToList();
+            if (lstSettings.Count > 0)
+            {
+                foreach (var item in lstSettings)
+                {
+                    if (item.KeyName == "Institute")
+                    {
+                        strInsitute = item.KeyValue;
+                        strInsituteAr = item.KeyValueAr;
+                    }
+                    if (item.KeyName == "Logo")
+                        strLogo = item.KeyValue;
+
+                }
+            }
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            Document document = new Document(iTextSharp.text.PageSize.A4.Rotate(), 20f, 20f, 30f, 20f);
+            System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
+            PdfWriter writer = PdfWriter.GetInstance(document, memoryStream);
+            document.NewPage();
+            document.Open();
+
+            string adobearabic = _webHostingEnvironment.ContentRootPath + "/Font/adobearabic.ttf";
+            BaseFont bfUniCode = BaseFont.CreateFont(adobearabic, BaseFont.IDENTITY_H, true);
+            iTextSharp.text.Font font = new iTextSharp.text.Font(bfUniCode, 14);
+            iTextSharp.text.Font headerfont = new iTextSharp.text.Font(bfUniCode, 22);
+            iTextSharp.text.Font titlefont = new iTextSharp.text.Font(bfUniCode, 16);
+
+
+
+            var assetDetailObj = _AssetDetailService.QueryAssetDetailById(assetId);
+
+            string imageURL = _webHostingEnvironment.ContentRootPath + "/Images/" + strLogo;
+            iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(imageURL);
+            jpg.ScaleAbsolute(70f, 50f);
+            PdfPTable headertable = new PdfPTable(3);
+       
+            if (lang == "ar")
+            {
+
+                headertable.SetTotalWidth(new float[] { 40f, 150f ,40f});
+                headertable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                headertable.WidthPercentage = 100;
+                PdfPCell headerCell = new PdfPCell(new PdfPCell(jpg));
+                headerCell.PaddingTop = 5;
+                headerCell.Border = Rectangle.NO_BORDER;
+                headerCell.PaddingRight = 30;
+                headerCell.HorizontalAlignment = 2; //0=Left, 1=Centre, 2=Right
+                headertable.AddCell(headerCell);
+
+            }
+            else
+            {
+                headertable.SetTotalWidth(new float[] {  50f,150f, 50f });
+                headertable.WidthPercentage = 100;
+                PdfPCell headerCell = new PdfPCell(new PdfPCell(jpg));
+                headerCell.PaddingTop = 5;
+                headerCell.Border = Rectangle.NO_BORDER;
+                headerCell.PaddingLeft = 60;
+                headerCell.HorizontalAlignment = 0; //0=Left, 1=Centre, 2=Right
+                headertable.AddCell(headerCell);
+            }
+            if (lang == "ar")
+                headertable.AddCell(new PdfPCell(new Phrase("\t\t\t\t " + strInsituteAr + "\n" + assetDetailObj.Hospital.NameAr + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 5 });
+            else
+                headertable.AddCell(new PdfPCell(new Phrase(" " + strInsitute + "\n" + assetDetailObj.Hospital.Name + "", font)) { Border = Rectangle.NO_BORDER, PaddingTop = 10 });
+
+            if(!string.IsNullOrEmpty(assetDetailObj.MasterAsset.AssetImg))
+            {
+                string assetImagePath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets/UploadMasterAssetImage/" + assetDetailObj.MasterAsset.AssetImg;
+                iTextSharp.text.Image assetImage = iTextSharp.text.Image.GetInstance(assetImagePath);
+                assetImage.ScaleAbsolute(50f, 50f);
+                headertable.AddCell(new PdfPCell(new PdfPCell(assetImage) { Border = Rectangle.NO_BORDER }));
+            }
+            else
+            {
+                string assetNullImagePath = _webHostingEnvironment.ContentRootPath + "/UploadedAttachments/MasterAssets/UploadMasterAssetImage/UnknownAsset.png";
+                iTextSharp.text.Image assetImage = iTextSharp.text.Image.GetInstance(assetNullImagePath);
+                assetImage.ScaleAbsolute(50f, 50f);
+                headertable.AddCell(new PdfPCell(new PdfPCell(assetImage){ Border = Rectangle.NO_BORDER }));
+
+
+            }
+
+
+
+           
+            document.Add(headertable);
+
+
+
+            PdfPTable titleTable = new PdfPTable(1);
+            titleTable.SetTotalWidth(new float[] { 800f });
+            titleTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+            titleTable.WidthPercentage = 100;
+            if (lang == "ar")
+                titleTable.AddCell(new PdfPCell(new Phrase("تاريخ الأصل", headerfont)) { PaddingBottom = 10, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+            else
+                titleTable.AddCell(new PdfPCell(new Phrase("Asset History")) { PaddingBottom = 10, Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER });
+
+
+
+            document.Add(titleTable);
+            if (lang == "ar")
+            {
+
+                PdfPTable table = new PdfPTable(4);
+                table.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                PdfPCell cell = new PdfPCell(new Phrase("البيانات الرئيسة", titlefont));
+                cell.BackgroundColor = new BaseColor(153, 204, 255);
+                cell.PaddingBottom = 10;
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.HorizontalAlignment = 0; //0=Left, 1=Centre, 2=Right
+                table.AddCell(cell);
+                table.AddCell(new Phrase("المحافظة", font));
+                table.AddCell(new Phrase(assetDetailObj.Hospital.Governorate.NameAr, font));
+                table.AddCell(new Phrase("المدينة", font));
+                table.AddCell(new Phrase(assetDetailObj.Hospital.City.NameAr, font));
+                table.AddCell(new Phrase("الهيئة", font));
+                table.AddCell(new Phrase(assetDetailObj.Hospital.Organization.NameAr, font));
+                table.AddCell(new Phrase("الهيئة الفرعية", font));
+                table.AddCell(new Phrase(assetDetailObj.Hospital.SubOrganization.NameAr, font));
+                table.AddCell(new Phrase("الفئة", font));
+                if (assetDetailObj.MasterAsset.Category != null)
+                    table.AddCell(new Phrase(assetDetailObj.MasterAsset.Category.NameAr, font));
+                else
+                    table.AddCell(new Phrase(" ", font));
+                table.AddCell(new Phrase("الفئة الفرعية", font));
+                if (assetDetailObj.MasterAsset.SubCategory != null)
+                    table.AddCell(new Phrase(assetDetailObj.MasterAsset.SubCategory.NameAr, font));
+                else
+                    table.AddCell(new Phrase(" ", font));
+                table.AddCell(new Phrase("الأولوية", font));
+                table.AddCell(new Phrase(assetDetailObj.MasterAsset.AssetPeriority.NameAr, font));
+                table.AddCell(new Phrase("القسم", font));
+                table.AddCell(new Phrase(assetDetailObj.Department.NameAr, font));
+                table.AddCell(new Phrase("الباركود", font));
+                table.AddCell(new Phrase(assetDetailObj.Barcode, font));
+                table.AddCell(new Phrase("السيريال", font));
+                table.AddCell(new Phrase(assetDetailObj.SerialNumber, font));
+                table.AddCell(new Phrase("الموديل", font));
+                table.AddCell(new Phrase(assetDetailObj.MasterAsset.ModelNumber, font));
+                table.AddCell(new Phrase("الماركة", font));
+                table.AddCell(new Phrase(assetDetailObj.MasterAsset.brand.NameAr, font));
+                table.AddCell(new Phrase("المورد", font));
+                table.AddCell(new Phrase(assetDetailObj.Supplier.NameAr, font));
+                table.AddCell(new Phrase("بلد المنشأ", font));
+
+                if (assetDetailObj.MasterAsset.Origin != null)
+                    table.AddCell(new Phrase(assetDetailObj.MasterAsset.Origin.NameAr, font));
+                else
+                    table.AddCell(new Phrase(" ", font));
+
+                document.Add(table);
+
+
+                Phrase ph = new Phrase(" ", font);
+                ph.Leading = 15;
+                document.Add(ph);
+
+
+                PdfPTable assetLocationTable = new PdfPTable(6);
+                assetLocationTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                assetLocationTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                PdfPCell assetLocationCell = new PdfPCell(new Phrase("الموقع", titlefont));
+                assetLocationCell.BackgroundColor = new BaseColor(153, 204, 255);
+                assetLocationCell.Border = 0;
+                assetLocationCell.Colspan = 6;
+                assetLocationCell.PaddingBottom = 10;
+                assetLocationCell.HorizontalAlignment = 0; //0=Left, 1=Centre, 2=Right
+                assetLocationTable.AddCell(assetLocationCell);
+
+                assetLocationTable.AddCell(new Phrase("المبنى", font));
+                if (assetDetailObj.Building != null)
+                    assetLocationTable.AddCell(new Phrase(assetDetailObj.Building.NameAr, font));
+                else
+                    assetLocationTable.AddCell(new Phrase(" ", font));
+
+                assetLocationTable.AddCell(new Phrase("الدور", font));
+                if (assetDetailObj.Floor != null)
+                    assetLocationTable.AddCell(new Phrase(assetDetailObj.Floor.NameAr, font));
+                else
+                    assetLocationTable.AddCell(new Phrase(" ", font));
+
+                assetLocationTable.AddCell(new Phrase("الغرفة", font));
+                if (assetDetailObj.Room != null)
+                    assetLocationTable.AddCell(new Phrase(assetDetailObj.Room.NameAr, font));
+                else
+                    assetLocationTable.AddCell(new Phrase(" ", font));
+                document.Add(assetLocationTable);
+
+
+                Phrase ph2 = new Phrase(" ", font);
+                ph2.Leading = 15;
+                document.Add(ph2);
+
+
+
+                PdfPTable assetWarrantyTable = new PdfPTable(6);
+                assetWarrantyTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                assetWarrantyTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                PdfPCell assetWarrantyCell = new PdfPCell(new Phrase("الضمان", titlefont));
+                assetWarrantyCell.BackgroundColor = new BaseColor(153, 204, 255);
+                assetWarrantyCell.Border = 0;
+                assetWarrantyCell.Colspan = 6;
+                assetWarrantyCell.PaddingBottom = 10;
+                assetWarrantyCell.HorizontalAlignment = 0; //0=Left, 1=Centre, 2=Right
+                assetWarrantyTable.AddCell(assetWarrantyCell);
+
+                assetWarrantyTable.AddCell(new Phrase("يبدأ الضمان", font));
+                if (assetDetailObj.WarrantyStart != null)
+                {
+                    if (assetDetailObj.WarrantyStart.Value.Date.Year != 1900)
+                        assetWarrantyTable.AddCell(new Phrase(assetDetailObj.WarrantyStart.Value.ToShortDateString(), font));
+                    else
+                        assetWarrantyTable.AddCell(new Phrase(" ", font));
+                }
+                else
+                    assetWarrantyTable.AddCell(new Phrase(" ", font));
+
+
+                assetWarrantyTable.AddCell(new Phrase("ينتهي الضمان", font));
+                if (assetDetailObj.WarrantyEnd != null)
+                {
+                    if (assetDetailObj.WarrantyEnd.Value.Date.Year != 1900)
+                        assetWarrantyTable.AddCell(new Phrase(assetDetailObj.WarrantyEnd.Value.ToShortDateString(), font));
+                    else
+                        assetWarrantyTable.AddCell(new Phrase(" ", font));
+                }
+                else
+                    assetWarrantyTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetWarrantyTable.AddCell(new Phrase("مدة الضمان", font));
+                if (assetDetailObj.WarrantyExpires != "")
+                    assetWarrantyTable.AddCell(new Phrase(assetDetailObj.WarrantyExpires + "  شهر", font));
+                else
+                    assetWarrantyTable.AddCell(new Phrase(" ", font));
+
+
+                assetWarrantyTable.AddCell(new Phrase("الضمان ينتهي بعد", font));
+                if (assetDetailObj.WarrantyEnd != null)
+                {
+                    var resultAr = Asset.Core.Helpers.DateTimeExtensions.ToDateStringAr(DateTime.Today.Date, DateTime.Parse(assetDetailObj.WarrantyEnd.Value.Date.ToString()));
+                    if (assetDetailObj.WarrantyEnd.Value.Date.Year != 1900)
+                    {
+                        assetWarrantyTable.AddCell(new Phrase(Helpers.ArabicNumeralHelper.ConvertNumerals(resultAr.ToString()), font));
+                    }
+                    else
+                        assetWarrantyTable.AddCell(new Phrase(" ", font));
+
+                }
+                else
+                    assetWarrantyTable.AddCell(new Phrase(" ", font));
+                document.Add(assetWarrantyTable);
+
+
+
+
+                Phrase ph3 = new Phrase(" ", font);
+                ph3.Leading = 15;
+                document.Add(ph3);
+
+
+                PdfPTable assetPurchaseTable = new PdfPTable(8);
+                assetPurchaseTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                assetPurchaseTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                PdfPCell assetPurchaseCell = new PdfPCell(new Phrase("الشراء", titlefont));
+                assetPurchaseCell.BackgroundColor = new BaseColor(153, 204, 255);
+                assetPurchaseCell.Border = 0;
+                assetPurchaseCell.Colspan = 8;
+                assetPurchaseCell.PaddingBottom = 10;
+                assetPurchaseCell.HorizontalAlignment = 0;
+                assetPurchaseTable.AddCell(assetPurchaseCell);
+
+
+                assetPurchaseTable.AddCell(new Phrase("الشراء", font));
+                if (assetDetailObj.PurchaseDate != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.PurchaseDate.Value.ToShortDateString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetPurchaseTable.AddCell(new Phrase("تاريخ توريد", font));
+                if (assetDetailObj.ReceivingDate != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.ReceivingDate.Value.ToShortDateString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetPurchaseTable.AddCell(new Phrase("تاريخ التركيب", font));
+                if (assetDetailObj.InstallationDate != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.InstallationDate.Value.ToShortDateString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+                assetPurchaseTable.AddCell(new Phrase("تاريخ التشغيل", font));
+                if (assetDetailObj.OperationDate != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.OperationDate.Value.ToShortDateString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetPurchaseTable.AddCell(new Phrase("رقم أمر الشراء", font));
+                if (assetDetailObj.PONumber != "")
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.PONumber, font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetPurchaseTable.AddCell(new Phrase("السعر", font));
+                if (assetDetailObj.Price != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.Price.ToString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+                assetPurchaseTable.AddCell(new Phrase("رقم الحساب", font));
+                if (assetDetailObj.CostCenter != "")
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.CostCenter, font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+                assetPurchaseTable.AddCell(new Phrase(" ", font));
+                assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+                document.Add(assetPurchaseTable);
+
+
+
+                Phrase ph4 = new Phrase(" ", font);
+                ph4.Leading = 15;
+                document.Add(ph4);
+
+                var lstRequests = _requestService.GetAllRequestsByAssetId(assetId, int.Parse(assetDetailObj.HospitalId.ToString())).ToList();
+                PdfPTable assetRequestTable = new PdfPTable(7);
+                assetRequestTable.SetTotalWidth(new float[] { 20f, 20f, 20f, 20f, 20f, 20f, 20f });
+                assetRequestTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                assetRequestTable.HorizontalAlignment = Element.ALIGN_CENTER;
+                assetRequestTable.WidthPercentage = 100;
+                assetRequestTable.PaddingTop = 200;
+                assetRequestTable.HeaderRows = 1;
+                assetRequestTable.SetWidths(new int[] { 10, 10, 10, 10, 10, 10, 10 });
+
+                string[] col = { "الحالة", "الموضوع", "التاريخ", "رقم أمر الشغل", "الموضوع", "التاريخ", "رقم بلاغ العطل" };
+                for (int i = col.Length - 1; i >= 0; i--)
+                {
+                    PdfPCell reqCell = new PdfPCell(new Phrase(col[i], font));
+                    reqCell.BackgroundColor = new iTextSharp.text.BaseColor(153, 204, 255);
+                    reqCell.PaddingBottom = 10;
+                    assetRequestTable.AddCell(reqCell);
+                }
+
+                int index = 0;
+                foreach (var item in lstRequests)
+                {
+                    ++index;
+
+                    if (item.RequestCode != "")
+                        assetRequestTable.AddCell(new Phrase(item.RequestCode, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+                    if (item.Subject != "")
+                        assetRequestTable.AddCell(new Phrase(item.Subject, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+                    if (item.RequestDate != null)
+                        assetRequestTable.AddCell(new Phrase(item.RequestDate.ToShortDateString(), font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+
+
+                    if (item.WorkOrderNumber != "")
+                        assetRequestTable.AddCell(new Phrase(item.WorkOrderNumber, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+
+                    if (item.WorkOrderDate != null)
+                        assetRequestTable.AddCell(new Phrase(item.WorkOrderDate.Value.ToShortDateString(), font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+                    if (item.WorkOrderSubject != "")
+                        assetRequestTable.AddCell(new Phrase(item.WorkOrderSubject, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+
+
+                    if (item.StatusNameAr != "")
+                        assetRequestTable.AddCell(new Phrase(item.StatusNameAr, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+                }
+                document.Add(assetRequestTable);
+            }
+
+
+            else
+            {
+
+                PdfPTable table = new PdfPTable(4);
+                table.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                //table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                PdfPCell cell = new PdfPCell(new Phrase("Main Data", titlefont));
+                cell.BackgroundColor = new BaseColor(153, 204, 255);
+                cell.PaddingBottom = 10;
+                cell.Border = 0;
+                cell.Colspan = 4;
+                cell.HorizontalAlignment = 0; //0=Left, 1=Centre, 2=Right
+                table.AddCell(cell);
+                table.AddCell(new Phrase("Governorate", font));
+                table.AddCell(new Phrase(assetDetailObj.Hospital.Governorate.Name, font));
+                table.AddCell(new Phrase("City", font));
+                table.AddCell(new Phrase(assetDetailObj.Hospital.City.Name, font));
+                table.AddCell(new Phrase("Organization", font));
+                table.AddCell(new Phrase(assetDetailObj.Hospital.Organization.Name, font));
+                table.AddCell(new Phrase("Sub Organization", font));
+                table.AddCell(new Phrase(assetDetailObj.Hospital.SubOrganization.Name, font));
+                table.AddCell(new Phrase("Category", font));
+                if (assetDetailObj.MasterAsset.Category != null)
+                    table.AddCell(new Phrase(assetDetailObj.MasterAsset.Category.Name, font));
+                else
+                    table.AddCell(new Phrase(" ", font));
+                table.AddCell(new Phrase("Sub Category", font));
+                if (assetDetailObj.MasterAsset.SubCategory != null)
+                    table.AddCell(new Phrase(assetDetailObj.MasterAsset.SubCategory.Name, font));
+                else
+                    table.AddCell(new Phrase(" ", font));
+                table.AddCell(new Phrase("Periority", font));
+                table.AddCell(new Phrase(assetDetailObj.MasterAsset.AssetPeriority.Name, font));
+                table.AddCell(new Phrase("Department", font));
+                table.AddCell(new Phrase(assetDetailObj.Department.Name, font));
+                table.AddCell(new Phrase("BarCode", font));
+                table.AddCell(new Phrase(assetDetailObj.Barcode, font));
+                table.AddCell(new Phrase("Serial", font));
+                table.AddCell(new Phrase(assetDetailObj.SerialNumber, font));
+                table.AddCell(new Phrase("Model", font));
+                table.AddCell(new Phrase(assetDetailObj.MasterAsset.ModelNumber, font));
+                table.AddCell(new Phrase("Brand", font));
+                table.AddCell(new Phrase(assetDetailObj.MasterAsset.brand.Name, font));
+                table.AddCell(new Phrase("Supplier", font));
+                table.AddCell(new Phrase(assetDetailObj.Supplier.Name, font));
+                table.AddCell(new Phrase("Origin", font));
+                if (assetDetailObj.MasterAsset.Origin != null)
+                    table.AddCell(new Phrase(assetDetailObj.MasterAsset.Origin.Name, font));
+                else
+                    table.AddCell(new Phrase(" ", font));
+
+                document.Add(table);
+
+
+                Phrase ph = new Phrase(" ", font);
+                ph.Leading = 15;
+                document.Add(ph);
+
+
+                PdfPTable assetLocationTable = new PdfPTable(6);
+               // assetLocationTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                assetLocationTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                PdfPCell assetLocationCell = new PdfPCell(new Phrase("Location", titlefont));
+                assetLocationCell.BackgroundColor = new BaseColor(153, 204, 255);
+                assetLocationCell.Border = 0;
+                assetLocationCell.Colspan = 6;
+                assetLocationCell.PaddingBottom = 10;
+                assetLocationCell.HorizontalAlignment = 0; //0=Left, 1=Centre, 2=Right
+                assetLocationTable.AddCell(assetLocationCell);
+
+                assetLocationTable.AddCell(new Phrase("Building", font));
+                if (assetDetailObj.Building != null)
+                    assetLocationTable.AddCell(new Phrase(assetDetailObj.Building.Name, font));
+                else
+                    assetLocationTable.AddCell(new Phrase(" ", font));
+
+                assetLocationTable.AddCell(new Phrase("Floor", font));
+                if (assetDetailObj.Floor != null)
+                    assetLocationTable.AddCell(new Phrase(assetDetailObj.Floor.Name, font));
+                else
+                    assetLocationTable.AddCell(new Phrase(" ", font));
+
+                assetLocationTable.AddCell(new Phrase("Room", font));
+                if (assetDetailObj.Room != null)
+                    assetLocationTable.AddCell(new Phrase(assetDetailObj.Room.Name, font));
+                else
+                    assetLocationTable.AddCell(new Phrase(" ", font));
+                document.Add(assetLocationTable);
+
+
+                Phrase ph2 = new Phrase(" ", font);
+                ph2.Leading = 15;
+                document.Add(ph2);
+
+
+
+                PdfPTable assetWarrantyTable = new PdfPTable(6);
+               // assetWarrantyTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                assetWarrantyTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                PdfPCell assetWarrantyCell = new PdfPCell(new Phrase("Warranty", titlefont));
+                assetWarrantyCell.BackgroundColor = new BaseColor(153, 204, 255);
+                assetWarrantyCell.Border = 0;
+                assetWarrantyCell.Colspan = 6;
+                assetWarrantyCell.PaddingBottom = 10;
+                assetWarrantyCell.HorizontalAlignment = 0; //0=Left, 1=Centre, 2=Right
+                assetWarrantyTable.AddCell(assetWarrantyCell);
+
+                assetWarrantyTable.AddCell(new Phrase("Warranty Start", font));
+                if (assetDetailObj.WarrantyStart != null)
+                {
+                    if (assetDetailObj.WarrantyStart.Value.Date.Year != 1900)
+                        assetWarrantyTable.AddCell(new Phrase(assetDetailObj.WarrantyStart.Value.ToShortDateString(), font));
+                    else
+                        assetWarrantyTable.AddCell(new Phrase(" ", font));
+                }
+                else
+                    assetWarrantyTable.AddCell(new Phrase(" ", font));
+
+
+                assetWarrantyTable.AddCell(new Phrase("Warranty End", font));
+                if (assetDetailObj.WarrantyEnd != null)
+                {
+                    if (assetDetailObj.WarrantyEnd.Value.Date.Year != 1900)
+                        assetWarrantyTable.AddCell(new Phrase(assetDetailObj.WarrantyEnd.Value.ToShortDateString(), font));
+                    else
+                        assetWarrantyTable.AddCell(new Phrase(" ", font));
+                }
+                else
+                    assetWarrantyTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetWarrantyTable.AddCell(new Phrase("Warranty Expires", font));
+                if (assetDetailObj.WarrantyExpires != "")
+                    assetWarrantyTable.AddCell(new Phrase(assetDetailObj.WarrantyExpires + "  Months", font));
+                else
+                    assetWarrantyTable.AddCell(new Phrase(" ", font));
+
+
+                assetWarrantyTable.AddCell(new Phrase("Warranty End After", font));
+                if (assetDetailObj.WarrantyEnd != null)
+                {
+                    var result = Asset.Core.Helpers.DateTimeExtensions.ToDateString(DateTime.Parse(assetDetailObj.WarrantyEnd.Value.Date.ToString()), DateTime.Today.Date);
+                    if (assetDetailObj.WarrantyEnd.Value.Date.Year != 1900)
+                    {
+                        assetWarrantyTable.AddCell(new Phrase(result.ToString()));
+                    }
+                    else
+                        assetWarrantyTable.AddCell(new Phrase(" ", font));
+
+                }
+                else
+                    assetWarrantyTable.AddCell(new Phrase(" ", font));
+                document.Add(assetWarrantyTable);
+
+
+
+
+                Phrase ph3 = new Phrase(" ", font);
+                ph3.Leading = 15;
+                document.Add(ph3);
+
+
+                PdfPTable assetPurchaseTable = new PdfPTable(8);
+                assetPurchaseTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+               // assetPurchaseTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                PdfPCell assetPurchaseCell = new PdfPCell(new Phrase("Purchase", titlefont));
+                assetPurchaseCell.BackgroundColor = new BaseColor(153, 204, 255);
+                assetPurchaseCell.Border = 0;
+                assetPurchaseCell.Colspan = 8;
+                assetPurchaseCell.PaddingBottom = 10;
+                assetPurchaseCell.HorizontalAlignment = 0;
+                assetPurchaseTable.AddCell(assetPurchaseCell);
+
+
+                assetPurchaseTable.AddCell(new Phrase("Purchase", font));
+                if (assetDetailObj.PurchaseDate != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.PurchaseDate.Value.ToShortDateString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetPurchaseTable.AddCell(new Phrase("Receiving Date", font));
+                if (assetDetailObj.ReceivingDate != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.ReceivingDate.Value.ToShortDateString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetPurchaseTable.AddCell(new Phrase("Installation Date", font));
+                if (assetDetailObj.InstallationDate != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.InstallationDate.Value.ToShortDateString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+                assetPurchaseTable.AddCell(new Phrase("Operation Date", font));
+                if (assetDetailObj.OperationDate != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.OperationDate.Value.ToShortDateString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetPurchaseTable.AddCell(new Phrase("PONumber", font));
+                if (assetDetailObj.PONumber != "")
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.PONumber, font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+
+                assetPurchaseTable.AddCell(new Phrase("Price", font));
+                if (assetDetailObj.Price != null)
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.Price.ToString(), font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+
+                assetPurchaseTable.AddCell(new Phrase("CostCenter", font));
+                if (assetDetailObj.CostCenter != "")
+                    assetPurchaseTable.AddCell(new Phrase(assetDetailObj.CostCenter, font));
+                else
+                    assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+                assetPurchaseTable.AddCell(new Phrase(" ", font));
+                assetPurchaseTable.AddCell(new Phrase(" ", font));
+
+                document.Add(assetPurchaseTable);
+
+
+
+                Phrase ph4 = new Phrase(" ", font);
+                ph4.Leading = 15;
+                document.Add(ph4);
+
+                var lstRequests = _requestService.GetAllRequestsByAssetId(assetId, int.Parse(assetDetailObj.HospitalId.ToString())).ToList();
+                PdfPTable assetRequestTable = new PdfPTable(7);
+                assetRequestTable.SetTotalWidth(new float[] { 20f, 20f, 20f, 20f, 20f, 20f, 20f });
+              //  assetRequestTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                assetRequestTable.HorizontalAlignment = Element.ALIGN_CENTER;
+                assetRequestTable.WidthPercentage = 100;
+                assetRequestTable.PaddingTop = 200;
+                assetRequestTable.HeaderRows = 1;
+                assetRequestTable.SetWidths(new int[] { 10, 10, 10, 10, 10, 10, 10 });
+                string[] col = { "Req No", "Req Date", "Req Subject", "WorkOrder No.", "WO. Date", "Wo. Subject", "Status" };
+                for (int i = col.Length - 1; i >= 0; i--)
+                {
+                    PdfPCell reqCell = new PdfPCell(new Phrase(col[i], font));
+                    reqCell.BackgroundColor = new iTextSharp.text.BaseColor(153, 204, 255);
+                    reqCell.PaddingBottom = 10;
+                    assetRequestTable.AddCell(reqCell);
+                }
+
+                int index = 0;
+                foreach (var item in lstRequests)
+                {
+                    ++index;
+
+                    if (item.RequestCode != "")
+                        assetRequestTable.AddCell(new Phrase(item.RequestCode, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+                    if (item.Subject != "")
+                        assetRequestTable.AddCell(new Phrase(item.Subject, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+                    if (item.RequestDate != null)
+                        assetRequestTable.AddCell(new Phrase(item.RequestDate.ToShortDateString(), font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+
+
+                    if (item.WorkOrderNumber != "")
+                        assetRequestTable.AddCell(new Phrase(item.WorkOrderNumber, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+
+                    if (item.WorkOrderDate != null)
+                        assetRequestTable.AddCell(new Phrase(item.WorkOrderDate.Value.ToShortDateString(), font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+                    if (item.WorkOrderSubject != "")
+                        assetRequestTable.AddCell(new Phrase(item.WorkOrderSubject, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+
+
+
+
+                    if (item.StatusNameAr != "")
+                        assetRequestTable.AddCell(new Phrase(item.StatusName, font));
+                    else
+                        assetRequestTable.AddCell(new Phrase(" ", font));
+                }
+                document.Add(assetRequestTable);
+            }
+
+
+            document.Close();
+            byte[] bytes = memoryStream.ToArray();
+            System.IO.File.WriteAllBytes(_webHostingEnvironment.ContentRootPath + "/UploadedAttachments/AssetDetails/AssetHistory.pdf", bytes);
+            memoryStream.Close();
+            document.Close();
+
+
+
+        }
+
+
+
         [HttpGet]
         [Route("AlertAssetsBefore3Monthes")]
         public IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes()
@@ -384,7 +1193,7 @@ namespace Asset.API.Controllers
         [Route("GetAssetsByUserIdAndPaging/{userId}/{pageNumber}/{pageSize}")]
         public IndexAssetDetailVM GetAssetsByUserIdAndPaging(string userId, int pageNumber, int pageSize)
         {
-           // return _AssetDetailService.GetAssetsByUserId(userId, pageNumber, pageSize);
+            // return _AssetDetailService.GetAssetsByUserId(userId, pageNumber, pageSize);
             return _AssetDetailService.GetAssetsByUserIdAndPaging(userId, pageNumber, pageSize);
         }
 

@@ -46,6 +46,7 @@ namespace Asset.Domain.Services
         IEnumerable<IndexAssetDetailVM.GetData> AlertAssetsBefore3Monthes(int duration);
         IndexAssetDetailVM AlertAssetsBefore3Monthes(int duration, int pageNumber, int pageSize);
         ViewAssetDetailVM ViewAssetDetailByMasterId(int masterId);
+        AssetDetail QueryAssetDetailById(int assetId);
         ViewAssetDetailVM GetAssetHistoryById(int assetId);
         IEnumerable<AssetDetail> ViewAllAssetDetailByMasterId(int MasterAssetId);
         int CreateAssetDetailDocuments(CreateAssetDetailAttachmentVM attachObj);

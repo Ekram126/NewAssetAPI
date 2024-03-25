@@ -2325,13 +2325,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2379,13 +2379,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2433,13 +2433,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2487,13 +2487,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2541,13 +2541,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2595,13 +2595,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2649,13 +2649,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2703,13 +2703,16 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
+                  
+                    
+                    
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2757,13 +2760,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2811,13 +2814,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2865,13 +2868,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2920,13 +2923,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -2974,13 +2977,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -3035,13 +3038,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -3089,13 +3092,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -3143,13 +3146,13 @@ namespace Asset.Core.Repositories
                             request = request.Where(b => b.SerialNumber.Contains(sortObj.StrSerial)).OrderBy(d => d.SerialNumber).ToList();
                         }
                     }
-                    if (sortObj.StrModel != "")
-                    {
-                        if (sortObj.SortStatus == "descending")
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
-                        else
-                            request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
-                    }
+                    //if (sortObj.StrModel != "")
+                    //{
+                    //    if (sortObj.SortStatus == "descending")
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderByDescending(d => d.ModelNumber).ToList();
+                    //    else
+                    //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
+                    //}
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -8804,5 +8807,643 @@ namespace Asset.Core.Repositories
             return mainClass;
         }
 
+
+
+
+        private IQueryable<RequestTracking> GetAllRequests()
+        {
+
+            var lastStatusPerRequest = _context.RequestTracking.Include(a => a.Request)
+                .Include(a => a.Request.RequestMode).Include(a => a.Request.RequestType).Include(a => a.RequestStatus)
+                         .Include(a => a.Request.AssetDetail).Include(a => a.User).Include(a => a.Request.AssetDetail.MasterAsset)
+                         .Include(a => a.Request.AssetDetail.MasterAsset.brand).Include(a => a.Request.AssetDetail.Supplier).Include(a => a.Request.AssetDetail.Department).Include(a => a.Request.AssetDetail.MasterAsset.Origin)
+                         .Include(a => a.Request.AssetDetail.Building).Include(a => a.Request.AssetDetail.Floor).Include(a => a.Request.AssetDetail.Room)
+                         .Include(a => a.Request.RequestPeriority).Include(a => a.Request.RequestMode)
+                         .Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.Organization)
+                         .Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.Governorate)
+                         .Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.City)
+                         .Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.SubOrganization)
+                         .ToList()
+                         .GroupBy(track => track.RequestId)
+                         .Select(g => g.OrderByDescending(track => track.DescriptionDate).FirstOrDefault())
+                         .OrderByDescending(a => a.DescriptionDate);
+            return lastStatusPerRequest.AsQueryable();
+        }
+
+
+
+        public IndexRequestVM ListRequests(SortAndFilterRequestVM data, int pageNumber, int pageSize)
+        {
+            #region Initial Variables
+            IQueryable<RequestTracking> query = GetAllRequests();
+
+            IndexRequestVM mainClass = new IndexRequestVM();
+            List<IndexRequestVM.GetData> list = new List<IndexRequestVM.GetData>();
+            ApplicationUser userObj = new ApplicationUser();
+            List<string> lstRoleNames = new List<string>();
+            Employee empObj = new Employee();
+            #endregion
+
+            #region User Role
+
+            if (data.SearchObj.UserId != null)
+            {
+                var getUserById = _context.ApplicationUser.Where(a => a.Id == data.SearchObj.UserId).ToList();
+                userObj = getUserById[0];
+
+                var roles = (from userRole in _context.UserRoles
+                             join role in _context.ApplicationRole on userRole.RoleId equals role.Id
+                             where userRole.UserId == userObj.Id
+                             select role);
+                foreach (var role in roles)
+                {
+                    lstRoleNames.Add(role.Name);
+                }
+                var lstEmployees = _context.Employees.Where(a => a.Email == userObj.Email).ToList();
+                if (lstEmployees.Count > 0)
+                {
+                    empObj = lstEmployees[0];
+                }
+            }
+            #endregion
+
+            #region Load Data Depend on User
+            if (userObj.HospitalId > 0)
+            {
+
+                if (lstRoleNames.Any() && ((lstRoleNames.Contains("AssetOwner") || lstRoleNames.Contains("SRCreator") || (lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRCreator"))) && !lstRoleNames.Any(itm => itm == "TLHospitalManager" || itm == "EngDepManager" || itm == "SRReviewer")))
+                {
+                    query = query.Where(a => a.CreatedById == userObj.Id && a.HospitalId == userObj.HospitalId);
+                }
+                if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("AssetOwner") && lstRoleNames.Contains("SRCreator"))
+                {
+                    query = query.Where(a => a.HospitalId == userObj.HospitalId);
+                }
+                if (lstRoleNames.Contains("TLHospitalManager") && !lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    query = query.Where(a => a.HospitalId == userObj.HospitalId);
+                }
+                if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    query = query.Where(a => a.HospitalId == userObj.HospitalId);
+                }
+                if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    query = query.Where(a => a.HospitalId == userObj.HospitalId);
+                }
+                if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    query = query.Where(a => a.HospitalId == userObj.HospitalId);
+                }
+                if (lstRoleNames.Contains("TLHospitalManager") && lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("SRReviewer") && lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    query = query.Where(a => a.HospitalId == userObj.HospitalId);
+                }
+            }
+            else
+            {
+                if (userObj.GovernorateId > 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    query = query.Where(a => a.Hospital.GovernorateId == userObj.GovernorateId);
+                }
+                if (userObj.GovernorateId > 0 && userObj.CityId > 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    query = query.Where(a => a.Hospital.GovernorateId == userObj.GovernorateId && a.Hospital.CityId == userObj.CityId);
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    query = query.Where(a => a.Hospital.OrganizationId == userObj.OrganizationId);
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId > 0 && userObj.SubOrganizationId > 0 && userObj.HospitalId == 0)
+                {
+                    query = query.Where(a => a.Hospital.OrganizationId == userObj.OrganizationId && a.Hospital.SubOrganizationId == userObj.SubOrganizationId);
+                }
+                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                {
+                    query = query;
+                }
+
+            }
+            #endregion
+
+            #region Search Criteria
+            if (data.SearchObj.GovernorateId != 0)
+            {
+                query = query.Where(x => x.Request.Hospital.GovernorateId == data.SearchObj.GovernorateId);
+            }
+            if (data.SearchObj.CityId != 0)
+            {
+                query = query.Where(x => x.Request.Hospital.CityId == data.SearchObj.CityId);
+            }
+            if (data.SearchObj.OrganizationId != 0)
+            {
+                query = query.Where(x => x.Request.Hospital.OrganizationId == data.SearchObj.OrganizationId);
+            }
+            if (data.SearchObj.SubOrganizationId != 0)
+            {
+                query = query.Where(x => x.Request.Hospital.SubOrganizationId == data.SearchObj.SubOrganizationId);
+            }
+            if (data.SearchObj.HospitalId != 0)
+            {
+                query = query.Where(x => x.Request.HospitalId == data.SearchObj.HospitalId);
+            }
+            if (data.SearchObj.MasterAssetId != 0)
+            {
+                query = query.Where(x => x.Request.AssetDetail.MasterAssetId == data.SearchObj.MasterAssetId);
+            }
+            if (!string.IsNullOrEmpty(data.SearchObj.Barcode))
+            {
+                query = query.Where(x => x.Request.AssetDetail.Barcode.Contains(data.SearchObj.Barcode));
+            }
+            if (!string.IsNullOrEmpty(data.SearchObj.SerialNumber))
+            {
+                query = query.Where(x => x.Request.AssetDetail.SerialNumber.Contains(data.SearchObj.SerialNumber));
+            }
+            if (data.SearchObj.ModelNumber != "")
+            {
+                query = query.Where(x => x.Request.AssetDetail.MasterAsset.ModelNumber == data.SearchObj.ModelNumber);
+            }
+            if (data.SearchObj.DepartmentId != 0)
+            {
+                query = query.Where(x => x.Request.AssetDetail.DepartmentId == data.SearchObj.DepartmentId);
+            }
+            if (data.SearchObj.PeriorityId != 0)
+            {
+                query = query.Where(x => x.Request.AssetDetail.MasterAsset.PeriorityId == data.SearchObj.PeriorityId);
+            }
+            if (data.SearchObj.ModeId != 0)
+            {
+                query = query.Where(x => x.Request.RequestModeId == data.SearchObj.ModeId);
+            }
+            if (data.SearchObj.Code != "")
+            {
+                query = query.Where(x => x.Request.RequestCode == data.SearchObj.Code);
+            }
+            if (data.SearchObj.Subject != "")
+            {
+                query = query.Where(x => x.Request.Subject == data.SearchObj.Subject);
+            }
+            if (data.SearchObj.StatusId != 0)
+            {
+                query = query.Where(x => x.RequestStatusId == data.SearchObj.StatusId);
+            }
+
+            if (data.SearchObj.AssetDetailId != 0)
+            {
+                query = query.Where(x => x.Request.AssetDetailId == data.SearchObj.AssetDetailId);
+            }
+
+            string setstartday, setstartmonth, setendday, setendmonth = "";
+            DateTime startingFrom = new DateTime();
+            DateTime endingTo = new DateTime();
+            if (data.SearchObj.Start == "")
+            {
+                startingFrom = DateTime.Parse("1900-01-01").Date;
+            }
+            else
+            {
+                data.SearchObj.StartDate = DateTime.Parse(data.SearchObj.Start.ToString());
+                var startyear = data.SearchObj.StartDate.Value.Year;
+                var startmonth = data.SearchObj.StartDate.Value.Month;
+                var startday = data.SearchObj.StartDate.Value.Day;
+                if (startday < 10)
+                    setstartday = data.SearchObj.StartDate.Value.Day.ToString().PadLeft(2, '0');
+                else
+                    setstartday = data.SearchObj.StartDate.Value.Day.ToString();
+
+                if (startmonth < 10)
+                    setstartmonth = data.SearchObj.StartDate.Value.Month.ToString().PadLeft(2, '0');
+                else
+                    setstartmonth = data.SearchObj.StartDate.Value.Month.ToString();
+
+                var sDate = startyear + "/" + setstartmonth + "/" + setstartday;
+                startingFrom = DateTime.Parse(sDate);
+            }
+
+            if (data.SearchObj.End == "")
+            {
+                endingTo = DateTime.Today.Date;
+            }
+            else
+            {
+                data.SearchObj.EndDate = DateTime.Parse(data.SearchObj.End.ToString());
+                var endyear = data.SearchObj.EndDate.Value.Year;
+                var endmonth = data.SearchObj.EndDate.Value.Month;
+                var endday = data.SearchObj.EndDate.Value.Day;
+                if (endday < 10)
+                    setendday = data.SearchObj.EndDate.Value.Day.ToString().PadLeft(2, '0');
+                else
+                    setendday = data.SearchObj.EndDate.Value.Day.ToString();
+                if (endmonth < 10)
+                    setendmonth = data.SearchObj.EndDate.Value.Month.ToString().PadLeft(2, '0');
+                else
+                    setendmonth = data.SearchObj.EndDate.Value.Month.ToString();
+                var eDate = endyear + "/" + setendmonth + "/" + setendday;
+                endingTo = DateTime.Parse(eDate);
+            }
+            if (data.SearchObj.Start != "" && data.SearchObj.End != "")
+            {
+                query = query.Where(a => a.Request.RequestDate.Date >= startingFrom.Date && a.Request.RequestDate.Date <= endingTo.Date);
+            }
+
+
+            #endregion
+
+            #region Sort Criteria
+
+            switch (data.SortObj.SortBy)
+            {
+                case "Barcode":
+                case "الباركود":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.AssetDetail.Barcode);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.AssetDetail.Barcode);
+                    }
+                    break;
+                case "Code":
+                case "الكود":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.RequestCode);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.RequestCode);
+                    }
+                    break;
+
+                case "Serial":
+                case "السيريال":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.AssetDetail.SerialNumber);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.AssetDetail.SerialNumber);
+                    }
+                    break;
+                case "Model":
+                case "الموديل":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.AssetDetail.MasterAsset.ModelNumber);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.AssetDetail.MasterAsset.ModelNumber);
+                    }
+                    break;
+                case "Subject":
+                case "الموضوع":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.Subject);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.Subject);
+                    }
+                    break;
+
+                case "Date":
+                case "التاريخ":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.RequestDate);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.RequestDate);
+                    }
+                    break;
+
+                case "Request Code":
+                case "رقم الطلب":
+                case "رقم طلب بلاغ العطل":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.RequestCode);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.RequestCode);
+                    }
+                    break;
+                case "CreatedBy":
+                case "تم بواسطة":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.User.UserName);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.User.UserName);
+                    }
+                    break;
+                case "Periority":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query.OrderBy(x => x.Request.RequestPeriority.Name);
+                    }
+                    else
+                    {
+                        query.OrderByDescending(x => x.Request.RequestPeriority.Name);
+                    }
+                    break;
+
+                case "الأولوية":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.RequestPeriority.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.RequestPeriority.NameAr);
+                    }
+                    break;
+                case "Mode":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query.OrderBy(x => x.Request.RequestMode.Name);
+                    }
+                    else
+                    {
+                        query.OrderByDescending(x => x.Request.RequestMode.Name);
+                    }
+                    break;
+                case "طريقة الإبلاغ":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.RequestMode.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.RequestMode.NameAr);
+                    }
+                    break;
+                case "Asset Name":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query.OrderBy(x => x.Request.AssetDetail.MasterAsset.Name);
+                    }
+                    else
+                    {
+                        query.OrderByDescending(x => x.Request.AssetDetail.MasterAsset.Name);
+                    }
+                    break;
+                case "اسم الأصل":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.AssetDetail.MasterAsset.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.AssetDetail.MasterAsset.NameAr);
+                    }
+                    break;
+
+
+                case "Hospital":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.Name);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.Name);
+                    }
+                    break;
+                case "المستشفى":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.NameAr);
+                    }
+                    break;
+                case "Brands":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.AssetDetail.MasterAsset.brand.Name);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.AssetDetail.MasterAsset.brand.Name);
+                    }
+                    break;
+                case "الماركات":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.AssetDetail.MasterAsset.brand.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.AssetDetail.MasterAsset.brand.NameAr);
+                    }
+                    break;
+                case "Department":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.AssetDetail.Department.Name);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.AssetDetail.Department.Name);
+                    }
+                    break;
+                case "القسم":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Request.AssetDetail.Department.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Request.AssetDetail.Department.NameAr);
+                    }
+                    break;
+                case "Governorate":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.Governorate.Name);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.Governorate.Name);
+                    }
+                    break;
+                case "المحافظة":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.Governorate.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.Governorate.NameAr);
+                    }
+                    break;
+
+                case "City":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.City.Name);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.City.Name);
+                    }
+                    break;
+                case "المدينة":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.City.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.City.NameAr);
+                    }
+                    break;
+                case "Organization":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.Organization.Name);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.Organization.Name);
+                    }
+                    break;
+
+                case "الهيئة":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.Organization.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.Organization.NameAr);
+                    }
+                    break;
+                case "SubOrganization":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.SubOrganization.Name);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.SubOrganization.Name);
+                    }
+                    break;
+                case "هيئة فرعية":
+                    if (data.SortObj.SortStatus == "ascending")
+                    {
+                        query = query.OrderBy(x => x.Hospital.SubOrganization.NameAr);
+                    }
+                    else
+                    {
+                        query = query.OrderByDescending(x => x.Hospital.SubOrganization.NameAr);
+                    }
+                    break;
+            }
+
+            #endregion
+
+            #region Count data and fiter By Paging
+            IQueryable<RequestTracking> lstResults;
+            var countItems = query.ToList();
+            mainClass.Count = countItems.Count();
+            if (pageNumber == 0 && pageSize == 0)
+                lstResults = query;
+            else
+                lstResults = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            #endregion
+
+            #region Loop to get Items after serach and sort
+
+            foreach (var req in lstResults.ToList())
+            {
+                IndexRequestVM.GetData getDataObj = new IndexRequestVM.GetData();
+                getDataObj.Id = req.Request.Id;
+                getDataObj.RequestCode = req.Request.RequestCode;
+                getDataObj.Barcode = req.Request.AssetDetail.Barcode;
+                getDataObj.CreatedById = req.CreatedById;
+                getDataObj.CreatedBy = req.User != null ? req.User.UserName : "";
+                getDataObj.Subject = req.Request.Subject;
+                getDataObj.RequestDate = req.Request.RequestDate;
+                getDataObj.AssetDetailId = req.Request.AssetDetailId != null ? (int)req.Request.AssetDetailId : 0;
+                getDataObj.HospitalId = req.Request.AssetDetail.HospitalId;
+                getDataObj.Barcode = req.Request.AssetDetail.Barcode;
+                getDataObj.SerialNumber = req.Request.AssetDetail.SerialNumber;
+                getDataObj.ModelNumber = req.Request.AssetDetail.MasterAsset.ModelNumber;
+                getDataObj.AssetName = req.Request.AssetDetail.MasterAsset.Name;
+                getDataObj.AssetNameAr = req.Request.AssetDetail.MasterAsset.NameAr;
+                getDataObj.ModeId = req.Request.RequestModeId != null ? (int)req.Request.RequestModeId : 0;
+                getDataObj.ModeName = req.Request.RequestMode != null ? req.Request.RequestMode.Name : "";
+                getDataObj.ModeNameAr = req.Request.RequestMode != null ? req.Request.RequestMode.NameAr : "";
+                getDataObj.PeriorityId = req.Request.RequestPeriorityId != null ? (int)req.Request.RequestPeriorityId : 0;
+                getDataObj.PeriorityName = req.Request.RequestPeriority != null ? req.Request.RequestPeriority.Name : "";
+                getDataObj.PeriorityNameAr = req.Request.RequestPeriority != null ? req.Request.RequestPeriority.NameAr : "";
+                getDataObj.PeriorityColor = req.Request.RequestPeriority != null ? req.Request.RequestPeriority.Color : "";
+                getDataObj.PeriorityIcon = req.Request.RequestPeriority != null ? req.Request.RequestPeriority.Icon : "";
+                getDataObj.GovernorateId = req.User != null ? req.User.GovernorateId : 0;
+                getDataObj.CityId = req.User != null ? req.User.CityId : 0;
+                getDataObj.OrganizationId = req.User != null ? req.User.OrganizationId : 0;
+                getDataObj.SubOrganizationId = req.User != null ? req.User.SubOrganizationId : 0;
+
+                if (req.Request.RequestModeId != null)
+                {
+                    getDataObj.ModeId = req.Request.RequestMode.Id;
+                    getDataObj.ModeName = req.Request.RequestMode.Name;
+                    getDataObj.ModeNameAr = req.Request.RequestMode.NameAr;
+                }
+                if (req.Request.RequestPeriorityId != null)
+                {
+                    getDataObj.PeriorityId = (int)req.Request.RequestPeriorityId;
+                    getDataObj.PeriorityName = req.Request.RequestPeriority.Name;
+                    getDataObj.PeriorityNameAr = req.Request.RequestPeriority.NameAr;
+                    getDataObj.PeriorityColor = req.Request.RequestPeriority.Color;
+                    getDataObj.PeriorityIcon = req.Request.RequestPeriority.Icon;
+                }
+                var lstWOStatusDB = _context.WorkOrderTrackings.Include(o => o.WorkOrder).Include(o => o.WorkOrderStatus)
+                    .Where(a => a.WorkOrder.RequestId == req.RequestId).OrderByDescending(a => a.CreationDate);
+                var lstWOStatus = lstWOStatusDB.ToList();
+                if (lstWOStatus.Count > 0)
+                {
+                    getDataObj.LatestWorkOrderStatusId = lstWOStatus[0].WorkOrderStatusId;
+                    getDataObj.WOLastTrackDescription = lstWOStatus[0].Notes;
+                }
+                getDataObj.StatusId = (int)req.RequestStatus.Id;
+                getDataObj.StatusName = req.RequestStatus.Name;
+                getDataObj.StatusNameAr = req.RequestStatus.NameAr;
+                getDataObj.StatusColor = req.RequestStatus.Color;
+                getDataObj.StatusIcon = req.RequestStatus.Icon;
+                getDataObj.Description = req.Description;
+                if (getDataObj.StatusId == 2)
+                {
+                    getDataObj.ClosedDate = req.DescriptionDate.ToString();
+                }
+                else
+                {
+                    getDataObj.ClosedDate = "";
+                }
+
+                getDataObj.CountWorkOrder = _context.WorkOrders.Where(a => a.RequestId == req.RequestId).ToList().Count > 0 ? _context.WorkOrders.Where(a => a.RequestId == req.RequestId).ToList().Count : 0;
+                getDataObj.CountListTracks = _context.RequestTracking.Where(a => a.RequestId == req.RequestId).ToList().Count;
+                list.Add(getDataObj);
+            }
+            #endregion
+
+            #region Represent data after Paging and count
+            mainClass.Results = list;
+            #endregion
+
+            return mainClass;
+        }
     }
 }

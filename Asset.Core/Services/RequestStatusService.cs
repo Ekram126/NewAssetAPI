@@ -74,5 +74,12 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.RequestStatus.GetAllForReport(requestDateObj);
         }
+
+
+
+        public IndexRequestStatusVM GetRequestStatusByUserId(string userId, int hospitalId)
+        {
+            return _unitOfWork.RequestStatus.GetRequestStatusByUserId(userId,hospitalId);
+        }
     }
 }

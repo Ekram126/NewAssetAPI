@@ -35,6 +35,29 @@ namespace Asset.Core.Repositories
         {
             _context = context;
         }
+
+        public AssetDetail QueryAssetDetailById(int assetId)
+        {
+            var lstHospitalAssets = _context.AssetDetails.Include(a => a.Supplier)
+                                                         .Include(a => a.MasterAsset).Include(a => a.Hospital)
+                                                         .Include(a => a.Hospital.Governorate)
+                                                         .Include(a => a.Hospital.City)
+                                                         .Include(a => a.Hospital.Organization).Include(a => a.Hospital.SubOrganization)
+                                                         .Include(a => a.MasterAsset.brand)
+                                                         .Include(a => a.MasterAsset.Category)
+                                                         .Include(a => a.MasterAsset.SubCategory)
+                                                         .Include(a => a.MasterAsset.ECRIS)
+                                                         .Include(a => a.MasterAsset.AssetPeriority)
+                                                         .Include(a => a.Department)
+                                                         .Include(a => a.Building).Include(a => a.Floor).Include(a => a.Room)
+                                                         .Include(a => a.MasterAsset.Origin).ToList().Where(a => a.Id == assetId).ToList();
+            if (lstHospitalAssets.Count() > 0)
+            {
+                return lstHospitalAssets[0];
+            }
+
+            return null;
+        }
         public int Add(CreateAssetDetailVM model)
         {
             AssetDetail assetDetailObj = new AssetDetail();
@@ -1603,8 +1626,6 @@ namespace Asset.Core.Repositories
                     {
                         model.RemainWarrantyExpiresAr = ArabicNumeralHelper.ConvertNumerals(resultAr.ToString());
                     }
-
-
                     var result = DateTimeExtensions.ToDateString(DateTime.Parse(detailObj.WarrantyEnd.Value.Date.ToString()), DateTime.Today.Date);
                     if (detailObj.WarrantyEnd.Value.Date.Year != 1900)
                         model.RemainWarrantyExpires = result.ToString();

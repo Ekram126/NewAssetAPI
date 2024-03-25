@@ -265,5 +265,12 @@ namespace Asset.Core.Services
         {
             return _unitOfWork.Request.GetRequestsByStatusIdAndPagingV2(userId, statusId, pageNumber, pageSize);
         }
+
+
+
+        public IndexRequestVM ListRequests(SortAndFilterRequestVM data, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.Request.ListRequests(data, pageNumber, pageSize);
+        }
     }
 }

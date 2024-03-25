@@ -354,8 +354,6 @@ namespace Asset.Core.Repositories
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
-
-
             }
 
             if (requests.Count > 0)
@@ -662,7 +660,7 @@ namespace Asset.Core.Repositories
             List<RequestTracking> lstSolvedTracks = new List<RequestTracking>();
             List<RequestTracking> lstApprovedTracks = new List<RequestTracking>();
 
-       
+
             //var obj = _context.ApplicationUser.Where(a => a.Id == requestDateObj.UserId).ToList();
             //if (obj.Count > 0)
             //{
@@ -750,7 +748,7 @@ namespace Asset.Core.Repositories
                 {
                     requests = requests.Where(t => t.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
                 }
-               
+
             }
 
 
@@ -867,6 +865,151 @@ namespace Asset.Core.Repositories
             return 0;
         }
 
+
+
+
+        public IndexRequestStatusVM GetRequestStatusByUserId(string userId, int hospitalId)
+        {
+            IndexRequestStatusVM mainClass = new IndexRequestStatusVM();
+            List<IndexRequestStatusVM.GetData> list = new List<IndexRequestStatusVM.GetData>();
+            ApplicationUser UserObj = new ApplicationUser();
+            ApplicationRole roleObj = new ApplicationRole();
+            List<string> lstRoleNames = new List<string>();
+
+            var obj = _context.ApplicationUser.Where(a => a.Id == userId).ToList();
+            if (obj.Count > 0)
+            {
+                UserObj = obj[0];
+                var roleNames = (from userRole in _context.UserRoles
+                                 join role in _context.Roles on userRole.RoleId equals role.Id
+                                 where userRole.UserId == userId
+                                 select role);
+                foreach (var item in roleNames)
+                {
+                    lstRoleNames.Add(item.Name);
+                }
+            }
+
+            List<RequestTracking> lstOpenTracks = new List<RequestTracking>();
+            List<RequestTracking> lstCloseTracks = new List<RequestTracking>();
+            List<RequestTracking> lstInProgressTracks = new List<RequestTracking>();
+            List<RequestTracking> lstSolvedTracks = new List<RequestTracking>();
+            List<RequestTracking> lstApprovedTracks = new List<RequestTracking>();
+
+
+            var lstStatus = _context.RequestStatus.Where(a => a.Id != 5).ToList();
+            mainClass.ListStatus = lstStatus;
+
+            var requests = _context.RequestTracking.Include(a => a.Request).Include(a => a.Request.AssetDetail).Include(a => a.Request.AssetDetail.Hospital)
+                                 .Include(a => a.Request.AssetDetail.Hospital.Governorate).Include(a => a.Request.AssetDetail.Hospital.City)
+                                 .Include(a => a.Request.AssetDetail.Hospital.Organization).Include(a => a.Request.AssetDetail.Hospital.SubOrganization)
+                                 .Include(a => a.Request.User)
+                                 .OrderByDescending(a => a.DescriptionDate)
+                                 .ToList().GroupBy(rt => rt.RequestId).ToList();
+
+            if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.GovernorateId == UserObj.GovernorateId).ToList();
+            }
+            if (UserObj.GovernorateId > 0 && UserObj.CityId > 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.CityId == UserObj.CityId).ToList();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId == 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.OrganizationId == UserObj.OrganizationId).ToList();
+            }
+            if (UserObj.OrganizationId > 0 && UserObj.SubOrganizationId > 0 && UserObj.HospitalId == 0)
+            {
+                requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.SubOrganizationId == UserObj.SubOrganizationId).ToList();
+            }
+            if (UserObj.HospitalId > 0)
+            {
+                if (lstRoleNames.Contains("TLHospitalManager"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (!lstRoleNames.Contains("EngDepManager") && lstRoleNames.Contains("Eng"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId && t.FirstOrDefault().CreatedById == userId).ToList();
+                }
+                if (!lstRoleNames.Contains("EngDepManager") && !lstRoleNames.Contains("Eng"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("AssetOwner"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId && t.FirstOrDefault().CreatedById == userId).ToList();
+                }
+                if (lstRoleNames.Contains("SRCreator") && !lstRoleNames.Contains("SRReviewer"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId && t.FirstOrDefault().CreatedById == userId).ToList();
+                }
+
+                if (lstRoleNames.Contains("SRCreator") && lstRoleNames.Contains("SRReviewer"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.Hospital.Id == UserObj.HospitalId).ToList();
+                }
+
+                if (lstRoleNames.Contains("AssetOwner") && !lstRoleNames.Contains("SRReviewer"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+                if (lstRoleNames.Contains("EngDepManager"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+
+                if (lstRoleNames.Contains("SRReviewer") && !lstRoleNames.Contains("SRCreator"))
+                {
+                    requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == UserObj.HospitalId).ToList();
+                }
+            }
+            if (hospitalId != 0)
+            {
+                requests = requests.Where(t => t.FirstOrDefault().Request.AssetDetail.HospitalId == hospitalId).ToList();
+            }
+
+
+            if (requests.ToList().Count > 0)
+            {
+                foreach (var req in requests)
+                {
+                    switch (req.FirstOrDefault().RequestStatusId)
+                    {
+                        case 1:
+                            lstOpenTracks.Add(req.FirstOrDefault());
+                            break;
+                        case 2:
+                            lstCloseTracks.Add(req.FirstOrDefault());
+                            break;
+                        case 3:
+                            lstInProgressTracks.Add(req.FirstOrDefault());
+                            break;
+                        case 4:
+                            lstSolvedTracks.Add(req.FirstOrDefault());
+                            break;
+                        case 5:
+                            lstApprovedTracks.Add(req.FirstOrDefault());
+                            break;
+                    }
+
+                }
+            }
+
+            mainClass.CountOpen = lstOpenTracks.Count;
+            mainClass.CountClosed = lstCloseTracks.Count;
+            mainClass.CountInProgress = lstInProgressTracks.Count;
+            mainClass.CountSolved = lstSolvedTracks.Count;
+            mainClass.CountApproved = lstApprovedTracks.Count;
+            mainClass.CountAll = requests.Count();
+
+            return mainClass;
+        }
 
     }
 }

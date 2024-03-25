@@ -136,6 +136,9 @@
     <Reference Include="Syncfusion.Pdf.Portable">
       <HintPath>C:\Users\Public\Documents\Syncfusion\ASP.NET Core - EJ2\20.3.0.56\bin\Debug\netcoreapp3.1\Syncfusion.Pdf.Portable.dll</HintPath>
     </Reference>
+    <Reference Include="System.Management">
+      <HintPath>bin\Debug\net5.0\System.Management.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 

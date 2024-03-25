@@ -25,6 +25,9 @@ namespace Asset.Domain.Repositories
         int Delete(int id);
 
 
+        IndexRequestStatusVM GetRequestStatusByUserId(string userId, int hospitalId);
+
+
         IEnumerable<IndexRequestStatusVM.GetData> SortRequestStatuses(SortRequestStatusVM sortObj);
 
     }
