@@ -84,13 +84,29 @@ namespace Asset.API.Controllers
             process.Start();
             string output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
-            string serialNumber = output.Trim();
-            char delimiter = '\n'; // Example delimiter
+
+            string serialNumber, serialOutPut = "";
+            if (output.Contains("/"))
+            {
+                //    string input = "/DR9L6L3/CNFCW001BA008O/";
+                serialNumber = output.Trim();
+                string[] parts = serialNumber.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                serialOutPut = parts[^1]; // Using the index -1 to access the last element
+            }
+            else
+            {
+                serialNumber = output.Trim();
+                char delimiter = '\n';
+                string[] substringsSerial = serialNumber.Split(delimiter);
+                serialOutPut = substringsSerial[1];
+            }
+            //string serialNumber = output.Trim();
+            //char delimiter = '\n'; // Example delimiter
 
             // Split the string using the delimiter
-            string[] substringsSerial = serialNumber.Split(delimiter);
+           // string[] substringsSerial = serialNumber.Split(delimiter);
 
-            var serialOutPut = substringsSerial[1];
+           // var serialOutPut = substringsSerial[1];
             string textFile = Path.Combine(_env.ContentRootPath, "UploadedAttachments") + "\\" + "MAC.abc";
             if (System.IO.File.Exists(textFile))
             {
