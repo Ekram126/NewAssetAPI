@@ -82,13 +82,14 @@ namespace Asset.API.Controllers
                 }
             };
             process.Start();
-            string output = process.StandardOutput.ReadToEnd();
+        //    string output = process.StandardOutput.ReadToEnd();
+          string  output = "/DR9L6L3/CNFCW001BA008O/";
             process.WaitForExit();
 
             string serialNumber, serialOutPut = "";
             if (output.Contains("/"))
             {
-                //    string input = "/DR9L6L3/CNFCW001BA008O/";
+                //output = "/DR9L6L3/CNFCW001BA008O/";
                 serialNumber = output.Trim();
                 string[] parts = serialNumber.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
                 serialOutPut = parts[^1]; // Using the index -1 to access the last element

@@ -901,11 +901,13 @@ namespace Asset.Core.Repositories
             mainClass.ListStatus = lstStatus;
 
             var requests = _context.RequestTracking.Include(a => a.Request).Include(a => a.Request.AssetDetail).Include(a => a.Request.AssetDetail.Hospital)
-                                 .Include(a => a.Request.AssetDetail.Hospital.Governorate).Include(a => a.Request.AssetDetail.Hospital.City)
-                                 .Include(a => a.Request.AssetDetail.Hospital.Organization).Include(a => a.Request.AssetDetail.Hospital.SubOrganization)
+                             //    .Include(a => a.Request.AssetDetail.Hospital.Governorate).Include(a => a.Request.AssetDetail.Hospital.City)
+                              //   .Include(a => a.Request.AssetDetail.Hospital.Organization).Include(a => a.Request.AssetDetail.Hospital.SubOrganization)
                                  .Include(a => a.Request.User)
                                  .OrderByDescending(a => a.DescriptionDate)
                                  .ToList().GroupBy(rt => rt.RequestId).ToList();
+
+
 
             if (UserObj.GovernorateId > 0 && UserObj.CityId == 0 && UserObj.HospitalId == 0)
             {

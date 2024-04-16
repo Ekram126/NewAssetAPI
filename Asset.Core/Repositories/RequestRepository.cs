@@ -2710,9 +2710,9 @@ namespace Asset.Core.Repositories
                     //    else
                     //        request = request.Where(b => b.ModelNumber.Contains(sortObj.StrModel)).OrderBy(d => d.ModelNumber).ToList();
                     //}
-                  
-                    
-                    
+
+
+
                     if (sortObj.StrRequestCode != "")
                     {
                         if (sortObj.SortStatus == "descending")
@@ -4602,8 +4602,8 @@ namespace Asset.Core.Repositories
 
             foreach (var item in list)
             {
-                var listWO = _context.WorkOrders.Where(a => a.RequestId == item.Id).ToList();
-                if (listWO.Count == 0)
+                var listWO = _context.WorkOrders.Where(a => a.RequestId == item.Id);
+                if (listWO.ToList().Count == 0)
                 {
                     listCountRequests.Add(item);
                 }
@@ -8815,18 +8815,27 @@ namespace Asset.Core.Repositories
 
             var lastStatusPerRequest = _context.RequestTracking.Include(a => a.Request)
                 .Include(a => a.Request.RequestMode).Include(a => a.Request.RequestType).Include(a => a.RequestStatus)
+                 .Include(a => a.Request.Hospital)
+
+                                     .Include(a => a.Request.Hospital.Governorate)
+                                     .Include(a => a.Request.Hospital.City)
+                                         .Include(a => a.Request.Hospital.Organization)
+                                         .Include(a => a.Request.Hospital.SubOrganization)
+
                          .Include(a => a.Request.AssetDetail).Include(a => a.User).Include(a => a.Request.AssetDetail.MasterAsset)
-                         .Include(a => a.Request.AssetDetail.MasterAsset.brand).Include(a => a.Request.AssetDetail.Supplier).Include(a => a.Request.AssetDetail.Department).Include(a => a.Request.AssetDetail.MasterAsset.Origin)
+                         .Include(a => a.Request.AssetDetail.MasterAsset.brand).Include(a => a.Request.AssetDetail.Supplier)
+                         .Include(a => a.Request.AssetDetail.Department).Include(a => a.Request.AssetDetail.MasterAsset.Origin)
                          .Include(a => a.Request.AssetDetail.Building).Include(a => a.Request.AssetDetail.Floor).Include(a => a.Request.AssetDetail.Room)
                          .Include(a => a.Request.RequestPeriority).Include(a => a.Request.RequestMode)
-                         .Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.Organization)
-                         .Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.Governorate)
-                         .Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.City)
-                         .Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.SubOrganization)
+                         .Include(a => a.Request.AssetDetail.Hospital)
+                         //.Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.Organization)
+                         //.Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.Governorate)
+                         //.Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.City)
+                         //.Include(a => a.Request.AssetDetail.Hospital).ThenInclude(h => h.SubOrganization)
                          .ToList()
                          .GroupBy(track => track.RequestId)
-                         .Select(g => g.OrderByDescending(track => track.DescriptionDate).FirstOrDefault())
-                         .OrderByDescending(a => a.DescriptionDate);
+                         .Select(g => g.OrderByDescending(track => track.DescriptionDate).FirstOrDefault());
+                       //  .OrderByDescending(a => a.DescriptionDate);
             return lastStatusPerRequest.AsQueryable();
         }
 
@@ -8918,31 +8927,31 @@ namespace Asset.Core.Repositories
                 {
                     query = query.Where(a => a.Hospital.OrganizationId == userObj.OrganizationId && a.Hospital.SubOrganizationId == userObj.SubOrganizationId);
                 }
-                if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
-                {
-                    query = query;
-                }
+                //if (userObj.GovernorateId == 0 && userObj.CityId == 0 && userObj.OrganizationId == 0 && userObj.SubOrganizationId == 0 && userObj.HospitalId == 0)
+                //{
+                //    query = query;
+                //}
 
             }
             #endregion
 
             #region Search Criteria
-            if (data.SearchObj.GovernorateId != 0)
-            {
-                query = query.Where(x => x.Request.Hospital.GovernorateId == data.SearchObj.GovernorateId);
-            }
+            //if (data.SearchObj.GovernorateId != 0)
+            //{
+            //    query = query.Where(x => x.Request.Hospital.GovernorateId == data.SearchObj.GovernorateId);
+            //}
             if (data.SearchObj.CityId != 0)
             {
                 query = query.Where(x => x.Request.Hospital.CityId == data.SearchObj.CityId);
             }
-            if (data.SearchObj.OrganizationId != 0)
-            {
-                query = query.Where(x => x.Request.Hospital.OrganizationId == data.SearchObj.OrganizationId);
-            }
-            if (data.SearchObj.SubOrganizationId != 0)
-            {
-                query = query.Where(x => x.Request.Hospital.SubOrganizationId == data.SearchObj.SubOrganizationId);
-            }
+            //if (data.SearchObj.OrganizationId != 0)
+            //{
+            //    query = query.Where(x => x.Request.Hospital.OrganizationId == data.SearchObj.OrganizationId);
+            //}
+            //if (data.SearchObj.SubOrganizationId != 0)
+            //{
+            //    query = query.Where(x => x.Request.Hospital.SubOrganizationId == data.SearchObj.SubOrganizationId);
+            //}
             if (data.SearchObj.HospitalId != 0)
             {
                 query = query.Where(x => x.Request.HospitalId == data.SearchObj.HospitalId);
@@ -9041,10 +9050,10 @@ namespace Asset.Core.Repositories
                 var eDate = endyear + "/" + setendmonth + "/" + setendday;
                 endingTo = DateTime.Parse(eDate);
             }
-            if (data.SearchObj.Start != "" && data.SearchObj.End != "")
-            {
-                query = query.Where(a => a.Request.RequestDate.Date >= startingFrom.Date && a.Request.RequestDate.Date <= endingTo.Date);
-            }
+            //if (data.SearchObj.Start != "" && data.SearchObj.End != "")
+            //{
+            //    query = query.Where(a => a.Request.RequestDate.Date >= startingFrom.Date && a.Request.RequestDate.Date <= endingTo.Date);
+            //}
 
 
             #endregion
